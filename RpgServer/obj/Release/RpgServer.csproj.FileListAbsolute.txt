@@ -1,0 +1,10 @@
+D:\GameDev\programming\C#\Genus\RpgServer\bin\Release\Data\MapInfo.xml
+D:\GameDev\programming\C#\Genus\RpgServer\bin\Release\RpgServer.exe
+D:\GameDev\programming\C#\Genus\RpgServer\bin\Release\RpgServer.pdb
+D:\GameDev\programming\C#\Genus\RpgServer\bin\Release\Genus2D.dll
+D:\GameDev\programming\C#\Genus\RpgServer\bin\Release\OpenTK.dll
+D:\GameDev\programming\C#\Genus\RpgServer\bin\Release\SharpFont.dll
+D:\GameDev\programming\C#\Genus\RpgServer\bin\Release\Genus2D.pdb
+D:\GameDev\programming\C#\Genus\RpgServer\obj\Release\RpgServer.csprojResolveAssemblyReference.cache
+D:\GameDev\programming\C#\Genus\RpgServer\obj\Release\RpgServer.exe
+D:\GameDev\programming\C#\Genus\RpgServer\obj\Release\RpgServer.pdb

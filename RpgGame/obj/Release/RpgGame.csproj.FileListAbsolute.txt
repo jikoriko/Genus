@@ -1,0 +1,11 @@
+D:\GameDev\programming\C#\Genus\RpgGame\bin\Release\RpgGame.exe.config
+D:\GameDev\programming\C#\Genus\RpgGame\bin\Release\Assets\Textures\player.png
+D:\GameDev\programming\C#\Genus\RpgGame\bin\Release\RpgGame.exe
+D:\GameDev\programming\C#\Genus\RpgGame\bin\Release\RpgGame.pdb
+D:\GameDev\programming\C#\Genus\RpgGame\bin\Release\Genus2D.dll
+D:\GameDev\programming\C#\Genus\RpgGame\bin\Release\OpenTK.dll
+D:\GameDev\programming\C#\Genus\RpgGame\bin\Release\SharpFont.dll
+D:\GameDev\programming\C#\Genus\RpgGame\bin\Release\Genus2D.pdb
+D:\GameDev\programming\C#\Genus\RpgGame\obj\Release\RpgGame.csprojResolveAssemblyReference.cache
+D:\GameDev\programming\C#\Genus\RpgGame\obj\Release\RpgGame.exe
+D:\GameDev\programming\C#\Genus\RpgGame\obj\Release\RpgGame.pdb

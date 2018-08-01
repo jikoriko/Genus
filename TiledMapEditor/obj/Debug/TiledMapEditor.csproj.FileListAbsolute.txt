@@ -1,0 +1,65 @@
+C:\Users\Perry\Desktop\opentk 2d\TiledMapEditor\bin\Debug\TiledMapEditor.exe
+C:\Users\Perry\Desktop\opentk 2d\TiledMapEditor\bin\Debug\TiledMapEditor.pdb
+C:\Users\Perry\Desktop\opentk 2d\TiledMapEditor\bin\Debug\Genus2D.dll
+C:\Users\Perry\Desktop\opentk 2d\TiledMapEditor\bin\Debug\OpenTK.dll
+C:\Users\Perry\Desktop\opentk 2d\TiledMapEditor\bin\Debug\SharpFont.dll
+C:\Users\Perry\Desktop\opentk 2d\TiledMapEditor\bin\Debug\Genus2D.pdb
+C:\Users\Perry\Desktop\opentk 2d\TiledMapEditor\obj\Debug\TiledMapEditor.csprojResolveAssemblyReference.cache
+C:\Users\Perry\Desktop\opentk 2d\TiledMapEditor\obj\Debug\TiledMapEditor.exe
+C:\Users\Perry\Desktop\opentk 2d\TiledMapEditor\obj\Debug\TiledMapEditor.pdb
+C:\Users\Perry\Desktop\opentk 2d\TiledMapEditor\bin\Debug\Assets\Textures\tileset.png
+C:\Users\Perry\Desktop\opentk 2d\TiledMapEditor\bin\Debug\Assets\Textures\pokemon_tileset.png
+C:\Users\Perry\Desktop\genus\TiledMapEditor\obj\Debug\TiledMapEditor.exe
+C:\Users\Perry\Desktop\genus\TiledMapEditor\obj\Debug\TiledMapEditor.pdb
+C:\Users\Perry\Desktop\genus\TiledMapEditor\bin\Debug\Assets\Textures\pokemon_tileset.png
+C:\Users\Perry\Desktop\genus\TiledMapEditor\bin\Debug\Assets\Textures\tileset.png
+C:\Users\Perry\Desktop\genus\TiledMapEditor\bin\Debug\TiledMapEditor.exe
+C:\Users\Perry\Desktop\genus\TiledMapEditor\bin\Debug\TiledMapEditor.pdb
+C:\Users\Perry\Desktop\genus\TiledMapEditor\bin\Debug\Genus2D.dll
+C:\Users\Perry\Desktop\genus\TiledMapEditor\bin\Debug\OpenTK.dll
+C:\Users\Perry\Desktop\genus\TiledMapEditor\bin\Debug\SharpFont.dll
+C:\Users\Perry\Desktop\genus\TiledMapEditor\bin\Debug\Genus2D.pdb
+C:\Users\Perry\Desktop\genus\TiledMapEditor\obj\Debug\TiledMapEditor.csprojResolveAssemblyReference.cache
+H:\genus\TiledMapEditor\obj\Debug\TiledMapEditor.exe
+H:\genus\TiledMapEditor\obj\Debug\TiledMapEditor.pdb
+H:\genus\TiledMapEditor\obj\Debug\TiledMapEditor.csprojResolveAssemblyReference.cache
+H:\genus\TiledMapEditor\bin\Debug\Assets\Textures\pokemon_tileset.png
+H:\genus\TiledMapEditor\bin\Debug\Assets\Textures\tileset.png
+H:\genus\TiledMapEditor\bin\Debug\TiledMapEditor.exe
+H:\genus\TiledMapEditor\bin\Debug\TiledMapEditor.pdb
+H:\genus\TiledMapEditor\bin\Debug\Genus2D.dll
+H:\genus\TiledMapEditor\bin\Debug\OpenTK.dll
+H:\genus\TiledMapEditor\bin\Debug\SharpFont.dll
+H:\genus\TiledMapEditor\bin\Debug\Genus2D.pdb
+F:\genus\TiledMapEditor\obj\Debug\TiledMapEditor.exe
+F:\genus\TiledMapEditor\obj\Debug\TiledMapEditor.pdb
+F:\genus\TiledMapEditor\bin\Debug\Assets\Textures\pokemon_tileset.png
+F:\genus\TiledMapEditor\bin\Debug\Assets\Textures\tileset.png
+F:\genus\TiledMapEditor\bin\Debug\TiledMapEditor.exe
+F:\genus\TiledMapEditor\bin\Debug\TiledMapEditor.pdb
+F:\genus\TiledMapEditor\bin\Debug\Genus2D.dll
+F:\genus\TiledMapEditor\bin\Debug\OpenTK.dll
+F:\genus\TiledMapEditor\bin\Debug\SharpFont.dll
+F:\genus\TiledMapEditor\bin\Debug\Genus2D.pdb
+F:\genus\TiledMapEditor\obj\Debug\TiledMapEditor.csprojResolveAssemblyReference.cache
+C:\Users\Perry\Desktop\GameDev\Genus\TiledMapEditor\obj\Debug\TiledMapEditor.exe
+C:\Users\Perry\Desktop\GameDev\Genus\TiledMapEditor\obj\Debug\TiledMapEditor.pdb
+D:\GameDev\programming\C#\Genus\TiledMapEditor\bin\Debug\Assets\Textures\pokemon_tileset.png
+D:\GameDev\programming\C#\Genus\TiledMapEditor\bin\Debug\Assets\Textures\tileset.png
+D:\GameDev\programming\C#\Genus\TiledMapEditor\bin\Debug\TiledMapEditor.exe
+D:\GameDev\programming\C#\Genus\TiledMapEditor\bin\Debug\TiledMapEditor.pdb
+D:\GameDev\programming\C#\Genus\TiledMapEditor\bin\Debug\Genus2D.dll
+D:\GameDev\programming\C#\Genus\TiledMapEditor\bin\Debug\OpenTK.dll
+D:\GameDev\programming\C#\Genus\TiledMapEditor\bin\Debug\SharpFont.dll
+D:\GameDev\programming\C#\Genus\TiledMapEditor\bin\Debug\Genus2D.pdb
+D:\GameDev\programming\C#\Genus\GenusBuild\Assets\Textures\GUI_Textures\BucketIcon.png
+D:\GameDev\programming\C#\Genus\GenusBuild\Assets\Textures\GUI_Textures\EventIcon.png
+D:\GameDev\programming\C#\Genus\GenusBuild\Assets\Textures\GUI_Textures\PencilIcon.png
+D:\GameDev\programming\C#\Genus\GenusBuild\Assets\Textures\GUI_Textures\RectangleIcon.png
+D:\GameDev\programming\C#\Genus\GenusBuild\Assets\Textures\pokemon_tileset.png
+D:\GameDev\programming\C#\Genus\GenusBuild\Assets\Textures\tileset.png
+D:\GameDev\programming\C#\Genus\GenusBuild\TiledMapEditor.exe.config
+D:\GameDev\programming\C#\Genus\GenusBuild\TiledMapEditor.exe
+D:\GameDev\programming\C#\Genus\GenusBuild\TiledMapEditor.pdb
+D:\GameDev\programming\C#\Genus\TiledMapEditor\obj\Debug\TiledMapEditor.exe
+D:\GameDev\programming\C#\Genus\TiledMapEditor\obj\Debug\TiledMapEditor.pdb

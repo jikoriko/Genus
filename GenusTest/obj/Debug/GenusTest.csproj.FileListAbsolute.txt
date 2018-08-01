@@ -1,0 +1,33 @@
+C:\Users\Perry\Desktop\opentk 2d\GenusTest\obj\Debug\GenusTest.csprojResolveAssemblyReference.cache
+C:\Users\Perry\Desktop\opentk 2d\GenusTest\bin\Debug\GenusTest.exe
+C:\Users\Perry\Desktop\opentk 2d\GenusTest\bin\Debug\GenusTest.pdb
+C:\Users\Perry\Desktop\opentk 2d\GenusTest\bin\Debug\Genus2D.dll
+C:\Users\Perry\Desktop\opentk 2d\GenusTest\bin\Debug\OpenTK.dll
+C:\Users\Perry\Desktop\opentk 2d\GenusTest\bin\Debug\SharpFont.dll
+C:\Users\Perry\Desktop\opentk 2d\GenusTest\bin\Debug\Genus2D.pdb
+C:\Users\Perry\Desktop\opentk 2d\GenusTest\obj\Debug\GenusTest.exe
+C:\Users\Perry\Desktop\opentk 2d\GenusTest\obj\Debug\GenusTest.pdb
+F:\genus\GenusTest\obj\Debug\GenusTest.exe
+F:\genus\GenusTest\obj\Debug\GenusTest.pdb
+F:\genus\GenusTest\obj\Debug\GenusTest.csprojResolveAssemblyReference.cache
+F:\genus\GenusTest\bin\Debug\GenusTest.exe
+F:\genus\GenusTest\bin\Debug\GenusTest.pdb
+F:\genus\GenusTest\bin\Debug\Genus2D.dll
+F:\genus\GenusTest\bin\Debug\OpenTK.dll
+F:\genus\GenusTest\bin\Debug\SharpFont.dll
+F:\genus\GenusTest\bin\Debug\Genus2D.pdb
+C:\Users\Perry\Desktop\Genus\GenusTest\bin\Debug\GenusTest.exe
+C:\Users\Perry\Desktop\Genus\GenusTest\bin\Debug\GenusTest.pdb
+C:\Users\Perry\Desktop\Genus\GenusTest\bin\Debug\Genus2D.dll
+C:\Users\Perry\Desktop\Genus\GenusTest\bin\Debug\OpenTK.dll
+C:\Users\Perry\Desktop\Genus\GenusTest\bin\Debug\SharpFont.dll
+C:\Users\Perry\Desktop\Genus\GenusTest\bin\Debug\Genus2D.pdb
+C:\Users\Perry\Desktop\Genus\GenusTest\obj\Debug\GenusTest.csprojResolveAssemblyReference.cache
+C:\Users\Perry\Desktop\Genus\GenusTest\obj\Debug\GenusTest.exe
+C:\Users\Perry\Desktop\Genus\GenusTest\obj\Debug\GenusTest.pdb
+D:\GameDev\programming\C#\Genus\GenusTest\obj\Debug\GenusTest.csprojResolveAssemblyReference.cache
+D:\GameDev\programming\C#\Genus\GenusTest\obj\Debug\GenusTest.exe
+D:\GameDev\programming\C#\Genus\GenusTest\obj\Debug\GenusTest.pdb
+D:\GameDev\programming\C#\Genus\GenusBuild\GenusTest.exe.config
+D:\GameDev\programming\C#\Genus\GenusBuild\GenusTest.exe
+D:\GameDev\programming\C#\Genus\GenusBuild\GenusTest.pdb
