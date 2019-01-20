@@ -294,7 +294,7 @@ namespace TiledMapEditor.UI
                 int endX = startX + (GetContentWidth() / 32) + 2;
                 int endY = startY + (GetContentHeight() / 32) + 2;
 
-                Texture tileset = Assets.GetTexture(TilesetData.GetTileset(_mapData.GetTilesetID()).TexturePath);
+                Texture tileset = Assets.GetTexture(TilesetData.GetTileset(_mapData.GetTilesetID()).ImagePath);
                 Vector3 pos = new Vector3();
                 Vector3 scale = new Vector3(_mapData.GetWidth() * 32, _mapData.GetHeight() * 32, 1);
                 Color4 colour = Color4.DarkGray;
@@ -367,7 +367,7 @@ namespace TiledMapEditor.UI
         {
             if (MouseInsideContent())
             {
-                Texture tileset = Assets.GetTexture(TilesetData.GetTileset(_mapData.GetTilesetID()).TexturePath);
+                Texture tileset = Assets.GetTexture(TilesetData.GetTileset(_mapData.GetTilesetID()).ImagePath);
 
                 Vector2 relativeMouse = StateWindow.Instance.GetMousePosition() - GetWorldContentPosition().Xy;
                 int layer = _editorState.GetControlPanel().GetLayer();
@@ -397,7 +397,7 @@ namespace TiledMapEditor.UI
         {
             if (_contentGrabbed || MouseInsideBody())
             {
-                Texture tileset = Assets.GetTexture(TilesetData.GetTileset(_mapData.GetTilesetID()).TexturePath);
+                Texture tileset = Assets.GetTexture(TilesetData.GetTileset(_mapData.GetTilesetID()).ImagePath);
 
                 Vector2 tilesetStartSelection = _editorState.GetTilesetPanel().GetSelectedStartTile();
                 Vector2 tilesetEndSelection = _editorState.GetTilesetPanel().GetSelectedEndTile();

@@ -103,7 +103,7 @@ namespace TiledMapEditor.UI
             TilesetData.Tileset tileset = _tilesetEditor.GetSelectedTileset();
             if (tileset != null)
             {
-                Texture tilesetTexture = Assets.GetTexture(tileset.TexturePath);
+                Texture tilesetTexture = Assets.GetTexture(tileset.ImagePath);
                 if (tilesetTexture != null)
                 {
                     SetScrollableHeight(tilesetTexture.GetHeight());
@@ -119,7 +119,7 @@ namespace TiledMapEditor.UI
             TilesetData.Tileset tileset = _tilesetEditor.GetSelectedTileset();
             if (tileset != null)
             {
-                Texture tilesetTexture = Assets.GetTexture(tileset.TexturePath);
+                Texture tilesetTexture = Assets.GetTexture(tileset.ImagePath);
 
                 if (tilesetTexture != null)
                 {

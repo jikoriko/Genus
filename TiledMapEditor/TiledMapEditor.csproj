@@ -66,6 +66,7 @@
     <Compile Include="UI\MapEventsPanel.cs" />
     <Compile Include="UI\MapPanel.cs" />
     <Compile Include="UI\NewMapPanel.cs" />
+    <Compile Include="UI\SpriteEditorPanel.cs" />
     <Compile Include="UI\TilesetEditorPanel.cs" />
     <Compile Include="UI\TilesetPanel.cs" />
     <Compile Include="UI\ControlPanel.cs" />

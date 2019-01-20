@@ -5,6 +5,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using Genus2D.Graphics;
 using Genus2D.Utililities;
+using System.Drawing;
 
 namespace Genus2D.GameData
 {
@@ -15,29 +16,31 @@ namespace Genus2D.GameData
         public class Tileset
         {
             public string Name;
-            public string TexturePath { get; private set; }
+            public string ImagePath { get; private set; }
             public bool[,] Pasabilities { get; private set; }
             public int[,] Priorities { get; private set; }
 
             public Tileset(string name)
             {
                 Name = name;
-                TexturePath = "";
+                ImagePath = "";
                 Pasabilities = null;
                 Priorities = null;
             }
 
-            public void SetTexturePath(string filepath)
+            public void SetImagePath(string filepath)
             {
-                if (TexturePath != filepath)
+                if (ImagePath != filepath)
                 {
-                    Texture texture = Assets.GetTexture(filepath);
-                    if (texture != null)
+                    try
                     {
-                        TexturePath = filepath;
-                        Pasabilities = new bool[texture.GetWidth() / 32, texture.GetHeight() / 32];
-                        Priorities = new int[texture.GetWidth() / 32, texture.GetHeight() / 32];
+                        Bitmap image = new Bitmap("Assets/Textures/Tilesets/" + filepath);
+                        ImagePath = filepath;
+                        Pasabilities = new bool[image.Width / 32, image.Height / 32];
+                        Priorities = new int[image.Width / 32, image.Height / 32];
+                        image.Dispose();
                     }
+                    catch { }
                 }
             }
 
@@ -105,7 +108,7 @@ namespace Genus2D.GameData
 
             public bool TextureLoaded()
             {
-                return TexturePath != "";
+                return ImagePath != "";
             }
         }
 

@@ -349,12 +349,12 @@ namespace Genus2D.Graphics
             GL.Scissor(scissorX, scissorY, scissorWidth, scissorHeight);
         }
 
-        public static void PushScreenClip(Rectangle clip)
+        public static void PushScreenClip(Rectangle clip, bool scissorClip = true)
         {
             if (_clipStack.Count > 0)
             {
                 Rectangle currentClip = (Rectangle)_clipStack.Peek();
-                if (currentClip.Contains(clip))
+                if (currentClip.Contains(clip) || scissorClip == false)
                 {
                     SetScreenClip(clip);
                     _clipStack.Push(clip);

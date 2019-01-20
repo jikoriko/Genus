@@ -56,8 +56,8 @@ namespace RpgGame.EntityComponents
                 Vector3 scale = new Vector3(32, 32, 1);
                 Rectangle source = new Rectangle(0, 0, 32, 32);
                 Color4 colour = Color4.White;
-                String textureName = TilesetData.GetTileset(_mapData.GetTilesetID()).TexturePath;
-                Texture tileset = Assets.GetTexture(textureName);
+                String textureName = TilesetData.GetTileset(_mapData.GetTilesetID()).ImagePath;
+                Texture tileset = Assets.GetTexture("Tilesets/" + textureName);
 
                 int startX = ((int)-Transform.Position.X / 32);
                 int startY = ((int)-Transform.Position.Y / 32);

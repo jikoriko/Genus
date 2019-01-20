@@ -106,7 +106,7 @@ namespace TiledMapEditor.UI
             TilesetData.Tileset tileset = TilesetData.GetTileset(tilesetID);
             if (tileset != null)
             {
-                _tileset = Assets.GetTexture(tileset.TexturePath);
+                _tileset = Assets.GetTexture(tileset.ImagePath);
                 if (_tileset != null)
                 {
                     SetScrollDimensions(_tileset.GetWidth(), _tileset.GetHeight());

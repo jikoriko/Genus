@@ -50,3 +50,12 @@ D:\GameDev\programming\C#\Genus\GenusBuild\RpgGame.pdb
 D:\GameDev\programming\C#\Genus\RpgGame\obj\Debug\RpgGame.exe
 D:\GameDev\programming\C#\Genus\RpgGame\obj\Debug\RpgGame.pdb
 D:\GameDev\programming\C#\Genus\RpgGame\obj\Debug\RpgGame.csprojResolveAssemblyReference.cache
+C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\player.png
+C:\Users\perry\Documents\GitHub\Genus\GenusBuild\RpgGame.exe.config
+C:\Users\perry\Documents\GitHub\Genus\GenusBuild\RpgGame.exe
+C:\Users\perry\Documents\GitHub\Genus\GenusBuild\RpgGame.pdb
+C:\Users\perry\Documents\GitHub\Genus\RpgGame\obj\Debug\RpgGame.csproj.CoreCompileInputs.cache
+C:\Users\perry\Documents\GitHub\Genus\RpgGame\obj\Debug\RpgGame.csproj.CopyComplete
+C:\Users\perry\Documents\GitHub\Genus\RpgGame\obj\Debug\RpgGame.exe
+C:\Users\perry\Documents\GitHub\Genus\RpgGame\obj\Debug\RpgGame.pdb
+C:\Users\perry\Documents\GitHub\Genus\RpgGame\obj\Debug\RpgGame.csprojAssemblyReference.cache

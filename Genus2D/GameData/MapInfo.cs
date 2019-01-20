@@ -11,6 +11,7 @@ namespace Genus2D.GameData
     public class MapInfo
     {
 
+        private static List<SpawnPoint> _spawnPoints;
         private static List<MapInfo> _mapInfos = LoadMapInfos();
         private static List<MapInfo> LoadMapInfos()
         {
@@ -21,11 +22,13 @@ namespace Genus2D.GameData
                 Stream stream = File.OpenRead("Data/MapInfo.data");
                 BinaryFormatter formatter = new BinaryFormatter();
                 mapInfo = (List<MapInfo>)formatter.Deserialize(stream);
+                _spawnPoints = (List<SpawnPoint>)formatter.Deserialize(stream);
                 stream.Close();
             }
             else
             {
                 mapInfo = new List<MapInfo>();
+                _spawnPoints = new List<SpawnPoint>();
             }
 
             return mapInfo;
@@ -39,6 +42,7 @@ namespace Genus2D.GameData
             Stream stream = File.Create("Data/MapInfo.data");
             BinaryFormatter formatter = new BinaryFormatter();
             formatter.Serialize(stream, _mapInfos);
+            formatter.Serialize(stream, _spawnPoints);
             stream.Close();
         }
 
@@ -76,6 +80,54 @@ namespace Genus2D.GameData
             return strings;
         }
 
+        public static int NumberMaps()
+        {
+            return _mapInfos.Count;
+        }
+
+        public static void AddSpawnPoint(SpawnPoint spawn)
+        {
+            for (int i = 0; i < _spawnPoints.Count; i++)
+            {
+                SpawnPoint point = _spawnPoints[i];
+                if (point.MapID == spawn.MapID && point.MapX == spawn.MapX && point.MapY == spawn.MapY)
+                    return;
+            }
+            _spawnPoints.Add(spawn);
+            SaveMapInfos();
+        }
+
+        public static void RemoveSpawnPoint(int index)
+        {
+            if (index >= 0 && index < _spawnPoints.Count)
+            {
+                _spawnPoints.RemoveAt(index);
+                SaveMapInfos();
+            }
+        }
+
+        public static SpawnPoint GetSpawnPoint(int index)
+        {
+            if (index >= 0 && index < _spawnPoints.Count)
+                return _spawnPoints[index];
+            return null;
+        }
+
+        public static SpawnPoint GetSpawnPoint(string name)
+        {
+            for (int i = 0; i < _spawnPoints.Count; i++)
+            {
+                if (_spawnPoints[i].Label == name)
+                    return _spawnPoints[i];
+            }
+            return null;
+        }
+
+        public static int NumberSpawnPoints()
+        {
+            return _spawnPoints.Count;
+        }
+
         public static MapData LoadMap(int index)
         {
             if (index >= 0 && index < _mapInfos.Count)
@@ -107,6 +159,8 @@ namespace Genus2D.GameData
                 Directory.CreateDirectory("Data/Maps");
 
             string filename = "Data/Maps/" + mapData.GetMapName() + ".mapData";
+
+            AddMapInfo(mapData.GetMapName(), mapData.GetWidth(), mapData.GetHeight());
 
             FileStream stream = File.Create(filename);
             BinaryFormatter formatter = new BinaryFormatter();

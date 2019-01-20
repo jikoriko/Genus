@@ -526,7 +526,7 @@ namespace RpgServer
         {
             if (_messageShowing)
             {
-                if (KeyDown(OpenTK.Input.Key.Space))
+                if (KeyDown(OpenTK.Input.Key.Enter))
                 {
                     AddClientCommand(new ClientCommand(ClientCommand.CommandType.CloseMessage));
                     _messageShowing = false;
@@ -597,10 +597,13 @@ namespace RpgServer
                         int mapID = (int)eventCommand.GetParameter("MapID");
                         int mapX = (int)eventCommand.GetParameter("MapX");
                         int mapY = (int)eventCommand.GetParameter("MapY");
-                        _playerPacket.MapID = mapID;
                         SetMapPosition(mapX, mapY);
-                        _mapInstance.RemoveClient(this);
-                        _mapInstance.GetServer().ChangeClientsMap(this);
+                        if (GetMapID() != mapID)
+                        {
+                            _playerPacket.MapID = mapID;
+                            _mapInstance.RemoveClient(this);
+                            _mapInstance.GetServer().ChangeClientsMap(this);
+                        }
 
                         break;
                     case EventCommand.CommandType.MovePlayer:

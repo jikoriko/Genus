@@ -106,7 +106,7 @@ namespace TiledMapEditor.UI
             {
                 _selectedTileset = TilesetData.GetTileset(index);
                 _tilesetNameField.SetText(_selectedTileset.Name);
-                _textureNameField.SetText(_selectedTileset.TexturePath);
+                _textureNameField.SetText(_selectedTileset.ImagePath);
             }
             else
             {
@@ -133,7 +133,7 @@ namespace TiledMapEditor.UI
             {
                 _selectedTileset.Name = _tilesetNameField.GetText();
                 _tilesetList.GetItems()[selection] = _tilesetNameField.GetText();
-                _selectedTileset.SetTexturePath(_textureNameField.GetText());
+                _selectedTileset.SetImagePath(_textureNameField.GetText());
 
                 TilesetData.SaveData();
                 SetTileset(selection);

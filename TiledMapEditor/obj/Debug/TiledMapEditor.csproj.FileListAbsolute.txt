@@ -63,3 +63,17 @@ D:\GameDev\programming\C#\Genus\GenusBuild\TiledMapEditor.exe
 D:\GameDev\programming\C#\Genus\GenusBuild\TiledMapEditor.pdb
 D:\GameDev\programming\C#\Genus\TiledMapEditor\obj\Debug\TiledMapEditor.exe
 D:\GameDev\programming\C#\Genus\TiledMapEditor\obj\Debug\TiledMapEditor.pdb
+C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\GUI_Textures\BucketIcon.png
+C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\GUI_Textures\EventIcon.png
+C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\GUI_Textures\PencilIcon.png
+C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\GUI_Textures\RectangleIcon.png
+C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\pokemon_tileset.png
+C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\tileset.png
+C:\Users\perry\Documents\GitHub\Genus\GenusBuild\TiledMapEditor.exe.config
+C:\Users\perry\Documents\GitHub\Genus\GenusBuild\TiledMapEditor.exe
+C:\Users\perry\Documents\GitHub\Genus\GenusBuild\TiledMapEditor.pdb
+C:\Users\perry\Documents\GitHub\Genus\TiledMapEditor\obj\Debug\TiledMapEditor.csprojAssemblyReference.cache
+C:\Users\perry\Documents\GitHub\Genus\TiledMapEditor\obj\Debug\TiledMapEditor.csproj.CoreCompileInputs.cache
+C:\Users\perry\Documents\GitHub\Genus\TiledMapEditor\obj\Debug\TiledMapEditor.csproj.CopyComplete
+C:\Users\perry\Documents\GitHub\Genus\TiledMapEditor\obj\Debug\TiledMapEditor.exe
+C:\Users\perry\Documents\GitHub\Genus\TiledMapEditor\obj\Debug\TiledMapEditor.pdb

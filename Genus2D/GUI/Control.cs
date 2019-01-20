@@ -34,6 +34,7 @@ namespace Genus2D.GUI
         protected Renderer.GradientMode _backgroundGradientMode = Renderer.GradientMode.None;
 
         protected bool _fillBody = true;
+        protected bool _scissorClip = true;
 
         public Control(int x, int y, int width, int height, State state)
         {
@@ -465,7 +466,7 @@ namespace Genus2D.GUI
             _worldBody.X = (int)GetWorldBodyPosition().X;
             _worldBody.Y = (int)GetWorldBodyPosition().Y;
 
-            Renderer.PushScreenClip(_worldBody);
+            Renderer.PushScreenClip(_worldBody, _scissorClip);
 
             Renderer.SetGradientMode(_borderGradientMode);
             Color4 endColour = Renderer.GetLighterColour(borderColour);

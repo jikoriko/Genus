@@ -13,9 +13,6 @@ namespace RpgServer
     {
 
         private string _sqlConnectionString;
-        private string _sqlDataSource;
-		private string _sqlUsername;
-		private string _sqlPassword;
         SqlConnection _connection;
         private bool _connected;
 
@@ -29,12 +26,7 @@ namespace RpgServer
         {
             try
             {
-                _sqlDataSource = Server.Instance.GetSettingsElement("SqlDataSource").InnerText;
-                _sqlUsername = Server.Instance.GetSettingsElement("SqlUsername").InnerText;
-                _sqlPassword = Server.Instance.GetSettingsElement("SqlPassword").InnerText;
-
-                _sqlConnectionString = "Data Source=" + _sqlDataSource + ";MultipleActiveResultSets=true;User ID=" + _sqlUsername + ";Password=" + _sqlPassword + ";";
-
+                _sqlConnectionString = Server.Instance.GetSettingsElement("SqlConnectionString").InnerText;
                 _connection = new SqlConnection(_sqlConnectionString);
                 _connection.Open();
                 _connected = true;

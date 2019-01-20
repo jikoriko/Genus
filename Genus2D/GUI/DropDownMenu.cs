@@ -40,6 +40,7 @@ namespace Genus2D.GUI
             if (!_droppedDown)
             {
                 _droppedDown = true;
+                _scissorClip = false;
                 if (_items.Count > _maxItemsVisible)
                     EnableVerticalScroll();
             }
@@ -52,6 +53,7 @@ namespace Genus2D.GUI
                     if (target < _items.Count && target >= 0)
                     {
                         _droppedDown = false;
+                        _scissorClip = true;
                         if (OnMenuSelection != null)
                             OnMenuSelection(target);
                     }
