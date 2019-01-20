@@ -17,9 +17,10 @@
  
  3: the build folder (GenusBuild) should have a file called /Data/ServerSettings.xml
  
-       add xml settings for connection to a Microsoft SQL database for the server.exe to run:
+       create an sql database required for the server to run, you can do this using cloud 
+       based services such as amazon aws, or on the host computer.
+       configure the SqlConnectionString for connection to your SQL database:
            <SqlConnectionString> </SqlConnectionString>
-       the database created can be blank as the server will handle creating the tables required.
        
  4. run the server and client
  
