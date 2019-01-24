@@ -260,7 +260,7 @@ namespace Genus2D.GameData
         private TriggerType _triggerType;
         private bool _passable;
         public List<EventCommand> EventCommands { get; private set; }
-        private int _spriteID = -1; 
+        private int _spriteID; 
 
         public MapEventData(string name)
         {

@@ -46,6 +46,7 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.panel3 = new System.Windows.Forms.Panel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.ImportTilesetButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.PrioritiesButton = new System.Windows.Forms.RadioButton();
             this.PassabilitiesButton = new System.Windows.Forms.RadioButton();
@@ -62,6 +63,8 @@
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel4 = new System.Windows.Forms.Panel();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.EventSpriteSelection = new System.Windows.Forms.ComboBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.EventCommandDataPanel = new System.Windows.Forms.Panel();
@@ -110,8 +113,9 @@
             this.label6 = new System.Windows.Forms.Label();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.tabPage6 = new System.Windows.Forms.TabPage();
-            this.EventSpriteSelection = new System.Windows.Forms.ComboBox();
-            this.label19 = new System.Windows.Forms.Label();
+            this.ImportSpriteButton = new System.Windows.Forms.Button();
+            this.SpriteNameBox = new System.Windows.Forms.TextBox();
+            this.label20 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -387,6 +391,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.BackColor = System.Drawing.Color.AliceBlue;
+            this.groupBox2.Controls.Add(this.ImportTilesetButton);
             this.groupBox2.Controls.Add(this.groupBox3);
             this.groupBox2.Controls.Add(this.panel2);
             this.groupBox2.Controls.Add(this.ApplyTilesetButton);
@@ -400,6 +405,17 @@
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Tileset Data";
+            // 
+            // ImportTilesetButton
+            // 
+            this.ImportTilesetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ImportTilesetButton.Location = new System.Drawing.Point(62, 73);
+            this.ImportTilesetButton.Name = "ImportTilesetButton";
+            this.ImportTilesetButton.Size = new System.Drawing.Size(185, 47);
+            this.ImportTilesetButton.TabIndex = 7;
+            this.ImportTilesetButton.Text = "Import Tileset";
+            this.ImportTilesetButton.UseVisualStyleBackColor = true;
+            this.ImportTilesetButton.Click += new System.EventHandler(this.ImportTilesetButton_Click);
             // 
             // groupBox3
             // 
@@ -580,6 +596,23 @@
             this.groupBox4.TabIndex = 2;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Event Data";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(34, 95);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(37, 13);
+            this.label19.TabIndex = 8;
+            this.label19.Text = "Sprite:";
+            // 
+            // EventSpriteSelection
+            // 
+            this.EventSpriteSelection.FormattingEnabled = true;
+            this.EventSpriteSelection.Location = new System.Drawing.Point(77, 92);
+            this.EventSpriteSelection.Name = "EventSpriteSelection";
+            this.EventSpriteSelection.Size = new System.Drawing.Size(141, 21);
+            this.EventSpriteSelection.TabIndex = 7;
             // 
             // groupBox5
             // 
@@ -782,6 +815,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox7.BackColor = System.Drawing.Color.AliceBlue;
+            this.groupBox7.Controls.Add(this.label20);
+            this.groupBox7.Controls.Add(this.SpriteNameBox);
+            this.groupBox7.Controls.Add(this.ImportSpriteButton);
             this.groupBox7.Controls.Add(this.label15);
             this.groupBox7.Controls.Add(this.label16);
             this.groupBox7.Controls.Add(this.label17);
@@ -815,7 +851,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(12, 344);
+            this.label15.Location = new System.Drawing.Point(12, 423);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(80, 13);
             this.label15.TabIndex = 24;
@@ -824,7 +860,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(15, 318);
+            this.label16.Location = new System.Drawing.Point(15, 397);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(77, 13);
             this.label16.TabIndex = 23;
@@ -833,7 +869,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(38, 292);
+            this.label17.Location = new System.Drawing.Point(38, 371);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(54, 13);
             this.label17.TabIndex = 22;
@@ -842,7 +878,7 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(38, 266);
+            this.label18.Location = new System.Drawing.Point(38, 345);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(54, 13);
             this.label18.TabIndex = 21;
@@ -851,7 +887,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(12, 195);
+            this.label14.Location = new System.Drawing.Point(12, 274);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(80, 13);
             this.label14.TabIndex = 20;
@@ -860,7 +896,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(15, 169);
+            this.label13.Location = new System.Drawing.Point(15, 248);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(77, 13);
             this.label13.TabIndex = 19;
@@ -869,7 +905,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(38, 143);
+            this.label12.Location = new System.Drawing.Point(38, 222);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(54, 13);
             this.label12.TabIndex = 18;
@@ -878,7 +914,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(38, 117);
+            this.label11.Location = new System.Drawing.Point(38, 196);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(54, 13);
             this.label11.TabIndex = 17;
@@ -887,7 +923,7 @@
             // LockSpriteBoundsCheck
             // 
             this.LockSpriteBoundsCheck.AutoSize = true;
-            this.LockSpriteBoundsCheck.Location = new System.Drawing.Point(77, 65);
+            this.LockSpriteBoundsCheck.Location = new System.Drawing.Point(77, 144);
             this.LockSpriteBoundsCheck.Name = "LockSpriteBoundsCheck";
             this.LockSpriteBoundsCheck.Size = new System.Drawing.Size(137, 17);
             this.LockSpriteBoundsCheck.TabIndex = 16;
@@ -897,7 +933,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(14, 233);
+            this.label10.Location = new System.Drawing.Point(14, 312);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(57, 13);
             this.label10.TabIndex = 15;
@@ -906,7 +942,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(26, 87);
+            this.label8.Location = new System.Drawing.Point(26, 166);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(45, 13);
             this.label8.TabIndex = 14;
@@ -919,7 +955,7 @@
             0,
             0,
             0});
-            this.HorizontalSpriteBoundsHeight.Location = new System.Drawing.Point(98, 342);
+            this.HorizontalSpriteBoundsHeight.Location = new System.Drawing.Point(98, 421);
             this.HorizontalSpriteBoundsHeight.Minimum = new decimal(new int[] {
             2,
             0,
@@ -942,7 +978,7 @@
             0,
             0,
             0});
-            this.HorizontalSpriteBoundsWidth.Location = new System.Drawing.Point(98, 316);
+            this.HorizontalSpriteBoundsWidth.Location = new System.Drawing.Point(98, 395);
             this.HorizontalSpriteBoundsWidth.Minimum = new decimal(new int[] {
             2,
             0,
@@ -960,7 +996,7 @@
             // 
             // HorizontalSpriteAnchorY
             // 
-            this.HorizontalSpriteAnchorY.Location = new System.Drawing.Point(98, 290);
+            this.HorizontalSpriteAnchorY.Location = new System.Drawing.Point(98, 369);
             this.HorizontalSpriteAnchorY.Name = "HorizontalSpriteAnchorY";
             this.HorizontalSpriteAnchorY.Size = new System.Drawing.Size(120, 20);
             this.HorizontalSpriteAnchorY.TabIndex = 11;
@@ -968,7 +1004,7 @@
             // 
             // HorizontalSpriteAnchorX
             // 
-            this.HorizontalSpriteAnchorX.Location = new System.Drawing.Point(98, 264);
+            this.HorizontalSpriteAnchorX.Location = new System.Drawing.Point(98, 343);
             this.HorizontalSpriteAnchorX.Name = "HorizontalSpriteAnchorX";
             this.HorizontalSpriteAnchorX.Size = new System.Drawing.Size(120, 20);
             this.HorizontalSpriteAnchorX.TabIndex = 10;
@@ -989,7 +1025,7 @@
             0,
             0,
             0});
-            this.VerticalSpriteBoundsHeight.Location = new System.Drawing.Point(98, 193);
+            this.VerticalSpriteBoundsHeight.Location = new System.Drawing.Point(98, 272);
             this.VerticalSpriteBoundsHeight.Minimum = new decimal(new int[] {
             2,
             0,
@@ -1012,7 +1048,7 @@
             0,
             0,
             0});
-            this.VerticalSpriteBoundsWidth.Location = new System.Drawing.Point(98, 167);
+            this.VerticalSpriteBoundsWidth.Location = new System.Drawing.Point(98, 246);
             this.VerticalSpriteBoundsWidth.Minimum = new decimal(new int[] {
             2,
             0,
@@ -1030,7 +1066,7 @@
             // 
             // VerticalSpriteAnchorY
             // 
-            this.VerticalSpriteAnchorY.Location = new System.Drawing.Point(98, 141);
+            this.VerticalSpriteAnchorY.Location = new System.Drawing.Point(98, 220);
             this.VerticalSpriteAnchorY.Name = "VerticalSpriteAnchorY";
             this.VerticalSpriteAnchorY.Size = new System.Drawing.Size(120, 20);
             this.VerticalSpriteAnchorY.TabIndex = 6;
@@ -1038,7 +1074,7 @@
             // 
             // VerticalSpriteAnchorX
             // 
-            this.VerticalSpriteAnchorX.Location = new System.Drawing.Point(98, 115);
+            this.VerticalSpriteAnchorX.Location = new System.Drawing.Point(98, 194);
             this.VerticalSpriteAnchorX.Name = "VerticalSpriteAnchorX";
             this.VerticalSpriteAnchorX.Size = new System.Drawing.Size(120, 20);
             this.VerticalSpriteAnchorX.TabIndex = 5;
@@ -1058,7 +1094,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(34, 41);
+            this.label9.Location = new System.Drawing.Point(34, 67);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(37, 13);
             this.label9.TabIndex = 2;
@@ -1067,7 +1103,7 @@
             // SpriteSelectionBox
             // 
             this.SpriteSelectionBox.FormattingEnabled = true;
-            this.SpriteSelectionBox.Location = new System.Drawing.Point(77, 38);
+            this.SpriteSelectionBox.Location = new System.Drawing.Point(77, 64);
             this.SpriteSelectionBox.Name = "SpriteSelectionBox";
             this.SpriteSelectionBox.Size = new System.Drawing.Size(141, 21);
             this.SpriteSelectionBox.TabIndex = 1;
@@ -1132,25 +1168,35 @@
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Size = new System.Drawing.Size(1152, 711);
             this.tabPage6.TabIndex = 5;
-            this.tabPage6.Text = "Npc\'s";
+            this.tabPage6.Text = "Enemies";
             this.tabPage6.UseVisualStyleBackColor = true;
             // 
-            // EventSpriteSelection
+            // ImportSpriteButton
             // 
-            this.EventSpriteSelection.FormattingEnabled = true;
-            this.EventSpriteSelection.Location = new System.Drawing.Point(77, 92);
-            this.EventSpriteSelection.Name = "EventSpriteSelection";
-            this.EventSpriteSelection.Size = new System.Drawing.Size(141, 21);
-            this.EventSpriteSelection.TabIndex = 7;
+            this.ImportSpriteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ImportSpriteButton.Location = new System.Drawing.Point(33, 91);
+            this.ImportSpriteButton.Name = "ImportSpriteButton";
+            this.ImportSpriteButton.Size = new System.Drawing.Size(185, 47);
+            this.ImportSpriteButton.TabIndex = 8;
+            this.ImportSpriteButton.Text = "Import Sprite";
+            this.ImportSpriteButton.UseVisualStyleBackColor = true;
+            this.ImportSpriteButton.Click += new System.EventHandler(this.ImportSpriteButton_Click);
             // 
-            // label19
+            // SpriteNameBox
             // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(34, 95);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(37, 13);
-            this.label19.TabIndex = 8;
-            this.label19.Text = "Sprite:";
+            this.SpriteNameBox.Location = new System.Drawing.Point(77, 38);
+            this.SpriteNameBox.Name = "SpriteNameBox";
+            this.SpriteNameBox.Size = new System.Drawing.Size(141, 20);
+            this.SpriteNameBox.TabIndex = 25;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(34, 41);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(38, 13);
+            this.label20.TabIndex = 26;
+            this.label20.Text = "Name:";
             // 
             // EditorForm
             // 
@@ -1287,6 +1333,10 @@
         private System.Windows.Forms.CheckBox LockSpriteBoundsCheck;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.ComboBox EventSpriteSelection;
+        private System.Windows.Forms.Button ImportTilesetButton;
+        private System.Windows.Forms.Button ImportSpriteButton;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.TextBox SpriteNameBox;
     }
 }
 

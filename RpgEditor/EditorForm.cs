@@ -146,6 +146,7 @@ namespace RpgEditor
         {
             if (Directory.Exists("Assets/Textures/Tilesets"))
             {
+                int selection = TilesetSelectionBox.SelectedIndex;
                 string[] files = Directory.GetFiles("Assets/Textures/Tilesets", "*.png");
                 for (int i = 0; i < files.Length; i++)
                 {
@@ -153,6 +154,7 @@ namespace RpgEditor
                 }
                 TilesetSelectionBox.Items.Clear();
                 TilesetSelectionBox.Items.AddRange(files);
+                TilesetSelectionBox.SelectedIndex = selection;
             }
         }
 
@@ -189,6 +191,22 @@ namespace RpgEditor
                 TilesetSelectionBox.SelectedIndex = -1;
                 tilesetDataPanel.SetTilesetImage(null);
             }
+        }
+
+        private void ImportTilesetButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "PNG files | *.png; *.PNG;";
+            DialogResult result = dialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                if (!Directory.Exists("Assets/Textures/Tilesets"))
+                    Directory.CreateDirectory("Assets/Textures/Tilesets");
+                string sourcePath = dialog.FileName;
+                string targetPath = "Assets/Textures/Tilesets/" + Path.GetFileName(sourcePath);
+                File.Copy(sourcePath, targetPath, true);
+            }
+            PopulateTilesetSelections();
         }
 
         private void ApplyTilesetDataChange()
@@ -629,7 +647,7 @@ namespace RpgEditor
 
         private void AddSpriteButton_Click(object sender, EventArgs e)
         {
-            Genus2D.GameData.SpriteData.AddSpriteData();
+            Genus2D.GameData.SpriteData.AddSpriteData("Sprite " + (SpritesList.Items.Count + 1).ToString("000"));
             PopulateSpritesList();
         }
 
@@ -649,6 +667,7 @@ namespace RpgEditor
             if (selection != -1)
             {
                 Genus2D.GameData.SpriteData sprite = Genus2D.GameData.SpriteData.GetSpriteData(selection);
+                sprite.Name = SpriteNameBox.Text;
                 sprite.ImagePath = SpriteSelectionBox.Text;
                 if (SpriteSelectionBox.Text != "")
                 {
@@ -697,15 +716,16 @@ namespace RpgEditor
         private void PopulateSpritesList()
         {
             int selection = SpritesList.SelectedIndex;
+
             SpritesList.Items.Clear();
             EventSpriteSelection.Items.Clear();
             EventSpriteSelection.Items.Add("None");
             EventSpriteSelection.SelectedIndex = 0;
-            for (int i = 0; i < Genus2D.GameData.SpriteData.NumSprites(); i++)
-            {
-                SpritesList.Items.Add("Sprite " + (i + 1).ToString("000"));
-                EventSpriteSelection.Items.Add("Sprite " + (i + 1).ToString("000"));
-            }
+
+            List<string> spriteNames = Genus2D.GameData.SpriteData.GetSpriteNames();
+            SpritesList.Items.AddRange(spriteNames.ToArray());
+            EventSpriteSelection.Items.AddRange(spriteNames.ToArray());
+
             if (selection < SpritesList.Items.Count)
                 SpritesList.SelectedIndex = selection;
         }
@@ -730,6 +750,7 @@ namespace RpgEditor
             if (selection != -1)
             {
                 Genus2D.GameData.SpriteData sprite = Genus2D.GameData.SpriteData.GetSpriteData(selection);
+                SpriteNameBox.Text = sprite.Name;
                 SpriteSelectionBox.Text = sprite.ImagePath;
                 VerticalSpriteAnchorX.Value = (int)sprite.VerticalAnchorPoint.X;
                 VerticalSpriteAnchorY.Value = (int)sprite.VerticalAnchorPoint.Y;
@@ -750,6 +771,7 @@ namespace RpgEditor
             }
             else
             {
+                SpriteNameBox.Text = "";
                 SpriteSelectionBox.Text = "";
                 VerticalSpriteAnchorX.Value = 0;
                 VerticalSpriteAnchorY.Value = 0;
@@ -834,5 +856,20 @@ namespace RpgEditor
             spriteViewerPanel.Refresh();
         }
 
+        private void ImportSpriteButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "PNG files | *.png; *.PNG;";
+            DialogResult result = dialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                if (!Directory.Exists("Assets/Textures/Sprites"))
+                    Directory.CreateDirectory("Assets/Textures/Sprites");
+                string sourcePath = dialog.FileName;
+                string targetPath = "Assets/Textures/Sprites/" + Path.GetFileName(sourcePath);
+                File.Copy(sourcePath, targetPath, true);
+            }
+            PopulateTilesetSelections();
+        }
     }
 }

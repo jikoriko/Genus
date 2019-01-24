@@ -16,11 +16,20 @@ namespace RpgEditor
         public SpriteViewerPanel()
         {
             Sprite = null;
+            this.AutoScroll = true;
         }
 
         public void SetSprite(Image sprite)
         {
             Sprite = sprite;
+            if (sprite != null)
+            {
+                this.AutoScrollMinSize = new Size(sprite.Width, sprite.Height);
+            }
+            else
+            {
+                this.AutoScrollMinSize = new Size(0, 0);
+            }
             this.Refresh();
         }
 

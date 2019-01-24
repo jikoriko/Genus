@@ -14,14 +14,16 @@ namespace Genus2D.GameData
     public class SpriteData
     {
 
+        public string Name;
         public string ImagePath;
         public Vector2 VerticalAnchorPoint;
         public Vector2 VerticalBounds;
         public Vector2 HorizontalAnchorPoint;
         public Vector2 HorizontalBounds;
 
-        public SpriteData()
+        public SpriteData(string name)
         {
+            Name = name;
             ImagePath = "";
             VerticalAnchorPoint = new Vector2();
             VerticalBounds = new Vector2(2, 2);
@@ -59,9 +61,9 @@ namespace Genus2D.GameData
             stream.Close();
         }
 
-        public static void AddSpriteData()
+        public static void AddSpriteData(string name)
         {
-            _spriteData.Add(new SpriteData());
+            _spriteData.Add(new SpriteData(name));
             SaveData();
         }
 
@@ -79,6 +81,16 @@ namespace Genus2D.GameData
             if (index > -1 && index < _spriteData.Count)
                 return _spriteData[index];
             return null;
+        }
+
+        public static List<string> GetSpriteNames()
+        {
+            List<string> names = new List<string>();
+            for (int i = 0; i < _spriteData.Count; i++)
+            {
+                names.Add(_spriteData[i].Name);
+            }
+            return names;
         }
 
         public static int NumSprites()
