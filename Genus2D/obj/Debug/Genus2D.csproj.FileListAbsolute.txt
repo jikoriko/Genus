@@ -120,7 +120,6 @@ C:\Users\perry\Documents\GitHub\Genus\GenusBuild\freetype6.dll
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\GUI_Textures\Cross.png
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\GUI_Textures\DownArrow.png
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\GUI_Textures\UpArrow.png
-C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\sprite.png
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Fonts\arial.ttf
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Fonts\arialbd.ttf
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Fonts\bmp_font.fnt

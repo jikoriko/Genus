@@ -19,6 +19,7 @@ namespace RpgEditor
         public TilesetSelectionPanel tilesetSelectionPanel;
         public MapPanel mapPanel;
         public TilesetDataPanel tilesetDataPanel;
+        public SpriteViewerPanel spriteViewerPanel;
 
         public enum MapTool
         {
@@ -44,9 +45,13 @@ namespace RpgEditor
             tilesetDataPanel = new TilesetDataPanel();
             tilesetDataPanel.Size = panel2.Size;
 
+            spriteViewerPanel = new SpriteViewerPanel();
+            spriteViewerPanel.Size = SpriteViewerParent.Size;
+
             splitContainer2.Panel1.Controls.Add(tilesetSelectionPanel);
             splitContainer2.Panel2.Controls.Add(mapPanel);
             panel2.Controls.Add(tilesetDataPanel);
+            SpriteViewerParent.Controls.Add(spriteViewerPanel);
 
             PencilButton.Checked = true;
             PassabilitiesButton.Checked = true;
@@ -54,6 +59,8 @@ namespace RpgEditor
             PopulateTilesetsList();
             PopulateTilesetSelections();
             PopulateEventsList();
+            PopulateSpritesList();
+            PopulateSpriteSelections();
         }
 
         /*
@@ -245,7 +252,7 @@ namespace RpgEditor
         }
 
         /*
-         * EVENT FUNCTIONS
+         * EVENT FUNCTIONS - the chunk of the code
          */
 
         private void PopulateEventsList()
@@ -541,12 +548,14 @@ namespace RpgEditor
                 EventNameBox.Text = data.Name;
                 EventTriggerBox.SelectedIndex = (int)data.GetTriggerType();
                 EventPassableCheck.Checked = data.Passable();
+                EventSpriteSelection.SelectedIndex = data.GetSpriteID() + 1;
             }
             else
             {
                 EventNameBox.Text = "";
                 EventTriggerBox.SelectedIndex = -1;
                 EventPassableCheck.Checked = false;
+                EventSpriteSelection.SelectedIndex = 0;
             }
         }
 
@@ -607,12 +616,222 @@ namespace RpgEditor
                 data.Name = EventNameBox.Text;
                 data.SetTriggerType((Genus2D.GameData.MapEventData.TriggerType)EventTriggerBox.SelectedIndex);
                 data.SetPassable(EventPassableCheck.Checked);
+                data.SetSpriteID(EventSpriteSelection.SelectedIndex - 1);
 
                 ApplyEventCommandData();
 
                 Genus2D.GameData.MapEventData.SaveMapEventsData();
                 PopulateEventsList();
             }
+        }
+
+        //sprite panel
+
+        private void AddSpriteButton_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.SpriteData.AddSpriteData();
+            PopulateSpritesList();
+        }
+
+        private void RemoveSpriteButton_Click(object sender, EventArgs e)
+        {
+            int selection = SpritesList.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.SpriteData.RemoveSprite(selection);
+                PopulateSpritesList();
+            }
+        }
+
+        private void ApplySpriteButton_Click(object sender, EventArgs e)
+        {
+            int selection = SpritesList.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.SpriteData sprite = Genus2D.GameData.SpriteData.GetSpriteData(selection);
+                sprite.ImagePath = SpriteSelectionBox.Text;
+                if (SpriteSelectionBox.Text != "")
+                {
+                    spriteViewerPanel.SetSprite(Image.FromFile("Assets/Textures/Sprites/" + sprite.ImagePath));
+                }
+                else
+                {
+                    spriteViewerPanel.SetSprite(null);
+                }
+                sprite.VerticalAnchorPoint.X = (int)VerticalSpriteAnchorX.Value;
+                sprite.VerticalAnchorPoint.Y = (int)VerticalSpriteAnchorY.Value;
+                sprite.VerticalBounds.X = (int)VerticalSpriteBoundsWidth.Value;
+                sprite.VerticalBounds.Y = (int)VerticalSpriteBoundsHeight.Value;
+                sprite.HorizontalAnchorPoint.X = (int)HorizontalSpriteAnchorX.Value;
+                sprite.HorizontalAnchorPoint.Y = (int)HorizontalSpriteAnchorY.Value;
+                sprite.HorizontalBounds.X = (int)HorizontalSpriteBoundsWidth.Value;
+                sprite.HorizontalBounds.Y = (int)HorizontalSpriteBoundsHeight.Value;
+                Genus2D.GameData.SpriteData.SaveData();
+            }
+            else
+            {
+                spriteViewerPanel.SetSprite(null);
+            }
+        }
+
+        public Point GetSpriteVerticalAnchor()
+        {
+            return new Point((int)VerticalSpriteAnchorX.Value, (int)VerticalSpriteAnchorY.Value);
+        }
+
+        public Point GetSpriteVerticalBounds()
+        {
+            return new Point((int)VerticalSpriteBoundsWidth.Value, (int)VerticalSpriteBoundsHeight.Value);
+        }
+
+        public Point GetSpriteHorizontalAnchor()
+        {
+            return new Point((int)HorizontalSpriteAnchorX.Value, (int)HorizontalSpriteAnchorY.Value);
+        }
+
+        public Point GetSpriteHorizontalBounds()
+        {
+            return new Point((int)HorizontalSpriteBoundsWidth.Value, (int)HorizontalSpriteBoundsHeight.Value);
+        }
+
+        private void PopulateSpritesList()
+        {
+            int selection = SpritesList.SelectedIndex;
+            SpritesList.Items.Clear();
+            EventSpriteSelection.Items.Clear();
+            EventSpriteSelection.Items.Add("None");
+            EventSpriteSelection.SelectedIndex = 0;
+            for (int i = 0; i < Genus2D.GameData.SpriteData.NumSprites(); i++)
+            {
+                SpritesList.Items.Add("Sprite " + (i + 1).ToString("000"));
+                EventSpriteSelection.Items.Add("Sprite " + (i + 1).ToString("000"));
+            }
+            if (selection < SpritesList.Items.Count)
+                SpritesList.SelectedIndex = selection;
+        }
+
+        private void PopulateSpriteSelections()
+        {
+            SpriteSelectionBox.Items.Clear();
+            if (Directory.Exists("Assets/Textures/Sprites"))
+            {
+                string[] files = Directory.GetFiles("Assets/Textures/Sprites", "*.png");
+                for (int i = 0; i < files.Length; i++)
+                {
+                    files[i] = Path.GetFileName(files[i]);
+                }
+                SpriteSelectionBox.Items.AddRange(files);
+            }
+        }
+
+        private void SpritesList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int selection = SpritesList.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.SpriteData sprite = Genus2D.GameData.SpriteData.GetSpriteData(selection);
+                SpriteSelectionBox.Text = sprite.ImagePath;
+                VerticalSpriteAnchorX.Value = (int)sprite.VerticalAnchorPoint.X;
+                VerticalSpriteAnchorY.Value = (int)sprite.VerticalAnchorPoint.Y;
+                VerticalSpriteBoundsWidth.Value = (int)sprite.VerticalBounds.X;
+                VerticalSpriteBoundsHeight.Value = (int)sprite.VerticalBounds.Y;
+                HorizontalSpriteAnchorX.Value = (int)sprite.HorizontalAnchorPoint.X;
+                HorizontalSpriteAnchorY.Value = (int)sprite.HorizontalAnchorPoint.Y;
+                HorizontalSpriteBoundsWidth.Value = (int)sprite.HorizontalBounds.X;
+                HorizontalSpriteBoundsHeight.Value = (int)sprite.HorizontalBounds.Y;
+                if (SpriteSelectionBox.Text != "")
+                {
+                    spriteViewerPanel.SetSprite(Image.FromFile("Assets/Textures/Sprites/" + sprite.ImagePath));
+                }
+                else
+                {
+                    spriteViewerPanel.SetSprite(null);
+                }
+            }
+            else
+            {
+                SpriteSelectionBox.Text = "";
+                VerticalSpriteAnchorX.Value = 0;
+                VerticalSpriteAnchorY.Value = 0;
+                VerticalSpriteBoundsWidth.Value = 2;
+                VerticalSpriteBoundsHeight.Value = 2;
+                HorizontalSpriteAnchorX.Value = 0;
+                HorizontalSpriteAnchorY.Value = 0;
+                HorizontalSpriteBoundsWidth.Value = 2;
+                HorizontalSpriteBoundsHeight.Value = 2;
+            }
+        }
+
+        private void VerticalSpriteAnchorX_ValueChanged(object sender, EventArgs e)
+        {
+            if (LockSpriteBoundsCheck.Checked)
+            {
+                HorizontalSpriteAnchorX.Value = VerticalSpriteAnchorX.Value;
+            }
+            spriteViewerPanel.Refresh();
+        }
+
+        private void VerticalSpriteAnchorY_ValueChanged(object sender, EventArgs e)
+        {
+            if (LockSpriteBoundsCheck.Checked)
+            {
+                HorizontalSpriteAnchorY.Value = VerticalSpriteAnchorY.Value;
+            }
+            spriteViewerPanel.Refresh();
+        }
+
+        private void VerticalSpriteBoundsWidth_ValueChanged(object sender, EventArgs e)
+        {
+            if (LockSpriteBoundsCheck.Checked)
+            {
+                HorizontalSpriteBoundsWidth.Value = VerticalSpriteBoundsWidth.Value;
+            }
+            spriteViewerPanel.Refresh();
+        }
+
+        private void VerticalSpriteBoundsHeight_ValueChanged(object sender, EventArgs e)
+        {
+            if (LockSpriteBoundsCheck.Checked)
+            {
+                HorizontalSpriteBoundsHeight.Value = VerticalSpriteBoundsHeight.Value;
+            }
+            spriteViewerPanel.Refresh();
+        }
+
+        private void HorizontalSpriteAnchorX_ValueChanged(object sender, EventArgs e)
+        {
+            if (LockSpriteBoundsCheck.Checked)
+            {
+                VerticalSpriteAnchorX.Value = HorizontalSpriteAnchorX.Value;
+            }
+            spriteViewerPanel.Refresh();
+        }
+
+        private void HorizontalSpriteAnchorY_ValueChanged(object sender, EventArgs e)
+        {
+            if (LockSpriteBoundsCheck.Checked)
+            {
+                VerticalSpriteAnchorY.Value = HorizontalSpriteAnchorY.Value;
+            }
+            spriteViewerPanel.Refresh();
+        }
+
+        private void HorizontalSpriteBoundsWidth_ValueChanged(object sender, EventArgs e)
+        {
+            if (LockSpriteBoundsCheck.Checked)
+            {
+                VerticalSpriteBoundsWidth.Value = HorizontalSpriteBoundsWidth.Value;
+            }
+            spriteViewerPanel.Refresh();
+        }
+
+        private void HorizontalSpriteBoundsHeight_ValueChanged(object sender, EventArgs e)
+        {
+            if (LockSpriteBoundsCheck.Checked)
+            {
+                VerticalSpriteBoundsHeight.Value = HorizontalSpriteBoundsHeight.Value;
+            }
+            spriteViewerPanel.Refresh();
         }
 
     }

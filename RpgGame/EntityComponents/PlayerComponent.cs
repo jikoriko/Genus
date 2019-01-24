@@ -21,7 +21,7 @@ namespace RpgGame.EntityComponents
         public PlayerComponent(Entity entity, PlayerPacket playerPacket)
             : base(entity)
         {
-            SetTexture(Assets.GetTexture("player.png"));
+            SetTexture(Assets.GetTexture("Sprites/player.png"));
             SetSpriteCenter(SpriteCenter.Top);
             SetAnimating(false);
             SetXFrames(4);
@@ -48,7 +48,7 @@ namespace RpgGame.EntityComponents
         public void SetRealPosition()
         {
             Vector3 pos = new Vector3(_playerPacket.RealX + 16, _playerPacket.RealY + 32, 0);
-            pos.Z = -(_playerPacket.PositionY + 1);
+            pos.Z = -(_playerPacket.PositionY * 32);
             Transform.LocalPosition = pos;
         }
 

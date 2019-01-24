@@ -79,8 +79,39 @@
             this.EventsList = new System.Windows.Forms.ListBox();
             this.label5 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.LockSpriteBoundsCheck = new System.Windows.Forms.CheckBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.HorizontalSpriteBoundsHeight = new System.Windows.Forms.NumericUpDown();
+            this.HorizontalSpriteBoundsWidth = new System.Windows.Forms.NumericUpDown();
+            this.HorizontalSpriteAnchorY = new System.Windows.Forms.NumericUpDown();
+            this.HorizontalSpriteAnchorX = new System.Windows.Forms.NumericUpDown();
+            this.SpriteViewerParent = new System.Windows.Forms.Panel();
+            this.VerticalSpriteBoundsHeight = new System.Windows.Forms.NumericUpDown();
+            this.VerticalSpriteBoundsWidth = new System.Windows.Forms.NumericUpDown();
+            this.VerticalSpriteAnchorY = new System.Windows.Forms.NumericUpDown();
+            this.VerticalSpriteAnchorX = new System.Windows.Forms.NumericUpDown();
+            this.ApplySpriteButton = new System.Windows.Forms.Button();
+            this.label9 = new System.Windows.Forms.Label();
+            this.SpriteSelectionBox = new System.Windows.Forms.ComboBox();
+            this.RemoveSpriteButton = new System.Windows.Forms.Button();
+            this.AddSpriteButton = new System.Windows.Forms.Button();
+            this.SpritesList = new System.Windows.Forms.ListBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.EventSpriteSelection = new System.Windows.Forms.ComboBox();
+            this.label19 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -100,6 +131,17 @@
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox6.SuspendLayout();
+            this.tabPage4.SuspendLayout();
+            this.panel5.SuspendLayout();
+            this.groupBox7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.HorizontalSpriteBoundsHeight)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.HorizontalSpriteBoundsWidth)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.HorizontalSpriteAnchorY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.HorizontalSpriteAnchorX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteBoundsHeight)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteBoundsWidth)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteAnchorY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteAnchorX)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -485,7 +527,7 @@
             this.TilesetsList.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TilesetsList.FormattingEnabled = true;
             this.TilesetsList.ItemHeight = 20;
-            this.TilesetsList.Location = new System.Drawing.Point(6, 27);
+            this.TilesetsList.Location = new System.Drawing.Point(7, 27);
             this.TilesetsList.Name = "TilesetsList";
             this.TilesetsList.Size = new System.Drawing.Size(185, 564);
             this.TilesetsList.TabIndex = 0;
@@ -523,6 +565,8 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.BackColor = System.Drawing.Color.AliceBlue;
+            this.groupBox4.Controls.Add(this.label19);
+            this.groupBox4.Controls.Add(this.EventSpriteSelection);
             this.groupBox4.Controls.Add(this.groupBox5);
             this.groupBox4.Controls.Add(this.EventPassableCheck);
             this.groupBox4.Controls.Add(this.ApplyEventChangesButton);
@@ -606,7 +650,7 @@
             // EventPassableCheck
             // 
             this.EventPassableCheck.AutoSize = true;
-            this.EventPassableCheck.Location = new System.Drawing.Point(149, 92);
+            this.EventPassableCheck.Location = new System.Drawing.Point(149, 179);
             this.EventPassableCheck.Name = "EventPassableCheck";
             this.EventPassableCheck.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.EventPassableCheck.Size = new System.Drawing.Size(69, 17);
@@ -708,12 +752,370 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.BackColor = System.Drawing.Color.DarkGray;
+            this.tabPage4.Controls.Add(this.panel5);
+            this.tabPage4.Controls.Add(this.RemoveSpriteButton);
+            this.tabPage4.Controls.Add(this.AddSpriteButton);
+            this.tabPage4.Controls.Add(this.SpritesList);
+            this.tabPage4.Controls.Add(this.label6);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Size = new System.Drawing.Size(1152, 711);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Sprites";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // panel5
+            // 
+            this.panel5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel5.BackColor = System.Drawing.Color.Gainsboro;
+            this.panel5.Controls.Add(this.groupBox7);
+            this.panel5.Location = new System.Drawing.Point(198, 27);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(945, 673);
+            this.panel5.TabIndex = 10;
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox7.BackColor = System.Drawing.Color.AliceBlue;
+            this.groupBox7.Controls.Add(this.label15);
+            this.groupBox7.Controls.Add(this.label16);
+            this.groupBox7.Controls.Add(this.label17);
+            this.groupBox7.Controls.Add(this.label18);
+            this.groupBox7.Controls.Add(this.label14);
+            this.groupBox7.Controls.Add(this.label13);
+            this.groupBox7.Controls.Add(this.label12);
+            this.groupBox7.Controls.Add(this.label11);
+            this.groupBox7.Controls.Add(this.LockSpriteBoundsCheck);
+            this.groupBox7.Controls.Add(this.label10);
+            this.groupBox7.Controls.Add(this.label8);
+            this.groupBox7.Controls.Add(this.HorizontalSpriteBoundsHeight);
+            this.groupBox7.Controls.Add(this.HorizontalSpriteBoundsWidth);
+            this.groupBox7.Controls.Add(this.HorizontalSpriteAnchorY);
+            this.groupBox7.Controls.Add(this.HorizontalSpriteAnchorX);
+            this.groupBox7.Controls.Add(this.SpriteViewerParent);
+            this.groupBox7.Controls.Add(this.VerticalSpriteBoundsHeight);
+            this.groupBox7.Controls.Add(this.VerticalSpriteBoundsWidth);
+            this.groupBox7.Controls.Add(this.VerticalSpriteAnchorY);
+            this.groupBox7.Controls.Add(this.VerticalSpriteAnchorX);
+            this.groupBox7.Controls.Add(this.ApplySpriteButton);
+            this.groupBox7.Controls.Add(this.label9);
+            this.groupBox7.Controls.Add(this.SpriteSelectionBox);
+            this.groupBox7.Location = new System.Drawing.Point(10, 9);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(926, 655);
+            this.groupBox7.TabIndex = 2;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Sprite Data";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(12, 344);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(80, 13);
+            this.label15.TabIndex = 24;
+            this.label15.Text = "Bounds Height:";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(15, 318);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(77, 13);
+            this.label16.TabIndex = 23;
+            this.label16.Text = "Bounds Width:";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(38, 292);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(54, 13);
+            this.label17.TabIndex = 22;
+            this.label17.Text = "Anchor Y:";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(38, 266);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(54, 13);
+            this.label18.TabIndex = 21;
+            this.label18.Text = "Anchor X:";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(12, 195);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(80, 13);
+            this.label14.TabIndex = 20;
+            this.label14.Text = "Bounds Height:";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(15, 169);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(77, 13);
+            this.label13.TabIndex = 19;
+            this.label13.Text = "Bounds Width:";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(38, 143);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(54, 13);
+            this.label12.TabIndex = 18;
+            this.label12.Text = "Anchor Y:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(38, 117);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(54, 13);
+            this.label11.TabIndex = 17;
+            this.label11.Text = "Anchor X:";
+            // 
+            // LockSpriteBoundsCheck
+            // 
+            this.LockSpriteBoundsCheck.AutoSize = true;
+            this.LockSpriteBoundsCheck.Location = new System.Drawing.Point(77, 65);
+            this.LockSpriteBoundsCheck.Name = "LockSpriteBoundsCheck";
+            this.LockSpriteBoundsCheck.Size = new System.Drawing.Size(137, 17);
+            this.LockSpriteBoundsCheck.TabIndex = 16;
+            this.LockSpriteBoundsCheck.Text = "Lock vertical/horizontal";
+            this.LockSpriteBoundsCheck.UseVisualStyleBackColor = true;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(14, 233);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(57, 13);
+            this.label10.TabIndex = 15;
+            this.label10.Text = "Horizontal:";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(26, 87);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(45, 13);
+            this.label8.TabIndex = 14;
+            this.label8.Text = "Vertical:";
+            // 
+            // HorizontalSpriteBoundsHeight
+            // 
+            this.HorizontalSpriteBoundsHeight.Increment = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.HorizontalSpriteBoundsHeight.Location = new System.Drawing.Point(98, 342);
+            this.HorizontalSpriteBoundsHeight.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.HorizontalSpriteBoundsHeight.Name = "HorizontalSpriteBoundsHeight";
+            this.HorizontalSpriteBoundsHeight.Size = new System.Drawing.Size(120, 20);
+            this.HorizontalSpriteBoundsHeight.TabIndex = 13;
+            this.HorizontalSpriteBoundsHeight.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.HorizontalSpriteBoundsHeight.ValueChanged += new System.EventHandler(this.HorizontalSpriteBoundsHeight_ValueChanged);
+            // 
+            // HorizontalSpriteBoundsWidth
+            // 
+            this.HorizontalSpriteBoundsWidth.Increment = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.HorizontalSpriteBoundsWidth.Location = new System.Drawing.Point(98, 316);
+            this.HorizontalSpriteBoundsWidth.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.HorizontalSpriteBoundsWidth.Name = "HorizontalSpriteBoundsWidth";
+            this.HorizontalSpriteBoundsWidth.Size = new System.Drawing.Size(120, 20);
+            this.HorizontalSpriteBoundsWidth.TabIndex = 12;
+            this.HorizontalSpriteBoundsWidth.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.HorizontalSpriteBoundsWidth.ValueChanged += new System.EventHandler(this.HorizontalSpriteBoundsWidth_ValueChanged);
+            // 
+            // HorizontalSpriteAnchorY
+            // 
+            this.HorizontalSpriteAnchorY.Location = new System.Drawing.Point(98, 290);
+            this.HorizontalSpriteAnchorY.Name = "HorizontalSpriteAnchorY";
+            this.HorizontalSpriteAnchorY.Size = new System.Drawing.Size(120, 20);
+            this.HorizontalSpriteAnchorY.TabIndex = 11;
+            this.HorizontalSpriteAnchorY.ValueChanged += new System.EventHandler(this.HorizontalSpriteAnchorY_ValueChanged);
+            // 
+            // HorizontalSpriteAnchorX
+            // 
+            this.HorizontalSpriteAnchorX.Location = new System.Drawing.Point(98, 264);
+            this.HorizontalSpriteAnchorX.Name = "HorizontalSpriteAnchorX";
+            this.HorizontalSpriteAnchorX.Size = new System.Drawing.Size(120, 20);
+            this.HorizontalSpriteAnchorX.TabIndex = 10;
+            this.HorizontalSpriteAnchorX.ValueChanged += new System.EventHandler(this.HorizontalSpriteAnchorX_ValueChanged);
+            // 
+            // SpriteViewerParent
+            // 
+            this.SpriteViewerParent.BackColor = System.Drawing.Color.Transparent;
+            this.SpriteViewerParent.Location = new System.Drawing.Point(224, 38);
+            this.SpriteViewerParent.Name = "SpriteViewerParent";
+            this.SpriteViewerParent.Size = new System.Drawing.Size(696, 558);
+            this.SpriteViewerParent.TabIndex = 9;
+            // 
+            // VerticalSpriteBoundsHeight
+            // 
+            this.VerticalSpriteBoundsHeight.Increment = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.VerticalSpriteBoundsHeight.Location = new System.Drawing.Point(98, 193);
+            this.VerticalSpriteBoundsHeight.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.VerticalSpriteBoundsHeight.Name = "VerticalSpriteBoundsHeight";
+            this.VerticalSpriteBoundsHeight.Size = new System.Drawing.Size(120, 20);
+            this.VerticalSpriteBoundsHeight.TabIndex = 8;
+            this.VerticalSpriteBoundsHeight.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.VerticalSpriteBoundsHeight.ValueChanged += new System.EventHandler(this.VerticalSpriteBoundsHeight_ValueChanged);
+            // 
+            // VerticalSpriteBoundsWidth
+            // 
+            this.VerticalSpriteBoundsWidth.Increment = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.VerticalSpriteBoundsWidth.Location = new System.Drawing.Point(98, 167);
+            this.VerticalSpriteBoundsWidth.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.VerticalSpriteBoundsWidth.Name = "VerticalSpriteBoundsWidth";
+            this.VerticalSpriteBoundsWidth.Size = new System.Drawing.Size(120, 20);
+            this.VerticalSpriteBoundsWidth.TabIndex = 7;
+            this.VerticalSpriteBoundsWidth.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.VerticalSpriteBoundsWidth.ValueChanged += new System.EventHandler(this.VerticalSpriteBoundsWidth_ValueChanged);
+            // 
+            // VerticalSpriteAnchorY
+            // 
+            this.VerticalSpriteAnchorY.Location = new System.Drawing.Point(98, 141);
+            this.VerticalSpriteAnchorY.Name = "VerticalSpriteAnchorY";
+            this.VerticalSpriteAnchorY.Size = new System.Drawing.Size(120, 20);
+            this.VerticalSpriteAnchorY.TabIndex = 6;
+            this.VerticalSpriteAnchorY.ValueChanged += new System.EventHandler(this.VerticalSpriteAnchorY_ValueChanged);
+            // 
+            // VerticalSpriteAnchorX
+            // 
+            this.VerticalSpriteAnchorX.Location = new System.Drawing.Point(98, 115);
+            this.VerticalSpriteAnchorX.Name = "VerticalSpriteAnchorX";
+            this.VerticalSpriteAnchorX.Size = new System.Drawing.Size(120, 20);
+            this.VerticalSpriteAnchorX.TabIndex = 5;
+            this.VerticalSpriteAnchorX.ValueChanged += new System.EventHandler(this.VerticalSpriteAnchorX_ValueChanged);
+            // 
+            // ApplySpriteButton
+            // 
+            this.ApplySpriteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ApplySpriteButton.Location = new System.Drawing.Point(798, 602);
+            this.ApplySpriteButton.Name = "ApplySpriteButton";
+            this.ApplySpriteButton.Size = new System.Drawing.Size(122, 47);
+            this.ApplySpriteButton.TabIndex = 4;
+            this.ApplySpriteButton.Text = "Save Changes";
+            this.ApplySpriteButton.UseVisualStyleBackColor = true;
+            this.ApplySpriteButton.Click += new System.EventHandler(this.ApplySpriteButton_Click);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(34, 41);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(37, 13);
+            this.label9.TabIndex = 2;
+            this.label9.Text = "Sprite:";
+            // 
+            // SpriteSelectionBox
+            // 
+            this.SpriteSelectionBox.FormattingEnabled = true;
+            this.SpriteSelectionBox.Location = new System.Drawing.Point(77, 38);
+            this.SpriteSelectionBox.Name = "SpriteSelectionBox";
+            this.SpriteSelectionBox.Size = new System.Drawing.Size(141, 21);
+            this.SpriteSelectionBox.TabIndex = 1;
+            // 
+            // RemoveSpriteButton
+            // 
+            this.RemoveSpriteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveSpriteButton.Location = new System.Drawing.Point(7, 650);
+            this.RemoveSpriteButton.Name = "RemoveSpriteButton";
+            this.RemoveSpriteButton.Size = new System.Drawing.Size(185, 47);
+            this.RemoveSpriteButton.TabIndex = 9;
+            this.RemoveSpriteButton.Text = "Remove Sprite";
+            this.RemoveSpriteButton.UseVisualStyleBackColor = true;
+            this.RemoveSpriteButton.Click += new System.EventHandler(this.RemoveSpriteButton_Click);
+            // 
+            // AddSpriteButton
+            // 
+            this.AddSpriteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddSpriteButton.Location = new System.Drawing.Point(7, 597);
+            this.AddSpriteButton.Name = "AddSpriteButton";
+            this.AddSpriteButton.Size = new System.Drawing.Size(185, 47);
+            this.AddSpriteButton.TabIndex = 8;
+            this.AddSpriteButton.Text = "Add Sprite";
+            this.AddSpriteButton.UseVisualStyleBackColor = true;
+            this.AddSpriteButton.Click += new System.EventHandler(this.AddSpriteButton_Click);
+            // 
+            // SpritesList
+            // 
+            this.SpritesList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.SpritesList.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SpritesList.FormattingEnabled = true;
+            this.SpritesList.ItemHeight = 20;
+            this.SpritesList.Location = new System.Drawing.Point(7, 27);
+            this.SpritesList.Name = "SpritesList";
+            this.SpritesList.Size = new System.Drawing.Size(185, 564);
+            this.SpritesList.TabIndex = 4;
+            this.SpritesList.SelectedIndexChanged += new System.EventHandler(this.SpritesList_SelectedIndexChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(3, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(74, 24);
+            this.label6.TabIndex = 3;
+            this.label6.Text = "Sprites";
             // 
             // tabPage5
             // 
@@ -732,6 +1134,23 @@
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Npc\'s";
             this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // EventSpriteSelection
+            // 
+            this.EventSpriteSelection.FormattingEnabled = true;
+            this.EventSpriteSelection.Location = new System.Drawing.Point(77, 92);
+            this.EventSpriteSelection.Name = "EventSpriteSelection";
+            this.EventSpriteSelection.Size = new System.Drawing.Size(141, 21);
+            this.EventSpriteSelection.TabIndex = 7;
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(34, 95);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(37, 13);
+            this.label19.TabIndex = 8;
+            this.label19.Text = "Sprite:";
             // 
             // EditorForm
             // 
@@ -763,6 +1182,19 @@
             this.groupBox4.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
+            this.panel5.ResumeLayout(false);
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.HorizontalSpriteBoundsHeight)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.HorizontalSpriteBoundsWidth)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.HorizontalSpriteAnchorY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.HorizontalSpriteAnchorX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteBoundsHeight)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteBoundsWidth)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteAnchorY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteAnchorX)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -824,6 +1256,37 @@
         private System.Windows.Forms.Button RemoveEventCommandButton;
         private System.Windows.Forms.Button AddEventCommandButton;
         private System.Windows.Forms.ListBox EventCommandsList;
+        private System.Windows.Forms.ListBox SpritesList;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.Button ApplySpriteButton;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.ComboBox SpriteSelectionBox;
+        private System.Windows.Forms.Button RemoveSpriteButton;
+        private System.Windows.Forms.Button AddSpriteButton;
+        private System.Windows.Forms.NumericUpDown VerticalSpriteBoundsHeight;
+        private System.Windows.Forms.NumericUpDown VerticalSpriteBoundsWidth;
+        private System.Windows.Forms.NumericUpDown VerticalSpriteAnchorY;
+        private System.Windows.Forms.NumericUpDown VerticalSpriteAnchorX;
+        private System.Windows.Forms.Panel SpriteViewerParent;
+        private System.Windows.Forms.NumericUpDown HorizontalSpriteBoundsHeight;
+        private System.Windows.Forms.NumericUpDown HorizontalSpriteBoundsWidth;
+        private System.Windows.Forms.NumericUpDown HorizontalSpriteAnchorY;
+        private System.Windows.Forms.NumericUpDown HorizontalSpriteAnchorX;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.CheckBox LockSpriteBoundsCheck;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.ComboBox EventSpriteSelection;
     }
 }
 

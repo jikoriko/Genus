@@ -10,18 +10,23 @@ using System.Threading.Tasks;
 
 namespace Genus2D.GameData
 {
+    [Serializable]
     public class SpriteData
     {
 
-        public string TextureName;
-        public Vector2 AnchorPoint;
-        public Rectangle Collider;
+        public string ImagePath;
+        public Vector2 VerticalAnchorPoint;
+        public Vector2 VerticalBounds;
+        public Vector2 HorizontalAnchorPoint;
+        public Vector2 HorizontalBounds;
 
         public SpriteData()
         {
-            TextureName = "";
-            AnchorPoint = new Vector2();
-            Collider = new Rectangle();
+            ImagePath = "";
+            VerticalAnchorPoint = new Vector2();
+            VerticalBounds = new Vector2(2, 2);
+            HorizontalAnchorPoint = new Vector2();
+            HorizontalBounds = new Vector2(2, 2);
         }
 
 
@@ -30,7 +35,7 @@ namespace Genus2D.GameData
         private static List<SpriteData> LoadData()
         {
             List<SpriteData> sprites;
-            if (File.Exists("Data/TilesetData.data"))
+            if (File.Exists("Data/SpriteData.data"))
             {
                 FileStream stream = File.Open("Data/SpriteData.data", FileMode.Open, FileAccess.Read);
                 BinaryFormatter formatter = new BinaryFormatter();
@@ -54,6 +59,21 @@ namespace Genus2D.GameData
             stream.Close();
         }
 
+        public static void AddSpriteData()
+        {
+            _spriteData.Add(new SpriteData());
+            SaveData();
+        }
+
+        public static void RemoveSprite(int index)
+        {
+            if (index >= 0 && index < _spriteData.Count)
+            {
+                _spriteData.RemoveAt(index);
+                SaveData();
+            }
+        }
+
         public static SpriteData GetSpriteData(int index)
         {
             if (index > -1 && index < _spriteData.Count)
@@ -65,5 +85,6 @@ namespace Genus2D.GameData
         {
             return _spriteData.Count;
         }
+
     }
 }

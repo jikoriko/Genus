@@ -260,6 +260,7 @@ namespace Genus2D.GameData
         private TriggerType _triggerType;
         private bool _passable;
         public List<EventCommand> EventCommands { get; private set; }
+        private int _spriteID = -1; 
 
         public MapEventData(string name)
         {
@@ -267,6 +268,7 @@ namespace Genus2D.GameData
             _triggerType = TriggerType.Action;
             _passable = false;
             EventCommands = new List<EventCommand>();
+            _spriteID = -1;
         }
 
         public void AddEventCommand(EventCommand.CommandType type)
@@ -315,6 +317,16 @@ namespace Genus2D.GameData
         public override string ToString()
         {
             return "Event: " + Name;
+        }
+
+        public int GetSpriteID()
+        {
+            return _spriteID;
+        }
+
+        public void SetSpriteID(int id)
+        {
+            _spriteID = id;
         }
 
     }

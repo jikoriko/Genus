@@ -77,7 +77,7 @@ namespace RpgGame.EntityComponents
                                 pos.X = x * 32;
                                 pos.Y = y * 32;
                                 int tilePriority = TilesetData.GetTileset(_mapData.GetTilesetID()).GetTilePriority(tileID);
-                                pos.Z = -(layer + y + (tilePriority * 32));
+                                pos.Z = -(y + tilePriority) * (layer * 32);
                                 source.X = tileID % 8 * 32;
                                 source.Y = tileID / 8 * 32;
                                 Renderer.FillTexture(tileset, ShapeFactory.Rectangle, ref pos, ref scale, ref source, ref colour);
@@ -89,13 +89,46 @@ namespace RpgGame.EntityComponents
                 for (int i = 0; i < _mapData.MapEventsCount(); i++)
                 {
                     MapEvent mapEvent = _mapData.GetMapEvent(i);
-                    Texture eventTexture = Assets.GetTexture("GUI_Textures/EventIcon.png");
-                    pos.X = mapEvent.MapX * 32;
-                    pos.Y = mapEvent.MapY * 32;
-                    pos.Z = -(pos.Y + 1);
+                    int spriteID = MapEventData.GetMapEventData(mapEvent.EventID).GetSpriteID();
+                    Texture eventTexture = null;
                     colour = Color4.White;
-                    colour.A = 0.65f;
-                    Renderer.FillTexture(eventTexture, ShapeFactory.Rectangle, ref pos, ref colour);
+
+                    if (spriteID != -1)
+                    {
+                        SpriteData sprite = SpriteData.GetSpriteData(spriteID);
+                        eventTexture = Assets.GetTexture("Sprites/" + sprite.ImagePath);
+
+                        scale.X = eventTexture.GetWidth() / 4;
+                        scale.Y = eventTexture.GetHeight() / 4;
+                        source.X = 0;
+                        source.Y = 0;
+                        source.Width = (int)scale.X;
+                        source.Height = (int)scale.Y;
+
+                        pos.X = (mapEvent.MapX * 32) + 16 - (sprite.VerticalAnchorPoint.X);
+                        pos.Y = (mapEvent.MapY * 32) + (scale.Y - sprite.VerticalAnchorPoint.Y) - (scale.Y / 2);
+                        pos.Z = -(mapEvent.MapY * 32);
+
+                        colour.A = 1f;
+                    }
+                    else
+                    {
+                        eventTexture = Assets.GetTexture("GUI_Textures/EventIcon.png");
+
+                        pos.X = mapEvent.MapX * 32;
+                        pos.Y = mapEvent.MapY * 32;
+                        pos.Z = -(mapEvent.MapY * 32);
+                        scale.X = 32;
+                        scale.Y = 32;
+                        source.X = 0;
+                        source.Y = 0;
+                        source.Width = 32;
+                        source.Height = 32;
+
+                        colour.A = 0.65f;
+                    }
+                    
+                    Renderer.FillTexture(eventTexture, ShapeFactory.Rectangle, ref pos, ref scale, ref source, ref colour);
                 }
 
                 Renderer.PopWorldMatrix();

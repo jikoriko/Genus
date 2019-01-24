@@ -23,3 +23,6 @@ C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.EditEventFor
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\Tilesets\pokemon_tileset.png
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\Tilesets\tileset.png
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.AddEventCommandForm.resources
+C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\Sprites\player.png
+C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\Sprites\wolf.png
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.csprojAssemblyReference.cache
