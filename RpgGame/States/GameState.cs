@@ -15,6 +15,7 @@ namespace RpgGame.States
     public class GameState : State
     {
 
+        public static GameState Instance { get; private set; }
         private RpgClientConnection _connection;
         private List<int> _keysDown;
 
@@ -23,9 +24,9 @@ namespace RpgGame.States
         public GameState()
             : base()
         {
+            Instance = this;
             MapEntity = Entity.CreateInstance(_entityManager);
             new MapComponent(MapEntity);
-            _entityManager.AddEntity(MapEntity);
 
             _connection = null;
             _keysDown = new List<int>();
@@ -84,14 +85,6 @@ namespace RpgGame.States
                 _connection.Update();
 
             base.OnUpdateFrame(e);
-
-            /*
-            Vector2 playerPos = _playerEntity.GetTransform().LocalPosition.Xy;
-            Vector2 resolutionCenter = Renderer.GetResoultion() / 2;
-
-            Vector2 worldPos = resolutionCenter - playerPos;
-            Transform.Position = new Vector3((int)worldPos.X, (int)worldPos.Y, 0);
-            */
         }
 
         public override void Destroy()

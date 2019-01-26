@@ -128,6 +128,15 @@ namespace Genus2D.GameData
             return _spawnPoints.Count;
         }
 
+        public static void SetMapEventsCount(int mapID, int count)
+        {
+            if (mapID >= 0 && mapID < _mapInfos.Count)
+            {
+                _mapInfos[mapID].NumberMapEvents = count;
+                SaveMapInfos();
+            }
+        }
+
         public static MapData LoadMap(int index)
         {
             if (index >= 0 && index < _mapInfos.Count)
@@ -172,12 +181,15 @@ namespace Genus2D.GameData
         public string MapName { get; private set; }
         public int Width { get; private set; }
         public int Height { get; private set; }
+
+        public int NumberMapEvents { get; private set; }
         
         public MapInfo(string name, int width, int height)
         {
             MapName = name;
             Width = width;
             Height = height;
+            NumberMapEvents = 0;
         }
 
     }

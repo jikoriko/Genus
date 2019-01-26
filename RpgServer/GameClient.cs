@@ -120,15 +120,10 @@ namespace RpgServer
         private PlayerPacket _playerPacket;
         private InputPacket _inputPacket;
         private MapInstance _mapInstance;
-        private MapEventData _triggeringEvent;
-        private int _triggeringEventCommand;
-        private float _triggeringEventWaitTimer;
 
+        private EventInterpreter _eventInterpreter;
+        private List<ClientCommand> _commandsToAdd;
         private List<ClientCommand> _clientCommands;
-        private bool _messageShowing;
-        private bool _optionsShowing;
-        private int _selectedOption;
-        private int _optionsCount;
 
         private GameClient(TcpClient tcpClient, int playerID)
         {
@@ -143,15 +138,10 @@ namespace RpgServer
 
             _inputPacket = null;
             _mapInstance = null;
-            _triggeringEvent = null;
-            _triggeringEventCommand = -1;
-            _triggeringEventWaitTimer = 0.0f;
 
+            _eventInterpreter = new EventInterpreter(this);
+            _commandsToAdd = new List<ClientCommand>();
             _clientCommands = new List<ClientCommand>();
-            _messageShowing = false;
-            _optionsShowing = false;
-            _selectedOption = -1;
-            _optionsCount = 0;
 
             Thread updatePacketsThread = new Thread(new ThreadStart(UpdatePackets));
             updatePacketsThread.Start();
@@ -194,10 +184,17 @@ namespace RpgServer
                         updateTimer = 0.05;
                         if (_mapInstance != null)
                         {
-                            SendMapPacket();
-                            SendPlayerPackets();
-                            SendClientCommands();
-                            RecieveInputPacket();
+                            try
+                            {
+                                SendMapPacket();
+                                SendPlayerPackets();
+                                SendClientCommands();
+                                RecieveInputPacket();
+                            }
+                            catch
+                            {
+                                Disconnect();
+                            }
                         }
                     }
                     else
@@ -235,28 +232,34 @@ namespace RpgServer
         public void AddClientCommand(ClientCommand command)
         {
             if (command != null)
-                _clientCommands.Add(command);
+                _commandsToAdd.Add(command);
         }
 
         public void SendClientCommands()
         {
+            while (_commandsToAdd.Count > 0)
+            {
+                if (_commandsToAdd[0] != null)
+                {
+                    _clientCommands.Add(_commandsToAdd[0]);
+                    _commandsToAdd.RemoveAt(0);
+                }
+            }
+
             while (_clientCommands.Count > 0)
             {
                 ClientCommand command = _clientCommands[0];
-                if (command != null)
-                {
-                    byte[] bytes = BitConverter.GetBytes((int)PacketType.ClientCommand);
-                    _stream.Write(bytes, 0, sizeof(int));
-                    _stream.Flush();
+                byte[] bytes = BitConverter.GetBytes((int)PacketType.ClientCommand);
+                _stream.Write(bytes, 0, sizeof(int));
+                _stream.Flush();
 
-                    bytes = command.GetBytes();
-                    _stream.Write(BitConverter.GetBytes(bytes.Length), 0, sizeof(int));
-                    _stream.Flush();
-                    _stream.Write(bytes, 0, bytes.Length);
-                    _stream.Flush();
+                bytes = command.GetBytes();
+                _stream.Write(BitConverter.GetBytes(bytes.Length), 0, sizeof(int));
+                _stream.Flush();
+                _stream.Write(bytes, 0, bytes.Length);
+                _stream.Flush();
 
-                    _clientCommands.RemoveAt(0);
-                }
+                _clientCommands.RemoveAt(0);
             }
         }
 
@@ -264,63 +267,46 @@ namespace RpgServer
         {
             if (_inputPacket == null)
             {
-                try
-                {
-                    byte[] bytes = BitConverter.GetBytes((int)PacketType.InputPacket);
-                    _stream.Write(bytes, 0, sizeof(int));
-                    _stream.Flush();
 
-                    bytes = ReadData(sizeof(int), _stream);
-                    int size = BitConverter.ToInt32(bytes, 0);
+                byte[] bytes = BitConverter.GetBytes((int)PacketType.InputPacket);
+                _stream.Write(bytes, 0, sizeof(int));
+                _stream.Flush();
 
-                    bytes = ReadData(size, _stream);
+                bytes = ReadData(sizeof(int), _stream);
+                int size = BitConverter.ToInt32(bytes, 0);
 
-                    InputPacket packet = InputPacket.FromBytes(bytes);
-                    _inputPacket = packet;
-                }
-                catch (Exception e)
-                {
-                    _inputPacket = null;
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine(e.StackTrace);
-                }
+                bytes = ReadData(size, _stream);
+
+                InputPacket packet = InputPacket.FromBytes(bytes);
+                _inputPacket = packet;
             }
         }
 
         public void SendPlayerPackets()
         {
-            try
-            {
-                List<PlayerPacket> packets = _mapInstance.GetPlayerPackets();
+            List<PlayerPacket> packets = _mapInstance.GetPlayerPackets();
 
-                PacketType type = PacketType.PlayerPacket;
-                byte[] bytes = BitConverter.GetBytes((int)type);
+            PacketType type = PacketType.PlayerPacket;
+            byte[] bytes = BitConverter.GetBytes((int)type);
+            _stream.Write(bytes, 0, bytes.Length);
+            _stream.Flush();
+
+            int numClients = packets.Count;
+            bytes = BitConverter.GetBytes(numClients);
+            _stream.Write(bytes, 0, sizeof(int));
+            _stream.Flush();
+
+            for (int i = 0; i < numClients; i++)
+            {
+                PlayerPacket packet = packets[i];
+
+                bytes = packet.GetBytes();
+                byte[] sizeBytes = BitConverter.GetBytes(bytes.Length);
+                _stream.Write(sizeBytes, 0, sizeof(int));
+                _stream.Flush();
+
                 _stream.Write(bytes, 0, bytes.Length);
                 _stream.Flush();
-
-                int numClients = packets.Count;
-                bytes = BitConverter.GetBytes(numClients);
-                _stream.Write(bytes, 0, sizeof(int));
-                _stream.Flush();
-
-                for (int i = 0; i < numClients; i++)
-                {
-                    PlayerPacket packet = packets[i];
-
-                    bytes = packet.GetBytes();
-                    byte[] sizeBytes = BitConverter.GetBytes(bytes.Length);
-                    _stream.Write(sizeBytes, 0, sizeof(int));
-                    _stream.Flush();
-
-                    _stream.Write(bytes, 0, bytes.Length);
-                    _stream.Flush();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Failed to read from client, disconnecting");
-                Console.WriteLine(e.Message);
-                Disconnect();
             }
 
         }
@@ -329,29 +315,30 @@ namespace RpgServer
         {
             if (_mapChanged)
             {
-                try
-                {
-                    MapPacket mapPacket = _mapInstance.GetMapPacket();
+                MapPacket mapPacket = _mapInstance.GetMapPacket();
 
-                    PacketType type = PacketType.MapPacket;
-                    byte[] bytes = BitConverter.GetBytes((int)type);
-                    _stream.Write(bytes, 0, sizeof(int));
-                    _stream.Flush();
+                PacketType type = PacketType.MapPacket;
+                byte[] bytes = BitConverter.GetBytes((int)type);
+                _stream.Write(bytes, 0, sizeof(int));
+                _stream.Flush();
 
-                    byte[] mapBytes = mapPacket.GetBytes();
-                    bytes = BitConverter.GetBytes(mapBytes.Length);
-                    _stream.Write(bytes, 0, sizeof(int));
-                    _stream.Flush();
-                    _stream.Write(mapBytes, 0, mapBytes.Length);
-                    _stream.Flush();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Failed to read from client, disconnecting");
-                    Console.WriteLine(e.Message);
-                    Disconnect();
-                }
+                byte[] mapBytes = mapPacket.GetBytes();
+                bytes = BitConverter.GetBytes(mapBytes.Length);
+                _stream.Write(bytes, 0, sizeof(int));
+                _stream.Flush();
+                _stream.Write(mapBytes, 0, mapBytes.Length);
+                _stream.Flush();
                 _mapChanged = false;
+            }
+        }
+
+        public void SetMapID(int id)
+        {
+            if (_playerPacket.MapID != id)
+            {
+                _playerPacket.MapID = id;
+                _mapInstance.RemoveClient(this);
+                _mapInstance.GetServer().ChangeClientsMap(this);
             }
         }
 
@@ -360,7 +347,7 @@ namespace RpgServer
             return _playerPacket.MapID;
         }
 
-        private bool Moving()
+        public bool Moving()
         {
             int posX = _playerPacket.PositionX * 32;
             int posY = _playerPacket.PositionY * 32;
@@ -377,11 +364,9 @@ namespace RpgServer
 
         public void Update(float deltaTime)
         {
-            if (_triggeringEvent != null)
-            {
-                TriggerMapEventData(deltaTime);
-            }
-            else
+            _eventInterpreter.Update(deltaTime);
+
+            if (!_eventInterpreter.EventTriggering())
             {
                 if (_inputPacket != null)
                 {
@@ -463,7 +448,7 @@ namespace RpgServer
             _inputPacket = null;
         }
 
-        private void SetMapPosition(int x, int y)
+        public void SetMapPosition(int x, int y)
         {
             _playerPacket.PositionX = x;
             _playerPacket.PositionY = y;
@@ -471,7 +456,7 @@ namespace RpgServer
             _playerPacket.RealY = y * 32;
         }
 
-        private void Move(Direction direction)
+        public void Move(Direction direction)
         {
             if (!Moving())
             {
@@ -505,6 +490,11 @@ namespace RpgServer
             }
         }
 
+        public void ChangeDirection(Direction direction)
+        {
+            _playerPacket.Direction = direction;
+        }
+
         private void CheckEventTriggers(int x, int y, MapEventData.TriggerType triggerType)
         {
             MapData mapData = _mapInstance.GetMapData();
@@ -515,140 +505,10 @@ namespace RpgServer
                 {
                     if (mapEvent.MapX == x && mapEvent.MapY == y)
                     {
-                        _triggeringEvent = mapEvent.GetMapEventData();
+                        _eventInterpreter.TriggerEventData(mapEvent.GetMapEventData());
                         break;
                     }
                 }
-            }
-        }
-
-        public void TriggerMapEventData(float deltaTime)
-        {
-            if (_messageShowing)
-            {
-                if (KeyDown(OpenTK.Input.Key.Enter))
-                {
-                    AddClientCommand(new ClientCommand(ClientCommand.CommandType.CloseMessage));
-                    _messageShowing = false;
-                }
-
-                return;
-            }
-            else if (_optionsShowing)
-            {
-                ClientCommand clientCommand;
-
-                if (KeyDown(OpenTK.Input.Key.Space))
-                {
-                    //get the selected option and trigger event
-
-                    _optionsShowing = false;
-                    _selectedOption = -1;
-                    _optionsCount = 0;
-                    AddClientCommand(new ClientCommand(ClientCommand.CommandType.CloseMessage));
-                }
-                else if (KeyDown(OpenTK.Input.Key.Down))
-                {
-                    _selectedOption++;
-                    if (_selectedOption >= _optionsCount)
-                        _selectedOption = 0;
-
-                    clientCommand = new ClientCommand(ClientCommand.CommandType.UpdateOptions);
-                    clientCommand.SetParameter("SelectedOption", _selectedOption.ToString());
-                    AddClientCommand(clientCommand);
-                }
-                if (KeyDown(OpenTK.Input.Key.Up))
-                {
-                    _selectedOption--;
-                    if (_selectedOption < 0)
-                        _selectedOption = _optionsCount - 1;
-
-                    clientCommand = new ClientCommand(ClientCommand.CommandType.UpdateOptions);
-                    clientCommand.SetParameter("SelectedOption", _selectedOption.ToString());
-                    AddClientCommand(clientCommand);
-                }
-
-                return;
-            }
-
-            if (_triggeringEventWaitTimer > 0)
-            {
-                _triggeringEventWaitTimer -= deltaTime;
-                return;
-            }
-
-            if (_triggeringEventCommand < _triggeringEvent.EventCommands.Count - 1)
-            {
-                _triggeringEventCommand++;
-                EventCommand eventCommand = _triggeringEvent.EventCommands[_triggeringEventCommand];
-
-                ClientCommand clientCommand;
-
-                switch (eventCommand.Type)
-                {
-                    case EventCommand.CommandType.EventWaitTimer:
-
-                        float timer = (float)eventCommand.GetParameter("Time");
-                        _triggeringEventWaitTimer = timer;
-
-                        break;
-                    case EventCommand.CommandType.MapTransfer:
-
-                        int mapID = (int)eventCommand.GetParameter("MapID");
-                        int mapX = (int)eventCommand.GetParameter("MapX");
-                        int mapY = (int)eventCommand.GetParameter("MapY");
-                        SetMapPosition(mapX, mapY);
-                        if (GetMapID() != mapID)
-                        {
-                            _playerPacket.MapID = mapID;
-                            _mapInstance.RemoveClient(this);
-                            _mapInstance.GetServer().ChangeClientsMap(this);
-                        }
-
-                        break;
-                    case EventCommand.CommandType.MovePlayer:
-
-                        Direction direction = (Direction)eventCommand.GetParameter("Direction");
-                        Move(direction);
-
-                        break;
-                    case EventCommand.CommandType.ShowMessage:
-
-                        clientCommand = new ClientCommand(ClientCommand.CommandType.ShowMessage);
-                        clientCommand.SetParameter("Message", (string)eventCommand.GetParameter("Message"));
-                        AddClientCommand(clientCommand);
-                        _messageShowing = true;
-
-                        break;
-                    case EventCommand.CommandType.ShowOptions:
-
-                        List<MessageOption> options = (List<MessageOption>)eventCommand.GetParameter("Options");
-                        _selectedOption = 0;
-                        _optionsCount = options.Count;
-
-                        string optionStrings = "";
-                        for (int i = 0; i < options.Count; i++)
-                        {
-                            optionStrings += options[i].Option;
-                            if (i < options.Count - 1)
-                                optionStrings += ",";
-                        }
-
-                        clientCommand = new ClientCommand(ClientCommand.CommandType.ShowOptions);
-                        clientCommand.SetParameter("Message", (string)eventCommand.GetParameter("Message"));
-                        clientCommand.SetParameter("Options", optionStrings);
-                        clientCommand.SetParameter("SelectedOption", _selectedOption.ToString());
-
-                        AddClientCommand(clientCommand);
-                        _optionsShowing = true;
-
-                        break;
-                }
-            }
-            else
-            {
-                _triggeringEvent = null;
-                _triggeringEventCommand = -1;
             }
         }
 

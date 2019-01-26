@@ -146,6 +146,7 @@ namespace RpgEditor
                             Genus2D.GameData.MapEvent mapEvent = MapData.GetMapEvent(i);
                             if (mapEvent.MapX == _lastX && mapEvent.MapY == _lastY)
                             {
+                                Genus2D.GameData.MapInfo.SetMapEventsCount(MapID, MapData.MapEventsCount() - 1);
                                 MapData.RemoveMapEvent(i);
                                 this.Refresh();
                                 break;
@@ -242,6 +243,7 @@ namespace RpgEditor
                         if (mapEvent == null)
                         {
                             mapEvent = new Genus2D.GameData.MapEvent(0, _lastX, _lastY);
+                            Genus2D.GameData.MapInfo.SetMapEventsCount(MapID, MapData.MapEventsCount() + 1);
                             MapData.AddMapEvent(mapEvent);
                         }
 

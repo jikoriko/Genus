@@ -77,8 +77,6 @@ namespace Genus2DTest
             this.AddControl(messageBox);
 
             Entity entity = Entity.CreateInstance(this.EntityManager, Vector3.Zero);
-            entity.SetCollisionSize(100, 100);
-            entity.Collider.Draggable = true;
             this.EntityManager.AddEntity(entity);
 
             Entity entity2 = Entity.CreateInstance(this.EntityManager, new Vector3(400, 600, 0));
@@ -88,9 +86,6 @@ namespace Genus2DTest
             spriteComponent.Transform.Parent = entity.GetTransform();
             spriteComponent.SetTexture(Assets.GetTexture("sprite.png"));
             spriteComponent.SetSpriteCenter(SpriteComponent.SpriteCenter.Top);
-            entity2.SetCollisionSize(spriteComponent.GetFrameWidth(), spriteComponent.GetFrameHeight());
-            entity2.SetColliderPosition(new Vector2(-spriteComponent.GetFrameWidth() / 2, -spriteComponent.GetFrameHeight()));
-            entity2.Collider.Draggable = true;
 
             //*/
 

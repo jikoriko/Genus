@@ -10,6 +10,8 @@ using Genus2D.Graphics;
 using Genus2D.Utililities;
 using System.Drawing;
 using Genus2D;
+using System.Collections.Generic;
+using RpgGame.States;
 
 namespace RpgGame.EntityComponents
 {
@@ -19,15 +21,19 @@ namespace RpgGame.EntityComponents
         public static MapComponent Instance { get; private set; }
 
         private MapData _mapData;
+        private List<Entity> _mapEvents;
+        private bool _mapDataChanged;
 
         public MapComponent(Entity entity)
             : base(entity)
         {
             Instance = this;
             _mapData = null;
+            _mapDataChanged = false;
+            _mapEvents = new List<Entity>();
         }
 
-        public MapData getMapData()
+        public MapData GetMapData()
         {
             return _mapData;
         }
@@ -35,6 +41,33 @@ namespace RpgGame.EntityComponents
         public void SetMapData(MapData mapData)
         {
             _mapData = mapData;
+            _mapDataChanged = true;
+            for (int i = 0; i < _mapEvents.Count; i++)
+            {
+                _mapEvents[i].Destroy();
+            }
+            _mapEvents.Clear();
+        }
+
+        public override void Update(FrameEventArgs e)
+        {
+            base.Update(e);
+
+            if (_mapDataChanged)
+            {
+
+                if (_mapData != null)
+                {
+                    for (int i = 0; i < _mapData.MapEventsCount(); i++)
+                    {
+                        Entity entity = Entity.CreateInstance(GameState.Instance.EntityManager);
+                        entity.GetTransform().Parent = this.Parent.GetTransform();
+                        MapEventComponent component = new MapEventComponent(entity, _mapData.GetMapEvent(i));
+                        _mapEvents.Add(entity);
+                    }
+                }
+                _mapDataChanged = false;
+            }
         }
 
         public override void LateUpdate(OpenTK.FrameEventArgs e)
@@ -84,51 +117,6 @@ namespace RpgGame.EntityComponents
                             }
                         }
                     }
-                }
-
-                for (int i = 0; i < _mapData.MapEventsCount(); i++)
-                {
-                    MapEvent mapEvent = _mapData.GetMapEvent(i);
-                    int spriteID = MapEventData.GetMapEventData(mapEvent.EventID).GetSpriteID();
-                    Texture eventTexture = null;
-                    colour = Color4.White;
-
-                    if (spriteID != -1)
-                    {
-                        SpriteData sprite = SpriteData.GetSpriteData(spriteID);
-                        eventTexture = Assets.GetTexture("Sprites/" + sprite.ImagePath);
-
-                        scale.X = eventTexture.GetWidth() / 4;
-                        scale.Y = eventTexture.GetHeight() / 4;
-                        source.X = 0;
-                        source.Y = 0;
-                        source.Width = (int)scale.X;
-                        source.Height = (int)scale.Y;
-
-                        pos.X = (mapEvent.MapX * 32) + 16 - (sprite.VerticalAnchorPoint.X);
-                        pos.Y = (mapEvent.MapY * 32) + (scale.Y - sprite.VerticalAnchorPoint.Y) - (scale.Y / 2);
-                        pos.Z = -(mapEvent.MapY * 32);
-
-                        colour.A = 1f;
-                    }
-                    else
-                    {
-                        eventTexture = Assets.GetTexture("GUI_Textures/EventIcon.png");
-
-                        pos.X = mapEvent.MapX * 32;
-                        pos.Y = mapEvent.MapY * 32;
-                        pos.Z = -(mapEvent.MapY * 32);
-                        scale.X = 32;
-                        scale.Y = 32;
-                        source.X = 0;
-                        source.Y = 0;
-                        source.Width = 32;
-                        source.Height = 32;
-
-                        colour.A = 0.65f;
-                    }
-                    
-                    Renderer.FillTexture(eventTexture, ShapeFactory.Rectangle, ref pos, ref scale, ref source, ref colour);
                 }
 
                 Renderer.PopWorldMatrix();

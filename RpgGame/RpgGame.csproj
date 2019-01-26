@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntityComponents\MapComponent.cs" />
+    <Compile Include="EntityComponents\MapEventComponent.cs" />
     <Compile Include="EntityComponents\PlayerComponent.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

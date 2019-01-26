@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using System.Data.SqlClient;
-
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -82,6 +82,10 @@ namespace RpgServer
             runThread.Start();
 
             Console.WriteLine("Server Started...");
+            for (int i = 0; i < MapInfo.NumberMaps(); i++)
+            {
+                CheckMapStart(i);
+            }
             RecieveClients();
         }
 
@@ -130,7 +134,14 @@ namespace RpgServer
             {
                 _mapInstances.Add(mapID, new MapInstance(this, mapID));
             }
-        } 
+        }
+
+        public MapInstance GetMapInstance(int id)
+        {
+            if (id >= 0 && id < _mapInstances.Count)
+                return _mapInstances[id];
+            return null;
+        }
 
         private void Run()
         {
@@ -141,7 +152,6 @@ namespace RpgServer
                 ticks = DateTime.Now.Ticks;
                 _deltaTime = (ticks - prevTicks) / 10000000.0;
 
-                //Console.WriteLine(DateTime.Now.Ticks);
                 for (int i = 0; i < _mapInstances.Count; i++)
                 {
                     MapInstance map = _mapInstances.ElementAt(i).Value;

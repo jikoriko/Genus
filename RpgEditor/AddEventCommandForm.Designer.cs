@@ -35,12 +35,6 @@
             // CommandSelection
             // 
             this.CommandSelection.FormattingEnabled = true;
-            this.CommandSelection.Items.AddRange(new object[] {
-            "Wait Timer",
-            "Map Transfer",
-            "Move Player",
-            "Show Message",
-            "Show Options"});
             this.CommandSelection.Location = new System.Drawing.Point(12, 12);
             this.CommandSelection.Name = "CommandSelection";
             this.CommandSelection.Size = new System.Drawing.Size(160, 21);

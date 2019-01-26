@@ -63,9 +63,7 @@ namespace RpgEditor
             PopulateSpriteSelections();
         }
 
-        /*
-         * MAP FUNCTIONS
-         */
+        #region Map Functions
 
         public MapTool GetMapTool()
         {
@@ -130,10 +128,9 @@ namespace RpgEditor
             }
         }
 
+        #endregion
 
-        /*
-         * TILESET FUNCTIONS 
-         */
+        #region Tileset Functions
 
         private void PopulateTilesetsList()
         {
@@ -269,9 +266,9 @@ namespace RpgEditor
             }
         }
 
-        /*
-         * EVENT FUNCTIONS - the chunk of the code
-         */
+        #endregion
+
+        #region Event Functions
 
         private void PopulateEventsList()
         {
@@ -306,120 +303,258 @@ namespace RpgEditor
                 Genus2D.GameData.MapEventData data = Genus2D.GameData.MapEventData.GetMapEventData(EventsList.SelectedIndex);
                 Genus2D.GameData.EventCommand command = data.EventCommands[selection];
 
-                Point pos = new Point(10, 10);
-
                 switch (command.Type)
                 {
-                    case Genus2D.GameData.EventCommand.CommandType.EventWaitTimer:
-
-                        NumericUpDown timerControl = new NumericUpDown();
-                        timerControl.DecimalPlaces = 3;
-                        timerControl.Value = (decimal)((float)command.GetParameter("Time"));
-
-                        EventCommandDataPanel.Controls.Add(timerControl);
-
+                    case Genus2D.GameData.EventCommand.CommandType.WaitTimer:
+                        BuildWaitTimerCommands(command);
                         break;
-                    case Genus2D.GameData.EventCommand.CommandType.MapTransfer:
-
-                        ComboBox mapSelection = new ComboBox();
-                        mapSelection.Location = pos;
-                        List<string> maps = Genus2D.GameData.MapInfo.GetMapInfoStrings();
-                        mapSelection.Items.AddRange(maps.ToArray());
-                        mapSelection.SelectedIndex = (int)command.GetParameter("MapID");
-
-                        NumericUpDown mapXControl = new NumericUpDown();
-                        pos.Y += mapSelection.Size.Height + 10;
-                        mapXControl.Location = pos;
-                        mapXControl.Value = (int)command.GetParameter("MapX");
-
-                        NumericUpDown mapYControl = new NumericUpDown();
-                        pos.Y += mapXControl.Size.Height + 10;
-                        mapYControl.Location = pos;
-                        mapYControl.Value = (int)command.GetParameter("MapY");
-
-                        EventCommandDataPanel.Controls.Add(mapSelection);
-                        EventCommandDataPanel.Controls.Add(mapXControl);
-                        EventCommandDataPanel.Controls.Add(mapYControl);
-
+                    case Genus2D.GameData.EventCommand.CommandType.TeleportPlayer:
+                        BuildTeleportPlayerCommands(command);
                         break;
                     case Genus2D.GameData.EventCommand.CommandType.MovePlayer:
-
-                        string[] directions = new string[4];
-                        for (int i = 0; i < 4; i++)
-                        {
-                            directions[i] = ((Genus2D.GameData.Direction)i).ToString();
-                        }
-                        ComboBox directionSelection = new ComboBox();
-                        directionSelection.Location = pos;
-                        directionSelection.Items.AddRange(directions);
-                        directionSelection.SelectedIndex = (int)((Genus2D.GameData.Direction)command.GetParameter("Direction"));
-
-                        EventCommandDataPanel.Controls.Add(directionSelection);
-
+                        BuildMovePlayerCommands(command);
+                        break;
+                    case Genus2D.GameData.EventCommand.CommandType.ChangePlayerDirection:
+                        BuildChangePlayerDirectionCommands(command);
+                        break;
+                    case Genus2D.GameData.EventCommand.CommandType.TeleportMapEvent:
+                        BuildTeleportMapEventCommands(command);
+                        break;
+                    case Genus2D.GameData.EventCommand.CommandType.MoveMapEvent:
+                        BuildMoveMapEventCommands(command);
+                        break;
+                    case Genus2D.GameData.EventCommand.CommandType.ChangeMapEventDirection:
+                        BuildChangeMapEventDirectionCommands(command);
                         break;
                     case Genus2D.GameData.EventCommand.CommandType.ShowMessage:
-
-                        RichTextBox textBox = new RichTextBox();
-                        textBox.Location = pos;
-                        textBox.Size = new Size(EventCommandDataPanel.Width - 20, EventCommandDataPanel.Height - 20);
-                        textBox.Text = (string)command.GetParameter("Message");
-
-                        EventCommandDataPanel.Controls.Add(textBox);
-
+                        BuildShowMessageCommands(command);
                         break;
                     case Genus2D.GameData.EventCommand.CommandType.ShowOptions:
-
-                        RichTextBox textBox2 = new RichTextBox();
-                        textBox2.Location = pos;
-                        textBox2.Size = new Size(EventCommandDataPanel.Width - 20, EventCommandDataPanel.Height - 200);
-                        textBox2.Text = (string)command.GetParameter("Message");
-
-                        ComboBox messageOptionsBox = new ComboBox();
-                        pos.Y += textBox2.Height + 10;
-                        messageOptionsBox.Location = pos;
-                        List<Genus2D.GameData.MessageOption> messageOptions = (List<Genus2D.GameData.MessageOption>)command.GetParameter("Options");
-                        for (int i = 0; i < messageOptions.Count; i++)
-                        {
-                            messageOptionsBox.Items.Add(messageOptions[i].Option);
-                        }
-                        messageOptionsBox.SelectedIndexChanged += ChangeMessageOption;
-
-                        Button removeOptionButton = new Button();
-                        pos.X += messageOptionsBox.Width + 10;
-                        removeOptionButton.Location = pos;
-                        removeOptionButton.Text = "Remove Option";
-                        removeOptionButton.Click += RemoveMessageOption;
-                        pos.X = 10;
-
-                        TextBox optionsTextBox = new TextBox();
-                        pos.Y += messageOptionsBox.Height + 10;
-                        optionsTextBox.Location = pos;
-
-                        Button addOptionButton = new Button();
-                        pos.X += optionsTextBox.Width + 10;
-                        addOptionButton.Location = pos;
-                        addOptionButton.Text = "Add Option";
-                        addOptionButton.Click += AddMessageOption;
-                        pos.X = 10;
-
-                        ComboBox eventOptionsBox = new ComboBox();
-                        pos.Y += optionsTextBox.Height + 10;
-                        eventOptionsBox.Location = pos;
-                        List<string> options = Genus2D.GameData.MapEventData.GetMapEventsDataNames();
-                        options.Insert(0, "None");
-                        eventOptionsBox.Items.AddRange(options.ToArray());
-                        eventOptionsBox.SelectedIndexChanged += ChangeEventMessageOption;
-
-                        EventCommandDataPanel.Controls.Add(textBox2);
-                        EventCommandDataPanel.Controls.Add(messageOptionsBox);
-                        EventCommandDataPanel.Controls.Add(removeOptionButton);
-                        EventCommandDataPanel.Controls.Add(optionsTextBox);
-                        EventCommandDataPanel.Controls.Add(addOptionButton);
-                        EventCommandDataPanel.Controls.Add(eventOptionsBox);
-
+                        BuildShowOptionsCommand(command);
                         break;
                 }
 
+            }
+        }
+
+        private void BuildWaitTimerCommands(Genus2D.GameData.EventCommand command)
+        {
+            Point pos = new Point(10, 10);
+            NumericUpDown timerControl = new NumericUpDown();
+            timerControl.Location = pos;
+            timerControl.DecimalPlaces = 3;
+            timerControl.Value = (decimal)((float)command.GetParameter("Time"));
+            EventCommandDataPanel.Controls.Add(timerControl);
+        }
+
+        private void BuildTeleportPlayerCommands(Genus2D.GameData.EventCommand command)
+        {
+            Point pos = new Point(10, 10);
+            ComboBox mapSelection = new ComboBox();
+            mapSelection.Location = pos;
+            List<string> maps = Genus2D.GameData.MapInfo.GetMapInfoStrings();
+            mapSelection.Items.AddRange(maps.ToArray());
+            mapSelection.SelectedIndex = (int)command.GetParameter("MapID");
+
+            NumericUpDown mapXControl = new NumericUpDown();
+            pos.Y += mapSelection.Size.Height + 10;
+            mapXControl.Location = pos;
+            mapXControl.Value = (int)command.GetParameter("MapX");
+
+            NumericUpDown mapYControl = new NumericUpDown();
+            pos.Y += mapXControl.Size.Height + 10;
+            mapYControl.Location = pos;
+            mapYControl.Value = (int)command.GetParameter("MapY");
+
+            EventCommandDataPanel.Controls.Add(mapSelection);
+            EventCommandDataPanel.Controls.Add(mapXControl);
+            EventCommandDataPanel.Controls.Add(mapYControl);
+        }
+
+        private void BuildMovePlayerCommands(Genus2D.GameData.EventCommand command)
+        {
+            Point pos = new Point(10, 10);
+            string[] directions = new string[4];
+            for (int i = 0; i < 4; i++)
+            {
+                directions[i] = ((Genus2D.GameData.Direction)i).ToString();
+            }
+
+            ComboBox directionSelection = new ComboBox();
+            directionSelection.Location = pos;
+            directionSelection.Items.AddRange(directions);
+            directionSelection.SelectedIndex = (int)((Genus2D.GameData.Direction)command.GetParameter("Direction"));
+
+            EventCommandDataPanel.Controls.Add(directionSelection);
+        }
+
+        private void BuildChangePlayerDirectionCommands(Genus2D.GameData.EventCommand command)
+        {
+            BuildMovePlayerCommands(command);
+        }
+
+        private void BuildTeleportMapEventCommands(Genus2D.GameData.EventCommand command)
+        {
+            Point pos = new Point(10, 10);
+
+            ComboBox mapSelection = new ComboBox();
+            mapSelection.Location = pos;
+            List<string> maps = Genus2D.GameData.MapInfo.GetMapInfoStrings();
+            mapSelection.Items.AddRange(maps.ToArray());
+            mapSelection.SelectedIndexChanged += ChangeTeleportMapEventMapID;
+
+            pos.Y += mapSelection.Size.Height + 10;
+            ComboBox eventSelection = new ComboBox();
+            eventSelection.Location = pos;
+
+            NumericUpDown mapXControl = new NumericUpDown();
+            pos.Y += mapSelection.Size.Height + 10;
+            mapXControl.Location = pos;
+            mapXControl.Value = (int)command.GetParameter("MapX");
+
+            NumericUpDown mapYControl = new NumericUpDown();
+            pos.Y += mapXControl.Size.Height + 10;
+            mapYControl.Location = pos;
+            mapYControl.Value = (int)command.GetParameter("MapY");
+
+            EventCommandDataPanel.Controls.Add(mapSelection);
+            EventCommandDataPanel.Controls.Add(eventSelection);
+            EventCommandDataPanel.Controls.Add(mapXControl);
+            EventCommandDataPanel.Controls.Add(mapYControl);
+
+            mapSelection.SelectedIndex = (int)command.GetParameter("MapID");
+            eventSelection.SelectedIndex = (int)command.GetParameter("EventID");
+        }
+
+        private void BuildMoveMapEventCommands(Genus2D.GameData.EventCommand command)
+        {
+            Point pos = new Point(10, 10);
+
+            ComboBox mapSelection = new ComboBox();
+            mapSelection.Location = pos;
+            List<string> maps = Genus2D.GameData.MapInfo.GetMapInfoStrings();
+            mapSelection.Items.AddRange(maps.ToArray());
+            mapSelection.SelectedIndexChanged += ChangeTeleportMapEventMapID;
+
+            pos.Y += mapSelection.Size.Height + 10;
+            ComboBox eventSelection = new ComboBox();
+            eventSelection.Location = pos;
+
+            string[] directions = new string[4];
+            for (int i = 0; i < 4; i++)
+            {
+                directions[i] = ((Genus2D.GameData.Direction)i).ToString();
+            }
+
+            pos.Y += mapSelection.Size.Height + 10;
+            ComboBox directionSelection = new ComboBox();
+            directionSelection.Location = pos;
+            directionSelection.Items.AddRange(directions);
+            directionSelection.SelectedIndex = (int)((Genus2D.GameData.Direction)command.GetParameter("Direction"));
+
+            EventCommandDataPanel.Controls.Add(mapSelection);
+            EventCommandDataPanel.Controls.Add(eventSelection);
+            EventCommandDataPanel.Controls.Add(directionSelection);
+
+            mapSelection.SelectedIndex = (int)command.GetParameter("MapID");
+            eventSelection.SelectedIndex = (int)command.GetParameter("EventID");
+        }
+
+        private void BuildChangeMapEventDirectionCommands(Genus2D.GameData.EventCommand command)
+        {
+            BuildMoveMapEventCommands(command);
+        }
+
+        private void BuildShowMessageCommands(Genus2D.GameData.EventCommand command)
+        {
+            Point pos = new Point(10, 10);
+            RichTextBox textBox = new RichTextBox();
+            textBox.Location = pos;
+            textBox.Size = new Size(EventCommandDataPanel.Width - 20, EventCommandDataPanel.Height - 20);
+            textBox.Text = (string)command.GetParameter("Message");
+            EventCommandDataPanel.Controls.Add(textBox);
+        }
+
+        private void BuildShowOptionsCommand(Genus2D.GameData.EventCommand command)
+        {
+            Point pos = new Point(10, 10);
+
+            RichTextBox textBox2 = new RichTextBox();
+            textBox2.Location = pos;
+            textBox2.Size = new Size(EventCommandDataPanel.Width - 20, EventCommandDataPanel.Height - 200);
+            textBox2.Text = (string)command.GetParameter("Message");
+
+            ComboBox messageOptionsBox = new ComboBox();
+            pos.Y += textBox2.Height + 10;
+            messageOptionsBox.Location = pos;
+            List<Genus2D.GameData.MessageOption> messageOptions = (List<Genus2D.GameData.MessageOption>)command.GetParameter("Options");
+            for (int i = 0; i < messageOptions.Count; i++)
+            {
+                messageOptionsBox.Items.Add(messageOptions[i].Option);
+            }
+            messageOptionsBox.SelectedIndexChanged += ChangeMessageOption;
+
+            Button removeOptionButton = new Button();
+            pos.X += messageOptionsBox.Width + 10;
+            removeOptionButton.Location = pos;
+            removeOptionButton.Text = "Remove Option";
+            removeOptionButton.Click += RemoveMessageOption;
+            pos.X = 10;
+
+            TextBox optionsTextBox = new TextBox();
+            pos.Y += messageOptionsBox.Height + 10;
+            optionsTextBox.Location = pos;
+
+            Button addOptionButton = new Button();
+            pos.X += optionsTextBox.Width + 10;
+            addOptionButton.Location = pos;
+            addOptionButton.Text = "Add Option";
+            addOptionButton.Click += AddMessageOption;
+            pos.X = 10;
+
+            ComboBox eventOptionsBox = new ComboBox();
+            pos.Y += optionsTextBox.Height + 10;
+            eventOptionsBox.Location = pos;
+            List<string> options = Genus2D.GameData.MapEventData.GetMapEventsDataNames();
+            options.Insert(0, "None");
+            eventOptionsBox.Items.AddRange(options.ToArray());
+            eventOptionsBox.SelectedIndexChanged += ChangeEventMessageOption;
+
+            EventCommandDataPanel.Controls.Add(textBox2);
+            EventCommandDataPanel.Controls.Add(messageOptionsBox);
+            EventCommandDataPanel.Controls.Add(removeOptionButton);
+            EventCommandDataPanel.Controls.Add(optionsTextBox);
+            EventCommandDataPanel.Controls.Add(addOptionButton);
+            EventCommandDataPanel.Controls.Add(eventOptionsBox);
+        }
+
+        private void ChangeTeleportMapEventMapID(object sender, EventArgs e)
+        {
+            ComboBox mapSelectionBox = (ComboBox)sender;
+            ComboBox eventSelectionBox = (ComboBox)EventCommandDataPanel.Controls[1];
+            eventSelectionBox.Items.Clear();
+            int selection = mapSelectionBox.SelectedIndex;
+            if (selection != -1)
+            {
+                for (int i = 0; i < Genus2D.GameData.MapInfo.GetMapInfo(selection).NumberMapEvents; i++)
+                {
+                    eventSelectionBox.Items.Add("Map Event " + (i + 1).ToString("000"));
+                }
+            }
+        }
+
+        private void ChangeMoveMapEventMapID(object sender, EventArgs e)
+        {
+            ComboBox mapSelectionBox = (ComboBox)sender;
+            ComboBox eventSelectionBox = (ComboBox)EventCommandDataPanel.Controls[1];
+            eventSelectionBox.Items.Clear();
+            int selection = mapSelectionBox.SelectedIndex;
+            if (selection != -1)
+            {
+                for (int i = 0; i < Genus2D.GameData.MapInfo.GetMapInfo(selection).NumberMapEvents; i++)
+                {
+                    eventSelectionBox.Items.Add("Map Event " + (i + 1).ToString("000"));
+                }
             }
         }
 
@@ -504,13 +639,13 @@ namespace RpgEditor
 
                 switch (command.Type)
                 {
-                    case Genus2D.GameData.EventCommand.CommandType.EventWaitTimer:
+                    case Genus2D.GameData.EventCommand.CommandType.WaitTimer:
 
                         NumericUpDown timerControl = (NumericUpDown)EventCommandDataPanel.Controls[0];
                         command.SetParameter("Time", (float)timerControl.Value);
 
                         break;
-                    case Genus2D.GameData.EventCommand.CommandType.MapTransfer:
+                    case Genus2D.GameData.EventCommand.CommandType.TeleportPlayer:
 
                         ComboBox mapSelection = (ComboBox)EventCommandDataPanel.Controls[0];
                         NumericUpDown mapXControl = (NumericUpDown)EventCommandDataPanel.Controls[1];
@@ -532,6 +667,86 @@ namespace RpgEditor
 
                         ComboBox directionSelection = (ComboBox)EventCommandDataPanel.Controls[0];
                         command.SetParameter("Direction", (Genus2D.GameData.Direction)directionSelection.SelectedIndex);
+
+                        break;
+                    case Genus2D.GameData.EventCommand.CommandType.ChangePlayerDirection:
+
+                        ComboBox directionSelection2 = (ComboBox)EventCommandDataPanel.Controls[0];
+                        command.SetParameter("Direction", (Genus2D.GameData.Direction)directionSelection2.SelectedIndex);
+
+                        break;
+                    case Genus2D.GameData.EventCommand.CommandType.TeleportMapEvent:
+
+                        ComboBox mapSelection2 = (ComboBox)EventCommandDataPanel.Controls[0];
+                        if (mapSelection2.SelectedIndex == -1)
+                        {
+                            MessageBox.Show("Select a valid map.");
+                            return;
+                        }
+                        ComboBox eventSelection = (ComboBox)EventCommandDataPanel.Controls[1];
+                        if (eventSelection.SelectedIndex == -1)
+                        {
+                            MessageBox.Show("Select a valid event.");
+                            return;
+                        }
+                        NumericUpDown mapXControl2 = (NumericUpDown)EventCommandDataPanel.Controls[2];
+                        NumericUpDown mapYControl2 = (NumericUpDown)EventCommandDataPanel.Controls[3];
+                        Genus2D.GameData.MapInfo mapInfo2 = Genus2D.GameData.MapInfo.GetMapInfo(mapSelection2.SelectedIndex);
+                        if (mapXControl2.Value < mapInfo2.Width && mapYControl2.Value < mapInfo2.Height)
+                        {
+                            command.SetParameter("MapID", mapSelection2.SelectedIndex);
+                            command.SetParameter("EventID", eventSelection.SelectedIndex);
+                            command.SetParameter("MapX", (int)mapXControl2.Value);
+                            command.SetParameter("MapY", (int)mapYControl2.Value);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Map X or Y coordinate out of map bounds.");
+                        }
+
+                        break;
+                    case Genus2D.GameData.EventCommand.CommandType.MoveMapEvent:
+
+                        ComboBox mapSelection3 = (ComboBox)EventCommandDataPanel.Controls[0];
+                        if (mapSelection3.SelectedIndex == -1)
+                        {
+                            MessageBox.Show("Select a valid map.");
+                            return;
+                        }
+                        ComboBox eventSelection2 = (ComboBox)EventCommandDataPanel.Controls[1];
+                        if (eventSelection2.SelectedIndex == -1)
+                        {
+                            MessageBox.Show("Select a valid event.");
+                            return;
+                        }
+
+                        ComboBox directionSelection3 = (ComboBox)EventCommandDataPanel.Controls[2];
+
+                        command.SetParameter("MapID", mapSelection3.SelectedIndex);
+                        command.SetParameter("EventID", eventSelection2.SelectedIndex);
+                        command.SetParameter("Direction", (Genus2D.GameData.Direction)directionSelection3.SelectedIndex);
+
+                        break;
+                    case Genus2D.GameData.EventCommand.CommandType.ChangeMapEventDirection:
+
+                        ComboBox mapSelection4 = (ComboBox)EventCommandDataPanel.Controls[0];
+                        if (mapSelection4.SelectedIndex == -1)
+                        {
+                            MessageBox.Show("Select a valid map.");
+                            return;
+                        }
+                        ComboBox eventSelection3 = (ComboBox)EventCommandDataPanel.Controls[1];
+                        if (eventSelection3.SelectedIndex == -1)
+                        {
+                            MessageBox.Show("Select a valid event.");
+                            return;
+                        }
+
+                        ComboBox directionSelection4 = (ComboBox)EventCommandDataPanel.Controls[2];
+
+                        command.SetParameter("MapID", mapSelection4.SelectedIndex);
+                        command.SetParameter("EventID", eventSelection3.SelectedIndex);
+                        command.SetParameter("Direction", (Genus2D.GameData.Direction)directionSelection4.SelectedIndex);
 
                         break;
                     case Genus2D.GameData.EventCommand.CommandType.ShowMessage:
@@ -643,7 +858,9 @@ namespace RpgEditor
             }
         }
 
-        //sprite panel
+        #endregion
+
+        #region Sprite Functions
 
         private void AddSpriteButton_Click(object sender, EventArgs e)
         {
@@ -871,5 +1088,8 @@ namespace RpgEditor
             }
             PopulateTilesetSelections();
         }
+
+        #endregion
+
     }
 }

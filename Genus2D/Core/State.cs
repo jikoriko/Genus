@@ -111,7 +111,6 @@ namespace Genus2D.Core
 
         public virtual void OnUpdateFrame(FrameEventArgs e)
         {
-            _entityManager.OrderLayers();
 
             if (_controlToBringToFront != null)
             {

@@ -34,8 +34,8 @@ D:\GameDev\programming\C#\Genus\GenusBuild\GenusTest.pdb
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\GenusTest.exe.config
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\GenusTest.exe
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\GenusTest.pdb
-C:\Users\perry\Documents\GitHub\Genus\GenusTest\obj\Debug\GenusTest.csprojAssemblyReference.cache
 C:\Users\perry\Documents\GitHub\Genus\GenusTest\obj\Debug\GenusTest.csproj.CoreCompileInputs.cache
 C:\Users\perry\Documents\GitHub\Genus\GenusTest\obj\Debug\GenusTest.csproj.CopyComplete
 C:\Users\perry\Documents\GitHub\Genus\GenusTest\obj\Debug\GenusTest.exe
 C:\Users\perry\Documents\GitHub\Genus\GenusTest\obj\Debug\GenusTest.pdb
+C:\Users\perry\Documents\GitHub\Genus\GenusTest\obj\Debug\GenusTest.csprojAssemblyReference.cache
