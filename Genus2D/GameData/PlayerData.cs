@@ -10,41 +10,32 @@ namespace Genus2D.GameData
     public class PlayerData
     {
 
-        [Serializable]
-        public struct CombatStats
-        {
-            public int Strength;
-            public int Defence;
-            public int Accuracy;
-            public int Evasion;
-        }
-
         public int Level;
-        public int Health;
-        public int Mana;
-        public int Stamina;
+        public int MaxHealth, Health;
+        public int MaxStamina, Stamina;
 
-        private List<Tuple<int, int>> _inventory;
+        private int inventorySize = 30; // hardcoded inventory size
+
+        private List<Tuple<int, int>> _inventory; //item id, item count
         private int[] _equipment;
 
         public PlayerData()
         {
             Level = 1;
-            Health = 100;
-            Mana = 100;
-            Stamina = 100;
+            MaxHealth = Health = 100;
+            MaxStamina = Stamina = 100;
 
             _inventory = new List<Tuple<int, int>>();
-            _equipment = new int[(int)EquipmentSlot.Hands + 1];
+            _equipment = new int[(int)EquipmentSlot.Ring + 1];
         }
 
-        public int AddInventoryItem(int id, int count)
+        public int AddInventoryItem(int itemID, int count)
         {
-            if (count < 1 || id < 0) return 0;
+            if (count < 1 || itemID < 0) return 0;
 
-            ItemData data = ItemData.GetItemData(id);
+            ItemData data = ItemData.GetItemData(itemID);
             if (data == null) return 0;
-            int max = data.MaxStack;
+            int max = data.GetMaxStack();
             int added = 0;
 
             if (max > 1)
@@ -53,20 +44,20 @@ namespace Genus2D.GameData
 
                 for (int i = 0; i < _inventory.Count; i++)
                 {
-                    if (_inventory[i].Item1 == id)
+                    if (_inventory[i].Item1 == itemID)
                     {
                         if (_inventory[i].Item2 < max)
                         {
                             int amountCanAdd = max - _inventory[i].Item2;
                             if (amountToAdd <= amountCanAdd)
                             {
-                                _inventory[i] = new Tuple<int, int>(id, _inventory[i].Item2 + amountToAdd);
+                                _inventory[i] = new Tuple<int, int>(itemID, _inventory[i].Item2 + amountToAdd);
                                 added += amountToAdd;
                                 amountToAdd = 0;
                             }
                             else
                             {
-                                _inventory[i] = new Tuple<int, int>(id, _inventory[i].Item2 + amountCanAdd);
+                                _inventory[i] = new Tuple<int, int>(itemID, _inventory[i].Item2 + amountCanAdd);
                                 added += amountCanAdd;
                                 amountToAdd -= amountCanAdd;
                             }
@@ -79,17 +70,17 @@ namespace Genus2D.GameData
 
                 while (amountToAdd > 0)
                 {
-                    if (_inventory.Count < 30) //hardcoded max inv count
+                    if (_inventory.Count < inventorySize)
                     {
                         if (amountToAdd <= max)
                         {
-                            _inventory.Add(new Tuple<int, int>(id, amountToAdd));
+                            _inventory.Add(new Tuple<int, int>(itemID, amountToAdd));
                             added += amountToAdd;
                             break;
                         }
                         else
                         {
-                            _inventory.Add(new Tuple<int, int>(id, max));
+                            _inventory.Add(new Tuple<int, int>(itemID, max));
                             added += max;
                             amountToAdd -= max;
                         }
@@ -106,12 +97,43 @@ namespace Genus2D.GameData
             return added;
         }
 
-        public void EquipItem(EquipmentSlot slot, int id)
+        public bool EquipItem(int itemIndex)
         {
-            _equipment[(int)slot] = id + 1;
+            if (itemIndex >= 0 && itemIndex < _inventory.Count)
+            {
+                ItemData data = ItemData.GetItemData(_inventory[itemIndex].Item1);
+                if (data.Equipable())
+                {
+                    EquipmentSlot slot = (EquipmentSlot)data.GetItemStat("EquipmentSlot").Item2;
+                    if (GetEquipedItemID(slot) == -1)
+                    {
+                        EquipItem(slot, _inventory[itemIndex].Item1);
+                        _inventory.RemoveAt(itemIndex);
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
-        public int GetEquipedItem(EquipmentSlot slot)
+        public bool UnequipItem(EquipmentSlot slot)
+        {
+            if (GetEquipedItemID(slot) != -1)
+            {
+                if (AddInventoryItem(GetEquipedItemID(slot), 1) == 0)
+                {
+                    EquipItem(slot, -1);
+                }
+            }
+            return false;
+        }
+
+        private void EquipItem(EquipmentSlot slot, int itemID)
+        {
+            _equipment[(int)slot] = itemID + 1;
+        }
+
+        public int GetEquipedItemID(EquipmentSlot slot)
         {
             return _equipment[(int)slot] - 1;
         }

@@ -84,6 +84,9 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.panel5 = new System.Windows.Forms.Panel();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.SpriteNameBox = new System.Windows.Forms.TextBox();
+            this.ImportSpriteButton = new System.Windows.Forms.Button();
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
@@ -113,9 +116,23 @@
             this.label6 = new System.Windows.Forms.Label();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.tabPage6 = new System.Windows.Forms.TabPage();
-            this.ImportSpriteButton = new System.Windows.Forms.Button();
-            this.SpriteNameBox = new System.Windows.Forms.TextBox();
-            this.label20 = new System.Windows.Forms.Label();
+            this.ItemListBox = new System.Windows.Forms.ListBox();
+            this.label21 = new System.Windows.Forms.Label();
+            this.RemoveItemButton = new System.Windows.Forms.Button();
+            this.AddItemButton = new System.Windows.Forms.Button();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.ItemNameBox = new System.Windows.Forms.TextBox();
+            this.ItemStatsPanel = new System.Windows.Forms.Panel();
+            this.ApplyItemButton = new System.Windows.Forms.Button();
+            this.label33 = new System.Windows.Forms.Label();
+            this.ItemIconSelection = new System.Windows.Forms.ComboBox();
+            this.label23 = new System.Windows.Forms.Label();
+            this.ItemTypeSelection = new System.Windows.Forms.ComboBox();
+            this.ItemMaxStack = new System.Windows.Forms.NumericUpDown();
+            this.label24 = new System.Windows.Forms.Label();
+            this.ImportIconButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -146,6 +163,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteBoundsWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteAnchorY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteAnchorX)).BeginInit();
+            this.tabPage5.SuspendLayout();
+            this.panel6.SuspendLayout();
+            this.groupBox8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ItemMaxStack)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -408,7 +429,6 @@
             // 
             // ImportTilesetButton
             // 
-            this.ImportTilesetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.ImportTilesetButton.Location = new System.Drawing.Point(62, 73);
             this.ImportTilesetButton.Name = "ImportTilesetButton";
             this.ImportTilesetButton.Size = new System.Drawing.Size(185, 47);
@@ -848,6 +868,32 @@
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Sprite Data";
             // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(34, 41);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(38, 13);
+            this.label20.TabIndex = 26;
+            this.label20.Text = "Name:";
+            // 
+            // SpriteNameBox
+            // 
+            this.SpriteNameBox.Location = new System.Drawing.Point(77, 38);
+            this.SpriteNameBox.Name = "SpriteNameBox";
+            this.SpriteNameBox.Size = new System.Drawing.Size(141, 20);
+            this.SpriteNameBox.TabIndex = 25;
+            // 
+            // ImportSpriteButton
+            // 
+            this.ImportSpriteButton.Location = new System.Drawing.Point(33, 91);
+            this.ImportSpriteButton.Name = "ImportSpriteButton";
+            this.ImportSpriteButton.Size = new System.Drawing.Size(185, 47);
+            this.ImportSpriteButton.TabIndex = 8;
+            this.ImportSpriteButton.Text = "Import Sprite";
+            this.ImportSpriteButton.UseVisualStyleBackColor = true;
+            this.ImportSpriteButton.Click += new System.EventHandler(this.ImportSpriteButton_Click);
+            // 
             // label15
             // 
             this.label15.AutoSize = true;
@@ -1155,48 +1201,217 @@
             // 
             // tabPage5
             // 
+            this.tabPage5.BackColor = System.Drawing.Color.DarkGray;
+            this.tabPage5.Controls.Add(this.panel6);
+            this.tabPage5.Controls.Add(this.RemoveItemButton);
+            this.tabPage5.Controls.Add(this.AddItemButton);
+            this.tabPage5.Controls.Add(this.label21);
+            this.tabPage5.Controls.Add(this.ItemListBox);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Size = new System.Drawing.Size(1152, 711);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Items";
-            this.tabPage5.UseVisualStyleBackColor = true;
             // 
             // tabPage6
             // 
+            this.tabPage6.BackColor = System.Drawing.Color.DarkGray;
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Size = new System.Drawing.Size(1152, 711);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Enemies";
-            this.tabPage6.UseVisualStyleBackColor = true;
             // 
-            // ImportSpriteButton
+            // ItemListBox
             // 
-            this.ImportSpriteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ImportSpriteButton.Location = new System.Drawing.Point(33, 91);
-            this.ImportSpriteButton.Name = "ImportSpriteButton";
-            this.ImportSpriteButton.Size = new System.Drawing.Size(185, 47);
-            this.ImportSpriteButton.TabIndex = 8;
-            this.ImportSpriteButton.Text = "Import Sprite";
-            this.ImportSpriteButton.UseVisualStyleBackColor = true;
-            this.ImportSpriteButton.Click += new System.EventHandler(this.ImportSpriteButton_Click);
+            this.ItemListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.ItemListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ItemListBox.FormattingEnabled = true;
+            this.ItemListBox.ItemHeight = 20;
+            this.ItemListBox.Location = new System.Drawing.Point(7, 27);
+            this.ItemListBox.Name = "ItemListBox";
+            this.ItemListBox.Size = new System.Drawing.Size(185, 564);
+            this.ItemListBox.TabIndex = 5;
+            this.ItemListBox.SelectedIndexChanged += new System.EventHandler(this.ItemListBox_SelectedIndexChanged);
             // 
-            // SpriteNameBox
+            // label21
             // 
-            this.SpriteNameBox.Location = new System.Drawing.Point(77, 38);
-            this.SpriteNameBox.Name = "SpriteNameBox";
-            this.SpriteNameBox.Size = new System.Drawing.Size(141, 20);
-            this.SpriteNameBox.TabIndex = 25;
+            this.label21.AutoSize = true;
+            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label21.Location = new System.Drawing.Point(3, 0);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(59, 24);
+            this.label21.TabIndex = 6;
+            this.label21.Text = "Items";
             // 
-            // label20
+            // RemoveItemButton
             // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(34, 41);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(38, 13);
-            this.label20.TabIndex = 26;
-            this.label20.Text = "Name:";
+            this.RemoveItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveItemButton.Location = new System.Drawing.Point(7, 650);
+            this.RemoveItemButton.Name = "RemoveItemButton";
+            this.RemoveItemButton.Size = new System.Drawing.Size(185, 47);
+            this.RemoveItemButton.TabIndex = 11;
+            this.RemoveItemButton.Text = "Remove Item";
+            this.RemoveItemButton.UseVisualStyleBackColor = true;
+            this.RemoveItemButton.Click += new System.EventHandler(this.RemoveItemButton_Click);
+            // 
+            // AddItemButton
+            // 
+            this.AddItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddItemButton.Location = new System.Drawing.Point(7, 597);
+            this.AddItemButton.Name = "AddItemButton";
+            this.AddItemButton.Size = new System.Drawing.Size(185, 47);
+            this.AddItemButton.TabIndex = 10;
+            this.AddItemButton.Text = "Add Item";
+            this.AddItemButton.UseVisualStyleBackColor = true;
+            this.AddItemButton.Click += new System.EventHandler(this.AddItemButton_Click);
+            // 
+            // panel6
+            // 
+            this.panel6.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel6.BackColor = System.Drawing.Color.Gainsboro;
+            this.panel6.Controls.Add(this.groupBox8);
+            this.panel6.Location = new System.Drawing.Point(198, 27);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(945, 673);
+            this.panel6.TabIndex = 12;
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox8.BackColor = System.Drawing.Color.AliceBlue;
+            this.groupBox8.Controls.Add(this.ImportIconButton);
+            this.groupBox8.Controls.Add(this.label24);
+            this.groupBox8.Controls.Add(this.ItemMaxStack);
+            this.groupBox8.Controls.Add(this.label23);
+            this.groupBox8.Controls.Add(this.ItemTypeSelection);
+            this.groupBox8.Controls.Add(this.label22);
+            this.groupBox8.Controls.Add(this.ItemNameBox);
+            this.groupBox8.Controls.Add(this.ItemStatsPanel);
+            this.groupBox8.Controls.Add(this.ApplyItemButton);
+            this.groupBox8.Controls.Add(this.label33);
+            this.groupBox8.Controls.Add(this.ItemIconSelection);
+            this.groupBox8.Location = new System.Drawing.Point(10, 9);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(926, 655);
+            this.groupBox8.TabIndex = 2;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "Sprite Data";
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(34, 41);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(38, 13);
+            this.label22.TabIndex = 26;
+            this.label22.Text = "Name:";
+            // 
+            // ItemNameBox
+            // 
+            this.ItemNameBox.Location = new System.Drawing.Point(77, 38);
+            this.ItemNameBox.Name = "ItemNameBox";
+            this.ItemNameBox.Size = new System.Drawing.Size(141, 20);
+            this.ItemNameBox.TabIndex = 25;
+            // 
+            // ItemStatsPanel
+            // 
+            this.ItemStatsPanel.BackColor = System.Drawing.Color.Transparent;
+            this.ItemStatsPanel.Location = new System.Drawing.Point(6, 197);
+            this.ItemStatsPanel.Name = "ItemStatsPanel";
+            this.ItemStatsPanel.Size = new System.Drawing.Size(212, 452);
+            this.ItemStatsPanel.TabIndex = 9;
+            // 
+            // ApplyItemButton
+            // 
+            this.ApplyItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ApplyItemButton.Location = new System.Drawing.Point(798, 602);
+            this.ApplyItemButton.Name = "ApplyItemButton";
+            this.ApplyItemButton.Size = new System.Drawing.Size(122, 47);
+            this.ApplyItemButton.TabIndex = 4;
+            this.ApplyItemButton.Text = "Save Changes";
+            this.ApplyItemButton.UseVisualStyleBackColor = true;
+            this.ApplyItemButton.Click += new System.EventHandler(this.ApplyItemButton_Click);
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(41, 67);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(31, 13);
+            this.label33.TabIndex = 2;
+            this.label33.Text = "Icon:";
+            // 
+            // ItemIconSelection
+            // 
+            this.ItemIconSelection.FormattingEnabled = true;
+            this.ItemIconSelection.Location = new System.Drawing.Point(77, 64);
+            this.ItemIconSelection.Name = "ItemIconSelection";
+            this.ItemIconSelection.Size = new System.Drawing.Size(141, 21);
+            this.ItemIconSelection.TabIndex = 1;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(15, 147);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(57, 13);
+            this.label23.TabIndex = 28;
+            this.label23.Text = "Item Type:";
+            // 
+            // ItemTypeSelection
+            // 
+            this.ItemTypeSelection.FormattingEnabled = true;
+            this.ItemTypeSelection.Items.AddRange(new object[] {
+            "Tool",
+            "Consumble",
+            "Material",
+            "Equipment"});
+            this.ItemTypeSelection.Location = new System.Drawing.Point(77, 144);
+            this.ItemTypeSelection.Name = "ItemTypeSelection";
+            this.ItemTypeSelection.Size = new System.Drawing.Size(141, 21);
+            this.ItemTypeSelection.TabIndex = 27;
+            // 
+            // ItemMaxStack
+            // 
+            this.ItemMaxStack.Location = new System.Drawing.Point(77, 171);
+            this.ItemMaxStack.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.ItemMaxStack.Name = "ItemMaxStack";
+            this.ItemMaxStack.Size = new System.Drawing.Size(141, 20);
+            this.ItemMaxStack.TabIndex = 29;
+            this.ItemMaxStack.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(10, 173);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(61, 13);
+            this.label24.TabIndex = 30;
+            this.label24.Text = "Max Stack:";
+            // 
+            // ImportIconButton
+            // 
+            this.ImportIconButton.Location = new System.Drawing.Point(33, 91);
+            this.ImportIconButton.Name = "ImportIconButton";
+            this.ImportIconButton.Size = new System.Drawing.Size(185, 47);
+            this.ImportIconButton.TabIndex = 31;
+            this.ImportIconButton.Text = "Import Icon";
+            this.ImportIconButton.UseVisualStyleBackColor = true;
+            this.ImportIconButton.Click += new System.EventHandler(this.ImportIconButton_Click);
             // 
             // EditorForm
             // 
@@ -1241,6 +1456,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteBoundsWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteAnchorY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteAnchorX)).EndInit();
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
+            this.panel6.ResumeLayout(false);
+            this.groupBox8.ResumeLayout(false);
+            this.groupBox8.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ItemMaxStack)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1337,6 +1558,23 @@
         private System.Windows.Forms.Button ImportSpriteButton;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.TextBox SpriteNameBox;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.GroupBox groupBox8;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.TextBox ItemNameBox;
+        private System.Windows.Forms.Panel ItemStatsPanel;
+        private System.Windows.Forms.Button ApplyItemButton;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.ComboBox ItemIconSelection;
+        private System.Windows.Forms.Button RemoveItemButton;
+        private System.Windows.Forms.Button AddItemButton;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.ListBox ItemListBox;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.ComboBox ItemTypeSelection;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.NumericUpDown ItemMaxStack;
+        private System.Windows.Forms.Button ImportIconButton;
     }
 }
 

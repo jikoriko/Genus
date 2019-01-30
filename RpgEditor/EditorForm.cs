@@ -56,11 +56,18 @@ namespace RpgEditor
             PencilButton.Checked = true;
             PassabilitiesButton.Checked = true;
 
+            InitializeDataPanels();
+        }
+
+        private void InitializeDataPanels()
+        {
             PopulateTilesetsList();
             PopulateTilesetSelections();
             PopulateEventsList();
             PopulateSpritesList();
             PopulateSpriteSelections();
+            PopulateItemList();
+            PopulateItemIconSelections();
         }
 
         #region Map Functions
@@ -144,13 +151,12 @@ namespace RpgEditor
             if (Directory.Exists("Assets/Textures/Tilesets"))
             {
                 int selection = TilesetSelectionBox.SelectedIndex;
+                TilesetSelectionBox.Items.Clear();
                 string[] files = Directory.GetFiles("Assets/Textures/Tilesets", "*.png");
                 for (int i = 0; i < files.Length; i++)
                 {
-                    files[i] = Path.GetFileName(files[i]);
+                    TilesetSelectionBox.Items.Add(Path.GetFileName(files[i]));
                 }
-                TilesetSelectionBox.Items.Clear();
-                TilesetSelectionBox.Items.AddRange(files);
                 TilesetSelectionBox.SelectedIndex = selection;
             }
         }
@@ -949,6 +955,7 @@ namespace RpgEditor
 
         private void PopulateSpriteSelections()
         {
+            int selection = SpriteSelectionBox.SelectedIndex;
             SpriteSelectionBox.Items.Clear();
             if (Directory.Exists("Assets/Textures/Sprites"))
             {
@@ -959,6 +966,7 @@ namespace RpgEditor
                 }
                 SpriteSelectionBox.Items.AddRange(files);
             }
+            SpriteSelectionBox.SelectedIndex = selection;
         }
 
         private void SpritesList_SelectedIndexChanged(object sender, EventArgs e)
@@ -1086,7 +1094,229 @@ namespace RpgEditor
                 string targetPath = "Assets/Textures/Sprites/" + Path.GetFileName(sourcePath);
                 File.Copy(sourcePath, targetPath, true);
             }
-            PopulateTilesetSelections();
+            PopulateSpriteSelections();
+        }
+
+        #endregion
+
+        #region Item Functions
+
+        private void PopulateItemList()
+        {
+            int selection = ItemListBox.SelectedIndex;
+            ItemListBox.Items.Clear();
+            for (int i = 0; i < Genus2D.GameData.ItemData.GetItemDataCount(); i++)
+            {
+                ItemListBox.Items.Add(Genus2D.GameData.ItemData.GetItemData(i).Name);
+            }
+            if (selection < ItemListBox.Items.Count)
+                ItemListBox.SelectedIndex = selection;
+
+        }
+
+        private void PopulateItemIconSelections()
+        {
+            ItemIconSelection.Items.Clear();
+            if (Directory.Exists("Assets/Textures/Icons"))
+            {
+                string[] files = Directory.GetFiles("Assets/Textures/Icons", "*.png");
+                for (int i = 0; i < files.Length; i++)
+                {
+                    files[i] = Path.GetFileName(files[i]);
+                }
+                ItemIconSelection.Items.AddRange(files);
+            }
+        }
+
+        private void AddItemButton_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.ItemData data = new Genus2D.GameData.ItemData("Item " + (ItemListBox.Items.Count + 1).ToString("000"));
+            Genus2D.GameData.ItemData.AddItemData(data);
+            PopulateItemList();
+        }
+
+        private void RemoveItemButton_Click(object sender, EventArgs e)
+        {
+            int selection = ItemListBox.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.ItemData.RemoveItemData(selection);
+                PopulateItemList();
+            }
+        }
+
+        private void ItemListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int selection = ItemListBox.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.ItemData data = Genus2D.GameData.ItemData.GetItemData(selection);
+                ItemNameBox.Text = data.Name;
+                ItemIconSelection.Text = data.IconImage;
+                ItemTypeSelection.SelectedIndex = (int)data.GetItemType();
+                ItemMaxStack.Value = data.GetMaxStack();
+            }
+            else
+            {
+                ItemNameBox.Text = "";
+                ItemIconSelection.SelectedIndex = -1;
+                ItemTypeSelection.SelectedIndex = 0;
+                ItemMaxStack.Value = 1;
+            }
+            PopulateItemStatPanel();
+        }
+
+        private void PopulateItemStatPanel()
+        {
+            int selection = ItemListBox.SelectedIndex;
+            ItemStatsPanel.Controls.Clear();
+            if (selection != -1)
+            {
+                Genus2D.GameData.ItemData data = Genus2D.GameData.ItemData.GetItemData(selection);
+                switch (data.GetItemType())
+                {
+                    case Genus2D.GameData.ItemData.ItemType.Tool:
+
+                        ComboBox toolSelection = new ComboBox();
+                        toolSelection.Location = new Point(10, 10);
+
+                        for (int i = 0; i < 3; i++)
+                        {
+                            Genus2D.GameData.ToolType toolType = (Genus2D.GameData.ToolType)i;
+                            toolSelection.Items.Add(toolType.ToString());
+                        }
+                        toolSelection.SelectedIndex = (int)data.GetItemStat("ToolType").Item2;
+
+                        ItemStatsPanel.Controls.Add(toolSelection);
+
+                        break;
+                    case Genus2D.GameData.ItemData.ItemType.Consumable:
+
+                        NumericUpDown hpControl = new NumericUpDown();
+                        hpControl.Location = new Point(10, 10);
+                        hpControl.Value = (int)data.GetItemStat("HP").Item2;
+
+                        NumericUpDown staminaControl = new NumericUpDown();
+                        staminaControl.Location = new Point(10, 20 + hpControl.Size.Height);
+                        staminaControl.Value = (int)data.GetItemStat("Stamina").Item2;
+
+                        ItemStatsPanel.Controls.Add(hpControl);
+                        ItemStatsPanel.Controls.Add(staminaControl);
+
+                        break;
+                    case Genus2D.GameData.ItemData.ItemType.Material:
+
+                        NumericUpDown matIdControl = new NumericUpDown();
+                        matIdControl.Location = new Point(10, 10);
+                        matIdControl.Value = (int)data.GetItemStat("MaterialID").Item2;
+
+                        ItemStatsPanel.Controls.Add(matIdControl);
+
+                        break;
+                    case Genus2D.GameData.ItemData.ItemType.Equipment:
+
+                        ComboBox equipmentSlotSelection = new ComboBox();
+                        equipmentSlotSelection.Location = new Point(10, 10);
+
+                        for (int i = 0; i < 9; i++)
+                        {
+                            Genus2D.GameData.EquipmentSlot slot = (Genus2D.GameData.EquipmentSlot)i;
+                            equipmentSlotSelection.Items.Add(slot.ToString());
+                        }
+                        equipmentSlotSelection.SelectedIndex = (int)data.GetItemStat("EquipmentSlot").Item2;
+
+                        int y = 20 + equipmentSlotSelection.Size.Height;
+                        NumericUpDown atkStrengthControl = new NumericUpDown();
+                        atkStrengthControl.Location = new Point(10, y);
+                        atkStrengthControl.Value = (int)data.GetItemStat("AttackStrength").Item2;
+
+                        y += atkStrengthControl.Size.Height + 10;
+                        NumericUpDown defenceControl = new NumericUpDown();
+                        defenceControl.Location = new Point(10, y);
+                        defenceControl.Value = (int)data.GetItemStat("Defence").Item2;
+
+                        ItemStatsPanel.Controls.Add(equipmentSlotSelection);
+                        ItemStatsPanel.Controls.Add(atkStrengthControl);
+                        ItemStatsPanel.Controls.Add(defenceControl);
+
+                        break;
+                }
+            }
+        }
+
+        private void ImportIconButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "PNG files | *.png; *.PNG;";
+            DialogResult result = dialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                if (!Directory.Exists("Assets/Textures/Icons"))
+                    Directory.CreateDirectory("Assets/Textures/Icons");
+                string sourcePath = dialog.FileName;
+                string targetPath = "Assets/Textures/Icons/" + Path.GetFileName(sourcePath);
+                File.Copy(sourcePath, targetPath, true);
+            }
+            PopulateItemIconSelections();
+        }
+
+        private void ApplyItemButton_Click(object sender, EventArgs e)
+        {
+            int selection = ItemListBox.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.ItemData data = Genus2D.GameData.ItemData.GetItemData(selection);
+                data.Name = ItemNameBox.Text;
+                data.IconImage = ItemIconSelection.SelectedText;
+                int prevItemType = (int)data.GetItemType();
+                data.SetItemType((Genus2D.GameData.ItemData.ItemType)ItemTypeSelection.SelectedIndex);
+                data.SetMaxStack((int)ItemMaxStack.Value);
+
+                if (prevItemType == ItemTypeSelection.SelectedIndex)
+                {
+                    switch (data.GetItemType())
+                    {
+                        case Genus2D.GameData.ItemData.ItemType.Tool:
+
+                            ComboBox toolSelection = (ComboBox)ItemStatsPanel.Controls[0];
+                            data.SetItemStat("ToolType", toolSelection.SelectedIndex);
+
+                            break;
+                        case Genus2D.GameData.ItemData.ItemType.Consumable:
+
+                            NumericUpDown hpControl = (NumericUpDown)ItemStatsPanel.Controls[0];
+                            NumericUpDown staminaControl = (NumericUpDown)ItemStatsPanel.Controls[1];
+                            data.SetItemStat("HP", (int)hpControl.Value);
+                            data.SetItemStat("Stamina", (int)staminaControl.Value);
+
+                            break;
+                        case Genus2D.GameData.ItemData.ItemType.Material:
+
+                            NumericUpDown matIdControl = (NumericUpDown)ItemStatsPanel.Controls[0];
+                            data.SetItemStat("MaterialID", (int)matIdControl.Value);
+
+                            break;
+                        case Genus2D.GameData.ItemData.ItemType.Equipment:
+
+                            ComboBox equipmentSlotSelection = (ComboBox)ItemStatsPanel.Controls[0];
+                            NumericUpDown atkStrengthControl = (NumericUpDown)ItemStatsPanel.Controls[1];
+                            NumericUpDown defenceControl = (NumericUpDown)ItemStatsPanel.Controls[2];
+                            data.SetItemStat("EquipmentSlot", equipmentSlotSelection.SelectedIndex);
+                            data.SetItemStat("AttackStrength", (int)atkStrengthControl.Value);
+                            data.SetItemStat("Defence", (int)defenceControl.Value);
+
+                            break;
+                    }
+                }
+                else
+                {
+                    PopulateItemStatPanel();
+                }
+
+                PopulateItemList();
+                Genus2D.GameData.ItemData.SaveItemData();
+
+            }
         }
 
         #endregion

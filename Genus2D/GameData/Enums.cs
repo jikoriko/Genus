@@ -18,11 +18,31 @@ namespace Genus2D.GameData
     [Serializable]
     public enum EquipmentSlot
     {
+        Weapon,
+        Shield,
         Head,
         Body,
         Legs,
         Feet,
-        Hands
+        Necklace,
+        Bracelet,
+        Ring
+    }
+
+    [Serializable]
+    public enum ToolType
+    {
+        Axe,
+        Pickaxe,
+        Shovel
+    }
+
+    [Serializable]
+    public enum ItemStatType
+    {
+        Integer,
+        ToolType,
+        EquipmentSlot
     }
 
 

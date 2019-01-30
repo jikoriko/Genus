@@ -18,41 +18,23 @@ namespace Genus2D.GameData
             Tool,
             Consumable,
             Material,
-            Weapon,
-            Armour,
-            Accessory,
-            Quest
+            Equipment
         }
 
-        private ItemType _itemType;
         public string Name;
-        public int MaxStack;
-        private Dictionary<string, int> _itemStats;
+        public string IconImage;
+        private ItemType _itemType;
+        private int _maxStack;
+        private Dictionary<string, Tuple<ItemStatType, object>> _itemStats;
 
-        public ItemData(ItemType type)
+        public ItemData(string name)
         {
-            _itemType = type;
-            Name = "";
-            MaxStack = 1;
-            _itemStats = new Dictionary<string, int>();
-        }
-
-        public int GetItemStat(string name)
-        {
-            return _itemStats[name];
-        }
-
-        public void SetItemStat(string name, int value)
-        {
-            _itemStats[name] = value;
-        }
-
-        public void RemoveItemStat(int index)
-        {
-            if (index < _itemStats.Count && index >= 0)
-            {
-                //_itemStats.RemoveAt(index);
-            }
+            Name = name;
+            IconImage = "";
+            _itemType = ItemType.Tool;
+            _maxStack = 1;
+            _itemStats = new Dictionary<string, Tuple<ItemStatType, object>>();
+            PopulateItemStats();
         }
 
         public ItemType GetItemType()
@@ -62,12 +44,67 @@ namespace Genus2D.GameData
 
         public void SetItemType(ItemType type)
         {
-            _itemType = type;
+            if (_itemType != type)
+            {
+                _itemType = type;
+                if (_itemType != ItemType.Consumable || _itemType != ItemType.Material)
+                    _maxStack = 1;
+
+                PopulateItemStats();
+            }
+
+        }
+
+        private void PopulateItemStats()
+        {
+            _itemStats.Clear();
+            switch(_itemType)
+            {
+                case ItemType.Tool:
+                    _itemStats.Add("ToolType", Tuple.Create(ItemStatType.ToolType, (object)ToolType.Axe));
+                    break;
+                case ItemType.Consumable:
+                    _itemStats.Add("HP", Tuple.Create(ItemStatType.Integer, (object)0));
+                    _itemStats.Add("Stamina", Tuple.Create(ItemStatType.Integer, (object)0));
+                    break;
+                case ItemType.Material:
+                    _itemStats.Add("MaterialID", Tuple.Create(ItemStatType.Integer, (object)0));
+                    break;
+                case ItemType.Equipment:
+                    _itemStats.Add("EquipmentSlot", Tuple.Create(ItemStatType.Integer, (object)EquipmentSlot.Weapon));
+                    _itemStats.Add("AttackStrength", Tuple.Create(ItemStatType.Integer, (object)0));
+                    _itemStats.Add("Defence", Tuple.Create(ItemStatType.Integer, (object)0));
+                    break;
+            }
         }
 
         public bool Equipable()
         {
-            return _itemType == ItemType.Weapon || _itemType == ItemType.Armour || _itemType == ItemType.Accessory;
+            return _itemType == ItemType.Equipment;
+        }
+
+        public int GetMaxStack()
+        {
+            return _maxStack;
+        }
+
+        public void SetMaxStack(int max)
+        {
+            if (_itemType == ItemType.Consumable || _itemType == ItemType.Material)
+                _maxStack = max;
+        }
+
+        public Tuple<ItemStatType, object> GetItemStat(string name)
+        {
+            if (_itemStats.ContainsKey(name))
+                return _itemStats[name];
+            return null;
+        }
+
+        public void SetItemStat(string name, object value)
+        {
+            if (_itemStats.ContainsKey(name))
+                _itemStats[name] = Tuple.Create(_itemStats[name].Item1, value);
         }
 
 
@@ -83,7 +120,7 @@ namespace Genus2D.GameData
 
         public static void RemoveItemData(int index)
         {
-            if (index < _itemData.Count && _itemData.Count > 0)
+            if (index >= 0 && index < _itemData.Count)
             {
                 _itemData.RemoveAt(index);
             }
@@ -91,7 +128,7 @@ namespace Genus2D.GameData
 
         public static ItemData GetItemData(int index)
         {
-            if (index < _itemData.Count && _itemData.Count > 0)
+            if (index >= 0 && index < _itemData.Count)
             {
                 return _itemData[index];
             }
@@ -122,7 +159,7 @@ namespace Genus2D.GameData
             return data;
         }
 
-        private static void SaveItemData()
+        public static void SaveItemData ()
         {
             if (!Directory.Exists("Data"))
                 Directory.CreateDirectory("Data");
