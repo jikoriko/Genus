@@ -300,7 +300,8 @@ namespace RpgServer
             {
                 PlayerPacket packet = packets[i];
 
-                bytes = packet.GetBytes();
+                bool isLocalPlayer = packet.PlayerID == _playerPacket.PlayerID;
+                bytes = packet.GetBytes(isLocalPlayer);
                 byte[] sizeBytes = BitConverter.GetBytes(bytes.Length);
                 _stream.Write(sizeBytes, 0, sizeof(int));
                 _stream.Flush();

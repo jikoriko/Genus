@@ -156,8 +156,9 @@ namespace Genus2D.Networking
         public float RealX;
         public float RealY;
         public float MovementSpeed;
+        public PlayerData Data;
 
-        public byte[] GetBytes()
+        public byte[] GetBytes(bool isLocalPlayer)
         {
             using (MemoryStream stream = new MemoryStream())
             {
@@ -172,6 +173,10 @@ namespace Genus2D.Networking
                 stream.Write(BitConverter.GetBytes(RealX), 0, sizeof(float));
                 stream.Write(BitConverter.GetBytes(RealY), 0, sizeof(float));
                 stream.Write(BitConverter.GetBytes(MovementSpeed), 0, sizeof(float));
+
+                byte[] dataBytes = Data.GetBytes(isLocalPlayer);
+                stream.Write(BitConverter.GetBytes(dataBytes.Length), 0, sizeof(int));
+                stream.Write(dataBytes, 0, dataBytes.Length);
 
                 return stream.ToArray();
             }
@@ -215,6 +220,15 @@ namespace Genus2D.Networking
                 stream.Read(tempBytes, 0, sizeof(float));
                 float movementSpeed = BitConverter.ToSingle(tempBytes, 0);
 
+                tempBytes = new byte[sizeof(int)];
+                stream.Read(tempBytes, 0, sizeof(int));
+                int dataSize = BitConverter.ToInt32(tempBytes, 0);
+
+                tempBytes = new byte[dataSize];
+                stream.Read(tempBytes, 0, dataSize);
+
+                PlayerData data = PlayerData.FromBytes(tempBytes);
+
                 PlayerPacket packet = new PlayerPacket();
                 packet.Username = username;
                 packet.PlayerID = playerID;
@@ -226,6 +240,7 @@ namespace Genus2D.Networking
                 packet.RealX = realX;
                 packet.RealY = realY;
                 packet.MovementSpeed = movementSpeed;
+                packet.Data = data;
                 return packet;
             }
         }

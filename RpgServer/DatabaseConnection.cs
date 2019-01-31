@@ -223,6 +223,8 @@ namespace RpgServer
                     packet.PositionY = rdr.GetInt32(6);
                     packet.RealX = packet.PositionX * 32;
                     packet.RealY = packet.PositionY * 32;
+
+                    packet.Data = new PlayerData();
                 }
 
                 rdr.Close();

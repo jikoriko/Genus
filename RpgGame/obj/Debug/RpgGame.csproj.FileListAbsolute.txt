@@ -57,4 +57,3 @@ C:\Users\perry\Documents\GitHub\Genus\RpgGame\obj\Debug\RpgGame.csproj.CoreCompi
 C:\Users\perry\Documents\GitHub\Genus\RpgGame\obj\Debug\RpgGame.csproj.CopyComplete
 C:\Users\perry\Documents\GitHub\Genus\RpgGame\obj\Debug\RpgGame.exe
 C:\Users\perry\Documents\GitHub\Genus\RpgGame\obj\Debug\RpgGame.pdb
-C:\Users\perry\Documents\GitHub\Genus\RpgGame\obj\Debug\RpgGame.csprojAssemblyReference.cache
