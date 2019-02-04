@@ -257,23 +257,16 @@ namespace Genus2D.Graphics
 
         public int GetTextHeight(string text)
         {
-            int height = 0;
-            int lineHeight = 0;
+            int height = _lineHeight;
 
             for (int i = 0; i < text.Length; i++)
             {
                 int c = text[i];
                 if (c == '\n')
                 {
-                    height += lineHeight;
-                    lineHeight = 0;
-                }
-                else if (_fontGlyphs[c].RealHeight > 0)
-                {
-                    lineHeight = _lineHeight;
+                    height += _lineHeight;
                 }
             }
-            height += lineHeight;
 
             return height;
         }

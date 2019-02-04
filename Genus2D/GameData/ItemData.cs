@@ -159,6 +159,11 @@ namespace Genus2D.GameData
             return data;
         }
 
+        public static void ReloadData()
+        {
+            _itemData = LoadItemData();
+        }
+
         public static void SaveItemData ()
         {
             if (!Directory.Exists("Data"))

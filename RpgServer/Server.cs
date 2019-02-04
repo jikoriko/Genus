@@ -27,6 +27,7 @@ namespace RpgServer
         private double _deltaTime;
 
         private Dictionary<int, MapInstance> _mapInstances;
+        private List<GameClient> _gameClients;
 
         private XmlDocument _settingsXml;
 
@@ -36,9 +37,22 @@ namespace RpgServer
 
             _running = false;
             _mapInstances = new Dictionary<int, MapInstance>();
+            _gameClients = new List<GameClient>();
+
             _deltaTime = 0.0;
             ticks = DateTime.Now.Ticks;
             prevTicks = ticks;
+        }
+
+        public void AddGameClient(GameClient client)
+        {
+            if (!_gameClients.Contains(client))
+                _gameClients.Add(client);
+        }
+
+        public void RemoveGameClient(GameClient client)
+        {
+            _gameClients.Remove(client);
         }
 
         public void Start()
@@ -157,6 +171,14 @@ namespace RpgServer
                     MapInstance map = _mapInstances.ElementAt(i).Value;
                     map.Update((float)_deltaTime);
                 }
+            }
+        }
+
+        public void SendMessage(MessagePacket message)
+        {
+            for (int i = 0; i < _gameClients.Count; i++)
+            {
+                _gameClients[i].RecieveMessage(message);
             }
         }
 

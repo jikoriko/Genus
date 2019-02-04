@@ -20,7 +20,7 @@ namespace RpgEditor
 
             _mapEvent = mapEvent;
 
-            List<string> events = Genus2D.GameData.MapEventData.GetMapEventsDataNames();
+            List<string> events = Genus2D.GameData.EventData.GetEventsDataNames();
             EventSelection.Items.AddRange(events.ToArray());
             EventSelection.SelectedIndex = _mapEvent.EventID;
 

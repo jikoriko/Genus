@@ -129,7 +129,6 @@ namespace Genus2D.GameData
         public static void AddTileset(string name)
         {
             _tilesets.Add(new Tileset(name));
-            SaveData();
         }
 
         public static void AddTileset(Tileset tileset)
@@ -137,7 +136,6 @@ namespace Genus2D.GameData
             if (tileset != null)
             {
                 _tilesets.Add(tileset);
-                SaveData();
             }
         }
 
@@ -146,7 +144,6 @@ namespace Genus2D.GameData
             if (index >= 0 && index < _tilesets.Count)
             {
                 _tilesets.RemoveAt(index);
-                SaveData();
             }
         }
 
@@ -160,7 +157,12 @@ namespace Genus2D.GameData
             return names;
         }
 
-        public static List<Tileset> LoadData()
+        public static void ReloadData()
+        {
+            _tilesets = LoadData();
+        }
+
+        private static List<Tileset> LoadData()
         {
             List<Tileset> tilesets;
             if (File.Exists("Data/TilesetData.data"))

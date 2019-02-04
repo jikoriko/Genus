@@ -142,8 +142,11 @@ namespace RpgEditor
         private void PopulateTilesetsList()
         {
             List<string> tilesets = Genus2D.GameData.TilesetData.GetTilesetNames();
+            int index = TilesetsList.SelectedIndex;
             TilesetsList.Items.Clear();
             TilesetsList.Items.AddRange(tilesets.ToArray());
+            if (index < TilesetsList.Items.Count)
+                TilesetsList.SelectedIndex = index;
         }
 
         private void PopulateTilesetSelections()
@@ -217,13 +220,11 @@ namespace RpgEditor
             Genus2D.GameData.TilesetData.Tileset tileset = GetSelectedTileset();
             if (tileset != null)
             {
-                int index = TilesetsList.SelectedIndex;
                 tileset.Name = TilesetNameBox.Text;
                 tileset.SetImagePath(TilesetSelectionBox.Text);
-                Genus2D.GameData.TilesetData.SaveData();
                 PopulateTilesetsList();
-                TilesetsList.SelectedIndex = index;
             }
+            Genus2D.GameData.TilesetData.SaveData();
         }
 
         public Genus2D.GameData.TilesetData.Tileset GetSelectedTileset()
@@ -243,6 +244,12 @@ namespace RpgEditor
         private void ApplyTilesetButton_Click(object sender, EventArgs e)
         {
             ApplyTilesetDataChange();
+        }
+
+        private void UndoTilesetButton_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.TilesetData.ReloadData();
+            PopulateTilesetsList();
         }
 
         private void PassabilitiesButton_CheckedChanged(object sender, EventArgs e)
@@ -268,6 +275,7 @@ namespace RpgEditor
             {
                 Genus2D.GameData.TilesetData.RemoveTileset(TilesetsList.SelectedIndex);
                 this.PopulateTilesetsList();
+                TilesetsList.SelectedIndex = -1;
                 ChangeTileset();
             }
         }
@@ -280,7 +288,7 @@ namespace RpgEditor
         {
             int selection = EventsList.SelectedIndex;
             EventsList.Items.Clear();
-            List<string> events = Genus2D.GameData.MapEventData.GetMapEventsDataNames();
+            List<string> events = Genus2D.GameData.EventData.GetEventsDataNames();
             EventsList.Items.AddRange(events.ToArray());
             if (selection < events.Count)
                 EventsList.SelectedIndex = selection;
@@ -293,7 +301,7 @@ namespace RpgEditor
             EventCommandsList.Items.Clear();
             if (selection != -1)
             {
-                Genus2D.GameData.MapEventData eventData = Genus2D.GameData.MapEventData.GetMapEventData(selection);
+                Genus2D.GameData.EventData eventData = Genus2D.GameData.EventData.GetEventData(selection);
                 EventCommandsList.Items.AddRange(eventData.GetEventCommandStrings().ToArray());
                 if (commandListIndex < EventCommandsList.Items.Count)
                     EventCommandsList.SelectedIndex = commandListIndex;
@@ -306,7 +314,7 @@ namespace RpgEditor
             EventCommandDataPanel.Controls.Clear();
             if (selection != -1)
             {
-                Genus2D.GameData.MapEventData data = Genus2D.GameData.MapEventData.GetMapEventData(EventsList.SelectedIndex);
+                Genus2D.GameData.EventData data = Genus2D.GameData.EventData.GetEventData(EventsList.SelectedIndex);
                 Genus2D.GameData.EventCommand command = data.EventCommands[selection];
 
                 switch (command.Type)
@@ -521,7 +529,7 @@ namespace RpgEditor
             ComboBox eventOptionsBox = new ComboBox();
             pos.Y += optionsTextBox.Height + 10;
             eventOptionsBox.Location = pos;
-            List<string> options = Genus2D.GameData.MapEventData.GetMapEventsDataNames();
+            List<string> options = Genus2D.GameData.EventData.GetEventsDataNames();
             options.Insert(0, "None");
             eventOptionsBox.Items.AddRange(options.ToArray());
             eventOptionsBox.SelectedIndexChanged += ChangeEventMessageOption;
@@ -569,7 +577,7 @@ namespace RpgEditor
             ComboBox messageOptionsBox = (ComboBox)sender;
             if (messageOptionsBox.SelectedIndex != -1)
             {
-                Genus2D.GameData.MapEventData data = Genus2D.GameData.MapEventData.GetMapEventData(EventsList.SelectedIndex);
+                Genus2D.GameData.EventData data = Genus2D.GameData.EventData.GetEventData(EventsList.SelectedIndex);
                 Genus2D.GameData.EventCommand command = data.EventCommands[EventCommandsList.SelectedIndex];
                 List<Genus2D.GameData.MessageOption> messageOptions = (List<Genus2D.GameData.MessageOption>)command.GetParameter("Options");
                 ((ComboBox)EventCommandDataPanel.Controls[5]).SelectedIndex = messageOptions[messageOptionsBox.SelectedIndex].OptionEventID + 1;
@@ -586,7 +594,7 @@ namespace RpgEditor
             if (messageOptionsBox.SelectedIndex != -1)
             {
                 ComboBox eventOptionsBox = (ComboBox)sender;
-                Genus2D.GameData.MapEventData data = Genus2D.GameData.MapEventData.GetMapEventData(EventsList.SelectedIndex);
+                Genus2D.GameData.EventData data = Genus2D.GameData.EventData.GetEventData(EventsList.SelectedIndex);
                 Genus2D.GameData.EventCommand command = data.EventCommands[EventCommandsList.SelectedIndex];
                 List<Genus2D.GameData.MessageOption> messageOptions = (List<Genus2D.GameData.MessageOption>)command.GetParameter("Options");
                 messageOptions[messageOptionsBox.SelectedIndex].OptionEventID = eventOptionsBox.SelectedIndex - 1;
@@ -598,7 +606,7 @@ namespace RpgEditor
             TextBox textBox = (TextBox)EventCommandDataPanel.Controls[3];
             if (textBox.Text != "")
             {
-                Genus2D.GameData.MapEventData data = Genus2D.GameData.MapEventData.GetMapEventData(EventsList.SelectedIndex);
+                Genus2D.GameData.EventData data = Genus2D.GameData.EventData.GetEventData(EventsList.SelectedIndex);
                 Genus2D.GameData.EventCommand command = data.EventCommands[EventCommandsList.SelectedIndex];
                 List<Genus2D.GameData.MessageOption> messageOptions = (List<Genus2D.GameData.MessageOption>)command.GetParameter("Options");
                 for (int i = 0; i < messageOptions.Count; i++)
@@ -624,7 +632,7 @@ namespace RpgEditor
             ComboBox optionsBox = (ComboBox)EventCommandDataPanel.Controls[1];
             if (optionsBox.SelectedIndex != -1)
             {
-                Genus2D.GameData.MapEventData data = Genus2D.GameData.MapEventData.GetMapEventData(EventsList.SelectedIndex);
+                Genus2D.GameData.EventData data = Genus2D.GameData.EventData.GetEventData(EventsList.SelectedIndex);
                 Genus2D.GameData.EventCommand command = data.EventCommands[EventCommandsList.SelectedIndex];
                 List<Genus2D.GameData.MessageOption> messageOptions = (List<Genus2D.GameData.MessageOption>)command.GetParameter("Options");
                 messageOptions.RemoveAt(optionsBox.SelectedIndex);
@@ -640,7 +648,7 @@ namespace RpgEditor
             int selection = EventCommandsList.SelectedIndex;
             if (selection != -1)
             {
-                Genus2D.GameData.MapEventData data = Genus2D.GameData.MapEventData.GetMapEventData(EventsList.SelectedIndex);
+                Genus2D.GameData.EventData data = Genus2D.GameData.EventData.GetEventData(EventsList.SelectedIndex);
                 Genus2D.GameData.EventCommand command = data.EventCommands[selection];
 
                 switch (command.Type)
@@ -783,7 +791,7 @@ namespace RpgEditor
             PopulateEventCommandData();
             if (EventsList.SelectedIndex != -1)
             {
-                Genus2D.GameData.MapEventData data = Genus2D.GameData.MapEventData.GetMapEventData(EventsList.SelectedIndex);
+                Genus2D.GameData.EventData data = Genus2D.GameData.EventData.GetEventData(EventsList.SelectedIndex);
                 EventNameBox.Text = data.Name;
                 EventTriggerBox.SelectedIndex = (int)data.GetTriggerType();
                 EventPassableCheck.Checked = data.Passable();
@@ -800,8 +808,8 @@ namespace RpgEditor
 
         private void AddEventButton_Click(object sender, EventArgs e)
         {
-            Genus2D.GameData.MapEventData data = new Genus2D.GameData.MapEventData("Event " + (Genus2D.GameData.MapEventData.MapEventsDataCount() + 1).ToString("000"));
-            Genus2D.GameData.MapEventData.AddMapEventData(data);
+            Genus2D.GameData.EventData data = new Genus2D.GameData.EventData("Event " + (Genus2D.GameData.EventData.EventsDataCount() + 1).ToString("000"));
+            Genus2D.GameData.EventData.AddEventData(data);
             PopulateEventsList();
             EventsList.SelectedIndex = EventsList.Items.Count - 1;
         }
@@ -810,7 +818,7 @@ namespace RpgEditor
         {
             if (EventsList.SelectedIndex != -1)
             {
-                Genus2D.GameData.MapEventData.RemoveMapEventData(EventsList.SelectedIndex);
+                Genus2D.GameData.EventData.RemoveEventData(EventsList.SelectedIndex);
                 PopulateEventsList();
                 ChangeEventListSelection();
             }
@@ -831,7 +839,7 @@ namespace RpgEditor
         {
             if (EventsList.SelectedIndex != -1)
             {
-                Genus2D.GameData.MapEventData data = Genus2D.GameData.MapEventData.GetMapEventData(EventsList.SelectedIndex);
+                Genus2D.GameData.EventData data = Genus2D.GameData.EventData.GetEventData(EventsList.SelectedIndex);
                 data.AddEventCommand(command);
                 PopulateEventCommandsList();
             }
@@ -841,9 +849,10 @@ namespace RpgEditor
         {
             if (EventCommandsList.SelectedIndex != -1)
             {
-                Genus2D.GameData.MapEventData data = Genus2D.GameData.MapEventData.GetMapEventData(EventsList.SelectedIndex);
+                Genus2D.GameData.EventData data = Genus2D.GameData.EventData.GetEventData(EventsList.SelectedIndex);
                 data.RemoveEventCommand(EventCommandsList.SelectedIndex);
                 PopulateEventCommandsList();
+                PopulateEventCommandData();
             }
         }
 
@@ -851,17 +860,22 @@ namespace RpgEditor
         {
             if (EventsList.SelectedIndex != -1)
             {
-                Genus2D.GameData.MapEventData data = Genus2D.GameData.MapEventData.GetMapEventData(EventsList.SelectedIndex);
+                Genus2D.GameData.EventData data = Genus2D.GameData.EventData.GetEventData(EventsList.SelectedIndex);
                 data.Name = EventNameBox.Text;
-                data.SetTriggerType((Genus2D.GameData.MapEventData.TriggerType)EventTriggerBox.SelectedIndex);
+                data.SetTriggerType((Genus2D.GameData.EventData.TriggerType)EventTriggerBox.SelectedIndex);
                 data.SetPassable(EventPassableCheck.Checked);
                 data.SetSpriteID(EventSpriteSelection.SelectedIndex - 1);
 
                 ApplyEventCommandData();
-
-                Genus2D.GameData.MapEventData.SaveMapEventsData();
                 PopulateEventsList();
             }
+            Genus2D.GameData.EventData.SaveEventsData();
+        }
+
+        private void UndoEventChangesButton_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.EventData.ReloadData();
+            PopulateEventsList();
         }
 
         #endregion
@@ -872,6 +886,7 @@ namespace RpgEditor
         {
             Genus2D.GameData.SpriteData.AddSpriteData("Sprite " + (SpritesList.Items.Count + 1).ToString("000"));
             PopulateSpritesList();
+            SpritesList.SelectedIndex = SpritesList.Items.Count - 1;
         }
 
         private void RemoveSpriteButton_Click(object sender, EventArgs e)
@@ -908,12 +923,18 @@ namespace RpgEditor
                 sprite.HorizontalAnchorPoint.Y = (int)HorizontalSpriteAnchorY.Value;
                 sprite.HorizontalBounds.X = (int)HorizontalSpriteBoundsWidth.Value;
                 sprite.HorizontalBounds.Y = (int)HorizontalSpriteBoundsHeight.Value;
-                Genus2D.GameData.SpriteData.SaveData();
             }
             else
             {
                 spriteViewerPanel.SetSprite(null);
             }
+            Genus2D.GameData.SpriteData.SaveData();
+        }
+
+        private void UndoSpriteButton_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.SpriteData.ReloadData();
+            PopulateSpritesList();
         }
 
         public Point GetSpriteVerticalAnchor()
@@ -951,6 +972,8 @@ namespace RpgEditor
 
             if (selection < SpritesList.Items.Count)
                 SpritesList.SelectedIndex = selection;
+            else
+                SelectSprite(-1);
         }
 
         private void PopulateSpriteSelections()
@@ -969,12 +992,11 @@ namespace RpgEditor
             SpriteSelectionBox.SelectedIndex = selection;
         }
 
-        private void SpritesList_SelectedIndexChanged(object sender, EventArgs e)
+        private void SelectSprite(int index)
         {
-            int selection = SpritesList.SelectedIndex;
-            if (selection != -1)
+            if (index != -1)
             {
-                Genus2D.GameData.SpriteData sprite = Genus2D.GameData.SpriteData.GetSpriteData(selection);
+                Genus2D.GameData.SpriteData sprite = Genus2D.GameData.SpriteData.GetSpriteData(index);
                 SpriteNameBox.Text = sprite.Name;
                 SpriteSelectionBox.Text = sprite.ImagePath;
                 VerticalSpriteAnchorX.Value = (int)sprite.VerticalAnchorPoint.X;
@@ -1007,6 +1029,12 @@ namespace RpgEditor
                 HorizontalSpriteBoundsWidth.Value = 2;
                 HorizontalSpriteBoundsHeight.Value = 2;
             }
+        }
+
+        private void SpritesList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int selection = SpritesList.SelectedIndex;
+            SelectSprite(selection);
         }
 
         private void VerticalSpriteAnchorX_ValueChanged(object sender, EventArgs e)
@@ -1111,6 +1139,8 @@ namespace RpgEditor
             }
             if (selection < ItemListBox.Items.Count)
                 ItemListBox.SelectedIndex = selection;
+            else
+                SelectItem(-1);
 
         }
 
@@ -1133,6 +1163,8 @@ namespace RpgEditor
             Genus2D.GameData.ItemData data = new Genus2D.GameData.ItemData("Item " + (ItemListBox.Items.Count + 1).ToString("000"));
             Genus2D.GameData.ItemData.AddItemData(data);
             PopulateItemList();
+            ItemListBox.SelectedIndex = ItemListBox.Items.Count - 1;
+
         }
 
         private void RemoveItemButton_Click(object sender, EventArgs e)
@@ -1148,9 +1180,14 @@ namespace RpgEditor
         private void ItemListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             int selection = ItemListBox.SelectedIndex;
-            if (selection != -1)
+            SelectItem(selection);
+        }
+
+        private void SelectItem(int index)
+        {
+            if (index != -1)
             {
-                Genus2D.GameData.ItemData data = Genus2D.GameData.ItemData.GetItemData(selection);
+                Genus2D.GameData.ItemData data = Genus2D.GameData.ItemData.GetItemData(index);
                 ItemNameBox.Text = data.Name;
                 ItemIconSelection.Text = data.IconImage;
                 ItemTypeSelection.SelectedIndex = (int)data.GetItemType();
@@ -1314,9 +1351,14 @@ namespace RpgEditor
                 }
 
                 PopulateItemList();
-                Genus2D.GameData.ItemData.SaveItemData();
-
             }
+            Genus2D.GameData.ItemData.SaveItemData();
+        }
+
+        private void UndoItemButton_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.ItemData.ReloadData();
+            PopulateItemList();
         }
 
         #endregion

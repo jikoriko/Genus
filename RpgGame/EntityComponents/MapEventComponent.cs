@@ -22,7 +22,7 @@ namespace RpgGame.EntityComponents
         public MapEventComponent(Entity entity, MapEvent mapEvent)
             : base(entity)
         {
-            int spriteID = MapEventData.GetMapEventData(mapEvent.EventID).GetSpriteID();
+            int spriteID = EventData.GetEventData(mapEvent.EventID).GetSpriteID();
             if (spriteID != -1)
             {
                 _spriteData = SpriteData.GetSpriteData(spriteID);
@@ -34,7 +34,7 @@ namespace RpgGame.EntityComponents
             }
             else
             {
-                SetSpriteCenter(SpriteCenter.Top);
+                SetSpriteCenter(SpriteCenter.Center);
                 _spriteData = null;
                 SetTexture(Assets.GetTexture("GUI_Textures/EventIcon.png"));
                 SetColour(new OpenTK.Graphics.Color4(1, 1, 1, 0.65f));

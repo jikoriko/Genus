@@ -10,6 +10,8 @@ using OpenTK.Input;
 using System.Collections.Generic;
 using Genus2D.Networking;
 
+using RpgGame.GUI;
+
 namespace RpgGame.States
 {
     public class GameState : State
@@ -18,6 +20,8 @@ namespace RpgGame.States
         public static GameState Instance { get; private set; }
         private RpgClientConnection _connection;
         private List<int> _keysDown;
+
+        private MessagePanel _messagePanel;
 
         public Entity MapEntity;
 
@@ -30,6 +34,9 @@ namespace RpgGame.States
 
             _connection = null;
             _keysDown = new List<int>();
+
+            _messagePanel = new MessagePanel(this);
+            this.AddControl(_messagePanel);
         }
 
         public void SetRpgClientConnection(RpgClientConnection connection)

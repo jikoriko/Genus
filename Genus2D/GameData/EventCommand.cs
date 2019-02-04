@@ -108,7 +108,7 @@ namespace Genus2D.GameData
 
         public override string ToString()
         {
-            string s = "Command: " + Type.ToString();
+            string s = Type.ToString();
             return s;
         }
     }

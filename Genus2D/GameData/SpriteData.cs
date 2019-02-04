@@ -51,6 +51,11 @@ namespace Genus2D.GameData
             return sprites;
         }
 
+        public static void ReloadData()
+        {
+            _spriteData = LoadData();
+        }
+
         public static void SaveData()
         {
             if (!Directory.Exists("Data"))
@@ -64,7 +69,6 @@ namespace Genus2D.GameData
         public static void AddSpriteData(string name)
         {
             _spriteData.Add(new SpriteData(name));
-            SaveData();
         }
 
         public static void RemoveSprite(int index)
@@ -72,7 +76,6 @@ namespace Genus2D.GameData
             if (index >= 0 && index < _spriteData.Count)
             {
                 _spriteData.RemoveAt(index);
-                SaveData();
             }
         }
 

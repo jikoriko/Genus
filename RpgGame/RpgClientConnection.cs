@@ -17,6 +17,7 @@ namespace RpgGame
 {
     public class RpgClientConnection
     {
+        public static RpgClientConnection Instance { get; private set; }
         private XmlDocument _settingsXml;
 
         private TcpClient _client;
@@ -31,11 +32,13 @@ namespace RpgGame
         private bool _playersUpdated = false;
 
         private Thread _recievePacketsThread;
+        private List<MessagePacket> _messages;
 
         States.GameState _gameState;
 
         public RpgClientConnection(States.GameState state, string username, string password, bool register)
         {
+            Instance = this;
             _gameState = state;
             if (_gameState != null)
                 _gameState.SetRpgClientConnection(this);
@@ -86,6 +89,7 @@ namespace RpgGame
 
                         _recievePacketsThread = new Thread(new ThreadStart(RecievePackets));
                         _recievePacketsThread.Start();
+                        _messages = new List<MessagePacket>();
                         Console.WriteLine("Client logged in: " + _loginResult.PlayerID + ", " + request.Username);
                     }
                     else
@@ -170,7 +174,7 @@ namespace RpgGame
                     PlayerPacket packet = _playerPackets.ElementAt(i).Value;
                     if (_loginResult.PlayerID == packet.PlayerID)
                     {
-                        Vector3 mapPos = new Vector3((Renderer.GetResoultion().X / 2) - (packet.RealX + 16), (Renderer.GetResoultion().Y / 2) - packet.RealY, 0);
+                        Vector3 mapPos = new Vector3((Renderer.GetResoultion().X / 2) - (packet.RealX + 16), ((Renderer.GetResoultion().Y - 200) / 2) - packet.RealY, 0);
                         _gameState.MapEntity.GetTransform().LocalPosition = mapPos;
                     }
 
@@ -234,6 +238,12 @@ namespace RpgGame
                             break;
                         case PacketType.ClientCommand:
                             ReciveClientCommand();
+                            break;
+                        case PacketType.SendMessagePackets:
+                            SendMessagePackets();
+                            break;
+                        case PacketType.RecieveMessagePackets:
+                            RecieveMessagePackets();
                             break;
 
                     }
@@ -375,6 +385,40 @@ namespace RpgGame
 
                     break;
 
+            }
+        }
+
+        public void SendMessage(MessagePacket packet)
+        {
+            _messages.Add(packet);
+        }
+
+        private void SendMessagePackets()
+        {
+            byte[] bytes = BitConverter.GetBytes(_messages.Count);
+            _stream.Write(bytes, 0, sizeof(int));
+            for (int i = 0; i < _messages.Count; i++)
+            {
+                bytes = _messages[i].GetBytes();
+                _stream.Write(BitConverter.GetBytes(bytes.Length), 0, sizeof(int));
+                _stream.Write(bytes, 0, bytes.Length);
+            }
+            _messages.Clear();
+            _stream.Flush();
+        }
+
+        private void RecieveMessagePackets()
+        {
+            byte[] bytes = ReadData(sizeof(int), _stream);
+            int numMessages = BitConverter.ToInt32(bytes, 0);
+
+            for (int i = 0; i < numMessages; i++)
+            {
+                bytes = ReadData(sizeof(int), _stream);
+                int messageSize = BitConverter.ToInt32(bytes, 0);
+                bytes = ReadData(messageSize, _stream);
+                MessagePacket packet = MessagePacket.FromBytes(bytes);
+                GUI.MessagePanel.Instance.AddMessage(packet);
             }
         }
 

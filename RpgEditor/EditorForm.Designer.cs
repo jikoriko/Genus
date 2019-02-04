@@ -115,24 +115,28 @@
             this.SpritesList = new System.Windows.Forms.ListBox();
             this.label6 = new System.Windows.Forms.Label();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.tabPage6 = new System.Windows.Forms.TabPage();
-            this.ItemListBox = new System.Windows.Forms.ListBox();
-            this.label21 = new System.Windows.Forms.Label();
-            this.RemoveItemButton = new System.Windows.Forms.Button();
-            this.AddItemButton = new System.Windows.Forms.Button();
             this.panel6 = new System.Windows.Forms.Panel();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.ImportIconButton = new System.Windows.Forms.Button();
+            this.label24 = new System.Windows.Forms.Label();
+            this.ItemMaxStack = new System.Windows.Forms.NumericUpDown();
+            this.label23 = new System.Windows.Forms.Label();
+            this.ItemTypeSelection = new System.Windows.Forms.ComboBox();
             this.label22 = new System.Windows.Forms.Label();
             this.ItemNameBox = new System.Windows.Forms.TextBox();
             this.ItemStatsPanel = new System.Windows.Forms.Panel();
             this.ApplyItemButton = new System.Windows.Forms.Button();
             this.label33 = new System.Windows.Forms.Label();
             this.ItemIconSelection = new System.Windows.Forms.ComboBox();
-            this.label23 = new System.Windows.Forms.Label();
-            this.ItemTypeSelection = new System.Windows.Forms.ComboBox();
-            this.ItemMaxStack = new System.Windows.Forms.NumericUpDown();
-            this.label24 = new System.Windows.Forms.Label();
-            this.ImportIconButton = new System.Windows.Forms.Button();
+            this.RemoveItemButton = new System.Windows.Forms.Button();
+            this.AddItemButton = new System.Windows.Forms.Button();
+            this.label21 = new System.Windows.Forms.Label();
+            this.ItemListBox = new System.Windows.Forms.ListBox();
+            this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.UndoTilesetButton = new System.Windows.Forms.Button();
+            this.UndoEventChangesButton = new System.Windows.Forms.Button();
+            this.UndoSpriteButton = new System.Windows.Forms.Button();
+            this.UndoItemButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -412,6 +416,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.BackColor = System.Drawing.Color.AliceBlue;
+            this.groupBox2.Controls.Add(this.UndoTilesetButton);
             this.groupBox2.Controls.Add(this.ImportTilesetButton);
             this.groupBox2.Controls.Add(this.groupBox3);
             this.groupBox2.Controls.Add(this.panel2);
@@ -581,7 +586,7 @@
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(1152, 711);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Events";
+            this.tabPage3.Text = "Event Data";
             // 
             // panel4
             // 
@@ -601,6 +606,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.BackColor = System.Drawing.Color.AliceBlue;
+            this.groupBox4.Controls.Add(this.UndoEventChangesButton);
             this.groupBox4.Controls.Add(this.label19);
             this.groupBox4.Controls.Add(this.EventSpriteSelection);
             this.groupBox4.Controls.Add(this.groupBox5);
@@ -799,9 +805,9 @@
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.Location = new System.Drawing.Point(3, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(73, 24);
+            this.label5.Size = new System.Drawing.Size(110, 24);
             this.label5.TabIndex = 2;
-            this.label5.Text = "Events";
+            this.label5.Text = "Event Data";
             // 
             // tabPage4
             // 
@@ -835,6 +841,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox7.BackColor = System.Drawing.Color.AliceBlue;
+            this.groupBox7.Controls.Add(this.UndoSpriteButton);
             this.groupBox7.Controls.Add(this.label20);
             this.groupBox7.Controls.Add(this.SpriteNameBox);
             this.groupBox7.Controls.Add(this.ImportSpriteButton);
@@ -1213,60 +1220,6 @@
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Items";
             // 
-            // tabPage6
-            // 
-            this.tabPage6.BackColor = System.Drawing.Color.DarkGray;
-            this.tabPage6.Location = new System.Drawing.Point(4, 22);
-            this.tabPage6.Name = "tabPage6";
-            this.tabPage6.Size = new System.Drawing.Size(1152, 711);
-            this.tabPage6.TabIndex = 5;
-            this.tabPage6.Text = "Enemies";
-            // 
-            // ItemListBox
-            // 
-            this.ItemListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.ItemListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ItemListBox.FormattingEnabled = true;
-            this.ItemListBox.ItemHeight = 20;
-            this.ItemListBox.Location = new System.Drawing.Point(7, 27);
-            this.ItemListBox.Name = "ItemListBox";
-            this.ItemListBox.Size = new System.Drawing.Size(185, 564);
-            this.ItemListBox.TabIndex = 5;
-            this.ItemListBox.SelectedIndexChanged += new System.EventHandler(this.ItemListBox_SelectedIndexChanged);
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.Location = new System.Drawing.Point(3, 0);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(59, 24);
-            this.label21.TabIndex = 6;
-            this.label21.Text = "Items";
-            // 
-            // RemoveItemButton
-            // 
-            this.RemoveItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.RemoveItemButton.Location = new System.Drawing.Point(7, 650);
-            this.RemoveItemButton.Name = "RemoveItemButton";
-            this.RemoveItemButton.Size = new System.Drawing.Size(185, 47);
-            this.RemoveItemButton.TabIndex = 11;
-            this.RemoveItemButton.Text = "Remove Item";
-            this.RemoveItemButton.UseVisualStyleBackColor = true;
-            this.RemoveItemButton.Click += new System.EventHandler(this.RemoveItemButton_Click);
-            // 
-            // AddItemButton
-            // 
-            this.AddItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.AddItemButton.Location = new System.Drawing.Point(7, 597);
-            this.AddItemButton.Name = "AddItemButton";
-            this.AddItemButton.Size = new System.Drawing.Size(185, 47);
-            this.AddItemButton.TabIndex = 10;
-            this.AddItemButton.Text = "Add Item";
-            this.AddItemButton.UseVisualStyleBackColor = true;
-            this.AddItemButton.Click += new System.EventHandler(this.AddItemButton_Click);
-            // 
             // panel6
             // 
             this.panel6.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -1285,6 +1238,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox8.BackColor = System.Drawing.Color.AliceBlue;
+            this.groupBox8.Controls.Add(this.UndoItemButton);
             this.groupBox8.Controls.Add(this.ImportIconButton);
             this.groupBox8.Controls.Add(this.label24);
             this.groupBox8.Controls.Add(this.ItemMaxStack);
@@ -1302,6 +1256,64 @@
             this.groupBox8.TabIndex = 2;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Sprite Data";
+            // 
+            // ImportIconButton
+            // 
+            this.ImportIconButton.Location = new System.Drawing.Point(33, 91);
+            this.ImportIconButton.Name = "ImportIconButton";
+            this.ImportIconButton.Size = new System.Drawing.Size(185, 47);
+            this.ImportIconButton.TabIndex = 31;
+            this.ImportIconButton.Text = "Import Icon";
+            this.ImportIconButton.UseVisualStyleBackColor = true;
+            this.ImportIconButton.Click += new System.EventHandler(this.ImportIconButton_Click);
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(10, 173);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(61, 13);
+            this.label24.TabIndex = 30;
+            this.label24.Text = "Max Stack:";
+            // 
+            // ItemMaxStack
+            // 
+            this.ItemMaxStack.Location = new System.Drawing.Point(77, 171);
+            this.ItemMaxStack.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.ItemMaxStack.Name = "ItemMaxStack";
+            this.ItemMaxStack.Size = new System.Drawing.Size(141, 20);
+            this.ItemMaxStack.TabIndex = 29;
+            this.ItemMaxStack.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(15, 147);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(57, 13);
+            this.label23.TabIndex = 28;
+            this.label23.Text = "Item Type:";
+            // 
+            // ItemTypeSelection
+            // 
+            this.ItemTypeSelection.FormattingEnabled = true;
+            this.ItemTypeSelection.Items.AddRange(new object[] {
+            "Tool",
+            "Consumble",
+            "Material",
+            "Equipment"});
+            this.ItemTypeSelection.Location = new System.Drawing.Point(77, 144);
+            this.ItemTypeSelection.Name = "ItemTypeSelection";
+            this.ItemTypeSelection.Size = new System.Drawing.Size(141, 21);
+            this.ItemTypeSelection.TabIndex = 27;
             // 
             // label22
             // 
@@ -1355,63 +1367,103 @@
             this.ItemIconSelection.Size = new System.Drawing.Size(141, 21);
             this.ItemIconSelection.TabIndex = 1;
             // 
-            // label23
+            // RemoveItemButton
             // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(15, 147);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(57, 13);
-            this.label23.TabIndex = 28;
-            this.label23.Text = "Item Type:";
+            this.RemoveItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveItemButton.Location = new System.Drawing.Point(7, 650);
+            this.RemoveItemButton.Name = "RemoveItemButton";
+            this.RemoveItemButton.Size = new System.Drawing.Size(185, 47);
+            this.RemoveItemButton.TabIndex = 11;
+            this.RemoveItemButton.Text = "Remove Item";
+            this.RemoveItemButton.UseVisualStyleBackColor = true;
+            this.RemoveItemButton.Click += new System.EventHandler(this.RemoveItemButton_Click);
             // 
-            // ItemTypeSelection
+            // AddItemButton
             // 
-            this.ItemTypeSelection.FormattingEnabled = true;
-            this.ItemTypeSelection.Items.AddRange(new object[] {
-            "Tool",
-            "Consumble",
-            "Material",
-            "Equipment"});
-            this.ItemTypeSelection.Location = new System.Drawing.Point(77, 144);
-            this.ItemTypeSelection.Name = "ItemTypeSelection";
-            this.ItemTypeSelection.Size = new System.Drawing.Size(141, 21);
-            this.ItemTypeSelection.TabIndex = 27;
+            this.AddItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddItemButton.Location = new System.Drawing.Point(7, 597);
+            this.AddItemButton.Name = "AddItemButton";
+            this.AddItemButton.Size = new System.Drawing.Size(185, 47);
+            this.AddItemButton.TabIndex = 10;
+            this.AddItemButton.Text = "Add Item";
+            this.AddItemButton.UseVisualStyleBackColor = true;
+            this.AddItemButton.Click += new System.EventHandler(this.AddItemButton_Click);
             // 
-            // ItemMaxStack
+            // label21
             // 
-            this.ItemMaxStack.Location = new System.Drawing.Point(77, 171);
-            this.ItemMaxStack.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.ItemMaxStack.Name = "ItemMaxStack";
-            this.ItemMaxStack.Size = new System.Drawing.Size(141, 20);
-            this.ItemMaxStack.TabIndex = 29;
-            this.ItemMaxStack.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.label21.AutoSize = true;
+            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label21.Location = new System.Drawing.Point(3, 0);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(59, 24);
+            this.label21.TabIndex = 6;
+            this.label21.Text = "Items";
             // 
-            // label24
+            // ItemListBox
             // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(10, 173);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(61, 13);
-            this.label24.TabIndex = 30;
-            this.label24.Text = "Max Stack:";
+            this.ItemListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.ItemListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ItemListBox.FormattingEnabled = true;
+            this.ItemListBox.ItemHeight = 20;
+            this.ItemListBox.Location = new System.Drawing.Point(7, 27);
+            this.ItemListBox.Name = "ItemListBox";
+            this.ItemListBox.Size = new System.Drawing.Size(185, 564);
+            this.ItemListBox.TabIndex = 5;
+            this.ItemListBox.SelectedIndexChanged += new System.EventHandler(this.ItemListBox_SelectedIndexChanged);
             // 
-            // ImportIconButton
+            // tabPage6
             // 
-            this.ImportIconButton.Location = new System.Drawing.Point(33, 91);
-            this.ImportIconButton.Name = "ImportIconButton";
-            this.ImportIconButton.Size = new System.Drawing.Size(185, 47);
-            this.ImportIconButton.TabIndex = 31;
-            this.ImportIconButton.Text = "Import Icon";
-            this.ImportIconButton.UseVisualStyleBackColor = true;
-            this.ImportIconButton.Click += new System.EventHandler(this.ImportIconButton_Click);
+            this.tabPage6.BackColor = System.Drawing.Color.DarkGray;
+            this.tabPage6.Location = new System.Drawing.Point(4, 22);
+            this.tabPage6.Name = "tabPage6";
+            this.tabPage6.Size = new System.Drawing.Size(1152, 711);
+            this.tabPage6.TabIndex = 5;
+            this.tabPage6.Text = "Enemies";
+            // 
+            // UndoTilesetButton
+            // 
+            this.UndoTilesetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.UndoTilesetButton.Location = new System.Drawing.Point(670, 602);
+            this.UndoTilesetButton.Name = "UndoTilesetButton";
+            this.UndoTilesetButton.Size = new System.Drawing.Size(122, 47);
+            this.UndoTilesetButton.TabIndex = 8;
+            this.UndoTilesetButton.Text = "Undo Changes";
+            this.UndoTilesetButton.UseVisualStyleBackColor = true;
+            this.UndoTilesetButton.Click += new System.EventHandler(this.UndoTilesetButton_Click);
+            // 
+            // UndoEventChangesButton
+            // 
+            this.UndoEventChangesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.UndoEventChangesButton.Location = new System.Drawing.Point(670, 602);
+            this.UndoEventChangesButton.Name = "UndoEventChangesButton";
+            this.UndoEventChangesButton.Size = new System.Drawing.Size(122, 47);
+            this.UndoEventChangesButton.TabIndex = 9;
+            this.UndoEventChangesButton.Text = "Undo Changes";
+            this.UndoEventChangesButton.UseVisualStyleBackColor = true;
+            this.UndoEventChangesButton.Click += new System.EventHandler(this.UndoEventChangesButton_Click);
+            // 
+            // UndoSpriteButton
+            // 
+            this.UndoSpriteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.UndoSpriteButton.Location = new System.Drawing.Point(670, 602);
+            this.UndoSpriteButton.Name = "UndoSpriteButton";
+            this.UndoSpriteButton.Size = new System.Drawing.Size(122, 47);
+            this.UndoSpriteButton.TabIndex = 27;
+            this.UndoSpriteButton.Text = "Undo Changes";
+            this.UndoSpriteButton.UseVisualStyleBackColor = true;
+            this.UndoSpriteButton.Click += new System.EventHandler(this.UndoSpriteButton_Click);
+            // 
+            // UndoItemButton
+            // 
+            this.UndoItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.UndoItemButton.Location = new System.Drawing.Point(670, 602);
+            this.UndoItemButton.Name = "UndoItemButton";
+            this.UndoItemButton.Size = new System.Drawing.Size(122, 47);
+            this.UndoItemButton.TabIndex = 32;
+            this.UndoItemButton.Text = "Undo Changes";
+            this.UndoItemButton.UseVisualStyleBackColor = true;
+            this.UndoItemButton.Click += new System.EventHandler(this.UndoItemButton_Click);
             // 
             // EditorForm
             // 
@@ -1575,6 +1627,10 @@
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.NumericUpDown ItemMaxStack;
         private System.Windows.Forms.Button ImportIconButton;
+        private System.Windows.Forms.Button UndoTilesetButton;
+        private System.Windows.Forms.Button UndoEventChangesButton;
+        private System.Windows.Forms.Button UndoSpriteButton;
+        private System.Windows.Forms.Button UndoItemButton;
     }
 }
 

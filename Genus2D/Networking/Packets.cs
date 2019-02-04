@@ -15,7 +15,10 @@ namespace Genus2D.Networking
         PlayerPacket,
         MapPacket,
         InputPacket,
-        ClientCommand
+        ClientCommand,
+        SendMessagePackets,
+        RecieveMessagePackets
+        
     }
 
     public class LoginRequest
@@ -142,6 +145,78 @@ namespace Genus2D.Networking
                 return loginResult;
             }
         }
+
+    }
+
+    public class MessagePacket
+    {
+
+        public enum MessageTarget
+        {
+            Public,
+            Private
+        }
+
+        public string Message;
+        public int PlayerID;
+        public MessageTarget TargetType;
+        public int TargetID;
+
+        public MessagePacket(string message)
+        {
+            Message = message;
+            PlayerID = -1;
+            TargetType = MessageTarget.Public;
+            TargetID = -1;
+        }
+
+        public byte[] GetBytes()
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                byte[] messageBytes = Encoding.UTF8.GetBytes(Message);
+                stream.Write(BitConverter.GetBytes(messageBytes.Length), 0, sizeof(int));
+                stream.Write(messageBytes, 0, messageBytes.Length);
+                stream.Write(BitConverter.GetBytes(PlayerID), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes((int)TargetType), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(TargetID), 0, sizeof(int));
+
+                return stream.ToArray();
+            }
+        }
+
+        public static MessagePacket FromBytes(byte[] bytes)
+        {
+            using (MemoryStream stream = new MemoryStream(bytes))
+            {
+                byte[] tempBytes = new byte[sizeof(int)];
+                stream.Read(tempBytes, 0, sizeof(int));
+                int messageSize = BitConverter.ToInt32(tempBytes, 0);
+
+                tempBytes = new byte[messageSize];
+                stream.Read(tempBytes, 0, messageSize);
+                string message = new string(Encoding.UTF8.GetChars(tempBytes));
+
+                tempBytes = new byte[sizeof(int)];
+                stream.Read(tempBytes, 0, sizeof(int));
+                int playerId = BitConverter.ToInt32(tempBytes, 0);
+
+                tempBytes = new byte[sizeof(int)];
+                stream.Read(tempBytes, 0, sizeof(int));
+                int targetType = BitConverter.ToInt32(tempBytes, 0);
+
+                tempBytes = new byte[sizeof(int)];
+                stream.Read(tempBytes, 0, sizeof(int));
+                int targetId = BitConverter.ToInt32(tempBytes, 0);
+
+                MessagePacket packet = new MessagePacket(message);
+                packet.PlayerID = playerId;
+                packet.TargetType = (MessageTarget)targetType;
+                packet.TargetID = targetId;
+                return packet;
+            }
+        }
+        
 
     }
 

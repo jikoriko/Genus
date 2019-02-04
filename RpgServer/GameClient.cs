@@ -122,11 +122,13 @@ namespace RpgServer
         private MapInstance _mapInstance;
 
         private EventInterpreter _eventInterpreter;
-        private List<ClientCommand> _commandsToAdd;
         private List<ClientCommand> _clientCommands;
+        private List<MessagePacket> _messagePackets;
 
         private GameClient(TcpClient tcpClient, int playerID)
         {
+            Server.Instance.AddGameClient(this);
+
             _tcpClient = tcpClient;
             _stream = _tcpClient.GetStream();
             _connected = true;
@@ -140,8 +142,8 @@ namespace RpgServer
             _mapInstance = null;
 
             _eventInterpreter = new EventInterpreter(this);
-            _commandsToAdd = new List<ClientCommand>();
             _clientCommands = new List<ClientCommand>();
+            _messagePackets = new List<MessagePacket>();
 
             Thread updatePacketsThread = new Thread(new ThreadStart(UpdatePackets));
             updatePacketsThread.Start();
@@ -190,6 +192,8 @@ namespace RpgServer
                                 SendPlayerPackets();
                                 SendClientCommands();
                                 RecieveInputPacket();
+                                RecieveMessagePackets();
+                                SendMessagePackets();
                             }
                             catch
                             {
@@ -232,20 +236,11 @@ namespace RpgServer
         public void AddClientCommand(ClientCommand command)
         {
             if (command != null)
-                _commandsToAdd.Add(command);
+                _clientCommands.Add(command);
         }
 
-        public void SendClientCommands()
+        private void SendClientCommands()
         {
-            while (_commandsToAdd.Count > 0)
-            {
-                if (_commandsToAdd[0] != null)
-                {
-                    _clientCommands.Add(_commandsToAdd[0]);
-                    _commandsToAdd.RemoveAt(0);
-                }
-            }
-
             while (_clientCommands.Count > 0)
             {
                 ClientCommand command = _clientCommands[0];
@@ -263,7 +258,62 @@ namespace RpgServer
             }
         }
 
-        public void RecieveInputPacket()
+        public void RecieveMessage(MessagePacket message)
+        {
+            if (message.TargetType == MessagePacket.MessageTarget.Public)
+            {
+                _messagePackets.Add(message);
+            }
+            else
+            {
+                if (message.TargetID == _playerPacket.PlayerID)
+                    _messagePackets.Add(message);
+            }
+        }
+
+        private void RecieveMessagePackets()
+        {
+            byte[] bytes = BitConverter.GetBytes((int)PacketType.SendMessagePackets);
+            _stream.Write(bytes, 0, sizeof(int));
+            _stream.Flush();
+
+            bytes = ReadData(sizeof(int), _stream);
+            int numMessages = BitConverter.ToInt32(bytes, 0);
+
+            for (int i = 0; i < numMessages; i++)
+            {
+                bytes = ReadData(sizeof(int), _stream);
+                int messageSize = BitConverter.ToInt32(bytes, 0);
+
+                bytes = ReadData(messageSize, _stream);
+                MessagePacket packet = MessagePacket.FromBytes(bytes);
+                packet.Message = _playerPacket.Username + ": " + packet.Message; // the server signs the messages with the username
+                packet.PlayerID = _playerPacket.PlayerID;
+                Server.Instance.SendMessage(packet);
+            }
+        }
+
+        private void SendMessagePackets()
+        {
+            if (_messagePackets.Count > 0)
+            {
+                byte[] bytes = BitConverter.GetBytes((int)PacketType.RecieveMessagePackets);
+                _stream.Write(bytes, 0, sizeof(int));
+
+                _stream.Write(BitConverter.GetBytes(_messagePackets.Count), 0, sizeof(int));
+
+                for (int i = 0; i < _messagePackets.Count; i++)
+                {
+                    bytes = _messagePackets[i].GetBytes();
+                    _stream.Write(BitConverter.GetBytes(bytes.Length), 0, sizeof(int));
+                    _stream.Write(bytes, 0, bytes.Length);
+                }
+                _stream.Flush();
+                _messagePackets.Clear();
+            }
+        }
+
+        private void RecieveInputPacket()
         {
             if (_inputPacket == null)
             {
@@ -282,7 +332,7 @@ namespace RpgServer
             }
         }
 
-        public void SendPlayerPackets()
+        private void SendPlayerPackets()
         {
             List<PlayerPacket> packets = _mapInstance.GetPlayerPackets();
 
@@ -422,7 +472,7 @@ namespace RpgServer
                                     targetY -= 1;
                                     break;
                             }
-                            CheckEventTriggers(targetX, targetY, MapEventData.TriggerType.Action);
+                            CheckEventTriggers(targetX, targetY, EventData.TriggerType.Action);
                         }
                     }
                 }
@@ -438,7 +488,7 @@ namespace RpgServer
                     if (dir.Length <= 0.1f)
                     {
                         realPos = new OpenTK.Vector2(_playerPacket.PositionX * 32, _playerPacket.PositionY * 32);
-                        CheckEventTriggers(_playerPacket.PositionX, _playerPacket.PositionY, MapEventData.TriggerType.PlayerTouch);
+                        CheckEventTriggers(_playerPacket.PositionX, _playerPacket.PositionY, EventData.TriggerType.PlayerTouch);
                     }
 
                     _playerPacket.RealX = realPos.X;
@@ -486,7 +536,7 @@ namespace RpgServer
                 }
                 else
                 {
-                    CheckEventTriggers(targetX, targetY, MapEventData.TriggerType.PlayerTouch);
+                    CheckEventTriggers(targetX, targetY, EventData.TriggerType.PlayerTouch);
                 }
             }
         }
@@ -496,17 +546,17 @@ namespace RpgServer
             _playerPacket.Direction = direction;
         }
 
-        private void CheckEventTriggers(int x, int y, MapEventData.TriggerType triggerType)
+        private void CheckEventTriggers(int x, int y, EventData.TriggerType triggerType)
         {
             MapData mapData = _mapInstance.GetMapData();
             for (int i = 0; i < mapData.MapEventsCount(); i++)
             {
                 MapEvent mapEvent = mapData.GetMapEvent(i);
-                if (mapEvent.GetMapEventData().GetTriggerType() == triggerType)
+                if (mapEvent.GetEventData().GetTriggerType() == triggerType)
                 {
                     if (mapEvent.MapX == x && mapEvent.MapY == y)
                     {
-                        _eventInterpreter.TriggerEventData(mapEvent.GetMapEventData());
+                        _eventInterpreter.TriggerEventData(mapEvent.GetEventData());
                         break;
                     }
                 }
@@ -518,6 +568,7 @@ namespace RpgServer
             Server.Instance.GetDatabaseConnection().UpdatePlayerQuery(_playerPacket);
             if (_connected)
             {
+                Server.Instance.RemoveGameClient(this);
                 _stream.Close();
                 _connected = false;
             }

@@ -228,7 +228,7 @@ namespace RpgEditor
                     FloodFillTile(_lastX, _lastY, layer, ref tilesetSelection);
                     break;
                 case EditorForm.MapTool.Event:
-                    if (Genus2D.GameData.MapEventData.MapEventsDataCount() != 0)
+                    if (Genus2D.GameData.EventData.EventsDataCount() != 0)
                     {
                         Genus2D.GameData.MapEvent mapEvent = null;
                         for (int i = 0; i < MapData.MapEventsCount(); i++)

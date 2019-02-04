@@ -19,6 +19,8 @@ namespace Genus2D.GameData
         public float RealY;
         public Direction EventDirection;
 
+        public bool Moved = false;
+
         public MapEvent(int id, int x, int y)
         {
             EventID = id;
@@ -76,7 +78,7 @@ namespace Genus2D.GameData
                 stream.Read(tempBytes, 0, sizeof(int));
                 Direction direction = (Direction)BitConverter.ToInt32(tempBytes, 0);
 
-                Console.WriteLine("recived map event: " + mapX + "," + mapY);
+                Console.WriteLine("recieved map event: " + mapX + "," + mapY);
 
                 MapEvent mapEvent = new MapEvent(eventID, mapX, mapY);
                 mapEvent.RealX = realX;
@@ -86,9 +88,9 @@ namespace Genus2D.GameData
             }
         }
 
-        public MapEventData GetMapEventData()
+        public EventData GetEventData()
         {
-            return MapEventData.GetMapEventData(EventID);
+            return EventData.GetEventData(EventID);
         }
 
         public bool Moving()
@@ -115,6 +117,7 @@ namespace Genus2D.GameData
 
                 RealX = realPos.X;
                 RealY = realPos.Y;
+                Moved = true;
             }
         }
     }

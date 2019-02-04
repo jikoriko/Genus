@@ -87,7 +87,7 @@ namespace RpgServer
             for (int i = 0; i < _mapData.MapEventsCount(); i++)
             {
                 MapEvent mapEvent = _mapData.GetMapEvent(i);
-                if ((mapEvent.MapX == x && mapEvent.MapY == y) && !mapEvent.GetMapEventData().Passable())
+                if ((mapEvent.MapX == x && mapEvent.MapY == y) && !mapEvent.GetEventData().Passable())
                     return false;
             }
 
@@ -184,15 +184,14 @@ namespace RpgServer
 
             for (int i = 0; i < GetMapData().MapEventsCount(); i++)
             {
-                if (GetMapData().GetMapEvent(i).Moving())
-                {
-                    GetMapData().GetMapEvent(i).UpdateMovement(deltaTime);
-                }
+                MapEvent mapEvent = GetMapData().GetMapEvent(i);
+                mapEvent.UpdateMovement(deltaTime);
 
-                if (_updateMapTimer <= 0f)
+                if (_updateMapTimer <= 0f && mapEvent.Moved)
                 {
                     UpdateMapEventOnClients(i);
                     _updateMapTimer = 0.06f;
+                    mapEvent.Moved = false;
                 }
             }
 

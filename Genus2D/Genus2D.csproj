@@ -73,7 +73,7 @@
     <Compile Include="GameData\ItemData.cs" />
     <Compile Include="GameData\MapData.cs" />
     <Compile Include="GameData\MapEvent.cs" />
-    <Compile Include="GameData\MapEventData.cs" />
+    <Compile Include="GameData\EventData.cs" />
     <Compile Include="GameData\MapInfo.cs" />
     <Compile Include="GameData\MessageOption.cs" />
     <Compile Include="GameData\PlayerData.cs" />

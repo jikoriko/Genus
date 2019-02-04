@@ -48,7 +48,7 @@ namespace RpgGame.EntityComponents
         public void SetRealPosition()
         {
             Vector3 pos = new Vector3(_playerPacket.RealX + 16, _playerPacket.RealY + 32, 0);
-            pos.Z = -(_playerPacket.PositionY * 32);
+            pos.Z = -(_playerPacket.PositionY * 32) - 1;
             Transform.LocalPosition = pos;
         }
 
@@ -101,7 +101,7 @@ namespace RpgGame.EntityComponents
                             break;
                     }
 
-                    Transform.LocalPosition = Transform.LocalPosition + new Vector3(dir * (_playerPacket.MovementSpeed * (float)e.Time));
+                    //Transform.LocalPosition = Transform.LocalPosition + new Vector3(dir * (_playerPacket.MovementSpeed * (float)e.Time));
                 }
 
                 // we could do some movement prediction here based on target pos, real pos and movement speed?
@@ -118,9 +118,9 @@ namespace RpgGame.EntityComponents
             pos.X -= Renderer.GetFont().GetTextWidth(_playerPacket.Username) / 2;
             OpenTK.Graphics.Color4 colour = OpenTK.Graphics.Color4.Red;
 
-            Renderer.DisableDepthTest();
+            //Renderer.DisableDepthTest();
             Renderer.PrintText(_playerPacket.Username, ref pos, ref colour);
-            Renderer.EnableDepthTest();
+            //Renderer.EnableDepthTest();
         }
     }
 }

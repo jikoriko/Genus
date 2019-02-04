@@ -12,7 +12,7 @@ namespace RpgServer
     {
         private GameClient _gameClient;
 
-        private MapEventData _triggeringEvent;
+        private EventData _triggeringEvent;
         private int _triggeringEventCommand;
         private float _triggeringEventWaitTimer;
         private bool _messageShowing;
@@ -213,7 +213,7 @@ namespace RpgServer
             return _triggeringEvent != null;
         }
 
-        public void TriggerEventData(MapEventData data)
+        public void TriggerEventData(EventData data)
         {
             if (_triggeringEvent == null)
             {
