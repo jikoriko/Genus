@@ -22,10 +22,9 @@ namespace RpgGame.EntityComponents
         public MapEventComponent(Entity entity, MapEvent mapEvent)
             : base(entity)
         {
-            int spriteID = EventData.GetEventData(mapEvent.EventID).GetSpriteID();
-            if (spriteID != -1)
+            if (mapEvent.SpriteID != -1)
             {
-                _spriteData = SpriteData.GetSpriteData(spriteID);
+                _spriteData = SpriteData.GetSpriteData(mapEvent.SpriteID);
                 SetTexture(Assets.GetTexture("Sprites/" + _spriteData.ImagePath));
                 SetSpriteCenter(SpriteCenter.Top);
                 SetAnimating(false);
@@ -112,6 +111,16 @@ namespace RpgGame.EntityComponents
                 }
             }
             
+        }
+
+        public override void Render(FrameEventArgs e)
+        {
+            PlayerPacket localPacket = RpgClientConnection.Instance.GetLocalPlayerPacket();
+            if (!(localPacket.PositionX == _mapEvent.MapX && localPacket.PositionY == _mapEvent.MapY))
+            {
+                base.Render(e);
+            }
+
         }
     }
 }

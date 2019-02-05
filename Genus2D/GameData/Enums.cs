@@ -16,6 +16,16 @@ namespace Genus2D.GameData
     }
 
     [Serializable]
+    public enum EventTriggerType
+    {
+        None,
+        Action,
+        PlayerTouch,
+        EventTouch,
+        Autorun
+    }
+
+    [Serializable]
     public enum EquipmentSlot
     {
         Weapon,

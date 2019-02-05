@@ -97,30 +97,23 @@ namespace Genus2D.GameData
 
         // EventData varialbles and functions
 
-        public enum TriggerType
-        {
-            Action,
-            PlayerTouch
-        }
-
         public string Name;
-        private TriggerType _triggerType;
-        private bool _passable;
         public List<EventCommand> EventCommands { get; private set; }
-        private int _spriteID;
 
         public EventData(string name)
         {
             Name = name;
-            _triggerType = TriggerType.Action;
-            _passable = false;
             EventCommands = new List<EventCommand>();
-            _spriteID = -1;
         }
 
         public void AddEventCommand(EventCommand.CommandType type)
         {
             EventCommands.Add(new EventCommand(type));
+        }
+
+        public void AddEventCommand(EventCommand command)
+        {
+            EventCommands.Add(command);
         }
 
         public void RemoveEventCommand(int index)
@@ -141,39 +134,10 @@ namespace Genus2D.GameData
             return strings;
         }
 
-        public TriggerType GetTriggerType()
-        {
-            return _triggerType;
-        }
-
-        public void SetTriggerType(TriggerType triggerType)
-        {
-            _triggerType = triggerType;
-        }
-
-        public bool Passable()
-        {
-            return _passable;
-        }
-
-        public void SetPassable(bool passable)
-        {
-            _passable = passable;
-        }
 
         public override string ToString()
         {
             return "Event: " + Name;
-        }
-
-        public int GetSpriteID()
-        {
-            return _spriteID;
-        }
-
-        public void SetSpriteID(int id)
-        {
-            _spriteID = id;
         }
 
     }

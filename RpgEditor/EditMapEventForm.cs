@@ -1,0 +1,63 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace RpgEditor
+{
+    public partial class EditMapEventForm : Form
+    {
+        private Genus2D.GameData.MapEvent _mapEvent;
+
+        public EditMapEventForm(Genus2D.GameData.MapEvent mapEvent)
+        {
+            InitializeComponent();
+
+            _mapEvent = mapEvent;
+
+            List<string> events = Genus2D.GameData.EventData.GetEventsDataNames();
+            EventSelection.Items.Add("None");
+            EventSelection.Items.AddRange(events.ToArray());
+            if (mapEvent.EventID + 1 < EventSelection.Items.Count)
+                EventSelection.SelectedIndex = mapEvent.EventID + 1;
+            else
+                EventSelection.SelectedIndex = 0;
+
+            EventDirectionSelection.SelectedIndex = (int)mapEvent.EventDirection;
+
+            EventSpriteSelection.Items.Add("None");
+            List<string> spriteNames = Genus2D.GameData.SpriteData.GetSpriteNames();
+            EventSpriteSelection.Items.AddRange(spriteNames.ToArray());
+            if (mapEvent.SpriteID + 1 < EventSpriteSelection.Items.Count)
+                EventSpriteSelection.SelectedIndex = mapEvent.SpriteID + 1;
+            else
+                EventSpriteSelection.SelectedIndex = 0;
+
+            EventTriggerTypeSelection.SelectedIndex = (int)mapEvent.TriggerType;
+            EventPassableCheck.Checked = mapEvent.Passable;
+
+            ApplyData();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ApplyData();
+            this.Close();
+        }
+
+        private void ApplyData()
+        {
+            _mapEvent.EventID = EventSelection.SelectedIndex - 1;
+            _mapEvent.EventDirection = (Genus2D.GameData.Direction)EventDirectionSelection.SelectedIndex;
+            _mapEvent.SpriteID = EventSpriteSelection.SelectedIndex - 1;
+            _mapEvent.TriggerType = (Genus2D.GameData.EventTriggerType)EventTriggerTypeSelection.SelectedIndex;
+            _mapEvent.Passable = EventPassableCheck.Checked;
+        }
+
+    }
+}

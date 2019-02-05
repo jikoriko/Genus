@@ -63,11 +63,11 @@
     <Compile Include="AddEventCommandForm.Designer.cs">
       <DependentUpon>AddEventCommandForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditEventForm.cs">
+    <Compile Include="EditMapEventForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditEventForm.Designer.cs">
-      <DependentUpon>EditEventForm.cs</DependentUpon>
+    <Compile Include="EditMapEventForm.Designer.cs">
+      <DependentUpon>EditMapEventForm.cs</DependentUpon>
     </Compile>
     <Compile Include="EditorForm.cs">
       <SubType>Form</SubType>
@@ -104,8 +104,8 @@
     <EmbeddedResource Include="AddEventCommandForm.resx">
       <DependentUpon>AddEventCommandForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditEventForm.resx">
-      <DependentUpon>EditEventForm.cs</DependentUpon>
+    <EmbeddedResource Include="EditMapEventForm.resx">
+      <DependentUpon>EditMapEventForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorForm.resx">
       <DependentUpon>EditorForm.cs</DependentUpon>

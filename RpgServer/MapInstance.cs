@@ -17,6 +17,7 @@ namespace RpgServer
         private List<GameClient> _clientsToAdd;
         private List<GameClient> _clientsToRemove;
 
+        private EventInterpreter _eventInterpreter;
         private float _updateMapTimer;
 
         public MapInstance(Server server, int mapID)
@@ -26,11 +27,13 @@ namespace RpgServer
             _mapData = MapInfo.LoadMap(mapID);
 
             _mapPacket = new MapPacket();
+            _mapPacket.MapID = _mapID;
             _mapPacket.mapData = _mapData;
             _clients = new List<GameClient>();
             _clientsToAdd = new List<GameClient>();
             _clientsToRemove = new List<GameClient>();
 
+            _eventInterpreter = new EventInterpreter();
             _updateMapTimer = 0.06f;
         }
 
@@ -71,7 +74,12 @@ namespace RpgServer
             return _mapData;
         }
 
-        public bool MapTilePassable(int x, int y)
+        public EventInterpreter GetEventInterpreter()
+        {
+            return _eventInterpreter;
+        }
+
+        public bool MapTilePassable(int x, int y, int eventID)
         {
             if (x < 0 || y < 0 || x >= _mapData.GetWidth() || y >= _mapData.GetHeight())
                 return false;
@@ -84,57 +92,102 @@ namespace RpgServer
                     return false;
             }
 
-            for (int i = 0; i < _mapData.MapEventsCount(); i++)
+            int tileEvent = TileHasEvent(x, y, eventID);
+            if (tileEvent != -1)
             {
-                MapEvent mapEvent = _mapData.GetMapEvent(i);
-                if ((mapEvent.MapX == x && mapEvent.MapY == y) && !mapEvent.GetEventData().Passable())
+                MapEvent mapEvent = _mapData.GetMapEvent(tileEvent);
+                if (!mapEvent.Passable)
+                    return false;
+            }
+
+            if (eventID != -1)
+            {
+                MapEvent mapEvent = _mapData.GetMapEvent(eventID);
+                if (TileHasPlayers(x, y) && !mapEvent.Passable)
                     return false;
             }
 
             return true;
         }
 
-        public void TeleportMapEvent(int eventID, int mapX, int mapY)
+        public int TileHasEvent(int mapX, int mapY, int ignoreID)
         {
-            if (MapTilePassable(mapX, mapY))
+            int id = -1;
+            for (int i = 0; i < _mapData.MapEventsCount(); i++)
             {
-                GetMapData().GetMapEvent(eventID).MapX = mapX;
-                GetMapData().GetMapEvent(eventID).MapY = mapY;
-                GetMapData().GetMapEvent(eventID).RealX = mapX * 32;
-                GetMapData().GetMapEvent(eventID).RealY = mapY * 32;
-                UpdateMapEventOnClients(eventID);
+                if (i == ignoreID)
+                    continue;
+                MapEvent mapEvent = _mapData.GetMapEvent(i);
+                if (mapEvent.MapX == mapX && mapEvent.MapY == mapY)
+                {
+                    id = i;
+                }
             }
+            return id;
         }
 
-        public void MoveMapEvent(int eventID, Direction direction)
+        public bool TileHasPlayers(int mapX, int mapY)
         {
+            for (int i = 0; i < _clients.Count; i++)
+            {
+                PlayerPacket packet = _clients[i].GetPacket();
+                if (packet.PositionX == mapX && packet.PositionY == mapY)
+                    return true;
+            }
+            return false;
+        }
+
+        public bool TeleportMapEvent(int eventID, int mapX, int mapY)
+        {
+            if (MapTilePassable(mapX, mapY, eventID))
+            {
+                MapEvent mapEvent = GetMapData().GetMapEvent(eventID);
+                mapEvent.MapX = mapX;
+                mapEvent.MapY = mapY;
+                mapEvent.RealX = mapX * 32;
+                mapEvent.RealY = mapY * 32;
+                UpdateMapEventOnClients(eventID);
+                return true;
+            }
+            return false;
+        }
+
+        public bool MoveMapEvent(int eventID, Direction direction)
+        {
+            MapEvent mapEvent = GetMapData().GetMapEvent(eventID);
             int x = direction == Direction.Left ? -1 : direction == Direction.Right ? 1 : 0;
             int y = direction == Direction.Up ? -1 : direction == Direction.Down ? 1 : 0;
-            x += GetMapData().GetMapEvent(eventID).MapX;
-            y += GetMapData().GetMapEvent(eventID).MapY;
+            x += mapEvent.MapX;
+            y += mapEvent.MapY;
 
-            if (MapTilePassable(x, y))
+            if (MapTilePassable(x, y, eventID))
             {
-                GetMapData().GetMapEvent(eventID).EventDirection = direction;
-                GetMapData().GetMapEvent(eventID).MapX = x;
-                GetMapData().GetMapEvent(eventID).MapY = y;
+                mapEvent.EventDirection = direction;
+                mapEvent.MapX = x;
+                mapEvent.MapY = y;
                 UpdateMapEventOnClients(eventID);
+                return true;
             }
             else
             {
                 ChangeMapEventDirection(eventID, direction);
+                return false;
             }
         }
 
         public void ChangeMapEventDirection(int eventID, Direction direction)
         {
-            GetMapData().GetMapEvent(eventID).EventDirection = direction;
-            ClientCommand clientCommand = new ClientCommand(ClientCommand.CommandType.ChangeMapEventDirection);
-            clientCommand.SetParameter("EventID", eventID.ToString());
-            clientCommand.SetParameter("Direction", ((int)direction).ToString());
-            for (int i = 0; i < _clients.Count; i++)
+            if (GetMapData().GetMapEvent(eventID).EventDirection != direction)
             {
-                _clients[i].AddClientCommand(clientCommand);
+                GetMapData().GetMapEvent(eventID).EventDirection = direction;
+                ClientCommand clientCommand = new ClientCommand(ClientCommand.CommandType.ChangeMapEventDirection);
+                clientCommand.SetParameter("EventID", eventID.ToString());
+                clientCommand.SetParameter("MapID", _mapID.ToString());
+                clientCommand.SetParameter("Direction", ((int)direction).ToString());
+                for (int i = 0; i < _clients.Count; i++)
+                {
+                    _clients[i].AddClientCommand(clientCommand);
+                }
             }
         }
 
@@ -142,6 +195,7 @@ namespace RpgServer
         {
             ClientCommand clientCommand = new ClientCommand(ClientCommand.CommandType.UpdateMapEvent);
             clientCommand.SetParameter("EventID", eventID.ToString());
+            clientCommand.SetParameter("MapID", _mapID.ToString());
             MapEvent mapEvent = GetMapData().GetMapEvent(eventID);
             clientCommand.SetParameter("MapX", (mapEvent.MapX).ToString());
             clientCommand.SetParameter("MapY", (mapEvent.MapY).ToString());
@@ -177,23 +231,6 @@ namespace RpgServer
                 }
             }
 
-            if (_updateMapTimer > 0f)
-            {
-                _updateMapTimer -= deltaTime;
-            }
-
-            for (int i = 0; i < GetMapData().MapEventsCount(); i++)
-            {
-                MapEvent mapEvent = GetMapData().GetMapEvent(i);
-                mapEvent.UpdateMovement(deltaTime);
-
-                if (_updateMapTimer <= 0f && mapEvent.Moved)
-                {
-                    UpdateMapEventOnClients(i);
-                    _updateMapTimer = 0.06f;
-                    mapEvent.Moved = false;
-                }
-            }
 
             for (int i = 0; i < _clients.Count; i++)
             {
@@ -204,6 +241,31 @@ namespace RpgServer
                 _clients[i].Update(deltaTime);
                 if (!_clients[i].Connected())
                     RemoveClient(_clients[i]);
+            }
+
+            _eventInterpreter.Update(deltaTime);
+
+            if (_updateMapTimer > 0f)
+            {
+                _updateMapTimer -= deltaTime;
+            }
+
+            for (int i = 0; i < GetMapData().MapEventsCount(); i++)
+            {
+                MapEvent mapEvent = GetMapData().GetMapEvent(i);
+                if (mapEvent.TriggerType == EventTriggerType.Autorun)
+                {
+                    _eventInterpreter.TriggerEventData(null, mapEvent);
+                }
+
+                mapEvent.UpdateMovement(deltaTime);
+
+                if (_updateMapTimer <= 0f && mapEvent.Moved)
+                {
+                    UpdateMapEventOnClients(i);
+                    _updateMapTimer = 0.06f;
+                    mapEvent.Moved = false;
+                }
             }
 
         }

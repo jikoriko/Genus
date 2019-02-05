@@ -106,6 +106,15 @@ namespace Genus2D.GameData
                 _parameters[name] = value;
         }
 
+        public void SetParameter(int index, object value)
+        {
+            if (index >= 0 && index < _parameters.Count)
+            {
+                string name = _parameters.ElementAt(index).Key;
+                _parameters[name] = value;
+            }
+        }
+
         public override string ToString()
         {
             string s = Type.ToString();

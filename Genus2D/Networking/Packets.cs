@@ -323,18 +323,40 @@ namespace Genus2D.Networking
 
     public class MapPacket
     {
+        public int MapID;
         public MapData mapData;
 
         public byte[] GetBytes()
         {
-            return mapData.GetBytes();
+            using (MemoryStream stream = new MemoryStream())
+            {
+                stream.Write(BitConverter.GetBytes(MapID), 0, sizeof(int));
+                byte[] mapBytes = mapData.GetBytes();
+                stream.Write(BitConverter.GetBytes(mapBytes.Length), 0, sizeof(int));
+                stream.Write(mapBytes, 0, mapBytes.Length);
+                return stream.ToArray();
+            }
         }
 
         public static MapPacket FromBytes(byte[] bytes)
         {
-            MapPacket mapPacket = new MapPacket();
-            mapPacket.mapData = MapData.FromBytes(bytes);
-            return mapPacket;
+            using (MemoryStream stream = new MemoryStream(bytes))
+            {
+                byte[] tempBytes = new byte[sizeof(int)];
+                stream.Read(tempBytes, 0, sizeof(int));
+                int mapID = BitConverter.ToInt32(tempBytes, 0);
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                int dataSize = BitConverter.ToInt32(tempBytes, 0);
+
+                tempBytes = new byte[dataSize];
+                stream.Read(tempBytes, 0, dataSize);
+
+                MapPacket mapPacket = new MapPacket();
+                mapPacket.MapID = mapID;
+                mapPacket.mapData = MapData.FromBytes(tempBytes);
+                return mapPacket;
+            }
         }
     }
 

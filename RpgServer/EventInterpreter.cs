@@ -10,215 +10,220 @@ namespace RpgServer
 {
     public class EventInterpreter
     {
-        private GameClient _gameClient;
+        private List<TriggeringEvent> _triggeringEvents;
 
-        private EventData _triggeringEvent;
-        private int _triggeringEventCommand;
-        private float _triggeringEventWaitTimer;
-        private bool _messageShowing;
-        private bool _optionsShowing;
-        private int _selectedOption;
-        private int _optionsCount;
-
-        public EventInterpreter(GameClient gameClient)
+        public EventInterpreter()
         {
-            _gameClient = gameClient;
-
-            _triggeringEvent = null;
-            _triggeringEventCommand = -1;
-
-            _triggeringEventWaitTimer = 0.0f;
-            _messageShowing = false;
-            _optionsShowing = false;
-            _selectedOption = -1;
-            _optionsCount = 0;
+            _triggeringEvents = new List<TriggeringEvent>();
         }
 
         public void Update(float deltaTime)
         {
-            if (EventTriggering())
+            for (int i = 0; i < _triggeringEvents.Count; i++)
             {
-                if (_messageShowing)
+                TriggerEvent(_triggeringEvents[i], deltaTime);
+                if (_triggeringEvents[i].Complete)
                 {
-                    if (_gameClient.KeyDown(OpenTK.Input.Key.Enter))
-                    {
-                        _gameClient.AddClientCommand(new ClientCommand(ClientCommand.CommandType.CloseMessage));
-                        _messageShowing = false;
-                    }
-
-                    return;
-                }
-                else if (_optionsShowing)
-                {
-                    ClientCommand clientCommand;
-
-                    if (_gameClient.KeyDown(OpenTK.Input.Key.Space))
-                    {
-                        //get the selected option and trigger event
-
-                        _optionsShowing = false;
-                        _selectedOption = -1;
-                        _optionsCount = 0;
-                        _gameClient.AddClientCommand(new ClientCommand(ClientCommand.CommandType.CloseMessage));
-                    }
-                    else if (_gameClient.KeyDown(OpenTK.Input.Key.Down))
-                    {
-                        _selectedOption++;
-                        if (_selectedOption >= _optionsCount)
-                            _selectedOption = 0;
-
-                        clientCommand = new ClientCommand(ClientCommand.CommandType.UpdateOptions);
-                        clientCommand.SetParameter("SelectedOption", _selectedOption.ToString());
-                        _gameClient.AddClientCommand(clientCommand);
-                    }
-                    if (_gameClient.KeyDown(OpenTK.Input.Key.Up))
-                    {
-                        _selectedOption--;
-                        if (_selectedOption < 0)
-                            _selectedOption = _optionsCount - 1;
-
-                        clientCommand = new ClientCommand(ClientCommand.CommandType.UpdateOptions);
-                        clientCommand.SetParameter("SelectedOption", _selectedOption.ToString());
-                        _gameClient.AddClientCommand(clientCommand);
-                    }
-
-                    return;
-                }
-
-                if (_triggeringEventWaitTimer > 0)
-                {
-                    _triggeringEventWaitTimer -= deltaTime;
-                    return;
-                }
-
-                if (_triggeringEventCommand < _triggeringEvent.EventCommands.Count - 1)
-                {
-                    _triggeringEventCommand++;
-                    EventCommand eventCommand = _triggeringEvent.EventCommands[_triggeringEventCommand];
-
-                    ClientCommand clientCommand;
-                    int mapID;
-                    int eventID;
-                    int mapX;
-                    int mapY;
-                    Direction direction;
-
-                    switch (eventCommand.Type)
-                    {
-                        case EventCommand.CommandType.WaitTimer:
-
-                            float timer = (float)eventCommand.GetParameter("Time");
-                            _triggeringEventWaitTimer = timer;
-
-                            break;
-                        case EventCommand.CommandType.TeleportPlayer:
-
-                            mapID = (int)eventCommand.GetParameter("MapID");
-                            mapX = (int)eventCommand.GetParameter("MapX");
-                            mapY = (int)eventCommand.GetParameter("MapY");
-                            _gameClient.SetMapPosition(mapX, mapY);
-                            _gameClient.SetMapID(mapID);
-
-                            break;
-                        case EventCommand.CommandType.MovePlayer:
-
-                            if (_gameClient.Moving())
-                            {
-                                _triggeringEventCommand--;
-                                break;
-                            }
-                            direction = (Direction)eventCommand.GetParameter("Direction");
-                            _gameClient.Move(direction);
-
-                            break;
-                        case EventCommand.CommandType.ChangePlayerDirection:
-
-                            direction = (Direction)eventCommand.GetParameter("Direction");
-                            _gameClient.ChangeDirection(direction);
-
-                            break;
-                        case EventCommand.CommandType.TeleportMapEvent:
-
-                            mapID = (int)eventCommand.GetParameter("MapID");
-                            eventID = (int)eventCommand.GetParameter("EventID");
-                            mapX = (int)eventCommand.GetParameter("MapX");
-                            mapY = (int)eventCommand.GetParameter("MapY");
-                            Server.Instance.GetMapInstance(mapID).TeleportMapEvent(eventID, mapX, mapY);
-
-                            break;
-                        case EventCommand.CommandType.MoveMapEvent:
-
-                            mapID = (int)eventCommand.GetParameter("MapID");
-                            eventID = (int)eventCommand.GetParameter("EventID");
-                            if (Server.Instance.GetMapInstance(mapID).GetMapData().GetMapEvent(eventID).Moving())
-                            {
-                                _triggeringEventCommand--;
-                                break;
-                            }
-                            direction = (Direction)eventCommand.GetParameter("Direction");
-                            Server.Instance.GetMapInstance(mapID).MoveMapEvent(eventID, direction);
-
-                            break;
-                        case EventCommand.CommandType.ChangeMapEventDirection:
-
-                            mapID = (int)eventCommand.GetParameter("MapID");
-                            eventID = (int)eventCommand.GetParameter("EventID");
-                            direction = (Direction)eventCommand.GetParameter("Direction");
-                            Server.Instance.GetMapInstance(mapID).ChangeMapEventDirection(eventID, direction);
-
-                            break;
-                        case EventCommand.CommandType.ShowMessage:
-
-                            clientCommand = new ClientCommand(ClientCommand.CommandType.ShowMessage);
-                            clientCommand.SetParameter("Message", (string)eventCommand.GetParameter("Message"));
-                            _gameClient.AddClientCommand(clientCommand);
-                            _messageShowing = true;
-
-                            break;
-                        case EventCommand.CommandType.ShowOptions:
-
-                            List<MessageOption> options = (List<MessageOption>)eventCommand.GetParameter("Options");
-                            _selectedOption = 0;
-                            _optionsCount = options.Count;
-
-                            string optionStrings = "";
-                            for (int i = 0; i < options.Count; i++)
-                            {
-                                optionStrings += options[i].Option;
-                                if (i < options.Count - 1)
-                                    optionStrings += ",";
-                            }
-
-                            clientCommand = new ClientCommand(ClientCommand.CommandType.ShowOptions);
-                            clientCommand.SetParameter("Message", (string)eventCommand.GetParameter("Message"));
-                            clientCommand.SetParameter("Options", optionStrings);
-                            clientCommand.SetParameter("SelectedOption", _selectedOption.ToString());
-
-                            _gameClient.AddClientCommand(clientCommand);
-                            _optionsShowing = true;
-
-                            break;
-                    }
-                }
-                else
-                {
-                    _triggeringEvent = null;
-                    _triggeringEventCommand = -1;
+                    _triggeringEvents.RemoveAt(i);
+                    i--;
                 }
             }
         }
 
-        public bool EventTriggering()
+        private void TriggerEvent(TriggeringEvent triggeringEvent, float deltaTime)
         {
-            return _triggeringEvent != null;
+            GameClient client = triggeringEvent.GetGameClient();
+            EventData eventData = triggeringEvent.GetEventData(); ;
+
+            if (triggeringEvent.MessageShowing)
+            {
+                if (client.KeyDown(OpenTK.Input.Key.Enter))
+                {
+                    client.AddClientCommand(new ClientCommand(ClientCommand.CommandType.CloseMessage));
+                    triggeringEvent.MessageShowing = false;
+                    client.MovementDisabled = false;
+                }
+
+                return;
+            }
+            else if (triggeringEvent.OptionsShowing)
+            {
+                ClientCommand clientCommand;
+
+                if (client.KeyDown(OpenTK.Input.Key.Space))
+                {
+                    //get the selected option and trigger event
+
+                    triggeringEvent.OptionsShowing = false;
+                    client.MovementDisabled = false;
+                    triggeringEvent.SelectedOption = -1;
+                    triggeringEvent.OptionsCount = 0;
+                    client.AddClientCommand(new ClientCommand(ClientCommand.CommandType.CloseMessage));
+                }
+                else if (client.KeyDown(OpenTK.Input.Key.Down))
+                {
+                    triggeringEvent.SelectedOption++;
+                    if (triggeringEvent.SelectedOption >= triggeringEvent.OptionsCount)
+                        triggeringEvent.SelectedOption = 0;
+
+                    clientCommand = new ClientCommand(ClientCommand.CommandType.UpdateOptions);
+                    clientCommand.SetParameter("SelectedOption", triggeringEvent.SelectedOption.ToString());
+                    client.AddClientCommand(clientCommand);
+                }
+                if (client.KeyDown(OpenTK.Input.Key.Up))
+                {
+                    triggeringEvent.SelectedOption--;
+                    if (triggeringEvent.SelectedOption < 0)
+                        triggeringEvent.SelectedOption = triggeringEvent.OptionsCount - 1;
+
+                    clientCommand = new ClientCommand(ClientCommand.CommandType.UpdateOptions);
+                    clientCommand.SetParameter("SelectedOption", triggeringEvent.SelectedOption.ToString());
+                    client.AddClientCommand(clientCommand);
+                }
+
+                return;
+            }
+
+            if (triggeringEvent.WaitTimer > 0)
+            {
+                triggeringEvent.WaitTimer -= deltaTime;
+                return;
+            }
+
+            if (triggeringEvent.CommandID < eventData.EventCommands.Count - 1)
+            {
+                triggeringEvent.CommandID++;
+                EventCommand eventCommand = eventData.EventCommands[triggeringEvent.CommandID];
+
+                ClientCommand clientCommand;
+                int mapID;
+                int eventID;
+                int mapX;
+                int mapY;
+                Direction direction;
+
+                switch (eventCommand.Type)
+                {
+                    case EventCommand.CommandType.WaitTimer:
+
+                        float timer = (float)eventCommand.GetParameter("Time");
+                        triggeringEvent.WaitTimer = timer;
+
+                        break;
+                    case EventCommand.CommandType.TeleportPlayer:
+
+                        mapID = (int)eventCommand.GetParameter("MapID");
+                        mapX = (int)eventCommand.GetParameter("MapX");
+                        mapY = (int)eventCommand.GetParameter("MapY");
+                        client.SetMapPosition(mapX, mapY);
+                        client.SetMapID(mapID);
+
+                        break;
+                    case EventCommand.CommandType.MovePlayer:
+
+                        if (client.Moving())
+                        {
+                            triggeringEvent.CommandID--;
+                            break;
+                        }
+                        direction = (Direction)eventCommand.GetParameter("Direction");
+                        client.Move(direction);
+
+                        break;
+                    case EventCommand.CommandType.ChangePlayerDirection:
+
+                        direction = (Direction)eventCommand.GetParameter("Direction");
+                        client.ChangeDirection(direction);
+
+                        break;
+                    case EventCommand.CommandType.TeleportMapEvent:
+
+                        mapID = (int)eventCommand.GetParameter("MapID");
+                        eventID = (int)eventCommand.GetParameter("EventID");
+                        if (Server.Instance.GetMapInstance(mapID).GetMapData().GetMapEvent(eventID).Moving())
+                        {
+                            triggeringEvent.CommandID--;
+                            break;
+                        }
+                        mapX = (int)eventCommand.GetParameter("MapX");
+                        mapY = (int)eventCommand.GetParameter("MapY");
+                        if (!Server.Instance.GetMapInstance(mapID).TeleportMapEvent(eventID, mapX, mapY))
+                            triggeringEvent.CommandID--;
+
+                        break;
+                    case EventCommand.CommandType.MoveMapEvent:
+
+                        mapID = (int)eventCommand.GetParameter("MapID");
+                        eventID = (int)eventCommand.GetParameter("EventID");
+                        if (Server.Instance.GetMapInstance(mapID).GetMapData().GetMapEvent(eventID).Moving())
+                        {
+                            triggeringEvent.CommandID--;
+                            break;
+                        }
+                        direction = (Direction)eventCommand.GetParameter("Direction");
+                        if (!Server.Instance.GetMapInstance(mapID).MoveMapEvent(eventID, direction))
+                            triggeringEvent.CommandID--;
+
+                        break;
+                    case EventCommand.CommandType.ChangeMapEventDirection:
+
+                        mapID = (int)eventCommand.GetParameter("MapID");
+                        eventID = (int)eventCommand.GetParameter("EventID");
+                        if (Server.Instance.GetMapInstance(mapID).GetMapData().GetMapEvent(eventID).Moving())
+                        {
+                            triggeringEvent.CommandID--;
+                            break;
+                        }
+                        direction = (Direction)eventCommand.GetParameter("Direction");
+                        Server.Instance.GetMapInstance(mapID).ChangeMapEventDirection(eventID, direction);
+
+                        break;
+                    case EventCommand.CommandType.ShowMessage:
+
+                        clientCommand = new ClientCommand(ClientCommand.CommandType.ShowMessage);
+                        clientCommand.SetParameter("Message", (string)eventCommand.GetParameter("Message"));
+                        client.AddClientCommand(clientCommand);
+                        triggeringEvent.MessageShowing = true;
+                        client.MovementDisabled = true;
+
+                        break;
+                    case EventCommand.CommandType.ShowOptions:
+
+                        List<MessageOption> options = (List<MessageOption>)eventCommand.GetParameter("Options");
+                        triggeringEvent.SelectedOption = 0;
+                        triggeringEvent.OptionsCount = options.Count;
+
+                        string optionStrings = "";
+                        for (int i = 0; i < options.Count; i++)
+                        {
+                            optionStrings += options[i].Option;
+                            if (i < options.Count - 1)
+                                optionStrings += ",";
+                        }
+
+                        clientCommand = new ClientCommand(ClientCommand.CommandType.ShowOptions);
+                        clientCommand.SetParameter("Message", (string)eventCommand.GetParameter("Message"));
+                        clientCommand.SetParameter("Options", optionStrings);
+                        clientCommand.SetParameter("SelectedOption", triggeringEvent.SelectedOption.ToString());
+
+                        client.AddClientCommand(clientCommand);
+                        triggeringEvent.OptionsShowing = true;
+                        client.MovementDisabled = true;
+
+                        break;
+                }
+            }
+            else
+            {
+                triggeringEvent.FinishTriggering();
+            }
         }
 
-        public void TriggerEventData(EventData data)
+        public void TriggerEventData(GameClient client, MapEvent mapEvent)
         {
-            if (_triggeringEvent == null)
-            {
-                _triggeringEvent = data;
-            }
+            if (mapEvent.Locked)
+                return;
+            _triggeringEvents.Add(new TriggeringEvent(client, mapEvent));
         }
 
 

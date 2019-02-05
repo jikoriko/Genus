@@ -174,6 +174,7 @@ namespace RpgServer
             }
         }
 
+
         public void SendMessage(MessagePacket message)
         {
             for (int i = 0; i < _gameClients.Count; i++)

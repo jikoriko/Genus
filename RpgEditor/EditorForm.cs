@@ -793,16 +793,10 @@ namespace RpgEditor
             {
                 Genus2D.GameData.EventData data = Genus2D.GameData.EventData.GetEventData(EventsList.SelectedIndex);
                 EventNameBox.Text = data.Name;
-                EventTriggerBox.SelectedIndex = (int)data.GetTriggerType();
-                EventPassableCheck.Checked = data.Passable();
-                EventSpriteSelection.SelectedIndex = data.GetSpriteID() + 1;
             }
             else
             {
                 EventNameBox.Text = "";
-                EventTriggerBox.SelectedIndex = -1;
-                EventPassableCheck.Checked = false;
-                EventSpriteSelection.SelectedIndex = 0;
             }
         }
 
@@ -835,13 +829,34 @@ namespace RpgEditor
             form.ShowDialog(this);
         }
 
-        public void AddEventCommand(Genus2D.GameData.EventCommand.CommandType command)
+        public void AddEventCommand(Genus2D.GameData.EventCommand.CommandType type)
         {
             if (EventsList.SelectedIndex != -1)
             {
                 Genus2D.GameData.EventData data = Genus2D.GameData.EventData.GetEventData(EventsList.SelectedIndex);
-                data.AddEventCommand(command);
+                data.AddEventCommand(type);
                 PopulateEventCommandsList();
+                EventCommandsList.SelectedIndex = EventCommandsList.Items.Count - 1;
+            }
+        }
+
+        private void CopyEventCommandButton_Click(object sender, EventArgs e)
+        {
+            if (EventsList.SelectedIndex == -1)
+                return;
+            if (EventCommandsList.SelectedIndex != -1)
+            {
+                Genus2D.GameData.EventData data = Genus2D.GameData.EventData.GetEventData(EventsList.SelectedIndex);
+                Genus2D.GameData.EventCommand command = data.EventCommands[EventCommandsList.SelectedIndex];
+                Genus2D.GameData.EventCommand newCommand = new Genus2D.GameData.EventCommand(command.Type);
+                for (int i = 0; i < command.NumParameters(); i++)
+                {
+                    object parameter = command.GetParameter(i);
+                    newCommand.SetParameter(i, parameter);
+                }
+                data.AddEventCommand(newCommand);
+                PopulateEventCommandsList();
+                EventCommandsList.SelectedIndex = EventCommandsList.Items.Count - 1;
             }
         }
 
@@ -862,9 +877,6 @@ namespace RpgEditor
             {
                 Genus2D.GameData.EventData data = Genus2D.GameData.EventData.GetEventData(EventsList.SelectedIndex);
                 data.Name = EventNameBox.Text;
-                data.SetTriggerType((Genus2D.GameData.EventData.TriggerType)EventTriggerBox.SelectedIndex);
-                data.SetPassable(EventPassableCheck.Checked);
-                data.SetSpriteID(EventSpriteSelection.SelectedIndex - 1);
 
                 ApplyEventCommandData();
                 PopulateEventsList();
@@ -962,13 +974,9 @@ namespace RpgEditor
             int selection = SpritesList.SelectedIndex;
 
             SpritesList.Items.Clear();
-            EventSpriteSelection.Items.Clear();
-            EventSpriteSelection.Items.Add("None");
-            EventSpriteSelection.SelectedIndex = 0;
 
             List<string> spriteNames = Genus2D.GameData.SpriteData.GetSpriteNames();
             SpritesList.Items.AddRange(spriteNames.ToArray());
-            EventSpriteSelection.Items.AddRange(spriteNames.ToArray());
 
             if (selection < SpritesList.Items.Count)
                 SpritesList.SelectedIndex = selection;

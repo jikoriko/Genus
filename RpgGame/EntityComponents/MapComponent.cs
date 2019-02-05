@@ -20,6 +20,7 @@ namespace RpgGame.EntityComponents
 
         public static MapComponent Instance { get; private set; }
 
+        public int MapID;
         private MapData _mapData;
         private List<Entity> _mapEvents;
         private bool _mapDataChanged;
@@ -28,6 +29,7 @@ namespace RpgGame.EntityComponents
             : base(entity)
         {
             Instance = this;
+            MapID = -1;
             _mapData = null;
             _mapDataChanged = false;
             _mapEvents = new List<Entity>();
@@ -38,8 +40,9 @@ namespace RpgGame.EntityComponents
             return _mapData;
         }
 
-        public void SetMapData(MapData mapData)
+        public void SetMapData(int id, MapData mapData)
         {
+            MapID = id;
             _mapData = mapData;
             _mapDataChanged = true;
             for (int i = 0; i < _mapEvents.Count; i++)

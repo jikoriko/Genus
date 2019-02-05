@@ -46,6 +46,7 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.panel3 = new System.Windows.Forms.Panel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.UndoTilesetButton = new System.Windows.Forms.Button();
             this.ImportTilesetButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.PrioritiesButton = new System.Windows.Forms.RadioButton();
@@ -63,19 +64,15 @@
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel4 = new System.Windows.Forms.Panel();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.label19 = new System.Windows.Forms.Label();
-            this.EventSpriteSelection = new System.Windows.Forms.ComboBox();
+            this.UndoEventChangesButton = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.EventCommandDataPanel = new System.Windows.Forms.Panel();
             this.RemoveEventCommandButton = new System.Windows.Forms.Button();
             this.AddEventCommandButton = new System.Windows.Forms.Button();
             this.EventCommandsList = new System.Windows.Forms.ListBox();
-            this.EventPassableCheck = new System.Windows.Forms.CheckBox();
             this.ApplyEventChangesButton = new System.Windows.Forms.Button();
-            this.EventTriggerSelection = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.EventTriggerBox = new System.Windows.Forms.ComboBox();
             this.EventNameBox = new System.Windows.Forms.TextBox();
             this.AddEventButton = new System.Windows.Forms.Button();
             this.RemoveEventButton = new System.Windows.Forms.Button();
@@ -84,6 +81,7 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.panel5 = new System.Windows.Forms.Panel();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.UndoSpriteButton = new System.Windows.Forms.Button();
             this.label20 = new System.Windows.Forms.Label();
             this.SpriteNameBox = new System.Windows.Forms.TextBox();
             this.ImportSpriteButton = new System.Windows.Forms.Button();
@@ -117,6 +115,7 @@
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.panel6 = new System.Windows.Forms.Panel();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.UndoItemButton = new System.Windows.Forms.Button();
             this.ImportIconButton = new System.Windows.Forms.Button();
             this.label24 = new System.Windows.Forms.Label();
             this.ItemMaxStack = new System.Windows.Forms.NumericUpDown();
@@ -133,10 +132,7 @@
             this.label21 = new System.Windows.Forms.Label();
             this.ItemListBox = new System.Windows.Forms.ListBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
-            this.UndoTilesetButton = new System.Windows.Forms.Button();
-            this.UndoEventChangesButton = new System.Windows.Forms.Button();
-            this.UndoSpriteButton = new System.Windows.Forms.Button();
-            this.UndoItemButton = new System.Windows.Forms.Button();
+            this.CopyEventCommandButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -432,6 +428,17 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Tileset Data";
             // 
+            // UndoTilesetButton
+            // 
+            this.UndoTilesetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.UndoTilesetButton.Location = new System.Drawing.Point(670, 602);
+            this.UndoTilesetButton.Name = "UndoTilesetButton";
+            this.UndoTilesetButton.Size = new System.Drawing.Size(122, 47);
+            this.UndoTilesetButton.TabIndex = 8;
+            this.UndoTilesetButton.Text = "Undo Changes";
+            this.UndoTilesetButton.UseVisualStyleBackColor = true;
+            this.UndoTilesetButton.Click += new System.EventHandler(this.UndoTilesetButton_Click);
+            // 
             // ImportTilesetButton
             // 
             this.ImportTilesetButton.Location = new System.Drawing.Point(62, 73);
@@ -607,14 +614,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.BackColor = System.Drawing.Color.AliceBlue;
             this.groupBox4.Controls.Add(this.UndoEventChangesButton);
-            this.groupBox4.Controls.Add(this.label19);
-            this.groupBox4.Controls.Add(this.EventSpriteSelection);
             this.groupBox4.Controls.Add(this.groupBox5);
-            this.groupBox4.Controls.Add(this.EventPassableCheck);
             this.groupBox4.Controls.Add(this.ApplyEventChangesButton);
-            this.groupBox4.Controls.Add(this.EventTriggerSelection);
             this.groupBox4.Controls.Add(this.label7);
-            this.groupBox4.Controls.Add(this.EventTriggerBox);
             this.groupBox4.Controls.Add(this.EventNameBox);
             this.groupBox4.Location = new System.Drawing.Point(10, 9);
             this.groupBox4.Name = "groupBox4";
@@ -623,25 +625,20 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Event Data";
             // 
-            // label19
+            // UndoEventChangesButton
             // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(34, 95);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(37, 13);
-            this.label19.TabIndex = 8;
-            this.label19.Text = "Sprite:";
-            // 
-            // EventSpriteSelection
-            // 
-            this.EventSpriteSelection.FormattingEnabled = true;
-            this.EventSpriteSelection.Location = new System.Drawing.Point(77, 92);
-            this.EventSpriteSelection.Name = "EventSpriteSelection";
-            this.EventSpriteSelection.Size = new System.Drawing.Size(141, 21);
-            this.EventSpriteSelection.TabIndex = 7;
+            this.UndoEventChangesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.UndoEventChangesButton.Location = new System.Drawing.Point(670, 602);
+            this.UndoEventChangesButton.Name = "UndoEventChangesButton";
+            this.UndoEventChangesButton.Size = new System.Drawing.Size(122, 47);
+            this.UndoEventChangesButton.TabIndex = 9;
+            this.UndoEventChangesButton.Text = "Undo Changes";
+            this.UndoEventChangesButton.UseVisualStyleBackColor = true;
+            this.UndoEventChangesButton.Click += new System.EventHandler(this.UndoEventChangesButton_Click);
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.CopyEventCommandButton);
             this.groupBox5.Controls.Add(this.groupBox6);
             this.groupBox5.Controls.Add(this.RemoveEventCommandButton);
             this.groupBox5.Controls.Add(this.AddEventCommandButton);
@@ -702,20 +699,9 @@
             this.EventCommandsList.ItemHeight = 20;
             this.EventCommandsList.Location = new System.Drawing.Point(6, 19);
             this.EventCommandsList.Name = "EventCommandsList";
-            this.EventCommandsList.Size = new System.Drawing.Size(185, 444);
+            this.EventCommandsList.Size = new System.Drawing.Size(185, 384);
             this.EventCommandsList.TabIndex = 4;
             this.EventCommandsList.SelectedIndexChanged += new System.EventHandler(this.EventCommandsList_SelectedIndexChanged);
-            // 
-            // EventPassableCheck
-            // 
-            this.EventPassableCheck.AutoSize = true;
-            this.EventPassableCheck.Location = new System.Drawing.Point(149, 179);
-            this.EventPassableCheck.Name = "EventPassableCheck";
-            this.EventPassableCheck.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.EventPassableCheck.Size = new System.Drawing.Size(69, 17);
-            this.EventPassableCheck.TabIndex = 5;
-            this.EventPassableCheck.Text = "Passable";
-            this.EventPassableCheck.UseVisualStyleBackColor = true;
             // 
             // ApplyEventChangesButton
             // 
@@ -728,15 +714,6 @@
             this.ApplyEventChangesButton.UseVisualStyleBackColor = true;
             this.ApplyEventChangesButton.Click += new System.EventHandler(this.ApplyEventChangesButton_Click);
             // 
-            // EventTriggerSelection
-            // 
-            this.EventTriggerSelection.AutoSize = true;
-            this.EventTriggerSelection.Location = new System.Drawing.Point(30, 68);
-            this.EventTriggerSelection.Name = "EventTriggerSelection";
-            this.EventTriggerSelection.Size = new System.Drawing.Size(43, 13);
-            this.EventTriggerSelection.TabIndex = 3;
-            this.EventTriggerSelection.Text = "Trigger:";
-            // 
             // label7
             // 
             this.label7.AutoSize = true;
@@ -745,17 +722,6 @@
             this.label7.Size = new System.Drawing.Size(38, 13);
             this.label7.TabIndex = 2;
             this.label7.Text = "Name:";
-            // 
-            // EventTriggerBox
-            // 
-            this.EventTriggerBox.FormattingEnabled = true;
-            this.EventTriggerBox.Items.AddRange(new object[] {
-            "Action",
-            "Player Touch"});
-            this.EventTriggerBox.Location = new System.Drawing.Point(77, 65);
-            this.EventTriggerBox.Name = "EventTriggerBox";
-            this.EventTriggerBox.Size = new System.Drawing.Size(141, 21);
-            this.EventTriggerBox.TabIndex = 1;
             // 
             // EventNameBox
             // 
@@ -874,6 +840,17 @@
             this.groupBox7.TabIndex = 2;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Sprite Data";
+            // 
+            // UndoSpriteButton
+            // 
+            this.UndoSpriteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.UndoSpriteButton.Location = new System.Drawing.Point(670, 602);
+            this.UndoSpriteButton.Name = "UndoSpriteButton";
+            this.UndoSpriteButton.Size = new System.Drawing.Size(122, 47);
+            this.UndoSpriteButton.TabIndex = 27;
+            this.UndoSpriteButton.Text = "Undo Changes";
+            this.UndoSpriteButton.UseVisualStyleBackColor = true;
+            this.UndoSpriteButton.Click += new System.EventHandler(this.UndoSpriteButton_Click);
             // 
             // label20
             // 
@@ -1257,6 +1234,17 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Sprite Data";
             // 
+            // UndoItemButton
+            // 
+            this.UndoItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.UndoItemButton.Location = new System.Drawing.Point(670, 602);
+            this.UndoItemButton.Name = "UndoItemButton";
+            this.UndoItemButton.Size = new System.Drawing.Size(122, 47);
+            this.UndoItemButton.TabIndex = 32;
+            this.UndoItemButton.Text = "Undo Changes";
+            this.UndoItemButton.UseVisualStyleBackColor = true;
+            this.UndoItemButton.Click += new System.EventHandler(this.UndoItemButton_Click);
+            // 
             // ImportIconButton
             // 
             this.ImportIconButton.Location = new System.Drawing.Point(33, 91);
@@ -1421,49 +1409,16 @@
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Enemies";
             // 
-            // UndoTilesetButton
+            // CopyEventCommandButton
             // 
-            this.UndoTilesetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.UndoTilesetButton.Location = new System.Drawing.Point(670, 602);
-            this.UndoTilesetButton.Name = "UndoTilesetButton";
-            this.UndoTilesetButton.Size = new System.Drawing.Size(122, 47);
-            this.UndoTilesetButton.TabIndex = 8;
-            this.UndoTilesetButton.Text = "Undo Changes";
-            this.UndoTilesetButton.UseVisualStyleBackColor = true;
-            this.UndoTilesetButton.Click += new System.EventHandler(this.UndoTilesetButton_Click);
-            // 
-            // UndoEventChangesButton
-            // 
-            this.UndoEventChangesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.UndoEventChangesButton.Location = new System.Drawing.Point(670, 602);
-            this.UndoEventChangesButton.Name = "UndoEventChangesButton";
-            this.UndoEventChangesButton.Size = new System.Drawing.Size(122, 47);
-            this.UndoEventChangesButton.TabIndex = 9;
-            this.UndoEventChangesButton.Text = "Undo Changes";
-            this.UndoEventChangesButton.UseVisualStyleBackColor = true;
-            this.UndoEventChangesButton.Click += new System.EventHandler(this.UndoEventChangesButton_Click);
-            // 
-            // UndoSpriteButton
-            // 
-            this.UndoSpriteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.UndoSpriteButton.Location = new System.Drawing.Point(670, 602);
-            this.UndoSpriteButton.Name = "UndoSpriteButton";
-            this.UndoSpriteButton.Size = new System.Drawing.Size(122, 47);
-            this.UndoSpriteButton.TabIndex = 27;
-            this.UndoSpriteButton.Text = "Undo Changes";
-            this.UndoSpriteButton.UseVisualStyleBackColor = true;
-            this.UndoSpriteButton.Click += new System.EventHandler(this.UndoSpriteButton_Click);
-            // 
-            // UndoItemButton
-            // 
-            this.UndoItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.UndoItemButton.Location = new System.Drawing.Point(670, 602);
-            this.UndoItemButton.Name = "UndoItemButton";
-            this.UndoItemButton.Size = new System.Drawing.Size(122, 47);
-            this.UndoItemButton.TabIndex = 32;
-            this.UndoItemButton.Text = "Undo Changes";
-            this.UndoItemButton.UseVisualStyleBackColor = true;
-            this.UndoItemButton.Click += new System.EventHandler(this.UndoItemButton_Click);
+            this.CopyEventCommandButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.CopyEventCommandButton.Location = new System.Drawing.Point(6, 418);
+            this.CopyEventCommandButton.Name = "CopyEventCommandButton";
+            this.CopyEventCommandButton.Size = new System.Drawing.Size(185, 47);
+            this.CopyEventCommandButton.TabIndex = 11;
+            this.CopyEventCommandButton.Text = "Copy Command";
+            this.CopyEventCommandButton.UseVisualStyleBackColor = true;
+            this.CopyEventCommandButton.Click += new System.EventHandler(this.CopyEventCommandButton_Click);
             // 
             // EditorForm
             // 
@@ -1563,11 +1518,8 @@
         private System.Windows.Forms.Button RemoveEventButton;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.CheckBox EventPassableCheck;
         private System.Windows.Forms.Button ApplyEventChangesButton;
-        private System.Windows.Forms.Label EventTriggerSelection;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.ComboBox EventTriggerBox;
         private System.Windows.Forms.TextBox EventNameBox;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox6;
@@ -1604,8 +1556,6 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.CheckBox LockSpriteBoundsCheck;
-        private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.ComboBox EventSpriteSelection;
         private System.Windows.Forms.Button ImportTilesetButton;
         private System.Windows.Forms.Button ImportSpriteButton;
         private System.Windows.Forms.Label label20;
@@ -1631,6 +1581,7 @@
         private System.Windows.Forms.Button UndoEventChangesButton;
         private System.Windows.Forms.Button UndoSpriteButton;
         private System.Windows.Forms.Button UndoItemButton;
+        private System.Windows.Forms.Button CopyEventCommandButton;
     }
 }
 

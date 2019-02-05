@@ -19,9 +19,9 @@ C:\Users\perry\Documents\GitHub\Genus\GenusBuild\RpgEditor.exe.config
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\RpgEditor.exe
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\RpgEditor.pdb
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.LoadMapForm.resources
-C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.EditEventForm.resources
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\Tilesets\pokemon_tileset.png
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.AddEventCommandForm.resources
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\Sprites\player.png
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Assets\Textures\Sprites\wolf.png
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.EditMapEventForm.resources
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.csprojAssemblyReference.cache

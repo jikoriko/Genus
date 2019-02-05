@@ -48,7 +48,7 @@ namespace RpgGame.EntityComponents
         public void SetRealPosition()
         {
             Vector3 pos = new Vector3(_playerPacket.RealX + 16, _playerPacket.RealY + 32, 0);
-            pos.Z = -(_playerPacket.PositionY * 32) - 1;
+            pos.Z = -(_playerPacket.PositionY * 32);
             Transform.LocalPosition = pos;
         }
 
@@ -101,26 +101,31 @@ namespace RpgGame.EntityComponents
                             break;
                     }
 
-                    //Transform.LocalPosition = Transform.LocalPosition + new Vector3(dir * (_playerPacket.MovementSpeed * (float)e.Time));
                 }
 
+                //Transform.LocalPosition = Transform.LocalPosition + new Vector3(dir * (_playerPacket.MovementSpeed * (float)e.Time));
                 // we could do some movement prediction here based on target pos, real pos and movement speed?
             }
-            
+
         }
 
         public override void Render(FrameEventArgs e)
         {
-            base.Render(e);
+            PlayerPacket localPacket = RpgClientConnection.Instance.GetLocalPlayerPacket();
+            if (!(localPacket.PositionX == _playerPacket.PositionX && localPacket.PositionY == _playerPacket.PositionY) ||
+                localPacket.PlayerID == _playerPacket.PlayerID)
+            {
+                base.Render(e);
 
-            Vector3 pos = Transform.Position;
-            pos.Y -= (GetTexture().GetHeight() / 4) + Renderer.GetFont().GetTextHeight(_playerPacket.Username);
-            pos.X -= Renderer.GetFont().GetTextWidth(_playerPacket.Username) / 2;
-            OpenTK.Graphics.Color4 colour = OpenTK.Graphics.Color4.Red;
+                Vector3 pos = Transform.Position;
+                pos.Y -= (GetTexture().GetHeight() / 4) + Renderer.GetFont().GetTextHeight(_playerPacket.Username);
+                pos.X -= Renderer.GetFont().GetTextWidth(_playerPacket.Username) / 2;
+                OpenTK.Graphics.Color4 colour = OpenTK.Graphics.Color4.Red;
 
-            //Renderer.DisableDepthTest();
-            Renderer.PrintText(_playerPacket.Username, ref pos, ref colour);
-            //Renderer.EnableDepthTest();
+                //Renderer.DisableDepthTest();
+                Renderer.PrintText(_playerPacket.Username, ref pos, ref colour);
+                //Renderer.EnableDepthTest();
+            }
         }
     }
 }

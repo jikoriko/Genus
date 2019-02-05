@@ -121,9 +121,10 @@ namespace RpgServer
         private InputPacket _inputPacket;
         private MapInstance _mapInstance;
 
-        private EventInterpreter _eventInterpreter;
         private List<ClientCommand> _clientCommands;
         private List<MessagePacket> _messagePackets;
+
+        public bool MovementDisabled;
 
         private GameClient(TcpClient tcpClient, int playerID)
         {
@@ -141,7 +142,6 @@ namespace RpgServer
             _inputPacket = null;
             _mapInstance = null;
 
-            _eventInterpreter = new EventInterpreter(this);
             _clientCommands = new List<ClientCommand>();
             _messagePackets = new List<MessagePacket>();
 
@@ -415,9 +415,7 @@ namespace RpgServer
 
         public void Update(float deltaTime)
         {
-            _eventInterpreter.Update(deltaTime);
-
-            if (!_eventInterpreter.EventTriggering())
+            if (!MovementDisabled)
             {
                 if (_inputPacket != null)
                 {
@@ -472,7 +470,7 @@ namespace RpgServer
                                     targetY -= 1;
                                     break;
                             }
-                            CheckEventTriggers(targetX, targetY, EventData.TriggerType.Action);
+                            CheckEventTriggers(targetX, targetY, EventTriggerType.Action);
                         }
                     }
                 }
@@ -488,7 +486,7 @@ namespace RpgServer
                     if (dir.Length <= 0.1f)
                     {
                         realPos = new OpenTK.Vector2(_playerPacket.PositionX * 32, _playerPacket.PositionY * 32);
-                        CheckEventTriggers(_playerPacket.PositionX, _playerPacket.PositionY, EventData.TriggerType.PlayerTouch);
+                        CheckEventTriggers(_playerPacket.PositionX, _playerPacket.PositionY, EventTriggerType.PlayerTouch);
                     }
 
                     _playerPacket.RealX = realPos.X;
@@ -529,14 +527,14 @@ namespace RpgServer
                         break;
                 }
 
-                if (_mapInstance.MapTilePassable(targetX, targetY))
+                if (_mapInstance.MapTilePassable(targetX, targetY, -1))
                 {
                     _playerPacket.PositionX = targetX;
                     _playerPacket.PositionY = targetY;
                 }
                 else
                 {
-                    CheckEventTriggers(targetX, targetY, EventData.TriggerType.PlayerTouch);
+                    CheckEventTriggers(targetX, targetY, EventTriggerType.PlayerTouch);
                 }
             }
         }
@@ -546,17 +544,17 @@ namespace RpgServer
             _playerPacket.Direction = direction;
         }
 
-        private void CheckEventTriggers(int x, int y, EventData.TriggerType triggerType)
+        private void CheckEventTriggers(int x, int y, EventTriggerType triggerType)
         {
             MapData mapData = _mapInstance.GetMapData();
             for (int i = 0; i < mapData.MapEventsCount(); i++)
             {
                 MapEvent mapEvent = mapData.GetMapEvent(i);
-                if (mapEvent.GetEventData().GetTriggerType() == triggerType)
+                if (mapEvent.TriggerType == triggerType)
                 {
                     if (mapEvent.MapX == x && mapEvent.MapY == y)
                     {
-                        _eventInterpreter.TriggerEventData(mapEvent.GetEventData());
+                        _mapInstance.GetEventInterpreter().TriggerEventData(this, mapEvent);
                         break;
                     }
                 }

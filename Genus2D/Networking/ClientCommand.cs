@@ -45,6 +45,7 @@ namespace Genus2D.Networking
                     break;
                 case CommandType.UpdateMapEvent:
                     _parameters.Add("EventID", "");
+                    _parameters.Add("MapID", "");
                     _parameters.Add("MapX", "");
                     _parameters.Add("MapY", "");
                     _parameters.Add("RealX", "");
@@ -53,6 +54,7 @@ namespace Genus2D.Networking
                     break;
                 case CommandType.ChangeMapEventDirection:
                     _parameters.Add("EventID", "");
+                    _parameters.Add("MapID", "");
                     _parameters.Add("Direction", "");
                     break;
 

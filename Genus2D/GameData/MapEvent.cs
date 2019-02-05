@@ -18,8 +18,12 @@ namespace Genus2D.GameData
         public float RealX;
         public float RealY;
         public Direction EventDirection;
+        public int SpriteID;
+        public EventTriggerType TriggerType;
+        public bool Passable;
 
         public bool Moved = false;
+        public bool Locked = false;
 
         public MapEvent(int id, int x, int y)
         {
@@ -29,13 +33,17 @@ namespace Genus2D.GameData
             RealX = x * 32;
             RealY = y * 32;
             EventDirection = Direction.Down;
+            SpriteID = -1;
+            TriggerType = EventTriggerType.None;
+            Passable = false;
         }
 
         public static int SizeOfBytes()
         {
             int size = 0;
-            size += sizeof(int) * 4;
+            size += sizeof(int) * 6;
             size += sizeof(float) * 2;
+            size += sizeof(bool);
             return size;
         }
 
@@ -51,6 +59,9 @@ namespace Genus2D.GameData
                 stream.Write(BitConverter.GetBytes(RealX), 0, sizeof(float));
                 stream.Write(BitConverter.GetBytes(RealY), 0, sizeof(float));
                 stream.Write(BitConverter.GetBytes((int)EventDirection), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(SpriteID), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes((int)TriggerType), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(Passable), 0, sizeof(bool));
                 return stream.ToArray();
             }
         }
@@ -69,21 +80,34 @@ namespace Genus2D.GameData
                 stream.Read(tempBytes, 0, sizeof(int));
                 int mapY = BitConverter.ToInt32(tempBytes, 0);
 
+                tempBytes = new byte[sizeof(float)];
                 stream.Read(tempBytes, 0, sizeof(float));
                 float realX = BitConverter.ToSingle(tempBytes, 0);
 
                 stream.Read(tempBytes, 0, sizeof(float));
                 float realY = BitConverter.ToSingle(tempBytes, 0);
 
+                tempBytes = new byte[sizeof(int)];
                 stream.Read(tempBytes, 0, sizeof(int));
                 Direction direction = (Direction)BitConverter.ToInt32(tempBytes, 0);
 
-                Console.WriteLine("recieved map event: " + mapX + "," + mapY);
+                stream.Read(tempBytes, 0, sizeof(int));
+                int spriteID = BitConverter.ToInt32(tempBytes, 0);
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                EventTriggerType triggerType = (EventTriggerType)BitConverter.ToInt32(tempBytes, 0);
+
+                tempBytes = new byte[sizeof(bool)];
+                stream.Read(tempBytes, 0, sizeof(bool));
+                bool passable = BitConverter.ToBoolean(tempBytes, 0);
 
                 MapEvent mapEvent = new MapEvent(eventID, mapX, mapY);
                 mapEvent.RealX = realX;
                 mapEvent.RealY = realY;
                 mapEvent.EventDirection = direction;
+                mapEvent.SpriteID = spriteID;
+                mapEvent.TriggerType = triggerType;
+                mapEvent.Passable = passable;
                 return mapEvent;
             }
         }

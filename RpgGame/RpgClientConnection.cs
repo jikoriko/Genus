@@ -106,6 +106,13 @@ namespace RpgGame
             }
         }
 
+        public PlayerPacket GetLocalPlayerPacket()
+        {
+            if (_playerPackets.ContainsKey(_loginResult.PlayerID))
+                return _playerPackets[_loginResult.PlayerID];
+            return null;
+        }
+
         private void SendRegisterRequest(NetworkStream stream, LoginRequest request)
         {
             byte[] requestBytes = request.GetBytes();
@@ -294,7 +301,7 @@ namespace RpgGame
             bytes = ReadData(packetSize, _stream);
 
             MapPacket packet = MapPacket.FromBytes(bytes);
-            MapComponent.Instance.SetMapData(packet.mapData);
+            MapComponent.Instance.SetMapData(packet.MapID, packet.mapData);
         }
 
         MessageBox _messageBox = null;
@@ -308,6 +315,7 @@ namespace RpgGame
             ClientCommand command = ClientCommand.FromBytes(bytes);
 
             int eventID;
+            int mapID;
             int mapX;
             int mapY;
             float realX;
@@ -335,7 +343,6 @@ namespace RpgGame
                     if (_messageBox == null)
                     {
                         string message = command.GetParameter("Message");
-                        Console.WriteLine("showing message: " + message);
                         _messageBox = new MessageBox(message, _gameState, false);
                         string[] options = command.GetParameter("Options").Split(',');
                         for (int i = 0; i < options.Length; i++)
@@ -355,32 +362,40 @@ namespace RpgGame
                 case ClientCommand.CommandType.UpdateMapEvent:
 
                     eventID = int.Parse(command.GetParameter("EventID"));
-                    mapX = int.Parse(command.GetParameter("MapX"));
-                    mapY = int.Parse(command.GetParameter("MapY"));
-                    realX = float.Parse(command.GetParameter("RealX"));
-                    realY = float.Parse(command.GetParameter("RealY"));
-                    direction = (Direction)int.Parse(command.GetParameter("Direction"));
-
-                    map = ((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).GetMapData();
-                    if (map != null)
+                    mapID = int.Parse(command.GetParameter("MapID"));
+                    if (((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).MapID == mapID)
                     {
-                        map.GetMapEvent(eventID).MapX = mapX;
-                        map.GetMapEvent(eventID).MapY = mapY;
-                        map.GetMapEvent(eventID).RealX = realX;
-                        map.GetMapEvent(eventID).RealY = realY;
-                        map.GetMapEvent(eventID).EventDirection = direction;
+                        mapX = int.Parse(command.GetParameter("MapX"));
+                        mapY = int.Parse(command.GetParameter("MapY"));
+                        realX = float.Parse(command.GetParameter("RealX"));
+                        realY = float.Parse(command.GetParameter("RealY"));
+                        direction = (Direction)int.Parse(command.GetParameter("Direction"));
+
+                        map = ((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).GetMapData();
+                        if (map != null)
+                        {
+                            map.GetMapEvent(eventID).MapX = mapX;
+                            map.GetMapEvent(eventID).MapY = mapY;
+                            map.GetMapEvent(eventID).RealX = realX;
+                            map.GetMapEvent(eventID).RealY = realY;
+                            map.GetMapEvent(eventID).EventDirection = direction;
+                        }
                     }
 
                     break;
                 case ClientCommand.CommandType.ChangeMapEventDirection:
 
                     eventID = int.Parse(command.GetParameter("EventID"));
-                    direction = (Direction)int.Parse(command.GetParameter("Direction"));
-
-                    map = ((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).GetMapData();
-                    if (map != null)
+                    mapID = int.Parse(command.GetParameter("MapID"));
+                    if (((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).MapID == mapID)
                     {
-                        map.GetMapEvent(eventID).EventDirection = direction;
+                        direction = (Direction)int.Parse(command.GetParameter("Direction"));
+
+                        map = ((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).GetMapData();
+                        if (map != null)
+                        {
+                            map.GetMapEvent(eventID).EventDirection = direction;
+                        }
                     }
 
                     break;

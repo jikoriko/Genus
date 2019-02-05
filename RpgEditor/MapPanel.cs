@@ -247,7 +247,7 @@ namespace RpgEditor
                             MapData.AddMapEvent(mapEvent);
                         }
 
-                        EditEventForm form = new EditEventForm(mapEvent);
+                        EditMapEventForm form = new EditMapEventForm(mapEvent);
                         form.ShowDialog(this);
                     }
                     else
