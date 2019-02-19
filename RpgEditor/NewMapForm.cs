@@ -19,10 +19,7 @@ namespace RpgEditor
         {
             InitializeComponent();
             _editor = editor;
-
-            List<string> tilesets = Genus2D.GameData.TilesetData.GetTilesetNames();
-            TilesetSelection.Items.AddRange(tilesets.ToArray());
-            TilesetSelection.SelectedIndex = 0;
+            NameField.Text = "Map " + (Genus2D.GameData.MapInfo.NumberMaps() + 1).ToString("000");
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -30,11 +27,10 @@ namespace RpgEditor
             string name = NameField.Text;
             int width = (int)WidthField.Value;
             int height = (int)HeightField.Value;
-            int tileset = TilesetSelection.SelectedIndex;
 
             if (name == "")
             {
-                MessageBox.Show("Please enter a map name." + tileset);
+                MessageBox.Show("Please enter a map name.");
                 return;
             }
             else if (Genus2D.GameData.MapInfo.GetMapInfoStrings().Contains(name))
@@ -42,14 +38,10 @@ namespace RpgEditor
                 MessageBox.Show("A map with that name already exists.");
                 return;
             }
-            else if (tileset == -1)
-            {
-                MessageBox.Show("Please select a tileset.");
-                return;
-            }
 
-            Genus2D.GameData.MapData map = new Genus2D.GameData.MapData(name, width, height, tileset);
+            Genus2D.GameData.MapData map = new Genus2D.GameData.MapData(name, width, height);
             _editor.SetMapData(map, Genus2D.GameData.MapInfo.NumberMaps());
+            Genus2D.GameData.MapInfo.SaveMap(map);
 
             this.Close();
         }

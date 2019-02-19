@@ -225,7 +225,8 @@ namespace Genus2D.Networking
         public string Username;
         public int PlayerID;
         public int MapID;
-        public Direction Direction;
+        public int SpriteID;
+        public FacingDirection Direction;
         public int PositionX;
         public int PositionY;
         public float RealX;
@@ -242,6 +243,7 @@ namespace Genus2D.Networking
                 stream.Write(usernameBytes, 0, usernameBytes.Length);
                 stream.Write(BitConverter.GetBytes(PlayerID), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(MapID), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(SpriteID), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes((int)Direction), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(PositionX), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(PositionY), 0, sizeof(int));
@@ -277,7 +279,10 @@ namespace Genus2D.Networking
                 int mapID = BitConverter.ToInt32(tempBytes, 0);
 
                 stream.Read(tempBytes, 0, sizeof(int));
-                Direction direction = (Direction)BitConverter.ToInt32(tempBytes, 0);
+                int spriteID = BitConverter.ToInt32(tempBytes, 0);
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                FacingDirection direction = (FacingDirection)BitConverter.ToInt32(tempBytes, 0);
 
                 stream.Read(tempBytes, 0, sizeof(int));
                 int PosX = BitConverter.ToInt32(tempBytes, 0);
@@ -309,6 +314,7 @@ namespace Genus2D.Networking
                 packet.PlayerID = playerID;
                 packet.Username = username;
                 packet.MapID = mapID;
+                packet.SpriteID = spriteID;
                 packet.Direction = direction;
                 packet.PositionX = PosX;
                 packet.PositionY = posY;
@@ -318,6 +324,14 @@ namespace Genus2D.Networking
                 packet.Data = data;
                 return packet;
             }
+        }
+
+        public override string ToString()
+        {
+            string s = ": ";
+            s += string.Format("{0}, {1}, {2}, {3}, {4}, {5}, {6}", PlayerID, Username, MapID, SpriteID, Direction.ToString(), PositionX, PositionY);
+
+            return base.ToString() + s;
         }
     }
 

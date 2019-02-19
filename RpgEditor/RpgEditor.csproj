@@ -63,17 +63,79 @@
     <Compile Include="AddEventCommandForm.Designer.cs">
       <DependentUpon>AddEventCommandForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="CommandDataPresets\ChangeInventoryItemPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\ChangeInventoryItemPreset.Designer.cs" />
+    <Compile Include="CommandDataPresets\ChangeMapEventDirectionPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\ChangeMapEventDirectionPreset.Designer.cs" />
+    <Compile Include="CommandDataPresets\ChangePlayerDirectionPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\ChangePlayerDirectionPreset.Designer.cs" />
+    <Compile Include="CommandDataPresets\ChangePlayerSpritePreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\ChangePlayerSpritePreset.Designer.cs" />
+    <Compile Include="CommandDataPresets\ChangeSystemVariablePreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\ChangeSystemVariablePreset.Designer.cs" />
+    <Compile Include="CommandDataPresets\CommandDataInterface.cs" />
+    <Compile Include="CommandDataPresets\ConditionalBranchPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\ConditionalBranchPreset.Designer.cs" />
+    <Compile Include="CommandDataPresets\MoveMapEventPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\MoveMapEventPreset.Designer.cs" />
+    <Compile Include="CommandDataPresets\MovePlayerPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\MovePlayerPreset.Designer.cs" />
+    <Compile Include="CommandDataPresets\ShowMessagePreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\ShowMessagePreset.Designer.cs" />
+    <Compile Include="CommandDataPresets\ShowOptionsPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\ShowOptionsPreset.Designer.cs" />
+    <Compile Include="CommandDataPresets\TeleportMapEventPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\TeleportMapEventPreset.Designer.cs" />
+    <Compile Include="CommandDataPresets\TeleportPlayerPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\TeleportPlayerPreset.Designer.cs" />
+    <Compile Include="CommandDataPresets\WaitTimerPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\WaitTimerPreset.Designer.cs" />
     <Compile Include="EditMapEventForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="EditMapEventForm.Designer.cs">
       <DependentUpon>EditMapEventForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="EditMapForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditMapForm.Designer.cs">
+      <DependentUpon>EditMapForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="EditorForm.Designer.cs">
       <DependentUpon>EditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IconSheetPanel.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="LoadMapForm.cs">
       <SubType>Form</SubType>
@@ -104,8 +166,24 @@
     <EmbeddedResource Include="AddEventCommandForm.resx">
       <DependentUpon>AddEventCommandForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="CommandDataPresets\ChangeInventoryItemPreset.resx" />
+    <EmbeddedResource Include="CommandDataPresets\ChangeMapEventDirectionPreset.resx" />
+    <EmbeddedResource Include="CommandDataPresets\ChangePlayerDirectionPreset.resx" />
+    <EmbeddedResource Include="CommandDataPresets\ChangePlayerSpritePreset.resx" />
+    <EmbeddedResource Include="CommandDataPresets\ChangeSystemVariablePreset.resx" />
+    <EmbeddedResource Include="CommandDataPresets\ConditionalBranchPreset.resx" />
+    <EmbeddedResource Include="CommandDataPresets\MoveMapEventPreset.resx" />
+    <EmbeddedResource Include="CommandDataPresets\MovePlayerPreset.resx" />
+    <EmbeddedResource Include="CommandDataPresets\ShowMessagePreset.resx" />
+    <EmbeddedResource Include="CommandDataPresets\ShowOptionsPreset.resx" />
+    <EmbeddedResource Include="CommandDataPresets\TeleportMapEventPreset.resx" />
+    <EmbeddedResource Include="CommandDataPresets\TeleportPlayerPreset.resx" />
+    <EmbeddedResource Include="CommandDataPresets\WaitTimerPreset.resx" />
     <EmbeddedResource Include="EditMapEventForm.resx">
       <DependentUpon>EditMapEventForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditMapForm.resx">
+      <DependentUpon>EditMapForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorForm.resx">
       <DependentUpon>EditorForm.cs</DependentUpon>

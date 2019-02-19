@@ -33,11 +33,11 @@ namespace RpgServer
         private void TriggerEvent(TriggeringEvent triggeringEvent, float deltaTime)
         {
             GameClient client = triggeringEvent.GetGameClient();
-            EventData eventData = triggeringEvent.GetEventData(); ;
+            EventData eventData = triggeringEvent.GetEventData();
 
             if (triggeringEvent.MessageShowing)
             {
-                if (client.KeyDown(OpenTK.Input.Key.Enter))
+                if (!client.MessageShowing)
                 {
                     client.AddClientCommand(new ClientCommand(ClientCommand.CommandType.CloseMessage));
                     triggeringEvent.MessageShowing = false;
@@ -50,7 +50,7 @@ namespace RpgServer
             {
                 ClientCommand clientCommand;
 
-                if (client.KeyDown(OpenTK.Input.Key.Space))
+                if (!client.MessageShowing)
                 {
                     //get the selected option and trigger event
 
@@ -60,7 +60,7 @@ namespace RpgServer
                     triggeringEvent.OptionsCount = 0;
                     client.AddClientCommand(new ClientCommand(ClientCommand.CommandType.CloseMessage));
                 }
-                else if (client.KeyDown(OpenTK.Input.Key.Down))
+                else if (client.KeyDown(OpenTK.Input.Key.Down)) // need to move this to client update
                 {
                     triggeringEvent.SelectedOption++;
                     if (triggeringEvent.SelectedOption >= triggeringEvent.OptionsCount)
@@ -100,7 +100,13 @@ namespace RpgServer
                 int eventID;
                 int mapX;
                 int mapY;
-                Direction direction;
+                FacingDirection facingDirection;
+                MovementDirection movementDirection;
+                int itemID;
+                int itemAmount;
+                int variableID;
+                VariableType variableType;
+                object variableValue;
 
                 switch (eventCommand.Type)
                 {
@@ -112,28 +118,34 @@ namespace RpgServer
                         break;
                     case EventCommand.CommandType.TeleportPlayer:
 
+                        if (client == null) break;
+
                         mapID = (int)eventCommand.GetParameter("MapID");
                         mapX = (int)eventCommand.GetParameter("MapX");
                         mapY = (int)eventCommand.GetParameter("MapY");
-                        client.SetMapPosition(mapX, mapY);
                         client.SetMapID(mapID);
+                        client.SetMapPosition(mapX, mapY);
 
                         break;
                     case EventCommand.CommandType.MovePlayer:
+
+                        if (client == null) break;
 
                         if (client.Moving())
                         {
                             triggeringEvent.CommandID--;
                             break;
                         }
-                        direction = (Direction)eventCommand.GetParameter("Direction");
-                        client.Move(direction);
+                        movementDirection = (MovementDirection)eventCommand.GetParameter("Direction");
+                        client.Move(movementDirection);
 
                         break;
                     case EventCommand.CommandType.ChangePlayerDirection:
 
-                        direction = (Direction)eventCommand.GetParameter("Direction");
-                        client.ChangeDirection(direction);
+                        if (client == null) break;
+
+                        facingDirection = (FacingDirection)eventCommand.GetParameter("Direction");
+                        client.ChangeDirection(facingDirection);
 
                         break;
                     case EventCommand.CommandType.TeleportMapEvent:
@@ -160,8 +172,8 @@ namespace RpgServer
                             triggeringEvent.CommandID--;
                             break;
                         }
-                        direction = (Direction)eventCommand.GetParameter("Direction");
-                        if (!Server.Instance.GetMapInstance(mapID).MoveMapEvent(eventID, direction))
+                        movementDirection = (MovementDirection)eventCommand.GetParameter("Direction");
+                        if (!Server.Instance.GetMapInstance(mapID).MoveMapEvent(eventID, movementDirection))
                             triggeringEvent.CommandID--;
 
                         break;
@@ -174,20 +186,25 @@ namespace RpgServer
                             triggeringEvent.CommandID--;
                             break;
                         }
-                        direction = (Direction)eventCommand.GetParameter("Direction");
-                        Server.Instance.GetMapInstance(mapID).ChangeMapEventDirection(eventID, direction);
+                        facingDirection = (FacingDirection)eventCommand.GetParameter("Direction");
+                        Server.Instance.GetMapInstance(mapID).ChangeMapEventDirection(eventID, facingDirection);
 
                         break;
                     case EventCommand.CommandType.ShowMessage:
+
+                        if (client == null) break;
 
                         clientCommand = new ClientCommand(ClientCommand.CommandType.ShowMessage);
                         clientCommand.SetParameter("Message", (string)eventCommand.GetParameter("Message"));
                         client.AddClientCommand(clientCommand);
                         triggeringEvent.MessageShowing = true;
                         client.MovementDisabled = true;
+                        client.MessageShowing = true;
 
                         break;
                     case EventCommand.CommandType.ShowOptions:
+
+                        if (client == null) break;
 
                         List<MessageOption> options = (List<MessageOption>)eventCommand.GetParameter("Options");
                         triggeringEvent.SelectedOption = 0;
@@ -209,6 +226,252 @@ namespace RpgServer
                         client.AddClientCommand(clientCommand);
                         triggeringEvent.OptionsShowing = true;
                         client.MovementDisabled = true;
+                        client.MessageShowing = true;
+
+                        break;
+
+                    case EventCommand.CommandType.ChangeSystemVariable:
+
+                        variableID = (int)eventCommand.GetParameter("VariableID");
+                        variableType = (VariableType)eventCommand.GetParameter("VariableType");
+                        variableValue = eventCommand.GetParameter("VariableValue");
+
+                        SystemVariable.GetSystemVariable(variableID).SetVariableType(variableType);
+                        SystemVariable.GetSystemVariable(variableID).SetValue(variableValue);
+
+                        break;
+
+                    case EventCommand.CommandType.ConditionalBranchStart:
+
+                        ConditionalBranchType type = (ConditionalBranchType)eventCommand.GetParameter("ConditionalBranchType");
+
+                        bool conditionMet = false;
+
+                        switch (type)
+                        {
+                            case ConditionalBranchType.PlayerPosition:
+                                if (client == null) break;
+
+                                mapID = (int)eventCommand.GetParameter("PlayerMapID");
+                                if (mapID == -1) break;
+                                mapX = (int)eventCommand.GetParameter("PlayerMapX");
+                                mapY = (int)eventCommand.GetParameter("PlayerMapY");
+
+                                if (client.GetPacket().MapID == mapID && client.GetPacket().PositionX == mapX &&
+                                        client.GetPacket().PositionY == mapY)
+                                    conditionMet = true;
+
+                                break;
+                            case ConditionalBranchType.MapEventPosition:
+                                mapID = (int)eventCommand.GetParameter("MapEventMapID");
+                                eventID = (int)eventCommand.GetParameter("MapEventID");
+                                if (mapID == -1 || eventID == -1) break;
+                                mapX = (int)eventCommand.GetParameter("MapEventMapX");
+                                mapY = (int)eventCommand.GetParameter("MapEventMapY");
+
+                                MapEvent mapEvent = Server.Instance.GetMapInstance(mapID).GetMapData().GetMapEvent(eventID);
+                                if (mapEvent.MapX == mapX && mapEvent.MapY == mapY)
+                                    conditionMet = true;
+
+                                break;
+                            case ConditionalBranchType.ItemEquipped:
+                                if (client == null) break;
+
+                                itemID = (int)eventCommand.GetParameter("EquippedItemID");
+                                if (itemID == -1) break;
+                                if (client.GetPacket().Data.ItemEquipped(itemID))
+                                    conditionMet = true;
+
+                                break;
+                            case ConditionalBranchType.ItemInInventory:
+                                if (client == null) break;
+
+                                itemID = (int)eventCommand.GetParameter("InventoryItemID");
+                                itemAmount = (int)eventCommand.GetParameter("InventoryItemAmount");
+                                if (itemID == -1) break;
+                                if (client.GetPacket().Data.ItemInInventory(itemID, itemAmount))
+                                    conditionMet = true;
+
+                                break;
+                            case ConditionalBranchType.SystemVariable:
+
+                                variableID = (int)eventCommand.GetParameter("VariableID");
+                                if (variableID == -1) break;
+                                variableType = (VariableType)eventCommand.GetParameter("VariableType");
+                                if (SystemVariable.GetSystemVariable(variableID).Type == variableType)
+                                {
+                                    ConditionValueCheck valueCheck = (ConditionValueCheck)eventCommand.GetParameter("ValueCondition");
+                                    ConditionalTextCheck textCheck = (ConditionalTextCheck)eventCommand.GetParameter("TextCondition");
+
+                                    switch (variableType)
+                                    {
+                                        case VariableType.Integer:
+                                            variableValue = eventCommand.GetParameter("VariableIntegerValue");
+                                            int intVal = (int)SystemVariable.GetSystemVariable(variableID).Value;
+                                            switch (valueCheck)
+                                            {
+                                                case ConditionValueCheck.Equal:
+                                                    if (intVal == (int)variableValue)
+                                                        conditionMet = true;
+                                                    break;
+                                                case ConditionValueCheck.Greater:
+                                                    if (intVal > (int)variableValue)
+                                                        conditionMet = true;
+                                                    break;
+                                                case ConditionValueCheck.GreaterOrEqual:
+                                                    if (intVal >= (int)variableValue)
+                                                        conditionMet = true;
+                                                    break;
+                                                case ConditionValueCheck.Lower:
+                                                    if (intVal < (int)variableValue)
+                                                        conditionMet = true;
+                                                    break;
+                                                case ConditionValueCheck.LowerOrEqual:
+                                                    if (intVal <= (int)variableValue)
+                                                        conditionMet = true;
+                                                    break;
+                                                case ConditionValueCheck.NotEqual:
+                                                    if (intVal != (int)variableValue)
+                                                        conditionMet = true;
+                                                    break;
+                                            }
+                                            break;
+                                        case VariableType.Float:
+                                            variableValue = eventCommand.GetParameter("VariableFloatValue");
+                                            float floatVal = (float)SystemVariable.GetSystemVariable(variableID).Value;
+                                            switch (valueCheck)
+                                            {
+                                                case ConditionValueCheck.Equal:
+                                                    if (floatVal == (float)variableValue)
+                                                        conditionMet = true;
+                                                    break;
+                                                case ConditionValueCheck.Greater:
+                                                    if (floatVal > (float)variableValue)
+                                                        conditionMet = true;
+                                                    break;
+                                                case ConditionValueCheck.GreaterOrEqual:
+                                                    if (floatVal >= (float)variableValue)
+                                                        conditionMet = true;
+                                                    break;
+                                                case ConditionValueCheck.Lower:
+                                                    if (floatVal < (float)variableValue)
+                                                        conditionMet = true;
+                                                    break;
+                                                case ConditionValueCheck.LowerOrEqual:
+                                                    if (floatVal <= (float)variableValue)
+                                                        conditionMet = true;
+                                                    break;
+                                                case ConditionValueCheck.NotEqual:
+                                                    if (floatVal != (float)variableValue)
+                                                        conditionMet = true;
+                                                    break;
+                                            }
+                                            break;
+                                        case VariableType.Bool:
+                                            variableValue = eventCommand.GetParameter("VariableBoolValue");
+                                            bool boolVal = (bool)SystemVariable.GetSystemVariable(variableID).Value;
+                                            if (boolVal == (bool)variableValue)
+                                                conditionMet = true;
+                                            break;
+                                        case VariableType.Text:
+                                            variableValue = eventCommand.GetParameter("VariableTextValue");
+                                            string textVal = (string)SystemVariable.GetSystemVariable(variableID).Value;
+                                            switch (textCheck)
+                                            {
+                                                case ConditionalTextCheck.Equal:
+                                                    if (textVal == (string)variableValue)
+                                                        conditionMet = true;
+                                                    break;
+                                                case ConditionalTextCheck.NotEqual:
+                                                    if (textVal != (string)variableValue)
+                                                        conditionMet = true;
+                                                    break;
+                                                case ConditionalTextCheck.Includes:
+                                                    if (textVal.Contains((string)variableValue))
+                                                        conditionMet = true;
+                                                    break;
+                                            }
+                                            break;
+                                    }
+                                }
+
+
+                                break;
+                            case ConditionalBranchType.QuestStatus:
+
+                                if (client == null) break;
+
+                                QuestStatus status = (QuestStatus)eventCommand.GetParameter("QuestStatus");
+                                // check quest status here
+
+                                break;
+                        }
+
+                        if (!conditionMet)
+                        {
+                            int conditionDepth = triggeringEvent.ConditionDepth;
+                            for (int i = triggeringEvent.CommandID + 1; i < eventData.EventCommands.Count; i++)
+                            {
+                                triggeringEvent.CommandID++;
+
+                                if (eventData.EventCommands[i].Type == EventCommand.CommandType.ConditionalBranchStart)
+                                    conditionDepth++;
+
+                                if (eventData.EventCommands[i].Type == EventCommand.CommandType.ConditionalBranchElse ||
+                                    eventData.EventCommands[i].Type == EventCommand.CommandType.ConditionalBranchEnd)
+                                {
+                                    if (conditionDepth > triggeringEvent.ConditionDepth)
+                                        conditionDepth--;
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            triggeringEvent.ConditionDepth++;
+                        }
+
+                        break;
+                    case EventCommand.CommandType.ConditionalBranchElse:
+                        for (int i = triggeringEvent.CommandID + 1; i < eventData.EventCommands.Count; i++)
+                        {
+                            triggeringEvent.CommandID++;
+                            if (eventData.EventCommands[i].Type == EventCommand.CommandType.ConditionalBranchEnd)
+                            {
+                                break;
+                            }
+                        }
+                        break;
+                    case EventCommand.CommandType.ConditionalBranchEnd:
+                        if (triggeringEvent.ConditionDepth > 0)
+                            triggeringEvent.ConditionDepth -= 1;
+                        break;
+                    case EventCommand.CommandType.AddInventoryItem:
+                        if (client == null) break;
+
+                        itemID = (int)eventCommand.GetParameter("ItemID");
+                        itemAmount = (int)eventCommand.GetParameter("ItemAmount");
+                        int remainder = itemAmount - client.GetPacket().Data.AddInventoryItem(itemID, itemAmount);
+
+                        //do something with the remainder, the players inventory is full, drop on floor?
+
+                        break;
+                    case EventCommand.CommandType.RemoveInventoryItem:
+                        if (client == null) break;
+
+                        itemID = (int)eventCommand.GetParameter("ItemID");
+                        itemAmount = (int)eventCommand.GetParameter("ItemAmount");
+                        client.GetPacket().Data.RemoveInventoryItem(itemID, itemAmount);
+
+                        break;
+                    case EventCommand.CommandType.ChangePlayerSprite:
+                        if (client == null) break;
+
+                        int spriteID = (int)eventCommand.GetParameter("SpriteID");
+                        client.GetPacket().SpriteID = spriteID;
 
                         break;
                 }

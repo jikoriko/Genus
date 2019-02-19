@@ -68,6 +68,59 @@ namespace Genus2D.GameData
             return null;
         }
 
+        public static int GetMapID(string name)
+        {
+            for (int i = 0; i < _mapInfos.Count; i++)
+            {
+                if (_mapInfos[i].MapName == name)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        public static bool RenameMap(int index, string name)
+        {
+            if (index >= 0 && index < _mapInfos.Count)
+            {
+                for (int i = 0; i < _mapInfos.Count; i++)
+                {
+                    if (i == index)
+                        continue;
+                    if (_mapInfos[i].MapName == name)
+                    {
+                        return false;
+                    }
+                }
+                File.Delete("Data/Maps/" + _mapInfos[index].MapName + ".mapData");
+                _mapInfos[index].MapName = name;
+                SaveMapInfos();
+                return true;
+            }
+            return false;
+        }
+
+        public static void DeleteMap(int index)
+        {
+            if (index >= 0 && index < _mapInfos.Count)
+            {
+                File.Delete("Data/Maps/" + _mapInfos[index].MapName + ".mapData");
+                _mapInfos.RemoveAt(index);
+                SaveMapInfos();
+            }
+        }
+
+        public static void ResizeMap(int index, int width, int height)
+        {
+            if (index >= 0 && index < _mapInfos.Count)
+            {
+                _mapInfos[index].Width = width;
+                _mapInfos[index].Height = height;
+                SaveMapInfos();
+            }
+        }
+
         public static List<string> GetMapInfoStrings()
         {
             List<string> strings = new List<string>();

@@ -14,6 +14,8 @@ namespace RpgServer
         private MapEvent _mapEvent;
         public int CommandID;
 
+        public int ConditionDepth;
+
         public float WaitTimer;
         public bool MessageShowing;
         public bool OptionsShowing;
@@ -27,6 +29,8 @@ namespace RpgServer
             _gameClient = client;
             _mapEvent = mapEvent;
             CommandID = -1;
+
+            ConditionDepth = 0;
 
             WaitTimer = 0f;
             MessageShowing = false;

@@ -16,19 +16,64 @@ namespace Genus2D.GameData
         private string _mapName;
         private int _width;
         private int _height;
-        private int _tilesetID;
-        private int[] _mapData;
+        private Tuple<int, int>[] _mapData;
         private List<MapEvent> _mapEvents;
 
-        public MapData(string mapName, int width, int height, int tilesetID)
+        public MapData(string mapName, int width, int height)
         {
             _mapName = mapName;
             _width = width;
             _height = height;
-            _tilesetID = tilesetID;
-            _mapData = new int[height * width * NUM_LAYERS];
+            _mapData = new Tuple<int, int>[height * width * NUM_LAYERS];
+            for (int i = 0; i < _mapData.Length; i++)
+            {
+                _mapData[i] = new Tuple<int, int>(0, -1);
+            }
             _mapEvents = new List<MapEvent>();
         }
+
+        public void Resize(int width, int height)
+        {
+            if (width > 0 && height > 0 && (width != _width || height != _height))
+            {
+                int oldWidth = _width;
+                int oldHeight = _height;
+                _width = width;
+                _height = height;
+
+                Tuple<int, int>[] oldData = _mapData;
+                _mapData = new Tuple<int, int>[height * width * NUM_LAYERS];
+                for (int i = 0; i < _mapData.Length; i++)
+                {
+                    _mapData[i] = new Tuple<int, int>(0, -1);
+                }
+
+                for (int layer = 0; layer < NUM_LAYERS; layer++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        for (int y = 0; y < height; y++)
+                        {
+                            if (x >= oldWidth || y >= oldHeight)
+                                continue;
+                            Tuple<int, int> oldtile = oldData[x + oldWidth * (y + oldHeight * layer)];
+                            SetTile(layer, x, y, oldtile.Item1, oldtile.Item2);
+                        }
+                    }
+                }
+
+                for (int i = 0; i < _mapEvents.Count; i++)
+                {
+                    if (_mapEvents[i].MapX >= width || _mapEvents[i].MapY >= height)
+                    {
+                        _mapEvents.RemoveAt(i);
+                        i--;
+                    }
+                }
+
+            }
+        }
+     
 
         public byte[] GetBytes()
         {
@@ -40,18 +85,20 @@ namespace Genus2D.GameData
 
                 stream.Write(BitConverter.GetBytes(_width), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(_height), 0, sizeof(int));
-                stream.Write(BitConverter.GetBytes(_tilesetID), 0, sizeof(int));
 
                 stream.Write(BitConverter.GetBytes(_mapData.Length), 0, sizeof(int));
+
                 for (int i = 0; i < _mapData.Length; i++)
                 {
-                    stream.Write(BitConverter.GetBytes(_mapData[i]), 0, sizeof(int));
+                    stream.Write(BitConverter.GetBytes(_mapData[i].Item1), 0, sizeof(int));
+                    stream.Write(BitConverter.GetBytes(_mapData[i].Item2), 0, sizeof(int));
                 }
 
                 stream.Write(BitConverter.GetBytes(_mapEvents.Count), 0, sizeof(int));
                 for (int i = 0; i < _mapEvents.Count; i++)
                 {
                     byte[] bytes = _mapEvents[i].GetBytes();
+                    stream.Write(BitConverter.GetBytes(bytes.Length), 0, sizeof(int));
                     stream.Write(bytes, 0, bytes.Length);
                 }
 
@@ -79,30 +126,34 @@ namespace Genus2D.GameData
                 int height = BitConverter.ToInt32(tempBytes, 0);
 
                 stream.Read(tempBytes, 0, sizeof(int));
-                int tilesetID = BitConverter.ToInt32(tempBytes, 0);
-
-                stream.Read(tempBytes, 0, sizeof(int));
                 int mapDataSize = BitConverter.ToInt32(tempBytes, 0);
 
-                int[] mapData = new int[mapDataSize];
+                Tuple<int, int>[] mapData = new Tuple<int, int>[mapDataSize];
 
                 for (int i = 0; i < mapDataSize; i++)
                 {
                     stream.Read(tempBytes, 0, sizeof(int));
-                    mapData[i] = BitConverter.ToInt32(tempBytes, 0);
+                    int tileID = BitConverter.ToInt32(tempBytes, 0);
+                    stream.Read(tempBytes, 0, sizeof(int));
+                    int tilesetID = BitConverter.ToInt32(tempBytes, 0);
+                    Tuple<int, int> tuple = new Tuple<int, int>(tileID, tilesetID);
+                    mapData[i] = tuple;
                 }
+
+                MapData data = new MapData(mapName, width, height);
+                data._mapData = mapData;
 
                 stream.Read(tempBytes, 0, sizeof(int));
                 int mapEventsSize = BitConverter.ToInt32(tempBytes, 0);
 
-                MapData data = new MapData(mapName, width, height, tilesetID);
-                data._mapData = mapData;
-
-                tempBytes = new byte[MapEvent.SizeOfBytes()];
-
                 for (int i = 0; i < mapEventsSize; i++)
                 {
-                    stream.Read(tempBytes, 0, MapEvent.SizeOfBytes());
+                    tempBytes = new byte[sizeof(int)];
+                    stream.Read(tempBytes, 0, sizeof(int));
+                    int size = BitConverter.ToInt32(tempBytes, 0);
+
+                    tempBytes = new byte[size];
+                    stream.Read(tempBytes, 0, size);
                     MapEvent mapEvent = MapEvent.FromBytes(tempBytes);
                     data.AddMapEvent(mapEvent);
                 }
@@ -116,6 +167,11 @@ namespace Genus2D.GameData
             return _mapName;
         }
 
+        public void SetMapName(string name)
+        {
+            _mapName = name;
+        }
+
         public int GetWidth()
         {
             return _width;
@@ -126,32 +182,25 @@ namespace Genus2D.GameData
             return _height;
         }
 
-        public int GetTilesetID()
-        {
-            return _tilesetID;
-        }
-
-        public void SetTilesetID(int id)
-        {
-            _tilesetID = id;
-        }
-
-        public int[] GetMapData()
+        public Tuple<int, int>[] GetMapData()
         {
             return _mapData;
         }
 
-        public int GetTileID(int layer, int x, int y)
+        public Tuple<int, int> GetTile(int layer, int x, int y)
         {
             if (x > -1 && y > -1 && x < _width && y < _height)
-                return _mapData[x + _height * (y + _width * layer)];
-            return -1;
+                return _mapData[x + _width * (y + _height * layer)];
+            return null;
         }
 
-        public void SetTileID(int layer, int x, int y, int id)
+        public void SetTile(int layer, int x, int y, int id, int tileset)
         {
             if (x > -1 && y > -1 && x < _width && y < _height)
-                _mapData[x + _height * (y + _width * layer)] = id;
+            {
+                int index = x + _width * (y + _height * layer);
+                _mapData[index] = new Tuple<int, int>(id, tileset);
+            }
         }
 
         public void AddMapEvent(MapEvent mapEvent)

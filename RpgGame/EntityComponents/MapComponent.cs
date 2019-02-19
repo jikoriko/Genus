@@ -25,6 +25,9 @@ namespace RpgGame.EntityComponents
         private List<Entity> _mapEvents;
         private bool _mapDataChanged;
 
+        private float _autoTileAnimationTimer;
+        private int _autoTileFrame;
+
         public MapComponent(Entity entity)
             : base(entity)
         {
@@ -33,6 +36,9 @@ namespace RpgGame.EntityComponents
             _mapData = null;
             _mapDataChanged = false;
             _mapEvents = new List<Entity>();
+
+            _autoTileAnimationTimer = 0;
+            _autoTileFrame = 0;
         }
 
         public MapData GetMapData()
@@ -58,7 +64,6 @@ namespace RpgGame.EntityComponents
 
             if (_mapDataChanged)
             {
-
                 if (_mapData != null)
                 {
                     for (int i = 0; i < _mapData.MapEventsCount(); i++)
@@ -83,6 +88,7 @@ namespace RpgGame.EntityComponents
         public override void Render(OpenTK.FrameEventArgs e)
         {
             base.Render(e);
+            if (_mapDataChanged) return;
             if (_mapData != null)
             {
                 Renderer.PushWorldMatrix();
@@ -90,10 +96,9 @@ namespace RpgGame.EntityComponents
 
                 Vector3 pos = Vector3.Zero;
                 Vector3 scale = new Vector3(32, 32, 1);
+                Vector3 autoTileScale = new Vector3(16, 16, 1);
                 Rectangle source = new Rectangle(0, 0, 32, 32);
                 Color4 colour = Color4.White;
-                String textureName = TilesetData.GetTileset(_mapData.GetTilesetID()).ImagePath;
-                Texture tileset = Assets.GetTexture("Tilesets/" + textureName);
 
                 int startX = ((int)-Transform.Position.X / 32);
                 int startY = ((int)-Transform.Position.Y / 32);
@@ -106,17 +111,66 @@ namespace RpgGame.EntityComponents
                     {
                         for (int y = startY; y < endY; y++)
                         {
-                            int tileID = _mapData.GetTileID(layer, x, y);
+                            Tuple<int, int> tileInfo = _mapData.GetTile(layer, x, y);
+                            if (tileInfo == null)
+                                continue;
+                            int tileID = tileInfo.Item1;
+                            if (tileID == 0)
+                                continue;
 
-                            if (tileID != -1)
+                            int tilesetID = tileInfo.Item2;
+                            TilesetData.Tileset tileset = TilesetData.GetTileset(tilesetID);
+                            Texture tilesetTexture = Assets.GetTexture("Tilesets/" + tileset.ImagePath);
+
+                            pos.X = x * 32;
+                            pos.Y = y * 32;
+                            int tilePriority = tileset.GetTilePriority(tileID);
+                            pos.Z = -((y + layer) * (tilePriority * 32));
+
+                            if (tileID < 8)
                             {
-                                pos.X = x * 32;
-                                pos.Y = y * 32;
-                                int tilePriority = TilesetData.GetTileset(_mapData.GetTilesetID()).GetTilePriority(tileID);
-                                pos.Z = -(y + tilePriority) * (layer * 32);
+                                string autoTileName = tileset.GetAutoTile(tileID - 1);
+                                if (autoTileName != "")
+                                {
+                                    int hashCode = 0;
+                                    int[] hashValues = new int[] { 1, 2, 4, 8, 16, 32, 64, 128 };
+                                    int[,] offsets = new int[,] { { 0, -1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, { -1, 1 }, { -1, 0 }, { -1, -1 } };
+                                    for (int i = 0; i < 8; i++)
+                                    {
+                                        Tuple<int, int> targetInfo = _mapData.GetTile(layer, x + offsets[i, 0], y + offsets[i, 1]);
+                                        if (targetInfo == null)
+                                            hashCode += hashValues[i];
+                                        else if (targetInfo.Item1 == tileInfo.Item1 && targetInfo.Item2 == tileInfo.Item2)
+                                            hashCode += hashValues[i];
+                                    }
+
+                                    Texture autoTile = Assets.GetTexture("AutoTiles/" + autoTileName);
+                                    Rectangle[] miniTiles = TilesetData.Tileset.GetAutoTileSources(hashCode);
+                                    int tileFrames = autoTile.GetWidth() / 96;
+                                    _autoTileAnimationTimer += (float)e.Time * (tileset.GetAutoTileTimer(tileID - 1) / 200f);
+                                    while (_autoTileAnimationTimer > 1f)
+                                        _autoTileAnimationTimer -= 1f;
+                                    int frame = (int)(_autoTileAnimationTimer * (tileFrames - 1));
+                                    for (int i = 0; i < miniTiles.Length; i++)
+                                    {
+                                        miniTiles[i].X += 96 * frame;
+                                    }
+
+                                    Renderer.FillTexture(autoTile, ShapeFactory.Rectangle, ref pos, ref autoTileScale, ref miniTiles[0], ref colour);
+                                    pos.X += 16;
+                                    Renderer.FillTexture(autoTile, ShapeFactory.Rectangle, ref pos, ref autoTileScale, ref miniTiles[1], ref colour);
+                                    pos.X -= 16;
+                                    pos.Y += 16;
+                                    Renderer.FillTexture(autoTile, ShapeFactory.Rectangle, ref pos, ref autoTileScale, ref miniTiles[2], ref colour);
+                                    pos.X += 16;
+                                    Renderer.FillTexture(autoTile, ShapeFactory.Rectangle, ref pos, ref autoTileScale, ref miniTiles[3], ref colour);
+                                }
+                            }
+                            else
+                            {
                                 source.X = tileID % 8 * 32;
-                                source.Y = tileID / 8 * 32;
-                                Renderer.FillTexture(tileset, ShapeFactory.Rectangle, ref pos, ref scale, ref source, ref colour);
+                                source.Y = (tileID / 8 * 32) - 32;
+                                Renderer.FillTexture(tilesetTexture, ShapeFactory.Rectangle, ref pos, ref scale, ref source, ref colour);
                             }
                         }
                     }

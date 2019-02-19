@@ -137,7 +137,6 @@ namespace RpgServer
         public void ChangeClientsMap(GameClient client)
         {
             int mapID = client.GetMapID();
-            Console.WriteLine("changing map: " + mapID);
             CheckMapStart(mapID);
             _mapInstances[mapID].AddClient(client);
         }

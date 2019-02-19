@@ -57,8 +57,9 @@
             this.ClientSize = new System.Drawing.Size(184, 161);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.MapSelection);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "LoadMapForm";
-            this.Text = "LoadMapForm";
+            this.Text = "Load Map";
             this.ResumeLayout(false);
 
         }

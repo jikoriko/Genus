@@ -320,7 +320,7 @@ namespace RpgGame
             int mapY;
             float realX;
             float realY;
-            Direction direction;
+            FacingDirection direction;
             MapData map;
 
             switch (command.GetCommandType())
@@ -369,7 +369,7 @@ namespace RpgGame
                         mapY = int.Parse(command.GetParameter("MapY"));
                         realX = float.Parse(command.GetParameter("RealX"));
                         realY = float.Parse(command.GetParameter("RealY"));
-                        direction = (Direction)int.Parse(command.GetParameter("Direction"));
+                        direction = (FacingDirection)int.Parse(command.GetParameter("Direction"));
 
                         map = ((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).GetMapData();
                         if (map != null)
@@ -389,7 +389,7 @@ namespace RpgGame
                     mapID = int.Parse(command.GetParameter("MapID"));
                     if (((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).MapID == mapID)
                     {
-                        direction = (Direction)int.Parse(command.GetParameter("Direction"));
+                        direction = (FacingDirection)int.Parse(command.GetParameter("Direction"));
 
                         map = ((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).GetMapData();
                         if (map != null)

@@ -38,64 +38,87 @@ namespace Genus2D.GameData
             if (data == null) return 0;
             int max = data.GetMaxStack();
             int added = 0;
+            int amountToAdd = count;
 
-            if (max > 1)
+            for (int i = 0; i < _inventory.Count; i++)
             {
-                int amountToAdd = count;
-
-                for (int i = 0; i < _inventory.Count; i++)
+                if (_inventory[i].Item1 == itemID)
                 {
-                    if (_inventory[i].Item1 == itemID)
+                    if (_inventory[i].Item2 < max)
                     {
-                        if (_inventory[i].Item2 < max)
+                        int amountCanAdd = max - _inventory[i].Item2;
+                        if (amountToAdd <= amountCanAdd)
                         {
-                            int amountCanAdd = max - _inventory[i].Item2;
-                            if (amountToAdd <= amountCanAdd)
-                            {
-                                _inventory[i] = new Tuple<int, int>(itemID, _inventory[i].Item2 + amountToAdd);
-                                added += amountToAdd;
-                                amountToAdd = 0;
-                            }
-                            else
-                            {
-                                _inventory[i] = new Tuple<int, int>(itemID, _inventory[i].Item2 + amountCanAdd);
-                                added += amountCanAdd;
-                                amountToAdd -= amountCanAdd;
-                            }
-                        }
-                    }
-
-                    if (amountToAdd < 1)
-                        break;
-                }
-
-                while (amountToAdd > 0)
-                {
-                    if (_inventory.Count < InventorySize)
-                    {
-                        if (amountToAdd <= max)
-                        {
-                            _inventory.Add(new Tuple<int, int>(itemID, amountToAdd));
+                            _inventory[i] = new Tuple<int, int>(itemID, _inventory[i].Item2 + amountToAdd);
                             added += amountToAdd;
-                            break;
+                            amountToAdd = 0;
                         }
                         else
                         {
-                            _inventory.Add(new Tuple<int, int>(itemID, max));
-                            added += max;
-                            amountToAdd -= max;
+                            _inventory[i] = new Tuple<int, int>(itemID, _inventory[i].Item2 + amountCanAdd);
+                            added += amountCanAdd;
+                            amountToAdd -= amountCanAdd;
                         }
-                    }
-                    else
-                    {
-                        break;
                     }
                 }
 
+                if (amountToAdd < 1)
+                    break;
+            }
 
+            while (amountToAdd > 0)
+            {
+                if (_inventory.Count < InventorySize)
+                {
+                    if (amountToAdd <= max)
+                    {
+                        _inventory.Add(new Tuple<int, int>(itemID, amountToAdd));
+                        added += amountToAdd;
+                        break;
+                    }
+                    else
+                    {
+                        _inventory.Add(new Tuple<int, int>(itemID, max));
+                        added += max;
+                        amountToAdd -= max;
+                    }
+                }
+                else
+                {
+                    break;
+                }
             }
 
             return added;
+        }
+
+        public void RemoveInventoryItem(int itemID, int count)
+        {
+            if (count < 1 || itemID < 0) return;
+            ItemData data = ItemData.GetItemData(itemID);
+            if (data == null) return;
+
+            for (int i = 0; i < _inventory.Count; i++)
+            {
+                if (_inventory[i].Item1 == itemID)
+                {
+                    if (_inventory[i].Item2 >= count)
+                    {
+                        int remainder = _inventory[i].Item2 - count;
+                        if (remainder == 0)
+                            _inventory.RemoveAt(i);
+                        else
+                            _inventory[i] = new Tuple<int, int>(itemID, remainder);
+                        return;
+                    }
+                    else
+                    {
+                        count -= _inventory[i].Item2;
+                        _inventory.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
         }
 
         public bool EquipItem(int itemIndex)
@@ -137,6 +160,31 @@ namespace Genus2D.GameData
         public int GetEquipedItemID(EquipmentSlot slot)
         {
             return _equipment[(int)slot] - 1;
+        }
+
+        public bool ItemEquipped(int itemID)
+        {
+            for (int i = 0; i < _equipment.Length; i++)
+            {
+                if (_equipment[i] - 1 == itemID)
+                    return true;
+            }
+            return false;
+        }
+
+        public bool ItemInInventory(int itemID, int amount)
+        {
+            int count = 0;
+            for (int i = 0; i < _inventory.Count; i++)
+            {
+                if (_inventory[i].Item1 == itemID)
+                {
+                    count += _inventory[i].Item2;
+                    if (count >= amount)
+                        return true;
+                }
+            }
+            return false;
         }
 
         public byte[] GetBytes(bool isLocalPlayer)

@@ -12,12 +12,13 @@ namespace Genus2D.GameData
     [Serializable]
     public class MapEvent
     {
+        public string Name;
         public int EventID;
         public int MapX;
         public int MapY;
         public float RealX;
         public float RealY;
-        public Direction EventDirection;
+        public FacingDirection EventDirection;
         public int SpriteID;
         public EventTriggerType TriggerType;
         public bool Passable;
@@ -25,34 +26,27 @@ namespace Genus2D.GameData
         public bool Moved = false;
         public bool Locked = false;
 
-        public MapEvent(int id, int x, int y)
+        public MapEvent(string name, int id, int x, int y)
         {
+            Name = name;
             EventID = id;
             MapX = x;
             MapY = y;
             RealX = x * 32;
             RealY = y * 32;
-            EventDirection = Direction.Down;
+            EventDirection = FacingDirection.Down;
             SpriteID = -1;
             TriggerType = EventTriggerType.None;
             Passable = false;
         }
 
-        public static int SizeOfBytes()
-        {
-            int size = 0;
-            size += sizeof(int) * 6;
-            size += sizeof(float) * 2;
-            size += sizeof(bool);
-            return size;
-        }
-
         public byte[] GetBytes()
         {
-
             using (MemoryStream stream = new MemoryStream())
             {
-                Console.WriteLine("sending map event: " + MapX + "," + MapY);
+                byte[] nameBytes = Encoding.UTF8.GetBytes(Name);
+                stream.Write(BitConverter.GetBytes(nameBytes.Length), 0, sizeof(int));
+                stream.Write(nameBytes, 0, nameBytes.Length);
                 stream.Write(BitConverter.GetBytes(EventID), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(MapX), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(MapY), 0, sizeof(int));
@@ -72,6 +66,14 @@ namespace Genus2D.GameData
             {
                 byte[] tempBytes = new byte[sizeof(int)];
                 stream.Read(tempBytes, 0, sizeof(int));
+                int nameLength = BitConverter.ToInt32(tempBytes, 0);
+
+                tempBytes = new byte[nameLength];
+                stream.Read(tempBytes, 0, nameLength);
+                string name = new string(Encoding.UTF8.GetChars(tempBytes, 0, nameLength));
+
+                tempBytes = new byte[sizeof(int)];
+                stream.Read(tempBytes, 0, sizeof(int));
                 int eventID = BitConverter.ToInt32(tempBytes, 0);
 
                 stream.Read(tempBytes, 0, sizeof(int));
@@ -89,7 +91,7 @@ namespace Genus2D.GameData
 
                 tempBytes = new byte[sizeof(int)];
                 stream.Read(tempBytes, 0, sizeof(int));
-                Direction direction = (Direction)BitConverter.ToInt32(tempBytes, 0);
+                FacingDirection direction = (FacingDirection)BitConverter.ToInt32(tempBytes, 0);
 
                 stream.Read(tempBytes, 0, sizeof(int));
                 int spriteID = BitConverter.ToInt32(tempBytes, 0);
@@ -101,7 +103,7 @@ namespace Genus2D.GameData
                 stream.Read(tempBytes, 0, sizeof(bool));
                 bool passable = BitConverter.ToBoolean(tempBytes, 0);
 
-                MapEvent mapEvent = new MapEvent(eventID, mapX, mapY);
+                MapEvent mapEvent = new MapEvent(name, eventID, mapX, mapY);
                 mapEvent.RealX = realX;
                 mapEvent.RealY = realY;
                 mapEvent.EventDirection = direction;

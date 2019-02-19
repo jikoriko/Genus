@@ -22,7 +22,8 @@ namespace Genus2D.GameData
         }
 
         public string Name;
-        public string IconImage;
+        public string IconSheetImage;
+        public int IconID;
         private ItemType _itemType;
         private int _maxStack;
         private Dictionary<string, Tuple<ItemStatType, object>> _itemStats;
@@ -30,7 +31,8 @@ namespace Genus2D.GameData
         public ItemData(string name)
         {
             Name = name;
-            IconImage = "";
+            IconSheetImage = "";
+            IconID = 0;
             _itemType = ItemType.Tool;
             _maxStack = 1;
             _itemStats = new Dictionary<string, Tuple<ItemStatType, object>>();
@@ -140,6 +142,18 @@ namespace Genus2D.GameData
             return _itemData.Count;
         }
 
+        public static List<string> GetItemNames()
+        {
+            List<string> names = new List<string>();
+
+            for (int i = 0; i < _itemData.Count; i++)
+            {
+                names.Add(_itemData[i].Name);
+            }
+
+            return names;
+        }
+
         private static List<ItemData> LoadItemData()
         {
             List<ItemData> data = null;
@@ -164,7 +178,7 @@ namespace Genus2D.GameData
             _itemData = LoadItemData();
         }
 
-        public static void SaveItemData ()
+        public static void SaveItemData()
         {
             if (!Directory.Exists("Data"))
                 Directory.CreateDirectory("Data");

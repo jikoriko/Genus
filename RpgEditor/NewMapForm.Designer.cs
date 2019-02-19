@@ -31,12 +31,10 @@
             this.NameField = new System.Windows.Forms.TextBox();
             this.WidthField = new System.Windows.Forms.NumericUpDown();
             this.HeightField = new System.Windows.Forms.NumericUpDown();
-            this.TilesetSelection = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.WidthField)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.HeightField)).BeginInit();
             this.SuspendLayout();
@@ -92,17 +90,9 @@
             0,
             0});
             // 
-            // TilesetSelection
-            // 
-            this.TilesetSelection.FormattingEnabled = true;
-            this.TilesetSelection.Location = new System.Drawing.Point(56, 86);
-            this.TilesetSelection.Name = "TilesetSelection";
-            this.TilesetSelection.Size = new System.Drawing.Size(123, 21);
-            this.TilesetSelection.TabIndex = 3;
-            // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(12, 119);
+            this.button1.Location = new System.Drawing.Point(11, 85);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(167, 30);
             this.button1.TabIndex = 4;
@@ -137,31 +127,21 @@
             this.label3.TabIndex = 7;
             this.label3.Text = "Height:";
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(9, 89);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(41, 13);
-            this.label4.TabIndex = 8;
-            this.label4.Text = "Tileset:";
-            // 
             // NewMapForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(184, 161);
-            this.Controls.Add(this.label4);
+            this.ClientSize = new System.Drawing.Size(184, 123);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.TilesetSelection);
             this.Controls.Add(this.HeightField);
             this.Controls.Add(this.WidthField);
             this.Controls.Add(this.NameField);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "NewMapForm";
-            this.Text = "NewMapForm";
+            this.Text = "New Map";
             ((System.ComponentModel.ISupportInitialize)(this.WidthField)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.HeightField)).EndInit();
             this.ResumeLayout(false);
@@ -174,11 +154,9 @@
         private System.Windows.Forms.TextBox NameField;
         private System.Windows.Forms.NumericUpDown WidthField;
         private System.Windows.Forms.NumericUpDown HeightField;
-        private System.Windows.Forms.ComboBox TilesetSelection;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
     }
 }

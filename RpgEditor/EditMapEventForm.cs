@@ -20,6 +20,7 @@ namespace RpgEditor
 
             _mapEvent = mapEvent;
 
+            NameBox.Text = _mapEvent.Name;
             List<string> events = Genus2D.GameData.EventData.GetEventsDataNames();
             EventSelection.Items.Add("None");
             EventSelection.Items.AddRange(events.ToArray());
@@ -52,8 +53,10 @@ namespace RpgEditor
 
         private void ApplyData()
         {
+            if (NameBox.Text != "")
+                _mapEvent.Name = NameBox.Text;
             _mapEvent.EventID = EventSelection.SelectedIndex - 1;
-            _mapEvent.EventDirection = (Genus2D.GameData.Direction)EventDirectionSelection.SelectedIndex;
+            _mapEvent.EventDirection = (Genus2D.GameData.FacingDirection)EventDirectionSelection.SelectedIndex;
             _mapEvent.SpriteID = EventSpriteSelection.SelectedIndex - 1;
             _mapEvent.TriggerType = (Genus2D.GameData.EventTriggerType)EventTriggerTypeSelection.SelectedIndex;
             _mapEvent.Passable = EventPassableCheck.Checked;

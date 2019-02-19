@@ -7,12 +7,25 @@ namespace Genus2D.GameData
 {
     
     [Serializable]
-    public enum Direction
+    public enum FacingDirection
     {
         Down,
         Left,
         Right,
         Up
+    }
+
+    [Serializable]
+    public enum MovementDirection
+    {
+        Down,
+        Left,
+        Right,
+        Up,
+        UpperLeft,
+        UpperRight,
+        LowerLeft,
+        LowerRight
     }
 
     [Serializable]
@@ -23,6 +36,53 @@ namespace Genus2D.GameData
         PlayerTouch,
         EventTouch,
         Autorun
+    }
+
+    [Serializable]
+    public enum VariableType
+    {
+        Integer,
+        Float,
+        Bool,
+        Text
+    }
+
+    [Serializable]
+    public enum ConditionalBranchType
+    {
+        PlayerPosition,
+        MapEventPosition,
+        ItemEquipped,
+        ItemInInventory,
+        SystemVariable,
+        QuestStatus
+    }
+
+    [Serializable]
+    public enum ConditionValueCheck
+    {
+        Equal,
+        NotEqual,
+        Greater,
+        GreaterOrEqual,
+        Lower,
+        LowerOrEqual
+    }
+
+    [Serializable]
+    public enum ConditionalTextCheck
+    {
+        Equal,
+        NotEqual,
+        Includes
+    }
+
+    [Serializable]
+    public enum QuestStatus
+    {
+        NotStarted,
+        Started,
+        Complete
     }
 
     [Serializable]

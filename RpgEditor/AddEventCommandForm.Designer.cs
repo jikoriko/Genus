@@ -57,8 +57,9 @@
             this.ClientSize = new System.Drawing.Size(184, 161);
             this.Controls.Add(this.AddCommandButton);
             this.Controls.Add(this.CommandSelection);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "AddEventCommandForm";
-            this.Text = "AddEventCommandForm";
+            this.Text = "Add Command";
             this.ResumeLayout(false);
 
         }

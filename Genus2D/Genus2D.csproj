@@ -79,6 +79,7 @@
     <Compile Include="GameData\PlayerData.cs" />
     <Compile Include="GameData\SpawnPoint.cs" />
     <Compile Include="GameData\SpriteData.cs" />
+    <Compile Include="GameData\SystemVariable.cs" />
     <Compile Include="GameData\TilesetData.cs" />
     <Compile Include="GUI\Label.cs" />
     <Compile Include="GUI\MessageBox.cs" />

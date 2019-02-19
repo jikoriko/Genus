@@ -84,8 +84,8 @@ namespace Genus2DTest
             spriteComponent = new SpriteComponent(entity2);
             spriteComponent.SetXFrames(3);
             spriteComponent.Transform.Parent = entity.GetTransform();
-            spriteComponent.SetTexture(Assets.GetTexture("sprite.png"));
-            spriteComponent.SetSpriteCenter(SpriteComponent.SpriteCenter.Top);
+            //spriteComponent.SetTexture(Assets.GetTexture("sprite.png"));
+            //spriteComponent.SetSpriteCenter(SpriteComponent.SpriteCenter.Top);
 
             //*/
 

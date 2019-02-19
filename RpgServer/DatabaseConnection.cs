@@ -3,6 +3,8 @@ using Genus2D.Networking;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Data.SQLite;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +15,9 @@ namespace RpgServer
     {
 
         private string _sqlConnectionString;
-        SqlConnection _connection;
+        private bool _sqlite;
+        SQLiteConnection _sqliteConnection;
+        SqlConnection _sqlConnection;
         private bool _connected;
 
         public DatabaseConnection()
@@ -24,15 +28,26 @@ namespace RpgServer
 
         private void Connect()
         {
+            _sqlite = Server.Instance.GetSettingsElement("SQLite").InnerText.ToLower() == "true" ? true : false;
             try
             {
-                _sqlConnectionString = Server.Instance.GetSettingsElement("SqlConnectionString").InnerText;
-                _connection = new SqlConnection(_sqlConnectionString);
-                _connection.Open();
+                if (_sqlite)
+                {
+                    if (!File.Exists("Data/sv.db")) SQLiteConnection.CreateFile("Data/sv.db");
+                    _sqliteConnection = new SQLiteConnection("Data Source=Data/sv.db;Version=3;");
+                    _sqliteConnection.Open();
+                }
+                else
+                {
+                    _sqlConnectionString = Server.Instance.GetSettingsElement("SqlConnectionString").InnerText;
+                    _sqlConnection = new SqlConnection(_sqlConnectionString);
+                    _sqlConnection.Open();
+                }
                 _connected = true;
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 _connected = false;
             }
         }
@@ -42,41 +57,80 @@ namespace RpgServer
             if (_connected)
             {
                 _connected = false;
-                _connection.Close();
+                if (_sqlite) _sqliteConnection.Close();
+                else _sqlConnection.Close();
             }
         }
 
         private void InitializeDatabase()
         {
-            try
+            if (_sqlite)
             {
-                _connection.ChangeDatabase("RpgMmoDatabase");
-            }
-            catch
-            {
-                string createDatabaseQuery = @"CREATE DATABASE RpgMmoDatabase";
-                Insert(createDatabaseQuery);
-                _connection.ChangeDatabase("RpgMmoDatabase");
-            }
-
-            SqlDataReader playersReader = ReadDatabaseTable("Players");
-            if (playersReader == null)
-            {
-                CreatePlayersTable();
+                SQLiteDataReader playersReader = ReadDatabaseTableSQLite("Players");
+                if (playersReader == null)
+                {
+                    Console.WriteLine("Creating tables...");
+                    CreatePlayersTable();
+                    Console.WriteLine("created table");
+                }
+                else
+                {
+                    playersReader.Close();
+                }
             }
             else
             {
-                playersReader.Close();
+                try
+                {
+                    _sqlConnection.ChangeDatabase("RpgMmoDatabase");
+                }
+                catch
+                {
+                    string createDatabaseQuery = @"CREATE DATABASE RpgMmoDatabase";
+                    Insert(createDatabaseQuery);
+                    _sqlConnection.ChangeDatabase("RpgMmoDatabase");
+                }
+
+                SqlDataReader playersReader = ReadDatabaseTable("Players");
+                if (playersReader == null)
+                {
+                    CreatePlayersTable();
+                }
+                else
+                {
+                    playersReader.Close();
+                }
             }
         }
 
         private void CreatePlayersTable()
         {
-            string createTableQuery = @"CREATE TABLE Players(
+            if (_sqlite)
+            {
+                string createTableQuery = @"CREATE TABLE Players(
+                PlayerID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                Username TEXT,
+                Password TEXT,
+                MapID INTEGER,
+                SpriteID INTEGER,
+                Direction INTEGER,
+                MapX INTEGER,
+                MapY INTEGER,
+                Health INTEGER,
+                MaxHealth INTEGER
+                )";
+
+                // create table in database
+                Insert(createTableQuery);
+            }
+            else
+            {
+                string createTableQuery = @"CREATE TABLE Players(
                 PlayerID int IDENTITY (1, 1) NOT NULL PRIMARY KEY,
                 Username varchar(50),
                 Password varchar(50),
                 MapID int,
+                SpriteID int,
                 Direction int,
                 MapX int,
                 MapY int,
@@ -84,16 +138,25 @@ namespace RpgServer
                 MaxHealth int
                 )";
 
-            // create table in database
-            Insert(createTableQuery);
+                // create table in database
+                Insert(createTableQuery);
+            }
         }
 
         private void Insert(string command)
         {
             try
             {
-                SqlCommand cmd = new SqlCommand(command, _connection);
-                cmd.ExecuteNonQuery();
+                if (_sqlite)
+                {
+                    SQLiteCommand cmd = new SQLiteCommand(command, _sqliteConnection);
+                    cmd.ExecuteNonQuery();
+                }
+                else
+                {
+                    SqlCommand cmd = new SqlCommand(command, _sqlConnection);
+                    cmd.ExecuteNonQuery();
+                }
             }
             catch (Exception e)
             {
@@ -105,8 +168,22 @@ namespace RpgServer
         {
             try
             {
-                SqlCommand cmd = new SqlCommand("SELECT * FROM " + table, _connection);
+                SqlCommand cmd = new SqlCommand("SELECT * FROM " + table, _sqlConnection);
                 SqlDataReader rdr = cmd.ExecuteReader();
+                return rdr;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private SQLiteDataReader ReadDatabaseTableSQLite(string table)
+        {
+            try
+            {
+                SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM " + table, _sqliteConnection);
+                SQLiteDataReader rdr = cmd.ExecuteReader();
                 return rdr;
             }
             catch
@@ -122,20 +199,41 @@ namespace RpgServer
 
             try
             {
-                SqlCommand cmd = new SqlCommand("SELECT * FROM Players WHERE Username='" + username + "'", _connection);
-                SqlDataReader rdr = cmd.ExecuteReader();
-                if (rdr.Read())
+                if (_sqlite)
                 {
-                    if (password == rdr.GetString(2))
+                    SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Players WHERE Username='" + username + "'", _sqliteConnection);
+                    SQLiteDataReader rdr = cmd.ExecuteReader();
+                    if (rdr.Read())
                     {
-                        login = true;
-                        playerID = rdr.GetInt32(0);
+                        if (password == rdr.GetString(2))
+                        {
+                            login = true;
+                            playerID = rdr.GetInt32(0);
+                        }
                     }
-                }
 
-                rdr.Close();
+                    rdr.Close();
+                }
+                else
+                {
+                    SqlCommand cmd = new SqlCommand("SELECT * FROM Players WHERE Username='" + username + "'", _sqlConnection);
+                    SqlDataReader rdr = cmd.ExecuteReader();
+                    if (rdr.Read())
+                    {
+                        if (password == rdr.GetString(2))
+                        {
+                            login = true;
+                            playerID = rdr.GetInt32(0);
+                        }
+                    }
+
+                    rdr.Close();
+                }
             }
-            catch { }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
             return login;
         }
@@ -157,23 +255,48 @@ namespace RpgServer
             {
                 try
                 {
-                    SqlCommand cmd = new SqlCommand("SELECT * FROM Players WHERE Username='" + username + "'", _connection);
-                    SqlDataReader rdr = cmd.ExecuteReader();
-
-                    if (!rdr.Read())
+                    if (_sqlite)
                     {
-                        string insertQuery = "INSERT INTO Players (Username, Password, MapID, Direction, MapX, MapY, Health, MaxHealth) " +
-                            "VALUES ('" + username + "', '" + password + "', " + "0, " + (int)Direction.Down + ", 0, 0, 1000, 1000" + ")";
+                        SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Players WHERE Username='" + username + "'", _sqliteConnection);
+                        SQLiteDataReader rdr = cmd.ExecuteReader();
 
-                        Insert(insertQuery);
-                        inserted = true;
+                        if (!rdr.Read())
+                        {
+                            SpawnPoint spawn = Genus2D.GameData.MapInfo.GetSpawnPoint(0);
+                            if (spawn == null) spawn = new SpawnPoint(0, 0, 0, "default");
+                            string insertQuery = "INSERT INTO Players (Username, Password, MapID, SpriteID, Direction, MapX, MapY, Health, MaxHealth) " +
+                                "VALUES ('" + username + "', '" + password + "', " + spawn.MapID + ", 0," + (int)FacingDirection.Down + ", " + spawn.MapX + ", " + spawn.MapY + ", 1000, 1000" + ")";
+
+                            Insert(insertQuery);
+                            inserted = true;
+                        }
+                        else
+                        {
+                            reason = "Account already exists.";
+                        }
+
+                        rdr.Close();
                     }
                     else
                     {
-                        reason = "Account already exists.";
-                    }
+                        SqlCommand cmd = new SqlCommand("SELECT * FROM Players WHERE Username='" + username + "'", _sqlConnection);
+                        SqlDataReader rdr = cmd.ExecuteReader();
 
-                    rdr.Close();
+                        if (!rdr.Read())
+                        {
+                            string insertQuery = "INSERT INTO Players (Username, Password, MapID, SpriteID, Direction, MapX, MapY, Health, MaxHealth) " +
+                                "VALUES ('" + username + "', '" + password + "', " + "0, 0, " + (int)FacingDirection.Down + ", 0, 0, 1000, 1000" + ")";
+
+                            Insert(insertQuery);
+                            inserted = true;
+                        }
+                        else
+                        {
+                            reason = "Account already exists.";
+                        }
+
+                        rdr.Close();
+                    }
                 }
                 catch { }
             }
@@ -184,14 +307,14 @@ namespace RpgServer
         public bool UpdatePlayerQuery(PlayerPacket packet)
         {
             bool updated = false;
-
             try
             {
                 string updateQuery = "UPDATE Players " +
                     "SET MapID=" + packet.MapID + "," +
+                    "SpriteID=" + packet.SpriteID + "," +
                     "Direction=" + (int)packet.Direction + "," +
                     "MapX=" + packet.PositionX + "," +
-                    "MapY=" + packet.PositionY +
+                    "MapY=" + packet.PositionY + " " +
                     //hp and max hp?
                     "WHERE Username='" + packet.Username + "'";
 
@@ -209,27 +332,56 @@ namespace RpgServer
 
             try
             {
-                SqlCommand cmd = new SqlCommand("SELECT * FROM Players WHERE PlayerID='" + playerID + "'", _connection);
-                SqlDataReader rdr = cmd.ExecuteReader();
-                if (rdr.Read())
+                if (_sqlite)
                 {
+                    SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Players WHERE PlayerID='" + playerID + "'", _sqliteConnection);
+                    SQLiteDataReader rdr = cmd.ExecuteReader();
+                    if (rdr.Read())
+                    {
+                        packet = new PlayerPacket();
+                        packet.PlayerID = Convert.ToInt32(rdr["PlayerID"]);
+                        packet.Username = (string)rdr["Username"];
+                        packet.MapID = Convert.ToInt32(rdr["MapID"]);
+                        packet.SpriteID = Convert.ToInt32(rdr["SpriteID"]);
+                        packet.Direction = (FacingDirection)(Convert.ToInt32(rdr["Direction"]));
+                        packet.PositionX = Convert.ToInt32(rdr["MapX"]);
+                        packet.PositionY = Convert.ToInt32(rdr["MapY"]);
+                        packet.RealX = packet.PositionX * 32;
+                        packet.RealY = packet.PositionY * 32;
 
-                    packet = new PlayerPacket();
-                    packet.PlayerID = rdr.GetInt32(0);
-                    packet.Username = rdr.GetString(1);
-                    packet.MapID = rdr.GetInt32(3);
-                    packet.Direction = (Direction)rdr.GetInt32(4);
-                    packet.PositionX = rdr.GetInt32(5);
-                    packet.PositionY = rdr.GetInt32(6);
-                    packet.RealX = packet.PositionX * 32;
-                    packet.RealY = packet.PositionY * 32;
+                        packet.Data = new PlayerData();
+                    }
 
-                    packet.Data = new PlayerData();
+                    rdr.Close();
                 }
+                else
+                {
+                    SqlCommand cmd = new SqlCommand("SELECT * FROM Players WHERE PlayerID='" + playerID + "'", _sqlConnection);
+                    SqlDataReader rdr = cmd.ExecuteReader();
+                    if (rdr.Read())
+                    {
 
-                rdr.Close();
+                        packet = new PlayerPacket();
+                        packet.PlayerID = rdr.GetInt32(0);
+                        packet.Username = rdr.GetString(1);
+                        packet.MapID = rdr.GetInt32(3);
+                        packet.SpriteID = rdr.GetInt32(4);
+                        packet.Direction = (FacingDirection)rdr.GetInt32(5);
+                        packet.PositionX = rdr.GetInt32(6);
+                        packet.PositionY = rdr.GetInt32(7);
+                        packet.RealX = packet.PositionX * 32;
+                        packet.RealY = packet.PositionY * 32;
+
+                        packet.Data = new PlayerData();
+                    }
+
+                    rdr.Close();
+                }
             }
-            catch { }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
             return packet;
         }

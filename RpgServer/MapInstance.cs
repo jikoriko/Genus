@@ -44,10 +44,10 @@ namespace RpgServer
 
         public void AddClient(GameClient client)
         {
-            Console.WriteLine(client);
             if (!_clients.Contains(client) && !_clientsToAdd.Contains(client))
             {
                 _clientsToAdd.Add(client);
+                client.SetMapInstance(this);
             }
         }
 
@@ -81,15 +81,34 @@ namespace RpgServer
 
         public bool MapTilePassable(int x, int y, int eventID)
         {
+            return MapTilePassable(x, y, MovementDirection.Down, eventID, false);
+        }
+
+        public bool MapTilePassable(int x, int y, MovementDirection dir, int eventID, bool checkDirections = true)
+        {
             if (x < 0 || y < 0 || x >= _mapData.GetWidth() || y >= _mapData.GetHeight())
                 return false;
 
-            int tilesetID = _mapData.GetTilesetID();
             for (int i = 0; i < MapData.NUM_LAYERS; i++)
             {
-                int tileID = _mapData.GetTileID(i, x, y);
-                if (!TilesetData.GetTileset(tilesetID).GetPassable(tileID))
-                    return false;
+                Tuple<int, int> tileInfo = _mapData.GetTile(i, x, y);
+                if (tileInfo.Item2 == -1)
+                    continue;
+
+                if (checkDirections)
+                {
+                    if (!TilesetData.GetTileset(tileInfo.Item2).GetPassable(tileInfo.Item1, dir))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (!TilesetData.GetTileset(tileInfo.Item2).GetPassable(tileInfo.Item1))
+                    {
+                        return false;
+                    }
+                }
             }
 
             int tileEvent = TileHasEvent(x, y, eventID);
@@ -152,30 +171,80 @@ namespace RpgServer
             return false;
         }
 
-        public bool MoveMapEvent(int eventID, Direction direction)
+        public bool MoveMapEvent(int eventID, MovementDirection direction)
         {
             MapEvent mapEvent = GetMapData().GetMapEvent(eventID);
-            int x = direction == Direction.Left ? -1 : direction == Direction.Right ? 1 : 0;
-            int y = direction == Direction.Up ? -1 : direction == Direction.Down ? 1 : 0;
-            x += mapEvent.MapX;
-            y += mapEvent.MapY;
+            int x = mapEvent.MapX;
+            int y = mapEvent.MapY;
+            int targetX = x;
+            int targetY = y;
+            FacingDirection facingDirection = FacingDirection.Down;
+            MovementDirection entryDirection = MovementDirection.Down;
 
-            if (MapTilePassable(x, y, eventID))
+            switch (direction)
             {
-                mapEvent.EventDirection = direction;
-                mapEvent.MapX = x;
-                mapEvent.MapY = y;
+                case MovementDirection.UpperLeft:
+                    targetX -= 1;
+                    targetY -= 1;
+                    facingDirection = FacingDirection.Left;
+                    entryDirection = MovementDirection.LowerRight;
+                    break;
+                case MovementDirection.Up:
+                    targetY -= 1;
+                    facingDirection = FacingDirection.Up;
+                    entryDirection = MovementDirection.Down;
+                    break;
+                case MovementDirection.UpperRight:
+                    targetX += 1;
+                    targetY -= 1;
+                    facingDirection = FacingDirection.Right;
+                    entryDirection = MovementDirection.LowerLeft;
+                    break;
+                case MovementDirection.Left:
+                    targetX -= 1;
+                    facingDirection = FacingDirection.Left;
+                    entryDirection = MovementDirection.Right;
+                    break;
+                case MovementDirection.Right:
+                    targetX += 1;
+                    facingDirection = FacingDirection.Right;
+                    entryDirection = MovementDirection.Left;
+                    break;
+                case MovementDirection.LowerLeft:
+                    targetX -= 1;
+                    targetY += 1;
+                    facingDirection = FacingDirection.Left;
+                    entryDirection = MovementDirection.UpperRight;
+                    break;
+                case MovementDirection.Down:
+                    targetY += 1;
+                    facingDirection = FacingDirection.Down;
+                    entryDirection = MovementDirection.Up;
+                    break;
+                case MovementDirection.LowerRight:
+                    targetX += 1;
+                    targetY += 1;
+                    facingDirection = FacingDirection.Right;
+                    entryDirection = MovementDirection.UpperLeft;
+                    break;
+            }
+
+            if (MapTilePassable(x, y, direction, eventID) && MapTilePassable(targetX, targetY, entryDirection, eventID))
+            {
+                mapEvent.EventDirection = facingDirection;
+                mapEvent.MapX = targetX;
+                mapEvent.MapY = targetY;
                 UpdateMapEventOnClients(eventID);
                 return true;
             }
             else
             {
-                ChangeMapEventDirection(eventID, direction);
+                ChangeMapEventDirection(eventID, facingDirection);
                 return false;
             }
         }
 
-        public void ChangeMapEventDirection(int eventID, Direction direction)
+        public void ChangeMapEventDirection(int eventID, FacingDirection direction)
         {
             if (GetMapData().GetMapEvent(eventID).EventDirection != direction)
             {
@@ -217,7 +286,6 @@ namespace RpgServer
                 {
                     _clients.Add(client);
                     _clientsToAdd.RemoveAt(0);
-                    client.SetMapInstance(this);
                 }
             }
 
@@ -234,10 +302,6 @@ namespace RpgServer
 
             for (int i = 0; i < _clients.Count; i++)
             {
-                if (_clients[i] == null)
-                {
-                    continue;
-                }
                 _clients[i].Update(deltaTime);
                 if (!_clients[i].Connected())
                     RemoveClient(_clients[i]);

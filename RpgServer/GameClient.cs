@@ -124,6 +124,7 @@ namespace RpgServer
         private List<ClientCommand> _clientCommands;
         private List<MessagePacket> _messagePackets;
 
+        public bool MessageShowing;
         public bool MovementDisabled;
 
         private GameClient(TcpClient tcpClient, int playerID)
@@ -144,6 +145,9 @@ namespace RpgServer
 
             _clientCommands = new List<ClientCommand>();
             _messagePackets = new List<MessagePacket>();
+
+            MessageShowing = false;
+            MovementDisabled = false;
 
             Thread updatePacketsThread = new Thread(new ThreadStart(UpdatePackets));
             updatePacketsThread.Start();
@@ -415,6 +419,11 @@ namespace RpgServer
 
         public void Update(float deltaTime)
         {
+            if (MessageShowing && KeyDown(OpenTK.Input.Key.Space))
+            {
+                MessageShowing = false;
+            }
+
             if (!MovementDisabled)
             {
                 if (_inputPacket != null)
@@ -429,25 +438,35 @@ namespace RpgServer
 
                 if (!Moving())
                 {
+                    MovementDirection movementDirection;
                     if (KeyDown(OpenTK.Input.Key.W))
                     {
-                        Move(Direction.Up);
-                        _playerPacket.Direction = Genus2D.GameData.Direction.Up;
+                        if (KeyDown(OpenTK.Input.Key.A))
+                            movementDirection = MovementDirection.UpperLeft;
+                        else if (KeyDown(OpenTK.Input.Key.D))
+                            movementDirection = MovementDirection.UpperRight;
+                        else
+                            movementDirection = MovementDirection.Up;
+
+                        Move(movementDirection);
                     }
                     else if (KeyDown(OpenTK.Input.Key.S))
                     {
-                        Move(Direction.Down);
-                        _playerPacket.Direction = Genus2D.GameData.Direction.Down;
+                        if (KeyDown(OpenTK.Input.Key.A))
+                            movementDirection = MovementDirection.LowerLeft;
+                        else if (KeyDown(OpenTK.Input.Key.D))
+                            movementDirection = MovementDirection.LowerRight;
+                        else
+                            movementDirection = MovementDirection.Down;
+                        Move(movementDirection);
                     }
                     else if (KeyDown(OpenTK.Input.Key.A))
                     {
-                        Move(Direction.Left);
-                        _playerPacket.Direction = Genus2D.GameData.Direction.Left;
+                        Move(MovementDirection.Left);
                     }
                     else if (KeyDown(OpenTK.Input.Key.D))
                     {
-                        Move(Direction.Right);
-                        _playerPacket.Direction = Genus2D.GameData.Direction.Right;
+                        Move(MovementDirection.Right);
                     }
                     else
                     {
@@ -457,19 +476,33 @@ namespace RpgServer
                             int targetY = _playerPacket.PositionY;
                             switch (_playerPacket.Direction)
                             {
-                                case Direction.Down:
+                                case FacingDirection.Down:
                                     targetY += 1;
                                     break;
-                                case Direction.Left:
+                                case FacingDirection.Left:
                                     targetX -= 1;
                                     break;
-                                case Direction.Right:
+                                case FacingDirection.Right:
                                     targetX += 1;
                                     break;
-                                case Direction.Up:
+                                case FacingDirection.Up:
                                     targetY -= 1;
                                     break;
                             }
+
+                            for (int i = 0; i < 3; i++)
+                            {
+                                Tuple<int, int> tileInfo = _mapInstance.GetMapData().GetTile(i, targetX, targetY);
+                                if (tileInfo.Item2 == -1)
+                                    continue;
+                                if (TilesetData.GetTileset(tileInfo.Item2).GetCounterFlag(tileInfo.Item1))
+                                {
+                                    targetX += _playerPacket.Direction == FacingDirection.Left ? -1 : _playerPacket.Direction == FacingDirection.Right ? 1 : 0;
+                                    targetY += _playerPacket.Direction == FacingDirection.Down ? 1 : _playerPacket.Direction == FacingDirection.Up ? -1 : 0;
+                                    break;
+                                }
+                            }
+
                             CheckEventTriggers(targetX, targetY, EventTriggerType.Action);
                         }
                     }
@@ -505,29 +538,67 @@ namespace RpgServer
             _playerPacket.RealY = y * 32;
         }
 
-        public void Move(Direction direction)
+        public void Move(MovementDirection direction)
         {
             if (!Moving())
             {
+                int x = _playerPacket.PositionX;
+                int y = _playerPacket.PositionY;
                 int targetX = _playerPacket.PositionX;
                 int targetY = _playerPacket.PositionY;
+                FacingDirection facingDirection = FacingDirection.Down;
+                MovementDirection entryDirection = MovementDirection.Down;
+
                 switch (direction)
                 {
-                    case Direction.Down:
-                        targetY += 1;
-                        break;
-                    case Direction.Left:
+                    case MovementDirection.UpperLeft:
                         targetX -= 1;
-                        break;
-                    case Direction.Right:
-                        targetX += 1;
-                        break;
-                    case Direction.Up:
                         targetY -= 1;
+                        facingDirection = FacingDirection.Left;
+                        entryDirection = MovementDirection.LowerRight;
+                        break;
+                    case MovementDirection.Up:
+                        targetY -= 1;
+                        facingDirection = FacingDirection.Up;
+                        entryDirection = MovementDirection.Down;
+                        break;
+                    case MovementDirection.UpperRight:
+                        targetX += 1;
+                        targetY -= 1;
+                        facingDirection = FacingDirection.Right;
+                        entryDirection = MovementDirection.LowerLeft;
+                        break;
+                    case MovementDirection.Left:
+                        targetX -= 1;
+                        facingDirection = FacingDirection.Left;
+                        entryDirection = MovementDirection.Right;
+                        break;
+                    case MovementDirection.Right:
+                        targetX += 1;
+                        facingDirection = FacingDirection.Right;
+                        entryDirection = MovementDirection.Left;
+                        break;
+                    case MovementDirection.LowerLeft:
+                        targetX -= 1;
+                        targetY += 1;
+                        facingDirection = FacingDirection.Left;
+                        entryDirection = MovementDirection.UpperRight;
+                        break;
+                    case MovementDirection.Down:
+                        targetY += 1;
+                        facingDirection = FacingDirection.Down;
+                        entryDirection = MovementDirection.Up;
+                        break;
+                    case MovementDirection.LowerRight:
+                        targetX += 1;
+                        targetY += 1;
+                        facingDirection = FacingDirection.Right;
+                        entryDirection = MovementDirection.UpperLeft;
                         break;
                 }
+                _playerPacket.Direction = facingDirection;
 
-                if (_mapInstance.MapTilePassable(targetX, targetY, -1))
+                if (_mapInstance.MapTilePassable(x, y, direction, -1) && _mapInstance.MapTilePassable(targetX, targetY, entryDirection, -1))
                 {
                     _playerPacket.PositionX = targetX;
                     _playerPacket.PositionY = targetY;
@@ -539,7 +610,7 @@ namespace RpgServer
             }
         }
 
-        public void ChangeDirection(Direction direction)
+        public void ChangeDirection(FacingDirection direction)
         {
             _playerPacket.Direction = direction;
         }
@@ -550,9 +621,11 @@ namespace RpgServer
             for (int i = 0; i < mapData.MapEventsCount(); i++)
             {
                 MapEvent mapEvent = mapData.GetMapEvent(i);
-                if (mapEvent.TriggerType == triggerType)
+                if (mapEvent.MapX == x && mapEvent.MapY == y)
                 {
-                    if (mapEvent.MapX == x && mapEvent.MapY == y)
+                    if (mapEvent.EventID == -1)
+                        return;
+                    if (mapEvent.TriggerType == triggerType)
                     {
                         _mapInstance.GetEventInterpreter().TriggerEventData(this, mapEvent);
                         break;

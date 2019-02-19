@@ -21,8 +21,6 @@ namespace RpgGame.EntityComponents
         public PlayerComponent(Entity entity, PlayerPacket playerPacket)
             : base(entity)
         {
-            SetTexture(Assets.GetTexture("Sprites/player.png"));
-            SetSpriteCenter(SpriteCenter.Top);
             SetAnimating(false);
             SetXFrames(4);
             SetYFrames(4);
@@ -41,13 +39,14 @@ namespace RpgGame.EntityComponents
         public void SetPlayerPacket(PlayerPacket playerPacket)
         {
             _playerPacket = playerPacket;
+            SetSpriteID(playerPacket.SpriteID);
             SetRealPosition();
             SetYFrame((int)_playerPacket.Direction);
         }
 
         public void SetRealPosition()
         {
-            Vector3 pos = new Vector3(_playerPacket.RealX + 16, _playerPacket.RealY + 32, 0);
+            Vector3 pos = new Vector3(_playerPacket.RealX + 16, _playerPacket.RealY + 16, 0);
             pos.Z = -(_playerPacket.PositionY * 32);
             Transform.LocalPosition = pos;
         }
@@ -83,24 +82,6 @@ namespace RpgGame.EntityComponents
                     if (running)
                         _spriteTimer /= 3.0f;
                     IncrementXFrame();
-
-                    Vector2 dir = Vector2.Zero;
-                    switch (_playerPacket.Direction)
-                    {
-                        case Direction.Down:
-                            dir.Y = 1;
-                            break;
-                        case Direction.Left:
-                            dir.X = -1;
-                            break;
-                        case Direction.Right:
-                            dir.X = 1;
-                            break;
-                        case Direction.Up:
-                            dir.Y = -1;
-                            break;
-                    }
-
                 }
 
                 //Transform.LocalPosition = Transform.LocalPosition + new Vector3(dir * (_playerPacket.MovementSpeed * (float)e.Time));
@@ -109,22 +90,60 @@ namespace RpgGame.EntityComponents
 
         }
 
+        public override bool BushFlag()
+        {
+            MapData data = MapComponent.Instance.GetMapData();
+            if (data == null)
+                return false;
+            for (int i = 0; i < 3; i++)
+            {
+                float x = _playerPacket.RealX;
+                float y = _playerPacket.RealY;
+                if ((x % 32) / 32f < 0.5)
+                    x = (int)Math.Floor(x / 32);
+                else
+                    x = (int)Math.Ceiling(x / 32);
+
+                if ((y % 32) / 32f < 0.3)
+                    y = (int)Math.Floor(y / 32);
+                else
+                    y = (int)Math.Ceiling(y / 32);
+
+                Tuple<int, int> tileInfo = data.GetTile(i, (int)x, (int)y);
+                if (tileInfo == null)
+                    continue;
+                TilesetData.Tileset tileset = TilesetData.GetTileset(tileInfo.Item2);
+                if (tileset != null)
+                {
+                    if (tileset.GetBushFlag(tileInfo.Item1))
+                        return true;
+                }
+            }
+
+            return base.BushFlag();
+        }
+
         public override void Render(FrameEventArgs e)
         {
             PlayerPacket localPacket = RpgClientConnection.Instance.GetLocalPlayerPacket();
-            if (!(localPacket.PositionX == _playerPacket.PositionX && localPacket.PositionY == _playerPacket.PositionY) ||
-                localPacket.PlayerID == _playerPacket.PlayerID)
+            if (localPacket != null)
             {
-                base.Render(e);
+                if (!(localPacket.PositionX == _playerPacket.PositionX && localPacket.PositionY == _playerPacket.PositionY) ||
+                    localPacket.PlayerID == _playerPacket.PlayerID)
+                {
+                    base.Render(e);
+                    if (GetSpriteID() == -1)
+                        return;
 
-                Vector3 pos = Transform.Position;
-                pos.Y -= (GetTexture().GetHeight() / 4) + Renderer.GetFont().GetTextHeight(_playerPacket.Username);
-                pos.X -= Renderer.GetFont().GetTextWidth(_playerPacket.Username) / 2;
-                OpenTK.Graphics.Color4 colour = OpenTK.Graphics.Color4.Red;
+                    Vector3 pos = Transform.Position;
+                    pos.Y -= GetFrameHeight() + Renderer.GetFont().GetTextHeight(_playerPacket.Username);
+                    pos.X -= Renderer.GetFont().GetTextWidth(_playerPacket.Username) / 2;
+                    OpenTK.Graphics.Color4 colour = OpenTK.Graphics.Color4.Red;
 
-                //Renderer.DisableDepthTest();
-                Renderer.PrintText(_playerPacket.Username, ref pos, ref colour);
-                //Renderer.EnableDepthTest();
+                    //Renderer.DisableDepthTest();
+                    Renderer.PrintText(_playerPacket.Username, ref pos, ref colour);
+                    //Renderer.EnableDepthTest();
+                }
             }
         }
     }
