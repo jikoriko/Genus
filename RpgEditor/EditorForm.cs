@@ -328,13 +328,23 @@ namespace RpgEditor
             DialogResult result = dialog.ShowDialog();
             if (result == DialogResult.OK)
             {
-                if (!Directory.Exists("Assets/Textures/Tilesets"))
-                    Directory.CreateDirectory("Assets/Textures/Tilesets");
                 string sourcePath = dialog.FileName;
-                string targetPath = "Assets/Textures/Tilesets/" + Path.GetFileName(sourcePath);
-                File.Copy(sourcePath, targetPath, true);
+                Image image = Image.FromFile(sourcePath);
+                if (image.Width / 32 != 8 || image.Height % 32 != 0)
+                {
+                    MessageBox.Show("Tilesets must be 8 tiles wide with a tile dimension of 32x32 pixels." + '\n' +
+                        "Tileset height = Num Y tiles x 32.");
+                }
+                else
+                {
+                    if (!Directory.Exists("Assets/Textures/Tilesets"))
+                        Directory.CreateDirectory("Assets/Textures/Tilesets");
+                    string targetPath = "Assets/Textures/Tilesets/" + Path.GetFileName(sourcePath);
+                    File.Copy(sourcePath, targetPath, true);
+                    PopulateTilesetSelections();
+                }
+                image.Dispose();
             }
-            PopulateTilesetSelections();
         }
 
         private void PopulateAutoTileSelections()
@@ -376,13 +386,22 @@ namespace RpgEditor
             DialogResult result = dialog.ShowDialog();
             if (result == DialogResult.OK)
             {
-                if (!Directory.Exists("Assets/Textures/AutoTiles"))
-                    Directory.CreateDirectory("Assets/Textures/AutoTiles");
                 string sourcePath = dialog.FileName;
-                string targetPath = "Assets/Textures/AutoTiles/" + Path.GetFileName(sourcePath);
-                File.Copy(sourcePath, targetPath, true);
+                Image image = Image.FromFile(sourcePath);
+                if (image.Width % 96 != 0 || image.Height != 128)
+                {
+                    MessageBox.Show("Autotiles must be 96 pixels wide * num animation frames." + '\n' +
+                        "Autotile height = 128.");
+                }
+                else
+                {
+                    if (!Directory.Exists("Assets/Textures/AutoTiles"))
+                        Directory.CreateDirectory("Assets/Textures/AutoTiles");
+                    string targetPath = "Assets/Textures/AutoTiles/" + Path.GetFileName(sourcePath);
+                    File.Copy(sourcePath, targetPath, true);
+                    PopulateAutoTileSelections();
+                }
             }
-            PopulateAutoTileSelections();
         }
 
         private void ApplyTilesetDataChange()
@@ -985,13 +1004,21 @@ namespace RpgEditor
             DialogResult result = dialog.ShowDialog();
             if (result == DialogResult.OK)
             {
-                if (!Directory.Exists("Assets/Textures/Sprites"))
-                    Directory.CreateDirectory("Assets/Textures/Sprites");
                 string sourcePath = dialog.FileName;
-                string targetPath = "Assets/Textures/Sprites/" + Path.GetFileName(sourcePath);
-                File.Copy(sourcePath, targetPath, true);
+                Image image = Image.FromFile(sourcePath);
+                if (image.Width < 32 * 4 || image.Height < 32 * 4)
+                {
+                    MessageBox.Show("Sprites must be a minimum of 32 pixels wide/tall * 4 frames.");
+                }
+                else
+                {
+                    if (!Directory.Exists("Assets/Textures/Sprites"))
+                        Directory.CreateDirectory("Assets/Textures/Sprites");
+                    string targetPath = "Assets/Textures/Sprites/" + Path.GetFileName(sourcePath);
+                    File.Copy(sourcePath, targetPath, true);
+                    PopulateSpriteSelections();
+                }
             }
-            PopulateSpriteSelections();
         }
 
         #endregion
@@ -1159,13 +1186,21 @@ namespace RpgEditor
             DialogResult result = dialog.ShowDialog();
             if (result == DialogResult.OK)
             {
-                if (!Directory.Exists("Assets/Textures/Icons"))
-                    Directory.CreateDirectory("Assets/Textures/Icons");
                 string sourcePath = dialog.FileName;
-                string targetPath = "Assets/Textures/Icons/" + Path.GetFileName(sourcePath);
-                File.Copy(sourcePath, targetPath, true);
+                Image image = Image.FromFile(sourcePath);
+                if (image.Width / 32 != 8 || image.Height / 32 != 8)
+                {
+                    MessageBox.Show("Icon sheets must be 8 tiles wide and tall, with a tile dimension of 32x32 pixels.");
+                }
+                else
+                {
+                    if (!Directory.Exists("Assets/Textures/Icons"))
+                        Directory.CreateDirectory("Assets/Textures/Icons");
+                    string targetPath = "Assets/Textures/Icons/" + Path.GetFileName(sourcePath);
+                    File.Copy(sourcePath, targetPath, true);
+                    PopulateItemIconSelections();
+                }
             }
-            PopulateItemIconSelections();
         }
 
         private void ApplyItemButton_Click(object sender, EventArgs e)

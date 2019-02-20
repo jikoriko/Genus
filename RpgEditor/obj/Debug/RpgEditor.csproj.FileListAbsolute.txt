@@ -38,4 +38,3 @@ C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.EditMapForm.
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.csproj.CopyComplete
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.exe
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.pdb
-C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.csprojAssemblyReference.cache
