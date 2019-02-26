@@ -36,7 +36,7 @@
             // 
             this.MessageBox.Location = new System.Drawing.Point(6, 29);
             this.MessageBox.Name = "MessageBox";
-            this.MessageBox.Size = new System.Drawing.Size(443, 397);
+            this.MessageBox.Size = new System.Drawing.Size(443, 180);
             this.MessageBox.TabIndex = 0;
             this.MessageBox.Text = "";
             // 
@@ -56,7 +56,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.MessageBox);
             this.Name = "ShowMessagePreset";
-            this.Size = new System.Drawing.Size(452, 429);
+            this.Size = new System.Drawing.Size(452, 235);
             this.ResumeLayout(false);
             this.PerformLayout();
 

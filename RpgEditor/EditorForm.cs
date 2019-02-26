@@ -604,6 +604,9 @@ namespace RpgEditor
                     case Genus2D.GameData.EventCommand.CommandType.ChangePlayerSprite:
                         control = new CommandDataPresets.ChangePlayerSpritePreset(command);
                         break;
+                    case Genus2D.GameData.EventCommand.CommandType.ChangeMapEventSprite:
+                        control = new CommandDataPresets.ChangeMapEventSprite(command);
+                        break;
                 }
 
                 if (control != null)

@@ -54,6 +54,8 @@
             this.label9 = new System.Windows.Forms.Label();
             this.ItemEquippedSelection = new System.Windows.Forms.ComboBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.InventoryItemStack = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
             this.ItemInInventorySelection = new System.Windows.Forms.ComboBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -73,8 +75,10 @@
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.label10 = new System.Windows.Forms.Label();
             this.QuestStatus = new System.Windows.Forms.ComboBox();
-            this.InventoryItemStack = new System.Windows.Forms.NumericUpDown();
-            this.label13 = new System.Windows.Forms.Label();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.SelectedOptionCheck = new System.Windows.Forms.RadioButton();
+            this.SelectedOptionControl = new System.Windows.Forms.NumericUpDown();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PlayerY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PlayerX)).BeginInit();
@@ -83,11 +87,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.MapEventX)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.InventoryItemStack)).BeginInit();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.VariableFloatValue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.VariableIntegerValue)).BeginInit();
             this.groupBox6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.InventoryItemStack)).BeginInit();
+            this.groupBox7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SelectedOptionControl)).BeginInit();
             this.SuspendLayout();
             // 
             // PlayerPositionCheck
@@ -362,6 +368,37 @@
             this.groupBox4.TabIndex = 15;
             this.groupBox4.TabStop = false;
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(36, 48);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(38, 13);
+            this.label13.TabIndex = 16;
+            this.label13.Text = "Stack:";
+            // 
+            // InventoryItemStack
+            // 
+            this.InventoryItemStack.Location = new System.Drawing.Point(72, 46);
+            this.InventoryItemStack.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.InventoryItemStack.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.InventoryItemStack.Name = "InventoryItemStack";
+            this.InventoryItemStack.Size = new System.Drawing.Size(120, 20);
+            this.InventoryItemStack.TabIndex = 15;
+            this.InventoryItemStack.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
             // label7
             // 
             this.label7.AutoSize = true;
@@ -561,41 +598,49 @@
             this.QuestStatus.Size = new System.Drawing.Size(121, 21);
             this.QuestStatus.TabIndex = 7;
             // 
-            // InventoryItemStack
+            // groupBox7
             // 
-            this.InventoryItemStack.Location = new System.Drawing.Point(72, 46);
-            this.InventoryItemStack.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.InventoryItemStack.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.InventoryItemStack.Name = "InventoryItemStack";
-            this.InventoryItemStack.Size = new System.Drawing.Size(120, 20);
-            this.InventoryItemStack.TabIndex = 15;
-            this.InventoryItemStack.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.groupBox7.Controls.Add(this.SelectedOptionControl);
+            this.groupBox7.Controls.Add(this.label14);
+            this.groupBox7.Location = new System.Drawing.Point(304, 240);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(227, 52);
+            this.groupBox7.TabIndex = 18;
+            this.groupBox7.TabStop = false;
             // 
-            // label13
+            // label14
             // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(36, 48);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(38, 13);
-            this.label13.TabIndex = 16;
-            this.label13.Text = "Stack:";
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(31, 22);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(41, 13);
+            this.label14.TabIndex = 8;
+            this.label14.Text = "Option:";
+            // 
+            // SelectedOptionCheck
+            // 
+            this.SelectedOptionCheck.AutoSize = true;
+            this.SelectedOptionCheck.Location = new System.Drawing.Point(286, 217);
+            this.SelectedOptionCheck.Name = "SelectedOptionCheck";
+            this.SelectedOptionCheck.Size = new System.Drawing.Size(104, 17);
+            this.SelectedOptionCheck.TabIndex = 17;
+            this.SelectedOptionCheck.TabStop = true;
+            this.SelectedOptionCheck.Text = "Selected Option:";
+            this.SelectedOptionCheck.UseVisualStyleBackColor = true;
+            // 
+            // SelectedOptionControl
+            // 
+            this.SelectedOptionControl.Location = new System.Drawing.Point(78, 20);
+            this.SelectedOptionControl.Name = "SelectedOptionControl";
+            this.SelectedOptionControl.Size = new System.Drawing.Size(120, 20);
+            this.SelectedOptionControl.TabIndex = 15;
             // 
             // ConditionalBranchPreset
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.groupBox7);
+            this.Controls.Add(this.SelectedOptionCheck);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
@@ -622,13 +667,16 @@
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.InventoryItemStack)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.VariableFloatValue)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.VariableIntegerValue)).EndInit();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.InventoryItemStack)).EndInit();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SelectedOptionControl)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -683,5 +731,9 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.NumericUpDown InventoryItemStack;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.NumericUpDown SelectedOptionControl;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.RadioButton SelectedOptionCheck;
     }
 }

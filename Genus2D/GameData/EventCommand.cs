@@ -27,7 +27,8 @@ namespace Genus2D.GameData
             ConditionalBranchEnd,
             AddInventoryItem,
             RemoveInventoryItem,
-            ChangePlayerSprite
+            ChangePlayerSprite,
+            ChangeMapEventSprite
 
         }
 
@@ -76,7 +77,7 @@ namespace Genus2D.GameData
                     break;
                 case CommandType.ShowOptions:
                     _parameters.Add("Message", "");
-                    _parameters.Add("Options", new List<MessageOption>());
+                    _parameters.Add("Options", new List<string>());
                     break;
                 case CommandType.ChangeSystemVariable:
                     _parameters.Add("VariableID", -1);
@@ -104,6 +105,7 @@ namespace Genus2D.GameData
                     _parameters.Add("ValueCondition", ConditionValueCheck.Equal);
                     _parameters.Add("TextCondition", ConditionalTextCheck.Equal);
                     _parameters.Add("QuestStatus", QuestStatus.NotStarted);
+                    _parameters.Add("SelectedOption", 0);
                     break;
                 case CommandType.AddInventoryItem:
                     _parameters.Add("ItemID", -1);
@@ -114,6 +116,11 @@ namespace Genus2D.GameData
                     _parameters.Add("ItemAmount", 1);
                     break;
                 case CommandType.ChangePlayerSprite:
+                    _parameters.Add("SpriteID", -1);
+                    break;
+                case CommandType.ChangeMapEventSprite:
+                    _parameters.Add("MapID", -1);
+                    _parameters.Add("EventID", -1);
                     _parameters.Add("SpriteID", -1);
                     break;
             }

@@ -37,9 +37,8 @@ namespace RpgServer
 
             if (triggeringEvent.MessageShowing)
             {
-                if (!client.MessageShowing)
+                if (!client.MessageShowing || !client.Connected())
                 {
-                    client.AddClientCommand(new ClientCommand(ClientCommand.CommandType.CloseMessage));
                     triggeringEvent.MessageShowing = false;
                     client.MovementDisabled = false;
                 }
@@ -48,37 +47,12 @@ namespace RpgServer
             }
             else if (triggeringEvent.OptionsShowing)
             {
-                ClientCommand clientCommand;
-
-                if (!client.MessageShowing)
+                if (!client.MessageShowing || !client.Connected())
                 {
-                    //get the selected option and trigger event
-
                     triggeringEvent.OptionsShowing = false;
                     client.MovementDisabled = false;
-                    triggeringEvent.SelectedOption = -1;
-                    triggeringEvent.OptionsCount = 0;
-                    client.AddClientCommand(new ClientCommand(ClientCommand.CommandType.CloseMessage));
-                }
-                else if (client.KeyDown(OpenTK.Input.Key.Down)) // need to move this to client update
-                {
-                    triggeringEvent.SelectedOption++;
-                    if (triggeringEvent.SelectedOption >= triggeringEvent.OptionsCount)
-                        triggeringEvent.SelectedOption = 0;
-
-                    clientCommand = new ClientCommand(ClientCommand.CommandType.UpdateOptions);
-                    clientCommand.SetParameter("SelectedOption", triggeringEvent.SelectedOption.ToString());
-                    client.AddClientCommand(clientCommand);
-                }
-                if (client.KeyDown(OpenTK.Input.Key.Up))
-                {
-                    triggeringEvent.SelectedOption--;
-                    if (triggeringEvent.SelectedOption < 0)
-                        triggeringEvent.SelectedOption = triggeringEvent.OptionsCount - 1;
-
-                    clientCommand = new ClientCommand(ClientCommand.CommandType.UpdateOptions);
-                    clientCommand.SetParameter("SelectedOption", triggeringEvent.SelectedOption.ToString());
-                    client.AddClientCommand(clientCommand);
+                    triggeringEvent.SelectedOption = client.SelectedOption;
+                    client.SelectedOption = -1;
                 }
 
                 return;
@@ -95,7 +69,7 @@ namespace RpgServer
                 triggeringEvent.CommandID++;
                 EventCommand eventCommand = eventData.EventCommands[triggeringEvent.CommandID];
 
-                ClientCommand clientCommand;
+                ServerCommand serverCommand;
                 int mapID;
                 int eventID;
                 int mapX;
@@ -118,7 +92,7 @@ namespace RpgServer
                         break;
                     case EventCommand.CommandType.TeleportPlayer:
 
-                        if (client == null) break;
+                        if (client == null || !client.Connected()) break;
 
                         mapID = (int)eventCommand.GetParameter("MapID");
                         mapX = (int)eventCommand.GetParameter("MapX");
@@ -129,7 +103,7 @@ namespace RpgServer
                         break;
                     case EventCommand.CommandType.MovePlayer:
 
-                        if (client == null) break;
+                        if (client == null || !client.Connected()) break;
 
                         if (client.Moving())
                         {
@@ -142,7 +116,7 @@ namespace RpgServer
                         break;
                     case EventCommand.CommandType.ChangePlayerDirection:
 
-                        if (client == null) break;
+                        if (client == null || !client.Connected()) break;
 
                         facingDirection = (FacingDirection)eventCommand.GetParameter("Direction");
                         client.ChangeDirection(facingDirection);
@@ -192,11 +166,11 @@ namespace RpgServer
                         break;
                     case EventCommand.CommandType.ShowMessage:
 
-                        if (client == null) break;
+                        if (client == null || !client.Connected()) break;
 
-                        clientCommand = new ClientCommand(ClientCommand.CommandType.ShowMessage);
-                        clientCommand.SetParameter("Message", (string)eventCommand.GetParameter("Message"));
-                        client.AddClientCommand(clientCommand);
+                        serverCommand = new ServerCommand(ServerCommand.CommandType.ShowMessage);
+                        serverCommand.SetParameter("Message", (string)eventCommand.GetParameter("Message"));
+                        client.AddServerCommand(serverCommand);
                         triggeringEvent.MessageShowing = true;
                         client.MovementDisabled = true;
                         client.MessageShowing = true;
@@ -204,26 +178,25 @@ namespace RpgServer
                         break;
                     case EventCommand.CommandType.ShowOptions:
 
-                        if (client == null) break;
+                        if (client == null || !client.Connected()) break;
 
-                        List<MessageOption> options = (List<MessageOption>)eventCommand.GetParameter("Options");
-                        triggeringEvent.SelectedOption = 0;
-                        triggeringEvent.OptionsCount = options.Count;
+                        List<string> options = (List<string>)eventCommand.GetParameter("Options");
+                        client.SelectedOption = 0;
+                        int OptionsCount = options.Count;
 
                         string optionStrings = "";
                         for (int i = 0; i < options.Count; i++)
                         {
-                            optionStrings += options[i].Option;
+                            optionStrings += options[i];
                             if (i < options.Count - 1)
                                 optionStrings += ",";
                         }
 
-                        clientCommand = new ClientCommand(ClientCommand.CommandType.ShowOptions);
-                        clientCommand.SetParameter("Message", (string)eventCommand.GetParameter("Message"));
-                        clientCommand.SetParameter("Options", optionStrings);
-                        clientCommand.SetParameter("SelectedOption", triggeringEvent.SelectedOption.ToString());
+                        serverCommand = new ServerCommand(ServerCommand.CommandType.ShowOptions);
+                        serverCommand.SetParameter("Message", (string)eventCommand.GetParameter("Message"));
+                        serverCommand.SetParameter("Options", optionStrings);
 
-                        client.AddClientCommand(clientCommand);
+                        client.AddServerCommand(serverCommand);
                         triggeringEvent.OptionsShowing = true;
                         client.MovementDisabled = true;
                         client.MessageShowing = true;
@@ -275,7 +248,7 @@ namespace RpgServer
 
                                 break;
                             case ConditionalBranchType.ItemEquipped:
-                                if (client == null) break;
+                                if (client == null || !client.Connected()) break;
 
                                 itemID = (int)eventCommand.GetParameter("EquippedItemID");
                                 if (itemID == -1) break;
@@ -399,10 +372,17 @@ namespace RpgServer
                                 break;
                             case ConditionalBranchType.QuestStatus:
 
-                                if (client == null) break;
+                                if (client == null || !client.Connected()) break;
 
                                 QuestStatus status = (QuestStatus)eventCommand.GetParameter("QuestStatus");
                                 // check quest status here
+
+                                break;
+                            case ConditionalBranchType.SelectedOption:
+
+                                int option = (int)eventCommand.GetParameter("SelectedOption");
+                                if (option == triggeringEvent.SelectedOption)
+                                    conditionMet = true;
 
                                 break;
                         }
@@ -450,7 +430,7 @@ namespace RpgServer
                             triggeringEvent.ConditionDepth -= 1;
                         break;
                     case EventCommand.CommandType.AddInventoryItem:
-                        if (client == null) break;
+                        if (client == null || !client.Connected()) break;
 
                         itemID = (int)eventCommand.GetParameter("ItemID");
                         itemAmount = (int)eventCommand.GetParameter("ItemAmount");
@@ -460,7 +440,7 @@ namespace RpgServer
 
                         break;
                     case EventCommand.CommandType.RemoveInventoryItem:
-                        if (client == null) break;
+                        if (client == null || !client.Connected()) break;
 
                         itemID = (int)eventCommand.GetParameter("ItemID");
                         itemAmount = (int)eventCommand.GetParameter("ItemAmount");
@@ -468,10 +448,18 @@ namespace RpgServer
 
                         break;
                     case EventCommand.CommandType.ChangePlayerSprite:
-                        if (client == null) break;
+                        if (client == null || !client.Connected()) break;
 
                         int spriteID = (int)eventCommand.GetParameter("SpriteID");
                         client.GetPacket().SpriteID = spriteID;
+
+                        break;
+                    case EventCommand.CommandType.ChangeMapEventSprite:
+
+                        mapID = (int)eventCommand.GetParameter("MapID");
+                        eventID = (int)eventCommand.GetParameter("EventID");
+                        spriteID = (int)eventCommand.GetParameter("SpriteID");
+                        Server.Instance.GetMapInstance(mapID).ChangeMapEventSprite(eventID, spriteID);
 
                         break;
                 }
@@ -484,7 +472,7 @@ namespace RpgServer
 
         public void TriggerEventData(GameClient client, MapEvent mapEvent)
         {
-            if (mapEvent.Locked)
+            if (mapEvent.Locked) // add player lock id so others can interact
                 return;
             _triggeringEvents.Add(new TriggeringEvent(client, mapEvent));
         }

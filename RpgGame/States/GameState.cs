@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Genus2D.Networking;
 
 using RpgGame.GUI;
+using Genus2D.GameData;
 
 namespace RpgGame.States
 {
@@ -19,7 +20,6 @@ namespace RpgGame.States
 
         public static GameState Instance { get; private set; }
         private RpgClientConnection _connection;
-        private List<int> _keysDown;
 
         private MessagePanel _messagePanel;
 
@@ -33,7 +33,6 @@ namespace RpgGame.States
             new MapComponent(MapEntity);
 
             _connection = null;
-            _keysDown = new List<int>();
 
             _messagePanel = new MessagePanel(this);
             this.AddControl(_messagePanel);
@@ -44,29 +43,36 @@ namespace RpgGame.States
             _connection = connection;
         }
 
-        List<int> GetKeysDown()
-        {
-            return _keysDown;
-        }
-
         public override void OnKeyDown(OpenTK.Input.KeyboardKeyEventArgs e)
         {
             base.OnKeyDown(e);
-
-            if (!_keysDown.Contains((int)e.Key))
-            {
-                _keysDown.Add((int)e.Key);
-            }
 
             if (e.Key == Key.Escape)
             {
                 StateWindow.Instance.PopState();
                 this.Destroy();
             }
-
-            if (e.Key == OpenTK.Input.Key.Enter && e.Alt)
+            else if (e.Key == OpenTK.Input.Key.Enter && e.Alt)
             {
                 Renderer.SetFulscreen(Renderer.GetFulscreen() ? false : true);
+            }
+            else
+            {
+                if (e.Key == Key.Space)
+                {
+                    ClientCommand command = new ClientCommand(ClientCommand.CommandType.ActionTrigger);
+                    RpgClientConnection.Instance.AddClientCommand(command);
+                }
+                else if (e.Key == Key.Enter)
+                {
+                    RpgClientConnection.Instance.CloseMessageBox();
+                }
+                else if (e.Key == Key.LShift)
+                {
+                    ClientCommand command = new ClientCommand(ClientCommand.CommandType.ToggleRunning);
+                    command.SetParameter("Running", "true");
+                    RpgClientConnection.Instance.AddClientCommand(command);
+                }
             }
         }
 
@@ -74,16 +80,12 @@ namespace RpgGame.States
         {
             base.OnKeyUp(e);
 
-            _keysDown.Remove((int)e.Key);
-        }
-
-
-        public InputPacket GetInputPacket()
-        {
-            InputPacket packet = new InputPacket();
-            packet.KeysDown = _keysDown;
-            //packet.MouseState = OpenTK.Input.Mouse.GetState();
-            return packet;
+            if (e.Key == Key.LShift)
+            {
+                ClientCommand command = new ClientCommand(ClientCommand.CommandType.ToggleRunning);
+                command.SetParameter("Running", "false");
+                RpgClientConnection.Instance.AddClientCommand(command);
+            }
         }
 
         public override void OnUpdateFrame(FrameEventArgs e)
@@ -92,6 +94,60 @@ namespace RpgGame.States
                 _connection.Update();
 
             base.OnUpdateFrame(e);
+
+            KeyboardState keyState = Keyboard.GetState();
+            bool moving = false;
+            MovementDirection direction = MovementDirection.Down;
+            if (keyState.IsKeyDown(Key.W))
+            {
+                moving = true;
+                if (keyState.IsKeyDown(Key.A))
+                {
+                    direction = MovementDirection.UpperLeft;
+                }
+                else if (keyState.IsKeyDown(Key.D))
+                {
+                    direction = MovementDirection.UpperRight;
+                }
+                else
+                {
+                    direction = MovementDirection.Up;
+                }
+            }
+            else if (keyState.IsKeyDown(Key.S))
+            {
+                moving = true;
+                if (keyState.IsKeyDown(Key.A))
+                {
+                    direction = MovementDirection.LowerLeft;
+                }
+                else if (keyState.IsKeyDown(Key.D))
+                {
+                    direction = MovementDirection.LowerRight;
+                }
+                else
+                {
+                    direction = MovementDirection.Down;
+                }
+            }
+            else if (keyState.IsKeyDown(Key.A))
+            {
+                moving = true;
+                direction = MovementDirection.Left;
+            }
+            else if (keyState.IsKeyDown(Key.D))
+            {
+                moving = true;
+                direction = MovementDirection.Right;
+            }
+
+            if (moving)
+            {
+                ClientCommand command = new ClientCommand(ClientCommand.CommandType.MovePlayer);
+                command.SetParameter("Direction", ((int)direction).ToString());
+                RpgClientConnection.Instance.AddClientCommand(command);
+            }
+
         }
 
         public override void Destroy()

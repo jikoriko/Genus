@@ -226,18 +226,30 @@ namespace Genus2D.GUI
 
         }
 
+        public void SetSliderScroll(int amount)
+        {
+            if (_sliderType == SliderType.Horizontal)
+            {
+                _sliderPosition.X = amount;
+            }
+            else
+            {
+                _sliderPosition.Y = amount;
+            }
+            CapSliderPosition();
+        }
+
         public void ScrollSlider(int amount)
         {
             if (_sliderType == SliderType.Horizontal)
             {
                 _sliderPosition.X += amount;
-                CapSliderPosition();
             }
             else
             {
                 _sliderPosition.Y += amount;
-                CapSliderPosition();
             }
+            CapSliderPosition();
         }
 
         public int GetRelativeScroll()

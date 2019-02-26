@@ -20,7 +20,6 @@ namespace RpgServer
         public bool MessageShowing;
         public bool OptionsShowing;
         public int SelectedOption;
-        public int OptionsCount;
 
         public bool Complete { get; private set; }
 
@@ -36,7 +35,6 @@ namespace RpgServer
             MessageShowing = false;
             OptionsShowing = false;
             SelectedOption = -1;
-            OptionsCount = 0;
 
             Complete = false;
             mapEvent.Locked = true;

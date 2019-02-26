@@ -11,12 +11,12 @@ namespace Genus2D.Networking
     {
         public enum CommandType
         {
-            ShowMessage,
             CloseMessage,
-            ShowOptions,
-            UpdateOptions,
-            UpdateMapEvent,
-            ChangeMapEventDirection
+            SelectOption,
+            MovePlayer,
+            ToggleRunning,
+            ActionTrigger
+
         }
 
         private CommandType _commandType;
@@ -29,35 +29,21 @@ namespace Genus2D.Networking
 
             switch (type)
             {
-                case CommandType.ShowMessage:
-                    _parameters.Add("Message", "");
-                    break;
                 case CommandType.CloseMessage:
 
                     break;
-                case CommandType.ShowOptions:
-                    _parameters.Add("Message", "");
-                    _parameters.Add("Options", "");
-                    _parameters.Add("SelectedOption", "");
+                case CommandType.SelectOption:
+                    _parameters.Add("Option", "");
                     break;
-                case CommandType.UpdateOptions:
-                    _parameters.Add("SelectedOption", "");
-                    break;
-                case CommandType.UpdateMapEvent:
-                    _parameters.Add("EventID", "");
-                    _parameters.Add("MapID", "");
-                    _parameters.Add("MapX", "");
-                    _parameters.Add("MapY", "");
-                    _parameters.Add("RealX", "");
-                    _parameters.Add("RealY", "");
+                case CommandType.MovePlayer:
                     _parameters.Add("Direction", "");
                     break;
-                case CommandType.ChangeMapEventDirection:
-                    _parameters.Add("EventID", "");
-                    _parameters.Add("MapID", "");
-                    _parameters.Add("Direction", "");
+                case CommandType.ToggleRunning:
+                    _parameters.Add("Running", "");
                     break;
+                case CommandType.ActionTrigger:
 
+                    break;
 
             }
         }

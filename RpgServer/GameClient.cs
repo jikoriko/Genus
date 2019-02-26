@@ -118,14 +118,14 @@ namespace RpgServer
         private bool _running;
 
         private PlayerPacket _playerPacket;
-        private InputPacket _inputPacket;
         private MapInstance _mapInstance;
 
-        private List<ClientCommand> _clientCommands;
+        private List<ServerCommand> _serverCommands;
         private List<MessagePacket> _messagePackets;
 
         public bool MessageShowing;
         public bool MovementDisabled;
+        public int SelectedOption;
 
         private GameClient(TcpClient tcpClient, int playerID)
         {
@@ -139,15 +139,14 @@ namespace RpgServer
             _running = false;
 
             _playerPacket = Server.Instance.GetDatabaseConnection().RetrievePlayerQuery(playerID);
-
-            _inputPacket = null;
             _mapInstance = null;
 
-            _clientCommands = new List<ClientCommand>();
+            _serverCommands = new List<ServerCommand>();
             _messagePackets = new List<MessagePacket>();
 
             MessageShowing = false;
             MovementDisabled = false;
+            SelectedOption = -1;
 
             Thread updatePacketsThread = new Thread(new ThreadStart(UpdatePackets));
             updatePacketsThread.Start();
@@ -194,8 +193,8 @@ namespace RpgServer
                             {
                                 SendMapPacket();
                                 SendPlayerPackets();
-                                SendClientCommands();
-                                RecieveInputPacket();
+                                SendServerCommands();
+                                RecieveClientCommands();
                                 RecieveMessagePackets();
                                 SendMessagePackets();
                             }
@@ -237,18 +236,18 @@ namespace RpgServer
             return speed;
         }
 
-        public void AddClientCommand(ClientCommand command)
+        public void AddServerCommand(ServerCommand command)
         {
             if (command != null)
-                _clientCommands.Add(command);
+                _serverCommands.Add(command);
         }
 
-        private void SendClientCommands()
+        private void SendServerCommands()
         {
-            while (_clientCommands.Count > 0)
+            while (_serverCommands.Count > 0)
             {
-                ClientCommand command = _clientCommands[0];
-                byte[] bytes = BitConverter.GetBytes((int)PacketType.ClientCommand);
+                ServerCommand command = _serverCommands[0];
+                byte[] bytes = BitConverter.GetBytes((int)PacketType.ServerCommand);
                 _stream.Write(bytes, 0, sizeof(int));
                 _stream.Flush();
 
@@ -258,7 +257,7 @@ namespace RpgServer
                 _stream.Write(bytes, 0, bytes.Length);
                 _stream.Flush();
 
-                _clientCommands.RemoveAt(0);
+                _serverCommands.RemoveAt(0);
             }
         }
 
@@ -317,22 +316,46 @@ namespace RpgServer
             }
         }
 
-        private void RecieveInputPacket()
+        private void RecieveClientCommands()
         {
-            if (_inputPacket == null)
+            byte[] bytes = BitConverter.GetBytes((int)PacketType.ClientCommand);
+            _stream.Write(bytes, 0, sizeof(int));
+            _stream.Flush();
+
+            bytes = ReadData(sizeof(int), _stream);
+            int numCommands = BitConverter.ToInt32(bytes, 0);
+            for (int i = 0; i < numCommands; i++)
             {
-
-                byte[] bytes = BitConverter.GetBytes((int)PacketType.InputPacket);
-                _stream.Write(bytes, 0, sizeof(int));
-                _stream.Flush();
-
                 bytes = ReadData(sizeof(int), _stream);
-                int size = BitConverter.ToInt32(bytes, 0);
+                int commandSize = BitConverter.ToInt32(bytes, 0);
 
-                bytes = ReadData(size, _stream);
-
-                InputPacket packet = InputPacket.FromBytes(bytes);
-                _inputPacket = packet;
+                bytes = ReadData(commandSize, _stream);
+                ClientCommand command = ClientCommand.FromBytes(bytes);
+                
+                switch (command.GetCommandType())
+                {
+                    case ClientCommand.CommandType.CloseMessage:
+                        MessageShowing = false;
+                        break;
+                    case ClientCommand.CommandType.SelectOption:
+                        int option = int.Parse(command.GetParameter("Option"));
+                        SelectedOption = option;
+                        MessageShowing = false;
+                        break;
+                    case ClientCommand.CommandType.MovePlayer:
+                        int dir = int.Parse(command.GetParameter("Direction"));
+                        MovementDirection direction = (MovementDirection)dir;
+                        Move(direction);
+                        break;
+                    case ClientCommand.CommandType.ToggleRunning:
+                        bool running = command.GetParameter("Running").ToLower() == "true" ? true : false;
+                        _running = running;
+                        break;
+                    case ClientCommand.CommandType.ActionTrigger:
+                        ActionTrigger();
+                        break;
+                }
+                
             }
         }
 
@@ -409,104 +432,51 @@ namespace RpgServer
             return (posX != _playerPacket.RealX || posY != _playerPacket.RealY);
         }
 
-        public bool KeyDown(OpenTK.Input.Key key)
+        public void ActionTrigger()
         {
-            if (_inputPacket == null)
-                return false;
+            if (!Moving() && !MovementDisabled)
+            {
+                int targetX = _playerPacket.PositionX;
+                int targetY = _playerPacket.PositionY;
+                switch (_playerPacket.Direction)
+                {
+                    case FacingDirection.Down:
+                        targetY += 1;
+                        break;
+                    case FacingDirection.Left:
+                        targetX -= 1;
+                        break;
+                    case FacingDirection.Right:
+                        targetX += 1;
+                        break;
+                    case FacingDirection.Up:
+                        targetY -= 1;
+                        break;
+                }
 
-            return _inputPacket.KeysDown.Contains((int)key);
+                for (int i = 0; i < 3; i++)
+                {
+                    Tuple<int, int> tileInfo = _mapInstance.GetMapData().GetTile(i, targetX, targetY);
+                    if (tileInfo.Item2 == -1)
+                        continue;
+                    if (TilesetData.GetTileset(tileInfo.Item2).GetCounterFlag(tileInfo.Item1))
+                    {
+                        targetX += _playerPacket.Direction == FacingDirection.Left ? -1 : _playerPacket.Direction == FacingDirection.Right ? 1 : 0;
+                        targetY += _playerPacket.Direction == FacingDirection.Down ? 1 : _playerPacket.Direction == FacingDirection.Up ? -1 : 0;
+                        break;
+                    }
+                }
+
+                CheckEventTriggers(targetX, targetY, EventTriggerType.Action);
+            }
         }
 
         public void Update(float deltaTime)
         {
-            if (MessageShowing && KeyDown(OpenTK.Input.Key.Space))
-            {
-                MessageShowing = false;
-            }
 
             if (!MovementDisabled)
             {
-                if (_inputPacket != null)
-                {
-                    if (KeyDown(OpenTK.Input.Key.LShift))
-                        _running = true;
-                    else
-                        _running = false;
-                }
-
                 _playerPacket.MovementSpeed = GetMovementSpeed();
-
-                if (!Moving())
-                {
-                    MovementDirection movementDirection;
-                    if (KeyDown(OpenTK.Input.Key.W))
-                    {
-                        if (KeyDown(OpenTK.Input.Key.A))
-                            movementDirection = MovementDirection.UpperLeft;
-                        else if (KeyDown(OpenTK.Input.Key.D))
-                            movementDirection = MovementDirection.UpperRight;
-                        else
-                            movementDirection = MovementDirection.Up;
-
-                        Move(movementDirection);
-                    }
-                    else if (KeyDown(OpenTK.Input.Key.S))
-                    {
-                        if (KeyDown(OpenTK.Input.Key.A))
-                            movementDirection = MovementDirection.LowerLeft;
-                        else if (KeyDown(OpenTK.Input.Key.D))
-                            movementDirection = MovementDirection.LowerRight;
-                        else
-                            movementDirection = MovementDirection.Down;
-                        Move(movementDirection);
-                    }
-                    else if (KeyDown(OpenTK.Input.Key.A))
-                    {
-                        Move(MovementDirection.Left);
-                    }
-                    else if (KeyDown(OpenTK.Input.Key.D))
-                    {
-                        Move(MovementDirection.Right);
-                    }
-                    else
-                    {
-                        if (KeyDown(OpenTK.Input.Key.Space))
-                        {
-                            int targetX = _playerPacket.PositionX;
-                            int targetY = _playerPacket.PositionY;
-                            switch (_playerPacket.Direction)
-                            {
-                                case FacingDirection.Down:
-                                    targetY += 1;
-                                    break;
-                                case FacingDirection.Left:
-                                    targetX -= 1;
-                                    break;
-                                case FacingDirection.Right:
-                                    targetX += 1;
-                                    break;
-                                case FacingDirection.Up:
-                                    targetY -= 1;
-                                    break;
-                            }
-
-                            for (int i = 0; i < 3; i++)
-                            {
-                                Tuple<int, int> tileInfo = _mapInstance.GetMapData().GetTile(i, targetX, targetY);
-                                if (tileInfo.Item2 == -1)
-                                    continue;
-                                if (TilesetData.GetTileset(tileInfo.Item2).GetCounterFlag(tileInfo.Item1))
-                                {
-                                    targetX += _playerPacket.Direction == FacingDirection.Left ? -1 : _playerPacket.Direction == FacingDirection.Right ? 1 : 0;
-                                    targetY += _playerPacket.Direction == FacingDirection.Down ? 1 : _playerPacket.Direction == FacingDirection.Up ? -1 : 0;
-                                    break;
-                                }
-                            }
-
-                            CheckEventTriggers(targetX, targetY, EventTriggerType.Action);
-                        }
-                    }
-                }
 
                 if (Moving())
                 {
@@ -526,8 +496,6 @@ namespace RpgServer
                     _playerPacket.RealY = realPos.Y;
                 }
             }
-
-            _inputPacket = null;
         }
 
         public void SetMapPosition(int x, int y)
@@ -540,7 +508,7 @@ namespace RpgServer
 
         public void Move(MovementDirection direction)
         {
-            if (!Moving())
+            if (!Moving() && !MovementDisabled)
             {
                 int x = _playerPacket.PositionX;
                 int y = _playerPacket.PositionY;

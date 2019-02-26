@@ -75,7 +75,6 @@
     <Compile Include="GameData\MapEvent.cs" />
     <Compile Include="GameData\EventData.cs" />
     <Compile Include="GameData\MapInfo.cs" />
-    <Compile Include="GameData\MessageOption.cs" />
     <Compile Include="GameData\PlayerData.cs" />
     <Compile Include="GameData\SpawnPoint.cs" />
     <Compile Include="GameData\SpriteData.cs" />
@@ -84,6 +83,7 @@
     <Compile Include="GUI\Label.cs" />
     <Compile Include="GUI\MessageBox.cs" />
     <Compile Include="Networking\ClientCommand.cs" />
+    <Compile Include="Networking\ServerCommand.cs" />
     <Compile Include="Networking\Packets.cs" />
     <Compile Include="Utilities\Clock.cs" />
     <Compile Include="Graphics\Triangulator.cs" />

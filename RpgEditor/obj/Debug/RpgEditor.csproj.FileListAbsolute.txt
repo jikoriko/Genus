@@ -9,7 +9,6 @@ C:\Users\perry\Documents\GitHub\Genus\RpgEditor\bin\Debug\Genus2D.dll.config
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\bin\Debug\SharpFont.dll.config
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.AddEventCommandForm.resources
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.ChangeInventoryItemPreset.resources
-C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.ChangeMapEventDirectionPreset.resources
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.ChangePlayerDirectionPreset.resources
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.ChangePlayerSpritePreset.resources
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.ChangeSystemVariablePreset.resources
@@ -38,3 +37,6 @@ C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.EditMapForm.
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.csproj.CopyComplete
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.exe
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.pdb
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.ChangeMapEventDirection.resources
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.ChangeMapEventSprite.resources
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.csprojAssemblyReference.cache

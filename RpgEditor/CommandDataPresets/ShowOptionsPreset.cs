@@ -14,7 +14,7 @@ namespace RpgEditor.CommandDataPresets
     {
 
         private Genus2D.GameData.EventCommand _command;
-        private List<Genus2D.GameData.MessageOption> _messageOptions;
+        private List<string> _messageOptions;
 
         public ShowOptionsPreset(Genus2D.GameData.EventCommand command)
         {
@@ -24,15 +24,14 @@ namespace RpgEditor.CommandDataPresets
 
             MessageTextBox.Text = (string)command.GetParameter("Message");
 
-            _messageOptions = (List<Genus2D.GameData.MessageOption>)command.GetParameter("Options");
+            _messageOptions = (List<string>)command.GetParameter("Options");
             for (int i = 0; i < _messageOptions.Count; i++)
             {
-                MessageOptions.Items.Add(_messageOptions[i].Option);
+                MessageOptions.Items.Add(_messageOptions[i]);
             }
 
             List<string> eventOptions = Genus2D.GameData.EventData.GetEventsDataNames();
             eventOptions.Insert(0, "None");
-            OptionEvents.Items.AddRange(eventOptions.ToArray());
 
 
         }
@@ -41,13 +40,11 @@ namespace RpgEditor.CommandDataPresets
         {
             if (MessageOptions.SelectedIndex != -1)
             {
-                OptionNameBox.Text = _messageOptions[MessageOptions.SelectedIndex].Option;
-                OptionEvents.SelectedIndex = _messageOptions[MessageOptions.SelectedIndex].OptionEventID + 1;
+                OptionNameBox.Text = _messageOptions[MessageOptions.SelectedIndex];
             }
             else
             {
                 OptionNameBox.Text = "";
-                OptionEvents.SelectedIndex = -1;
             }
         }
 
@@ -59,7 +56,6 @@ namespace RpgEditor.CommandDataPresets
                 MessageOptions.Items.RemoveAt(MessageOptions.SelectedIndex);
                 MessageOptions.SelectedIndex = -1;
                 MessageOptions.Text = "";
-                OptionEvents.SelectedIndex = 0;
             }
         }
 
@@ -69,16 +65,14 @@ namespace RpgEditor.CommandDataPresets
             {
                 for (int i = 0; i < _messageOptions.Count; i++)
                 {
-                    if (_messageOptions[i].Option == OptionNameBox.Text)
+                    if (_messageOptions[i] == OptionNameBox.Text)
                     {
                         MessageBox.Show("Option already exists");
                         return;
                     }
                 }
 
-                Genus2D.GameData.MessageOption option = new Genus2D.GameData.MessageOption();
-                option.Option = OptionNameBox.Text;
-                _messageOptions.Add(option);
+                _messageOptions.Add(OptionNameBox.Text);
                 MessageOptions.Items.Add(OptionNameBox.Text);
                 MessageOptions.SelectedIndex = MessageOptions.Items.Count - 1;
             }
@@ -92,14 +86,14 @@ namespace RpgEditor.CommandDataPresets
                 {
                     for (int i = 0; i < _messageOptions.Count; i++)
                     {
-                        if (_messageOptions[i].Option == OptionNameBox.Text)
+                        if (_messageOptions[i] == OptionNameBox.Text)
                         {
                             MessageBox.Show("Option already exists");
                             return;
                         }
                     }
 
-                    _messageOptions[MessageOptions.SelectedIndex].Option = OptionNameBox.Text;
+                    _messageOptions[MessageOptions.SelectedIndex] = OptionNameBox.Text;
                     MessageOptions.Items[MessageOptions.SelectedIndex] = OptionNameBox.Text;
                 }
             }

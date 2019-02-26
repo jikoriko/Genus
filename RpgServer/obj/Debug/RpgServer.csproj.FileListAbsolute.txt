@@ -26,3 +26,4 @@ C:\Users\perry\Documents\GitHub\Genus\RpgServer\obj\Debug\RpgServer.csproj.CoreC
 C:\Users\perry\Documents\GitHub\Genus\RpgServer\obj\Debug\RpgServer.csproj.CopyComplete
 C:\Users\perry\Documents\GitHub\Genus\RpgServer\obj\Debug\RpgServer.exe
 C:\Users\perry\Documents\GitHub\Genus\RpgServer\obj\Debug\RpgServer.pdb
+C:\Users\perry\Documents\GitHub\Genus\RpgServer\obj\Debug\RpgServer.csprojAssemblyReference.cache

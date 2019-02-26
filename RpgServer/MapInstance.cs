@@ -249,31 +249,47 @@ namespace RpgServer
             if (GetMapData().GetMapEvent(eventID).EventDirection != direction)
             {
                 GetMapData().GetMapEvent(eventID).EventDirection = direction;
-                ClientCommand clientCommand = new ClientCommand(ClientCommand.CommandType.ChangeMapEventDirection);
-                clientCommand.SetParameter("EventID", eventID.ToString());
-                clientCommand.SetParameter("MapID", _mapID.ToString());
-                clientCommand.SetParameter("Direction", ((int)direction).ToString());
+                ServerCommand serverCommand = new ServerCommand(ServerCommand.CommandType.ChangeMapEventDirection);
+                serverCommand.SetParameter("EventID", eventID.ToString());
+                serverCommand.SetParameter("MapID", _mapID.ToString());
+                serverCommand.SetParameter("Direction", ((int)direction).ToString());
                 for (int i = 0; i < _clients.Count; i++)
                 {
-                    _clients[i].AddClientCommand(clientCommand);
+                    _clients[i].AddServerCommand(serverCommand);
+                }
+            }
+        }
+
+        public void ChangeMapEventSprite(int eventID, int spriteID)
+        {
+            if (GetMapData().GetMapEvent(eventID).SpriteID != spriteID)
+            {
+                GetMapData().GetMapEvent(eventID).SpriteID = spriteID;
+                ServerCommand serverCommand = new ServerCommand(ServerCommand.CommandType.ChangeMapEventSprite);
+                serverCommand.SetParameter("EventID", eventID.ToString());
+                serverCommand.SetParameter("MapID", _mapID.ToString());
+                serverCommand.SetParameter("SpriteID", spriteID.ToString());
+                for (int i = 0; i < _clients.Count; i++)
+                {
+                    _clients[i].AddServerCommand(serverCommand);
                 }
             }
         }
 
         public void UpdateMapEventOnClients(int eventID)
         {
-            ClientCommand clientCommand = new ClientCommand(ClientCommand.CommandType.UpdateMapEvent);
-            clientCommand.SetParameter("EventID", eventID.ToString());
-            clientCommand.SetParameter("MapID", _mapID.ToString());
+            ServerCommand serverCommand = new ServerCommand(ServerCommand.CommandType.UpdateMapEvent);
+            serverCommand.SetParameter("EventID", eventID.ToString());
+            serverCommand.SetParameter("MapID", _mapID.ToString());
             MapEvent mapEvent = GetMapData().GetMapEvent(eventID);
-            clientCommand.SetParameter("MapX", (mapEvent.MapX).ToString());
-            clientCommand.SetParameter("MapY", (mapEvent.MapY).ToString());
-            clientCommand.SetParameter("RealX", (mapEvent.RealX).ToString());
-            clientCommand.SetParameter("RealY", (mapEvent.RealY).ToString());
-            clientCommand.SetParameter("Direction", ((int)mapEvent.EventDirection).ToString());
+            serverCommand.SetParameter("MapX", (mapEvent.MapX).ToString());
+            serverCommand.SetParameter("MapY", (mapEvent.MapY).ToString());
+            serverCommand.SetParameter("RealX", (mapEvent.RealX).ToString());
+            serverCommand.SetParameter("RealY", (mapEvent.RealY).ToString());
+            serverCommand.SetParameter("Direction", ((int)mapEvent.EventDirection).ToString());
             for (int i = 0; i < _clients.Count; i++)
             {
-                _clients[i].AddClientCommand(clientCommand);
+                _clients[i].AddServerCommand(serverCommand);
             }
         }
 

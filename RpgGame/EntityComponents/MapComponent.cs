@@ -58,6 +58,15 @@ namespace RpgGame.EntityComponents
             _mapEvents.Clear();
         }
 
+        public void ChangeMapEventSprite(int mapEvent, int spriteID)
+        {
+            if (mapEvent >= 0 && mapEvent < _mapEvents.Count)
+            {
+                ((MapEventComponent)_mapEvents[mapEvent].FindComponent<MapEventComponent>()).SetSpriteID(spriteID);
+                _mapData.GetMapEvent(mapEvent).SpriteID = spriteID;
+            }
+        }
+
         public override void Update(FrameEventArgs e)
         {
             base.Update(e);

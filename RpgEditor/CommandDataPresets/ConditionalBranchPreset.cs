@@ -56,6 +56,7 @@ namespace RpgEditor.CommandDataPresets
             VariableTextCondition.SelectedIndex = (int)command.GetParameter("TextCondition");
 
             QuestStatus.SelectedIndex = (int)command.GetParameter("QuestStatus");
+            SelectedOptionControl.Value = (int)command.GetParameter("SelectedOption");
 
         }
 
@@ -81,6 +82,9 @@ namespace RpgEditor.CommandDataPresets
                 case Genus2D.GameData.ConditionalBranchType.QuestStatus:
                     QuestStatusCheck.Checked = true;
                     break;
+                case Genus2D.GameData.ConditionalBranchType.SelectedOption:
+                    SelectedOptionCheck.Checked = true;
+                    break;
             }
         }
 
@@ -96,8 +100,10 @@ namespace RpgEditor.CommandDataPresets
                 return Genus2D.GameData.ConditionalBranchType.ItemInInventory;
             if (SystemVariableCheck.Checked)
                 return Genus2D.GameData.ConditionalBranchType.SystemVariable;
+            if (QuestStatusCheck.Checked)
+                return Genus2D.GameData.ConditionalBranchType.QuestStatus;
 
-            return Genus2D.GameData.ConditionalBranchType.QuestStatus;
+            return Genus2D.GameData.ConditionalBranchType.SelectedOption;
         }
 
         private void SetVariableType(Genus2D.GameData.VariableType type)
@@ -263,6 +269,9 @@ namespace RpgEditor.CommandDataPresets
                     break;
                 case Genus2D.GameData.ConditionalBranchType.QuestStatus:
                     _command.SetParameter("QuestStatus", (Genus2D.GameData.QuestStatus)QuestStatus.SelectedIndex);
+                    break;
+                case Genus2D.GameData.ConditionalBranchType.SelectedOption:
+                    _command.SetParameter("SelectedOption", (int)SelectedOptionControl.Value);
                     break;
             }
 

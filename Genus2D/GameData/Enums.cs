@@ -55,7 +55,8 @@ namespace Genus2D.GameData
         ItemEquipped,
         ItemInInventory,
         SystemVariable,
-        QuestStatus
+        QuestStatus,
+        SelectedOption
     }
 
     [Serializable]

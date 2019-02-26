@@ -126,6 +126,22 @@ namespace Genus2D.GUI
             return new Vector2(_horizontalBar.GetRelativeScroll(), _verticalBar.GetRelativeScroll());
         }
 
+        public void SetScrolledAmount(Vector2 scroll)
+        {
+            SetHorizontalScroll((int)scroll.X);
+            SetVerticalScroll((int)scroll.Y);
+        }
+
+        public void SetHorizontalScroll(int scroll)
+        {
+            _horizontalBar.SetSliderScroll(scroll);
+        }
+
+        public void SetVerticalScroll(int scroll)
+        {
+            _verticalBar.SetSliderScroll(scroll);
+        }
+
         public Vector2 GetRelativeContentPosition()
         {
             return GetWorldContentPosition().Xy + GetScrolledAmount();

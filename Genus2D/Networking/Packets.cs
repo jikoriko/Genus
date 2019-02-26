@@ -14,7 +14,7 @@ namespace Genus2D.Networking
         RegisterRequest,
         PlayerPacket,
         MapPacket,
-        InputPacket,
+        ServerCommand,
         ClientCommand,
         SendMessagePackets,
         RecieveMessagePackets
@@ -370,52 +370,6 @@ namespace Genus2D.Networking
                 mapPacket.MapID = mapID;
                 mapPacket.mapData = MapData.FromBytes(tempBytes);
                 return mapPacket;
-            }
-        }
-    }
-
-    public class InputPacket
-    {
-        public List<int> KeysDown;
-        //public OpenTK.Input.MouseState MouseState;
-
-        public InputPacket()
-        {
-            KeysDown = new List<int>();
-        }
-
-        public byte[] GetBytes()
-        {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                stream.Write(BitConverter.GetBytes(KeysDown.Count), 0, sizeof(int));
-
-                for (int i = 0; i < KeysDown.Count; i++)
-                {
-                    stream.Write(BitConverter.GetBytes(KeysDown[i]), 0, sizeof(int));
-                }
-
-                return stream.ToArray();
-            }
-        }
-
-        public static InputPacket FromBytes(byte[] bytes)
-        {
-            using (MemoryStream stream = new MemoryStream(bytes))
-            {
-                InputPacket packet = new InputPacket();
-
-                byte[] tempBytes = new byte[sizeof(int)];
-                stream.Read(tempBytes, 0, sizeof(int));
-                int numKeysDown = BitConverter.ToInt32(tempBytes, 0);
-
-                for (int i = 0; i < numKeysDown; i++)
-                {
-                    stream.Read(tempBytes, 0, sizeof(int));
-                    packet.KeysDown.Add(BitConverter.ToInt32(tempBytes, 0));
-                }
-
-                return packet;
             }
         }
     }

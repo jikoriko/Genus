@@ -33,6 +33,7 @@ namespace RpgGame
 
         private Thread _recievePacketsThread;
         private List<MessagePacket> _messages;
+        private List<ClientCommand> _clientCommands;
 
         States.GameState _gameState;
 
@@ -90,6 +91,7 @@ namespace RpgGame
                         _recievePacketsThread = new Thread(new ThreadStart(RecievePackets));
                         _recievePacketsThread.Start();
                         _messages = new List<MessagePacket>();
+                        _clientCommands = new List<ClientCommand>();
                         Console.WriteLine("Client logged in: " + _loginResult.PlayerID + ", " + request.Username);
                     }
                     else
@@ -206,20 +208,6 @@ namespace RpgGame
 
         }
 
-        public void SendInputPacket()
-        {
-            InputPacket packet = _gameState.GetInputPacket();
-
-            byte[] inputBytes = packet.GetBytes();
-
-            _stream.Write(BitConverter.GetBytes(inputBytes.Length), 0, sizeof(int));
-            _stream.Flush();
-
-            _stream.Write(inputBytes, 0, inputBytes.Length);
-            _stream.Flush();
-
-        }
-
         private void RecievePackets()
         {
             while (true)
@@ -240,11 +228,11 @@ namespace RpgGame
                         case PacketType.MapPacket:
                             RecieveMapPackets();
                             break;
-                        case PacketType.InputPacket:
-                            SendInputPacket();
+                        case PacketType.ServerCommand:
+                            ReciveServerCommand();
                             break;
                         case PacketType.ClientCommand:
-                            ReciveClientCommand();
+                            SendClientCommands();
                             break;
                         case PacketType.SendMessagePackets:
                             SendMessagePackets();
@@ -306,13 +294,34 @@ namespace RpgGame
 
         MessageBox _messageBox = null;
 
-        private void ReciveClientCommand()
+
+        public void CloseMessageBox()
+        {
+            if (_messageBox != null)
+            {
+                if (_messageBox.GetSelectedOption() != -1)
+                {
+                    ClientCommand command = new ClientCommand(ClientCommand.CommandType.SelectOption);
+                    command.SetParameter("Option", _messageBox.GetSelectedOption().ToString());
+                    this.AddClientCommand(command);
+                }
+                else
+                {
+                    ClientCommand command = new ClientCommand(ClientCommand.CommandType.CloseMessage);
+                    this.AddClientCommand(command);
+                }
+                _messageBox.Close();
+                _messageBox = null;
+            }
+        }
+
+        private void ReciveServerCommand()
         {
             byte[] bytes = ReadData(sizeof(int), _stream);
             int packetSize = BitConverter.ToInt32(bytes, 0);
 
             bytes = ReadData(packetSize, _stream);
-            ClientCommand command = ClientCommand.FromBytes(bytes);
+            ServerCommand command = ServerCommand.FromBytes(bytes);
 
             int eventID;
             int mapID;
@@ -325,21 +334,14 @@ namespace RpgGame
 
             switch (command.GetCommandType())
             {
-                case ClientCommand.CommandType.ShowMessage:
+                case ServerCommand.CommandType.ShowMessage:
                     if (_messageBox == null)
                     {
                         _messageBox = new MessageBox(command.GetParameter("Message"), _gameState, false);
                         _gameState.AddControl(_messageBox);
                     }
                     break;
-                case ClientCommand.CommandType.CloseMessage:
-                    if (_messageBox != null)
-                    {
-                        _messageBox.Close();
-                        _messageBox = null;
-                    }
-                    break;
-                case ClientCommand.CommandType.ShowOptions:
+                case ServerCommand.CommandType.ShowOptions:
                     if (_messageBox == null)
                     {
                         string message = command.GetParameter("Message");
@@ -347,19 +349,11 @@ namespace RpgGame
                         string[] options = command.GetParameter("Options").Split(',');
                         for (int i = 0; i < options.Length; i++)
                             _messageBox.AddOption(options[i]);
-                        int selectedOption = int.Parse(command.GetParameter("SelectedOption"));
-                        _messageBox.SetSelectedOption(selectedOption);
+                        _messageBox.SetSelectedOption(0);
                         _gameState.AddControl(_messageBox);
                     }
                     break;
-                case ClientCommand.CommandType.UpdateOptions:
-                    if (_messageBox != null)
-                    {
-                        int selectedOption = int.Parse(command.GetParameter("SelectedOption"));
-                        _messageBox.SetSelectedOption(selectedOption);
-                    }
-                    break;
-                case ClientCommand.CommandType.UpdateMapEvent:
+                case ServerCommand.CommandType.UpdateMapEvent:
 
                     eventID = int.Parse(command.GetParameter("EventID"));
                     mapID = int.Parse(command.GetParameter("MapID"));
@@ -383,7 +377,7 @@ namespace RpgGame
                     }
 
                     break;
-                case ClientCommand.CommandType.ChangeMapEventDirection:
+                case ServerCommand.CommandType.ChangeMapEventDirection:
 
                     eventID = int.Parse(command.GetParameter("EventID"));
                     mapID = int.Parse(command.GetParameter("MapID"));
@@ -400,7 +394,39 @@ namespace RpgGame
 
                     break;
 
+                case ServerCommand.CommandType.ChangeMapEventSprite:
+
+                    mapID = int.Parse(command.GetParameter("MapID"));
+                    if (((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).MapID == mapID)
+                    {
+                        eventID = int.Parse(command.GetParameter("EventID"));
+                        int spriteID = int.Parse(command.GetParameter("SpriteID"));
+                        ((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).ChangeMapEventSprite(eventID, spriteID);
+                    }
+
+                    break;
+
             }
+        }
+
+        public void AddClientCommand(ClientCommand command)
+        {
+            _clientCommands.Add(command);
+        }
+
+        private void SendClientCommands()
+        {
+            int numCommands = _clientCommands.Count;
+            byte[] bytes = BitConverter.GetBytes(numCommands);
+            _stream.Write(bytes, 0, sizeof(int));
+            for (int i = 0; i < numCommands; i++)
+            {
+                bytes = _clientCommands[i].GetBytes();
+                _stream.Write(BitConverter.GetBytes(bytes.Length), 0, sizeof(int));
+                _stream.Write(bytes, 0, bytes.Length);
+            }
+            _clientCommands.RemoveRange(0, numCommands);
+            _stream.Flush();
         }
 
         public void SendMessage(MessagePacket packet)
@@ -410,15 +436,16 @@ namespace RpgGame
 
         private void SendMessagePackets()
         {
-            byte[] bytes = BitConverter.GetBytes(_messages.Count);
+            int numMessages = _messages.Count;
+            byte[] bytes = BitConverter.GetBytes(numMessages);
             _stream.Write(bytes, 0, sizeof(int));
-            for (int i = 0; i < _messages.Count; i++)
+            for (int i = 0; i < numMessages; i++)
             {
                 bytes = _messages[i].GetBytes();
                 _stream.Write(BitConverter.GetBytes(bytes.Length), 0, sizeof(int));
                 _stream.Write(bytes, 0, bytes.Length);
             }
-            _messages.Clear();
+            _messages.RemoveRange(0, numMessages);
             _stream.Flush();
         }
 
