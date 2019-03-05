@@ -40,7 +40,12 @@ namespace RpgEditor
                 EventSpriteSelection.SelectedIndex = 0;
 
             EventTriggerTypeSelection.SelectedIndex = (int)mapEvent.TriggerType;
+            RenderPrioritySelection.SelectedIndex = (int)mapEvent.Priority;
+            SpeedSelection.SelectedIndex = (int)mapEvent.Speed;
+            FrequencySelection.SelectedIndex = (int)mapEvent.Frequency;
             EventPassableCheck.Checked = mapEvent.Passable;
+            RandomMovementCheck.Checked = mapEvent.RandomMovement;
+            EnabledCheck.Checked = mapEvent.Enabled;
 
             ApplyData();
         }
@@ -59,7 +64,12 @@ namespace RpgEditor
             _mapEvent.EventDirection = (Genus2D.GameData.FacingDirection)EventDirectionSelection.SelectedIndex;
             _mapEvent.SpriteID = EventSpriteSelection.SelectedIndex - 1;
             _mapEvent.TriggerType = (Genus2D.GameData.EventTriggerType)EventTriggerTypeSelection.SelectedIndex;
+            _mapEvent.Priority = (Genus2D.GameData.RenderPriority)RenderPrioritySelection.SelectedIndex;
+            _mapEvent.Speed = (Genus2D.GameData.MovementSpeed)SpeedSelection.SelectedIndex;
+            _mapEvent.Frequency = (Genus2D.GameData.MovementFrequency)FrequencySelection.SelectedIndex;
             _mapEvent.Passable = EventPassableCheck.Checked;
+            _mapEvent.RandomMovement = RandomMovementCheck.Checked;
+            _mapEvent.Enabled = EnabledCheck.Checked;
         }
 
     }

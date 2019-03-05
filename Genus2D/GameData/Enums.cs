@@ -39,6 +39,49 @@ namespace Genus2D.GameData
     }
 
     [Serializable]
+    public enum ChangeMapEventProperty
+    {
+        Teleport,
+        Move,
+        Direction,
+        Sprite,
+        RenderPriority,
+        MovementSpeed,
+        MovementFrequency,
+        Passable,
+        RandomMovement,
+        Enabled
+    }
+
+    [Serializable]
+    public enum RenderPriority
+    {
+        BelowPlayer,
+        AbovePlayer,
+        OnTop
+    }
+
+    [Serializable]
+    public enum MovementSpeed
+    {
+        ExtraFast,
+        Fast,
+        Normal,
+        Slow,
+        ExtraSlow
+    }
+
+    [Serializable]
+    public enum MovementFrequency
+    {
+        Instant,
+        High,
+        Normal,
+        Low,
+        VeryLow
+    }
+
+    [Serializable]
     public enum VariableType
     {
         Integer,
@@ -56,7 +99,9 @@ namespace Genus2D.GameData
         ItemInInventory,
         SystemVariable,
         QuestStatus,
-        SelectedOption
+        SelectedOption,
+        TerrainTag,
+        PlayerDirection
     }
 
     [Serializable]

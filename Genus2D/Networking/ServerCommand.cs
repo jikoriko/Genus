@@ -15,7 +15,9 @@ namespace Genus2D.Networking
             ShowOptions,
             UpdateMapEvent,
             ChangeMapEventDirection,
-            ChangeMapEventSprite
+            ChangeMapEventSprite,
+            ChangeMapEventRenderPriority,
+            ChangeMapEventEnabled
         }
 
         private CommandType _commandType;
@@ -45,6 +47,7 @@ namespace Genus2D.Networking
                     _parameters.Add("RealX", "");
                     _parameters.Add("RealY", "");
                     _parameters.Add("Direction", "");
+                    _parameters.Add("OnBridge", "");
                     break;
                 case CommandType.ChangeMapEventDirection:
                     _parameters.Add("EventID", "");
@@ -55,6 +58,16 @@ namespace Genus2D.Networking
                     _parameters.Add("EventID", "");
                     _parameters.Add("MapID", "");
                     _parameters.Add("SpriteID", "");
+                    break;
+                case CommandType.ChangeMapEventRenderPriority:
+                    _parameters.Add("EventID", "");
+                    _parameters.Add("MapID", "");
+                    _parameters.Add("RenderPriority", "");
+                    break;
+                case CommandType.ChangeMapEventEnabled:
+                    _parameters.Add("EventID", "");
+                    _parameters.Add("MapID", "");
+                    _parameters.Add("Enabled", "");
                     break;
 
             }

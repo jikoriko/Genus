@@ -91,13 +91,13 @@ namespace RpgEditor
                 if (tileX == 0 && tileY == 0)
                     return;
 
-                bool passable;
+                bool boo;
                 switch (property)
                 {
                     case EditorForm.TilesetProperties.Passabilities:
 
-                        passable = EditorForm.Instance.GetSelectedTileset().GetPassable(tileX, tileY) ? false : true;
-                        EditorForm.Instance.GetSelectedTileset().SetPassable(tileX, tileY, passable);
+                        boo = EditorForm.Instance.GetSelectedTileset().GetPassable(tileX, tileY) ? false : true;
+                        EditorForm.Instance.GetSelectedTileset().SetPassable(tileX, tileY, boo);
 
                         break;
                     case EditorForm.TilesetProperties.Passabilities8Dir:
@@ -135,14 +135,14 @@ namespace RpgEditor
 
                         if (dir == -1)
                         {
-                            passable = EditorForm.Instance.GetSelectedTileset().GetPassable(tileX, tileY) ? false : true;
-                            EditorForm.Instance.GetSelectedTileset().SetPassable(tileX, tileY, passable);
+                            boo = EditorForm.Instance.GetSelectedTileset().GetPassable(tileX, tileY) ? false : true;
+                            EditorForm.Instance.GetSelectedTileset().SetPassable(tileX, tileY, boo);
                         }
                         else
                         {
                             Genus2D.GameData.MovementDirection direction = (Genus2D.GameData.MovementDirection)dir;
-                            passable = EditorForm.Instance.GetSelectedTileset().GetPassable(tileX, tileY, direction) ? false : true;
-                            EditorForm.Instance.GetSelectedTileset().SetPassable(tileX, tileY, direction, passable);
+                            boo = EditorForm.Instance.GetSelectedTileset().GetPassable(tileX, tileY, direction) ? false : true;
+                            EditorForm.Instance.GetSelectedTileset().SetPassable(tileX, tileY, direction, boo);
                         }
 
                         break;
@@ -163,12 +163,20 @@ namespace RpgEditor
                         EditorForm.Instance.GetSelectedTileset().SetTerrainTag(tileX, tileY, tag);
                         break;
                     case EditorForm.TilesetProperties.BushFlags:
-                        passable = EditorForm.Instance.GetSelectedTileset().GetBushFlag(tileX, tileY) ? false : true;
-                        EditorForm.Instance.GetSelectedTileset().SetBushFlag(tileX, tileY, passable);
+                        boo = EditorForm.Instance.GetSelectedTileset().GetBushFlag(tileX, tileY) ? false : true;
+                        EditorForm.Instance.GetSelectedTileset().SetBushFlag(tileX, tileY, boo);
                         break;
                     case EditorForm.TilesetProperties.CounterFlags:
-                        passable = EditorForm.Instance.GetSelectedTileset().GetCounterFlag(tileX, tileY) ? false : true;
-                        EditorForm.Instance.GetSelectedTileset().SetCounterFlag(tileX, tileY, passable);
+                        boo = EditorForm.Instance.GetSelectedTileset().GetCounterFlag(tileX, tileY) ? false : true;
+                        EditorForm.Instance.GetSelectedTileset().SetCounterFlag(tileX, tileY, boo);
+                        break;
+                    case EditorForm.TilesetProperties.ReflectionFlags:
+                        boo = EditorForm.Instance.GetSelectedTileset().GetReflectionFlag(tileX, tileY) ? false : true;
+                        EditorForm.Instance.GetSelectedTileset().SetReflectionFlag(tileX, tileY, boo);
+                        break;
+                    case EditorForm.TilesetProperties.BridgeFlags:
+                        boo = EditorForm.Instance.GetSelectedTileset().GetBridgeFlag(tileX, tileY) ? false : true;
+                        EditorForm.Instance.GetSelectedTileset().SetBridgeFlag(tileX, tileY, boo);
                         break;
                 }
                 this.Refresh();
@@ -272,6 +280,14 @@ namespace RpgEditor
                                 break;
                             case EditorForm.TilesetProperties.CounterFlags:
                                 s = EditorForm.Instance.GetSelectedTileset().GetCounterFlag(x, y) ? "O" : "X";
+                                e.Graphics.DrawString(s, font, brush, xPos, yPos);
+                                break;
+                            case EditorForm.TilesetProperties.ReflectionFlags:
+                                s = EditorForm.Instance.GetSelectedTileset().GetReflectionFlag(x, y) ? "O" : "X";
+                                e.Graphics.DrawString(s, font, brush, xPos, yPos);
+                                break;
+                            case EditorForm.TilesetProperties.BridgeFlags:
+                                s = EditorForm.Instance.GetSelectedTileset().GetBridgeFlag(x, y) ? "O" : "X";
                                 e.Graphics.DrawString(s, font, brush, xPos, yPos);
                                 break;
                         }

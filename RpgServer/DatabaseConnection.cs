@@ -117,7 +117,8 @@ namespace RpgServer
                 MapX INTEGER,
                 MapY INTEGER,
                 Health INTEGER,
-                MaxHealth INTEGER
+                MaxHealth INTEGER,
+                OnBridge INTEGER
                 )";
 
                 // create table in database
@@ -135,7 +136,8 @@ namespace RpgServer
                 MapX int,
                 MapY int,
                 Health int,
-                MaxHealth int
+                MaxHealth int,
+                OnBridge int
                 )";
 
                 // create table in database
@@ -264,8 +266,8 @@ namespace RpgServer
                         {
                             SpawnPoint spawn = Genus2D.GameData.MapInfo.GetSpawnPoint(0);
                             if (spawn == null) spawn = new SpawnPoint(0, 0, 0, "default");
-                            string insertQuery = "INSERT INTO Players (Username, Password, MapID, SpriteID, Direction, MapX, MapY, Health, MaxHealth) " +
-                                "VALUES ('" + username + "', '" + password + "', " + spawn.MapID + ", 0," + (int)FacingDirection.Down + ", " + spawn.MapX + ", " + spawn.MapY + ", 1000, 1000" + ")";
+                            string insertQuery = "INSERT INTO Players (Username, Password, MapID, SpriteID, Direction, MapX, MapY, Health, MaxHealth, OnBridge) " +
+                                "VALUES ('" + username + "', '" + password + "', " + spawn.MapID + ", 0," + (int)FacingDirection.Down + ", " + spawn.MapX + ", " + spawn.MapY + ", 1000, 1000, 0)";
 
                             Insert(insertQuery);
                             inserted = true;
@@ -284,8 +286,8 @@ namespace RpgServer
 
                         if (!rdr.Read())
                         {
-                            string insertQuery = "INSERT INTO Players (Username, Password, MapID, SpriteID, Direction, MapX, MapY, Health, MaxHealth) " +
-                                "VALUES ('" + username + "', '" + password + "', " + "0, 0, " + (int)FacingDirection.Down + ", 0, 0, 1000, 1000" + ")";
+                            string insertQuery = "INSERT INTO Players (Username, Password, MapID, SpriteID, Direction, MapX, MapY, Health, MaxHealth, OnBridge) " +
+                                "VALUES ('" + username + "', '" + password + "', " + "0, 0, " + (int)FacingDirection.Down + ", 0, 0, 1000, 1000, 0)";
 
                             Insert(insertQuery);
                             inserted = true;
@@ -314,7 +316,8 @@ namespace RpgServer
                     "SpriteID=" + packet.SpriteID + "," +
                     "Direction=" + (int)packet.Direction + "," +
                     "MapX=" + packet.PositionX + "," +
-                    "MapY=" + packet.PositionY + " " +
+                    "MapY=" + packet.PositionY + "," +
+                    "OnBridge=" + (packet.OnBridge ? 1 : 0) + " " +
                     //hp and max hp?
                     "WHERE Username='" + packet.Username + "'";
 
@@ -348,6 +351,7 @@ namespace RpgServer
                         packet.PositionY = Convert.ToInt32(rdr["MapY"]);
                         packet.RealX = packet.PositionX * 32;
                         packet.RealY = packet.PositionY * 32;
+                        packet.OnBridge = Convert.ToInt32(rdr["OnBridge"]) == 1 ? true : false;
 
                         packet.Data = new PlayerData();
                     }
@@ -371,6 +375,7 @@ namespace RpgServer
                         packet.PositionY = rdr.GetInt32(7);
                         packet.RealX = packet.PositionX * 32;
                         packet.RealY = packet.PositionY * 32;
+                        packet.OnBridge = rdr.GetInt32(10) == 1 ? true : false;
 
                         packet.Data = new PlayerData();
                     }

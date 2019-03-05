@@ -19,6 +19,7 @@ namespace RpgServer
 
         private EventInterpreter _eventInterpreter;
         private float _updateMapTimer;
+        private Random _random = new Random();
 
         public MapInstance(Server server, int mapID)
         {
@@ -33,7 +34,7 @@ namespace RpgServer
             _clientsToAdd = new List<GameClient>();
             _clientsToRemove = new List<GameClient>();
 
-            _eventInterpreter = new EventInterpreter();
+            _eventInterpreter = new EventInterpreter(this);
             _updateMapTimer = 0.06f;
         }
 
@@ -64,6 +65,11 @@ namespace RpgServer
             return _clients.Count;
         }
 
+        public GameClient[] GetClients()
+        {
+            return _clients.ToArray();
+        }
+
         public MapPacket GetMapPacket()
         {
             return _mapPacket;
@@ -79,54 +85,125 @@ namespace RpgServer
             return _eventInterpreter;
         }
 
-        public bool MapTilePassable(int x, int y, int eventID)
-        {
-            return MapTilePassable(x, y, MovementDirection.Down, eventID, false);
-        }
-
-        public bool MapTilePassable(int x, int y, MovementDirection dir, int eventID, bool checkDirections = true)
+        public bool TileInsideMap(int x, int y)
         {
             if (x < 0 || y < 0 || x >= _mapData.GetWidth() || y >= _mapData.GetHeight())
                 return false;
+            return true;
+        }
 
-            for (int i = 0; i < MapData.NUM_LAYERS; i++)
+        public bool MapTilePassable(int x, int y)
+        {
+            if (!TileInsideMap(x, y))
+                return false;
+
+            for (int i = MapData.NUM_LAYERS - 1; i >= 0; i--)
+            {
+                Tuple<int, int> tileInfo = _mapData.GetTile(i, x, y);
+                if (tileInfo.Item2 == -1)
+                    continue;
+                if (!TilesetData.GetTileset(tileInfo.Item2).GetPassable(tileInfo.Item1))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool MapTilePassable(int x, int y, int eventID, bool onBridge, bool bridgeEntry)
+        {
+            return MapTilePassable(x, y, MovementDirection.Down, eventID, onBridge, bridgeEntry, false);
+        }
+
+        public bool MapTilePassable(int x, int y, MovementDirection dir, int eventID, bool onBridge, bool bridgeEntry, bool checkDirections = true, bool checkCharacters = true)
+        {
+            if (!TileInsideMap(x, y))
+                return false;
+
+            if (eventID != -1)
+            {
+                MapEvent mapEvent = _mapData.GetMapEvent(eventID);
+                if (mapEvent.Passable)
+                    return true;
+            }
+
+            for (int i = MapData.NUM_LAYERS - 1; i >= 0; i--)
             {
                 Tuple<int, int> tileInfo = _mapData.GetTile(i, x, y);
                 if (tileInfo.Item2 == -1)
                     continue;
 
-                if (checkDirections)
+                if (TilesetData.GetTileset(tileInfo.Item2).GetBridgeFlag(tileInfo.Item1))
                 {
-                    if (!TilesetData.GetTileset(tileInfo.Item2).GetPassable(tileInfo.Item1, dir))
-                    {
-                        return false;
-                    }
+                    if (onBridge)
+                        break;
                 }
                 else
                 {
-                    if (!TilesetData.GetTileset(tileInfo.Item2).GetPassable(tileInfo.Item1))
+                    if (onBridge)
+                    {
+                        if (bridgeEntry && MapTilePassable(x, y))
+                            return true;
+                        else
+                            return false;
+                    }
+                    else
+                    {
+                        if (checkDirections)
+                        {
+                            if (!TilesetData.GetTileset(tileInfo.Item2).GetPassable(tileInfo.Item1, dir))
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            if (!TilesetData.GetTileset(tileInfo.Item2).GetPassable(tileInfo.Item1))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            if (checkCharacters)
+            {
+                int tileEvent = TileHasEvent(x, y, eventID);
+                if (tileEvent != -1)
+                {
+                    MapEvent mapEvent = _mapData.GetMapEvent(tileEvent);
+                    if (onBridge == mapEvent.OnBridge)
                     {
                         return false;
                     }
                 }
-            }
 
-            int tileEvent = TileHasEvent(x, y, eventID);
-            if (tileEvent != -1)
-            {
-                MapEvent mapEvent = _mapData.GetMapEvent(tileEvent);
-                if (!mapEvent.Passable)
-                    return false;
-            }
-
-            if (eventID != -1)
-            {
-                MapEvent mapEvent = _mapData.GetMapEvent(eventID);
-                if (TileHasPlayers(x, y) && !mapEvent.Passable)
-                    return false;
+                if (eventID != -1)
+                {
+                    MapEvent mapEvent = _mapData.GetMapEvent(eventID);
+                    if (TileHasPlayers(x, y, onBridge) && !mapEvent.Passable)
+                        return false;
+                }
             }
 
             return true;
+        }
+
+        public bool GetBridgeFlag(int mapX, int mapY)
+        {
+            for (int i = MapData.NUM_LAYERS - 1; i >= 0; i--)
+            {
+                Tuple<int, int> tileInfo = _mapData.GetTile(i, mapX, mapY);
+                if (tileInfo.Item2 == -1)
+                    continue;
+
+                if (TilesetData.GetTileset(tileInfo.Item2).GetBridgeFlag(tileInfo.Item1))
+                    return true;
+            }
+            return false;
         }
 
         public int TileHasEvent(int mapX, int mapY, int ignoreID)
@@ -137,28 +214,92 @@ namespace RpgServer
                 if (i == ignoreID)
                     continue;
                 MapEvent mapEvent = _mapData.GetMapEvent(i);
-                if (mapEvent.MapX == mapX && mapEvent.MapY == mapY)
+                if (!mapEvent.Passable && mapEvent.Enabled)
                 {
-                    id = i;
+                    if (mapEvent.MapX == mapX && mapEvent.MapY == mapY)
+                    {
+                        id = i;
+                        break;
+                    }
                 }
             }
             return id;
         }
 
-        public bool TileHasPlayers(int mapX, int mapY)
+        public bool TileHasPlayers(int mapX, int mapY, bool onBridge)
         {
             for (int i = 0; i < _clients.Count; i++)
             {
                 PlayerPacket packet = _clients[i].GetPacket();
-                if (packet.PositionX == mapX && packet.PositionY == mapY)
+                if (packet.PositionX == mapX && packet.PositionY == mapY && packet.OnBridge == onBridge)
                     return true;
             }
             return false;
         }
 
+        public bool ChangeMapEvent(int eventID, EventCommand command)
+        {
+            ChangeMapEventProperty property = (ChangeMapEventProperty)command.GetParameter("Property");
+            switch (property)
+            {
+                case ChangeMapEventProperty.Teleport:
+                    if (GetMapData().GetMapEvent(eventID).Moving())
+                    {
+                        return false;
+                    }
+                    int mapX = (int)command.GetParameter("MapX");
+                    int mapY = (int)command.GetParameter("MapY");
+                    if (!TeleportMapEvent(eventID, mapX, mapY))
+                        return false;
+                    break;
+                case ChangeMapEventProperty.Move:
+                    MovementDirection movementDirection = (MovementDirection)command.GetParameter("MovementDirection");
+                    if (!MoveMapEvent(eventID, movementDirection))
+                        return false;
+                    break;
+                case ChangeMapEventProperty.Direction:
+                    if (GetMapData().GetMapEvent(eventID).Moving())
+                    {
+                        return false;
+                    }
+                    FacingDirection facingDirection = (FacingDirection)command.GetParameter("FacingDirection");
+                    ChangeMapEventDirection(eventID, facingDirection);
+                    break;
+                case ChangeMapEventProperty.Sprite:
+                    int spriteID = (int)command.GetParameter("SpriteID");
+                    ChangeMapEventSprite(eventID, spriteID);
+                    break;
+                case ChangeMapEventProperty.RenderPriority:
+                    RenderPriority priority = (RenderPriority)command.GetParameter("RenderPriority");
+                    ChangeMapEventRenderPriority(eventID, priority);
+                    break;
+                case ChangeMapEventProperty.MovementSpeed:
+                    MovementSpeed speed = (MovementSpeed)command.GetParameter("MovementSpeed");
+                    GetMapData().GetMapEvent(eventID).Speed = speed;
+                    break;
+                case ChangeMapEventProperty.MovementFrequency:
+                    MovementFrequency frequency = (MovementFrequency)command.GetParameter("MovementFrequency");
+                    GetMapData().GetMapEvent(eventID).Frequency = frequency;
+                    break;
+                case ChangeMapEventProperty.Passable:
+                    bool passable = (bool)command.GetParameter("Passable");
+                    GetMapData().GetMapEvent(eventID).Passable = passable;
+                    break;
+                case ChangeMapEventProperty.RandomMovement:
+                    bool randomMovement = (bool)command.GetParameter("RandomMovement");
+                    GetMapData().GetMapEvent(eventID).RandomMovement = randomMovement;
+                    break;
+                case ChangeMapEventProperty.Enabled:
+                    bool enabled = (bool)command.GetParameter("Enabled");
+                    ChangeMapEventEnabled(eventID, enabled);
+                    break;
+            }
+            return true;
+        }
+
         public bool TeleportMapEvent(int eventID, int mapX, int mapY)
         {
-            if (MapTilePassable(mapX, mapY, eventID))
+            if (MapTilePassable(mapX, mapY, eventID, false, false))
             {
                 MapEvent mapEvent = GetMapData().GetMapEvent(eventID);
                 mapEvent.MapX = mapX;
@@ -174,6 +315,8 @@ namespace RpgServer
         public bool MoveMapEvent(int eventID, MovementDirection direction)
         {
             MapEvent mapEvent = GetMapData().GetMapEvent(eventID);
+            if (mapEvent.Moving() || !mapEvent.Enabled)
+                return false;
             int x = mapEvent.MapX;
             int y = mapEvent.MapY;
             int targetX = x;
@@ -229,22 +372,30 @@ namespace RpgServer
                     break;
             }
 
-            if (MapTilePassable(x, y, direction, eventID) && MapTilePassable(targetX, targetY, entryDirection, eventID))
+            bool bridgeEntry = MapTilePassable(x, y) && mapEvent.OnBridge;
+            if ((MapTilePassable(x, y, direction, eventID, mapEvent.OnBridge, bridgeEntry, true, false) && 
+                MapTilePassable(targetX, targetY, entryDirection, eventID, mapEvent.OnBridge, bridgeEntry)))
             {
-                mapEvent.EventDirection = facingDirection;
-                mapEvent.MapX = targetX;
-                mapEvent.MapY = targetY;
-                UpdateMapEventOnClients(eventID);
-                return true;
+                if (mapEvent.Move(targetX, targetY))
+                {
+                    if (GetBridgeFlag(targetX, targetY))
+                    {
+                        if (MapTilePassable(targetX, targetY))
+                            mapEvent.OnBridge = true;
+                    }
+                    else
+                    {
+                        mapEvent.OnBridge = false;
+                    }
+                    mapEvent.EventDirection = facingDirection;
+                    UpdateMapEventOnClients(eventID);
+                    return true;
+                }
             }
-            else
-            {
-                ChangeMapEventDirection(eventID, facingDirection);
-                return false;
-            }
+            return false;
         }
 
-        public void ChangeMapEventDirection(int eventID, FacingDirection direction)
+        private void ChangeMapEventDirection(int eventID, FacingDirection direction)
         {
             if (GetMapData().GetMapEvent(eventID).EventDirection != direction)
             {
@@ -260,7 +411,7 @@ namespace RpgServer
             }
         }
 
-        public void ChangeMapEventSprite(int eventID, int spriteID)
+        private void ChangeMapEventSprite(int eventID, int spriteID)
         {
             if (GetMapData().GetMapEvent(eventID).SpriteID != spriteID)
             {
@@ -269,6 +420,38 @@ namespace RpgServer
                 serverCommand.SetParameter("EventID", eventID.ToString());
                 serverCommand.SetParameter("MapID", _mapID.ToString());
                 serverCommand.SetParameter("SpriteID", spriteID.ToString());
+                for (int i = 0; i < _clients.Count; i++)
+                {
+                    _clients[i].AddServerCommand(serverCommand);
+                }
+            }
+        }
+
+        private void ChangeMapEventRenderPriority(int eventID, RenderPriority priority)
+        {
+            if (GetMapData().GetMapEvent(eventID).Priority != priority)
+            {
+                GetMapData().GetMapEvent(eventID).Priority = priority;
+                ServerCommand serverCommand = new ServerCommand(ServerCommand.CommandType.ChangeMapEventRenderPriority);
+                serverCommand.SetParameter("EventID", eventID.ToString());
+                serverCommand.SetParameter("MapID", _mapID.ToString());
+                serverCommand.SetParameter("RenderPriority", ((int)priority).ToString());
+                for (int i = 0; i < _clients.Count; i++)
+                {
+                    _clients[i].AddServerCommand(serverCommand);
+                }
+            }
+        }
+
+        private void ChangeMapEventEnabled(int eventID, bool enabled)
+        {
+            if (GetMapData().GetMapEvent(eventID).Enabled != enabled)
+            {
+                GetMapData().GetMapEvent(eventID).Enabled = enabled;
+                ServerCommand serverCommand = new ServerCommand(ServerCommand.CommandType.ChangeMapEventEnabled);
+                serverCommand.SetParameter("EventID", eventID.ToString());
+                serverCommand.SetParameter("MapID", _mapID.ToString());
+                serverCommand.SetParameter("Enabled", (enabled ? 1 : 0).ToString());
                 for (int i = 0; i < _clients.Count; i++)
                 {
                     _clients[i].AddServerCommand(serverCommand);
@@ -287,10 +470,25 @@ namespace RpgServer
             serverCommand.SetParameter("RealX", (mapEvent.RealX).ToString());
             serverCommand.SetParameter("RealY", (mapEvent.RealY).ToString());
             serverCommand.SetParameter("Direction", ((int)mapEvent.EventDirection).ToString());
+            serverCommand.SetParameter("OnBridge", (mapEvent.OnBridge ? 1 : 0).ToString());
             for (int i = 0; i < _clients.Count; i++)
             {
                 _clients[i].AddServerCommand(serverCommand);
             }
+        }
+
+        public bool TerrainTagCheck(int x, int y, int tag)
+        {
+            for (int i = 0; i < MapData.NUM_LAYERS; i++)
+            {
+                Tuple<int, int> tileInfo = GetMapData().GetTile(i, x, y);
+                if (tileInfo.Item2 != -1)
+                {
+                    if (TilesetData.GetTileset(tileInfo.Item2).GetTerrainTag(tileInfo.Item1) == tag)
+                        return true;
+                }
+            }
+            return false;
         }
 
         public void Update(float deltaTime)
@@ -315,6 +513,7 @@ namespace RpgServer
                 }
             }
 
+            _eventInterpreter.Update(deltaTime);
 
             for (int i = 0; i < _clients.Count; i++)
             {
@@ -323,16 +522,23 @@ namespace RpgServer
                     RemoveClient(_clients[i]);
             }
 
-            _eventInterpreter.Update(deltaTime);
-
             if (_updateMapTimer > 0f)
             {
                 _updateMapTimer -= deltaTime;
             }
 
+            bool movedMapEvent = false;
+
             for (int i = 0; i < GetMapData().MapEventsCount(); i++)
             {
                 MapEvent mapEvent = GetMapData().GetMapEvent(i);
+
+                if (mapEvent.RandomMovement)
+                {
+                    int dir = _random.Next(0, 7);
+                    MoveMapEvent(i, (MovementDirection)dir);
+                }
+
                 if (mapEvent.TriggerType == EventTriggerType.Autorun)
                 {
                     _eventInterpreter.TriggerEventData(null, mapEvent);
@@ -343,9 +549,14 @@ namespace RpgServer
                 if (_updateMapTimer <= 0f && mapEvent.Moved)
                 {
                     UpdateMapEventOnClients(i);
-                    _updateMapTimer = 0.06f;
+                    movedMapEvent = true;
                     mapEvent.Moved = false;
                 }
+            }
+
+            if (movedMapEvent && _updateMapTimer <= 0)
+            {
+                _updateMapTimer = 0.06f;
             }
 
         }

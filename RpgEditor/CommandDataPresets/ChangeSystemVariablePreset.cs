@@ -46,6 +46,20 @@ namespace RpgEditor.CommandDataPresets
                     break;
             }
 
+            bool randoInt = (bool)command.GetParameter("RandomInt");
+            bool randomFloat = (bool)command.GetParameter("RandomFloat");
+            if (randoInt)
+            {
+                RandomIntCheck.Checked = true;
+                RandomMin.Value = (int)command.GetParameter("RandomMin");
+                RandomMax.Value = (int)command.GetParameter("RandomMax");
+            }
+            else if (randomFloat)
+            {
+                RandomFloatCheck.Checked = true;
+                RandomMin.Value = (decimal)((float)command.GetParameter("RandomMin"));
+                RandomMax.Value = (decimal)((float)command.GetParameter("RandomMax"));
+            }
 
         }
 
@@ -54,37 +68,64 @@ namespace RpgEditor.CommandDataPresets
             int variableID = SystemVariables.SelectedIndex;
             if (variableID != -1)
             {
-                Genus2D.GameData.VariableType type = (Genus2D.GameData.VariableType)VariableType.SelectedIndex;
-                object value = null;
-
-                try
+                if (RandomIntCheck.Checked)
                 {
-                    switch (type)
-                    {
-                        case Genus2D.GameData.VariableType.Integer:
-                            value = int.Parse(ValueBox.Text);
-                            break;
-                        case Genus2D.GameData.VariableType.Float:
-                            value = float.Parse(ValueBox.Text);
-                            break;
-                        case Genus2D.GameData.VariableType.Bool:
-                            if (ValueBox.Text.ToLower() == "true") value = true;
-                            else if (ValueBox.Text.ToLower() == "false") value = false;
-                            else throw new Exception("Value must be true or false.");
-                            break;
-                        case Genus2D.GameData.VariableType.Text:
-                            value = ValueBox.Text;
-                            break;
-                    }
-
                     _command.SetParameter("VariableID", variableID);
-                    _command.SetParameter("VariableType", type);
-                    _command.SetParameter("VariableValue", value);
-
+                    _command.SetParameter("VariableType", Genus2D.GameData.VariableType.Integer);
+                    _command.SetParameter("VariableValue", 0);
+                    _command.SetParameter("RandomInt", true);
+                    _command.SetParameter("RandomFloat", false);
+                    RandomMin.Value = (int)RandomMin.Value;
+                    RandomMax.Value = (int)RandomMax.Value;
+                    _command.SetParameter("RandomMin", (int)RandomMin.Value);
+                    _command.SetParameter("RandomMax", (int)RandomMax.Value);
                 }
-                catch (Exception e)
+                else if (RandomFloatCheck.Checked)
                 {
-                    MessageBox.Show("Error parsing variable value." + '\n' + e.Message);
+                    _command.SetParameter("VariableID", variableID);
+                    _command.SetParameter("VariableType", Genus2D.GameData.VariableType.Float);
+                    _command.SetParameter("VariableValue", 0f);
+                    _command.SetParameter("RandomInt", false);
+                    _command.SetParameter("RandomFloat", true);
+                    _command.SetParameter("RandomMin", (float)RandomMin.Value);
+                    _command.SetParameter("RandomMax", (float)RandomMax.Value);
+                }
+                else
+                {
+                    Genus2D.GameData.VariableType type = (Genus2D.GameData.VariableType)VariableType.SelectedIndex;
+                    object value = null;
+
+                    try
+                    {
+                        switch (type)
+                        {
+                            case Genus2D.GameData.VariableType.Integer:
+                                value = int.Parse(ValueBox.Text);
+                                break;
+                            case Genus2D.GameData.VariableType.Float:
+                                value = float.Parse(ValueBox.Text);
+                                break;
+                            case Genus2D.GameData.VariableType.Bool:
+                                if (ValueBox.Text.ToLower() == "true") value = true;
+                                else if (ValueBox.Text.ToLower() == "false") value = false;
+                                else throw new Exception("Value must be true or false.");
+                                break;
+                            case Genus2D.GameData.VariableType.Text:
+                                value = ValueBox.Text;
+                                break;
+                        }
+
+                        _command.SetParameter("VariableID", variableID);
+                        _command.SetParameter("VariableType", type);
+                        _command.SetParameter("VariableValue", value);
+                        _command.SetParameter("RandomInt", false);
+                        _command.SetParameter("RandomFloat", false);
+
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show("Error parsing variable value." + '\n' + e.Message);
+                    }
                 }
 
             }
@@ -92,6 +133,28 @@ namespace RpgEditor.CommandDataPresets
             {
                 MessageBox.Show("Select a valid sytstem variable.");
             }
+        }
+
+        private void RandomIntCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            if (RandomIntCheck.Checked) RandomFloatCheck.Checked = false;
+        }
+
+        private void RandomFloatCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            if (RandomFloatCheck.Checked) RandomIntCheck.Checked = false;
+        }
+
+        private void RandomMin_ValueChanged(object sender, EventArgs e)
+        {
+            if (RandomMax.Value < RandomMin.Value)
+                RandomMax.Value = RandomMin.Value;
+        }
+
+        private void RandomMax_ValueChanged(object sender, EventArgs e)
+        {
+            if (RandomMax.Value < RandomMin.Value)
+                RandomMax.Value = RandomMin.Value;
         }
     }
 }

@@ -72,6 +72,11 @@ namespace Genus2D.Entities
             return null;
         }
 
+        public Color4 GetColour()
+        {
+            return _colour;
+        }
+
         public void SetColour(Color4 colour)
         {
             _colour = colour;

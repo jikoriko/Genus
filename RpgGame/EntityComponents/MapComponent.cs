@@ -26,7 +26,6 @@ namespace RpgGame.EntityComponents
         private bool _mapDataChanged;
 
         private float _autoTileAnimationTimer;
-        private int _autoTileFrame;
 
         public MapComponent(Entity entity)
             : base(entity)
@@ -38,7 +37,6 @@ namespace RpgGame.EntityComponents
             _mapEvents = new List<Entity>();
 
             _autoTileAnimationTimer = 0;
-            _autoTileFrame = 0;
         }
 
         public MapData GetMapData()
@@ -64,6 +62,22 @@ namespace RpgGame.EntityComponents
             {
                 ((MapEventComponent)_mapEvents[mapEvent].FindComponent<MapEventComponent>()).SetSpriteID(spriteID);
                 _mapData.GetMapEvent(mapEvent).SpriteID = spriteID;
+            }
+        }
+
+        public void ChangeMapEventRenderPriority(int mapEvent, RenderPriority priority)
+        {
+            if (mapEvent >= 0 && mapEvent < _mapEvents.Count)
+            {
+                _mapData.GetMapEvent(mapEvent).Priority = priority;
+            }
+        }
+
+        public void ChangeMapEventEnabled(int mapEvent, bool enabled)
+        {
+            if (mapEvent >= 0 && mapEvent < _mapEvents.Count)
+            {
+                _mapData.GetMapEvent(mapEvent).Enabled = enabled;
             }
         }
 
@@ -136,6 +150,11 @@ namespace RpgGame.EntityComponents
                             int tilePriority = tileset.GetTilePriority(tileID);
                             pos.Z = -((y + layer) * (tilePriority * 32));
 
+                            if (tileset.GetReflectionFlag(tileID))
+                            {
+                                Renderer.PushStencilDepth(OpenTK.Graphics.OpenGL.StencilOp.Incr, OpenTK.Graphics.OpenGL.StencilFunction.Equal);
+                            }
+
                             if (tileID < 8)
                             {
                                 string autoTileName = tileset.GetAutoTile(tileID - 1);
@@ -180,6 +199,11 @@ namespace RpgGame.EntityComponents
                                 source.X = tileID % 8 * 32;
                                 source.Y = (tileID / 8 * 32) - 32;
                                 Renderer.FillTexture(tilesetTexture, ShapeFactory.Rectangle, ref pos, ref scale, ref source, ref colour);
+                            }
+
+                            if (tileset.GetReflectionFlag(tileID))
+                            {
+                                Renderer.PopStencilDepth();
                             }
                         }
                     }

@@ -232,6 +232,7 @@ namespace Genus2D.Networking
         public float RealX;
         public float RealY;
         public float MovementSpeed;
+        public bool OnBridge;
         public PlayerData Data;
 
         public byte[] GetBytes(bool isLocalPlayer)
@@ -250,6 +251,7 @@ namespace Genus2D.Networking
                 stream.Write(BitConverter.GetBytes(RealX), 0, sizeof(float));
                 stream.Write(BitConverter.GetBytes(RealY), 0, sizeof(float));
                 stream.Write(BitConverter.GetBytes(MovementSpeed), 0, sizeof(float));
+                stream.Write(BitConverter.GetBytes(OnBridge), 0, sizeof(bool));
 
                 byte[] dataBytes = Data.GetBytes(isLocalPlayer);
                 stream.Write(BitConverter.GetBytes(dataBytes.Length), 0, sizeof(int));
@@ -300,6 +302,10 @@ namespace Genus2D.Networking
                 stream.Read(tempBytes, 0, sizeof(float));
                 float movementSpeed = BitConverter.ToSingle(tempBytes, 0);
 
+                tempBytes = new byte[sizeof(bool)];
+                stream.Read(tempBytes, 0, sizeof(bool));
+                bool onBridge = BitConverter.ToBoolean(tempBytes, 0);
+
                 tempBytes = new byte[sizeof(int)];
                 stream.Read(tempBytes, 0, sizeof(int));
                 int dataSize = BitConverter.ToInt32(tempBytes, 0);
@@ -321,6 +327,7 @@ namespace Genus2D.Networking
                 packet.RealX = realX;
                 packet.RealY = realY;
                 packet.MovementSpeed = movementSpeed;
+                packet.OnBridge = onBridge;
                 packet.Data = data;
                 return packet;
             }

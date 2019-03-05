@@ -23,6 +23,8 @@ namespace Genus2D.GameData
             private int[,] TerrainTags;
             private bool[,] BushFlags;
             private bool[,] CounterFlags;
+            private bool[,] ReflectionFlags;
+            private bool[,] BridgeFlags;
 
             private string[] AutoTiles;
             private float[] AutoTileTimers;
@@ -404,6 +406,8 @@ namespace Genus2D.GameData
                 TerrainTags = new int[8, 1];
                 BushFlags = new bool[8, 1];
                 CounterFlags = new bool[8, 1];
+                ReflectionFlags = new bool [8, 1];
+                BridgeFlags = new bool[8, 1];
 
                 AutoTiles = new string[7];
                 AutoTileTimers = new float[7];
@@ -428,12 +432,16 @@ namespace Genus2D.GameData
                         int[,] oldTerrainTags = TerrainTags;
                         bool[,] oldBushFlags = BushFlags;
                         bool[,] oldCounterFlags = CounterFlags;
+                        bool[,] oldReflectionFlags = ReflectionFlags;
+                        bool[,] oldBridgeFlags = BridgeFlags;
 
                         Pasabilities = new bool[8, (image.Height / 32) + 1, 8];
                         Priorities = new int[8, (image.Height / 32) + 1];
                         TerrainTags = new int[8, (image.Height / 32) + 1];
                         BushFlags = new bool[8, (image.Height / 32) + 1];
                         CounterFlags = new bool[8, (image.Height / 32) + 1];
+                        ReflectionFlags = new bool[8, (image.Height / 32) + 1];
+                        BridgeFlags = new bool[8, (image.Height / 32) + 1];
 
                         for (int x = 0; x < Pasabilities.GetLength(0); x++)
                         {
@@ -449,6 +457,8 @@ namespace Genus2D.GameData
                                     TerrainTags[x, y] = oldTerrainTags[x, y];
                                     BushFlags[x, y] = oldBushFlags[x, y];
                                     CounterFlags[x, y] = oldCounterFlags[x, y];
+                                    ReflectionFlags[x, y] = oldReflectionFlags[x, y];
+                                    BridgeFlags[x, y] = oldBridgeFlags[x, y];
                                 }
                             }
                         }
@@ -527,6 +537,8 @@ namespace Genus2D.GameData
             {
                 if (x >= 0 && x < Priorities.GetLength(0) && y >= 0 && y < Priorities.GetLength(1))
                 {
+                    if (GetBridgeFlag(x, y))
+                        return 3;
                     return Priorities[x, y];
                 }
 
@@ -604,6 +616,52 @@ namespace Genus2D.GameData
                 if (x >= 0 && x < CounterFlags.GetLength(0) && y >= 0 && y < CounterFlags.GetLength(1))
                 {
                     CounterFlags[x, y] = flag;
+                }
+            }
+
+            public bool GetReflectionFlag(int tileID)
+            {
+                return GetReflectionFlag(tileID % ReflectionFlags.GetLength(0), tileID / ReflectionFlags.GetLength(0));
+            }
+
+            public bool GetReflectionFlag(int x, int y)
+            {
+                if (x >= 0 && x < ReflectionFlags.GetLength(0) && y >= 0 && y < ReflectionFlags.GetLength(1))
+                {
+                    return ReflectionFlags[x, y];
+                }
+                return false;
+            }
+
+            public void SetReflectionFlag(int x, int y, bool flag)
+            {
+                if (x >= 0 && x < ReflectionFlags.GetLength(0) && y >= 0 && y < ReflectionFlags.GetLength(1))
+                {
+                    ReflectionFlags[x, y] = flag;
+                }
+            }
+
+            public bool GetBridgeFlag(int tileID)
+            {
+                if (BridgeFlags == null) BridgeFlags = new bool[8, ReflectionFlags.GetLength(1)];
+                return GetBridgeFlag(tileID % BridgeFlags.GetLength(0), tileID / BridgeFlags.GetLength(0));
+            }
+
+            public bool GetBridgeFlag(int x, int y)
+            {
+                if (BridgeFlags == null) BridgeFlags = new bool[8, ReflectionFlags.GetLength(1)];
+                if (x >= 0 && x < BridgeFlags.GetLength(0) && y >= 0 && y < BridgeFlags.GetLength(1))
+                {
+                    return BridgeFlags[x, y];
+                }
+                return false;
+            }
+
+            public void SetBridgeFlag(int x, int y, bool flag)
+            {
+                if (x >= 0 && x < BridgeFlags.GetLength(0) && y >= 0 && y < BridgeFlags.GetLength(1))
+                {
+                    BridgeFlags[x, y] = flag;
                 }
             }
 

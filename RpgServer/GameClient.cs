@@ -198,8 +198,10 @@ namespace RpgServer
                                 RecieveMessagePackets();
                                 SendMessagePackets();
                             }
-                            catch
+                            catch (Exception e)
                             {
+                                Console.WriteLine(e.Message);
+                                Console.WriteLine(e.StackTrace);
                                 Disconnect();
                             }
                         }
@@ -238,8 +240,10 @@ namespace RpgServer
 
         public void AddServerCommand(ServerCommand command)
         {
-            if (command != null)
+            if (command != null && _serverCommands.Count < 10)
+            {
                 _serverCommands.Add(command);
+            }
         }
 
         private void SendServerCommands()
@@ -566,10 +570,21 @@ namespace RpgServer
                 }
                 _playerPacket.Direction = facingDirection;
 
-                if (_mapInstance.MapTilePassable(x, y, direction, -1) && _mapInstance.MapTilePassable(targetX, targetY, entryDirection, -1))
+                bool bridgeEntry = _mapInstance.MapTilePassable(x, y) && _playerPacket.OnBridge;
+                if (_mapInstance.MapTilePassable(x, y, direction, -1, _playerPacket.OnBridge, bridgeEntry) && 
+                    _mapInstance.MapTilePassable(targetX, targetY, entryDirection, -1, _playerPacket.OnBridge, bridgeEntry))
                 {
                     _playerPacket.PositionX = targetX;
                     _playerPacket.PositionY = targetY;
+                    if (_mapInstance.GetBridgeFlag(targetX, targetY))
+                    {
+                        if (_mapInstance.MapTilePassable(targetX, targetY))
+                            _playerPacket.OnBridge = true;
+                    }
+                    else
+                    {
+                        _playerPacket.OnBridge = false;
+                    }
                 }
                 else
                 {
@@ -589,6 +604,7 @@ namespace RpgServer
             for (int i = 0; i < mapData.MapEventsCount(); i++)
             {
                 MapEvent mapEvent = mapData.GetMapEvent(i);
+                if (!mapEvent.Enabled) continue;
                 if (mapEvent.MapX == x && mapEvent.MapY == y)
                 {
                     if (mapEvent.EventID == -1)
@@ -600,6 +616,11 @@ namespace RpgServer
                     }
                 }
             }
+        }
+
+        public bool TerrainTagCheck(int tag)
+        {
+            return _mapInstance.TerrainTagCheck(_playerPacket.PositionX, _playerPacket.PositionY, tag);
         }
 
         public void Disconnect()

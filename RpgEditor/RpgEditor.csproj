@@ -63,11 +63,11 @@
     <Compile Include="AddEventCommandForm.Designer.cs">
       <DependentUpon>AddEventCommandForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="CommandDataPresets\ChangeMapEventSpritePreset.cs">
+    <Compile Include="CommandDataPresets\ChangeMapEventPreset.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="CommandDataPresets\ChangeMapEventSpritePreset.Designer.cs">
-      <DependentUpon>ChangeMapEventSpritePreset.cs</DependentUpon>
+    <Compile Include="CommandDataPresets\ChangeMapEventPreset.Designer.cs">
+      <DependentUpon>ChangeMapEventPreset.cs</DependentUpon>
     </Compile>
     <Compile Include="CommandDataPresets\CommandDataInterface.cs" />
     <Compile Include="EditMapEventForm.cs">
@@ -123,12 +123,6 @@
     <Compile Include="CommandDataPresets\ChangeInventoryItemPreset.Designer.cs">
       <DependentUpon>ChangeInventoryItemPreset.cs</DependentUpon>
     </Compile>
-    <Compile Include="CommandDataPresets\ChangeMapEventDirectionPreset.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CommandDataPresets\ChangeMapEventDirectionPreset.Designer.cs">
-      <DependentUpon>ChangeMapEventDirectionPreset.cs</DependentUpon>
-    </Compile>
     <Compile Include="CommandDataPresets\ChangePlayerDirectionPreset.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -153,12 +147,6 @@
     <Compile Include="CommandDataPresets\ConditionalBranchPreset.Designer.cs">
       <DependentUpon>ConditionalBranchPreset.cs</DependentUpon>
     </Compile>
-    <Compile Include="CommandDataPresets\MoveMapEventPreset.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CommandDataPresets\MoveMapEventPreset.Designer.cs">
-      <DependentUpon>MoveMapEventPreset.cs</DependentUpon>
-    </Compile>
     <Compile Include="CommandDataPresets\MovePlayerPreset.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -177,12 +165,6 @@
     <Compile Include="CommandDataPresets\ShowOptionsPreset.Designer.cs">
       <DependentUpon>ShowOptionsPreset.cs</DependentUpon>
     </Compile>
-    <Compile Include="CommandDataPresets\TeleportMapEventPreset.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CommandDataPresets\TeleportMapEventPreset.Designer.cs">
-      <DependentUpon>TeleportMapEventPreset.cs</DependentUpon>
-    </Compile>
     <Compile Include="CommandDataPresets\TeleportPlayerPreset.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -198,8 +180,8 @@
     <EmbeddedResource Include="AddEventCommandForm.resx">
       <DependentUpon>AddEventCommandForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CommandDataPresets\ChangeMapEventSpritePreset.resx">
-      <DependentUpon>ChangeMapEventSpritePreset.cs</DependentUpon>
+    <EmbeddedResource Include="CommandDataPresets\ChangeMapEventPreset.resx">
+      <DependentUpon>ChangeMapEventPreset.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditMapEventForm.resx">
       <DependentUpon>EditMapEventForm.cs</DependentUpon>
@@ -219,9 +201,6 @@
     <EmbeddedResource Include="CommandDataPresets\ChangeInventoryItemPreset.resx">
       <DependentUpon>ChangeInventoryItemPreset.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CommandDataPresets\ChangeMapEventDirectionPreset.resx">
-      <DependentUpon>ChangeMapEventDirectionPreset.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="CommandDataPresets\ChangePlayerDirectionPreset.resx">
       <DependentUpon>ChangePlayerDirectionPreset.cs</DependentUpon>
     </EmbeddedResource>
@@ -234,9 +213,6 @@
     <EmbeddedResource Include="CommandDataPresets\ConditionalBranchPreset.resx">
       <DependentUpon>ConditionalBranchPreset.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CommandDataPresets\MoveMapEventPreset.resx">
-      <DependentUpon>MoveMapEventPreset.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="CommandDataPresets\MovePlayerPreset.resx">
       <DependentUpon>MovePlayerPreset.cs</DependentUpon>
     </EmbeddedResource>
@@ -245,9 +221,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CommandDataPresets\ShowOptionsPreset.resx">
       <DependentUpon>ShowOptionsPreset.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CommandDataPresets\TeleportMapEventPreset.resx">
-      <DependentUpon>TeleportMapEventPreset.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CommandDataPresets\TeleportPlayerPreset.resx">
       <DependentUpon>TeleportPlayerPreset.cs</DependentUpon>
@@ -277,17 +250,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assets\Textures\Sprites\player.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Textures\Sprites\wolf.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Textures\Tilesets\pokemon_tileset.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

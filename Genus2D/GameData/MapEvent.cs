@@ -22,9 +22,17 @@ namespace Genus2D.GameData
         public int SpriteID;
         public EventTriggerType TriggerType;
         public bool Passable;
+        public RenderPriority Priority;
+        public MovementSpeed Speed;
+        public MovementFrequency Frequency;
+        public bool RandomMovement;
 
+        public bool Enabled = true;
         public bool Moved = false;
         public bool Locked = false;
+        public bool OnBridge = false;
+
+        private float _frequencyTimer;
 
         public MapEvent(string name, int id, int x, int y)
         {
@@ -38,6 +46,10 @@ namespace Genus2D.GameData
             SpriteID = -1;
             TriggerType = EventTriggerType.None;
             Passable = false;
+            Priority = RenderPriority.BelowPlayer;
+            Speed = MovementSpeed.Normal;
+            Frequency = MovementFrequency.Normal;
+            RandomMovement = false;
         }
 
         public byte[] GetBytes()
@@ -55,7 +67,10 @@ namespace Genus2D.GameData
                 stream.Write(BitConverter.GetBytes((int)EventDirection), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(SpriteID), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes((int)TriggerType), 0, sizeof(int));
-                stream.Write(BitConverter.GetBytes(Passable), 0, sizeof(bool));
+                stream.Write(BitConverter.GetBytes((int)Priority), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes((int)Speed), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(Enabled), 0, sizeof(bool));
+                stream.Write(BitConverter.GetBytes(OnBridge), 0, sizeof(bool));
                 return stream.ToArray();
             }
         }
@@ -99,9 +114,18 @@ namespace Genus2D.GameData
                 stream.Read(tempBytes, 0, sizeof(int));
                 EventTriggerType triggerType = (EventTriggerType)BitConverter.ToInt32(tempBytes, 0);
 
+                stream.Read(tempBytes, 0, sizeof(int));
+                RenderPriority priority = (RenderPriority)BitConverter.ToInt32(tempBytes, 0);
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                MovementSpeed speed = (MovementSpeed)BitConverter.ToInt32(tempBytes, 0);
+
                 tempBytes = new byte[sizeof(bool)];
                 stream.Read(tempBytes, 0, sizeof(bool));
-                bool passable = BitConverter.ToBoolean(tempBytes, 0);
+                bool enabled = BitConverter.ToBoolean(tempBytes, 0);
+
+                stream.Read(tempBytes, 0, sizeof(bool));
+                bool onBridge = BitConverter.ToBoolean(tempBytes, 0);
 
                 MapEvent mapEvent = new MapEvent(name, eventID, mapX, mapY);
                 mapEvent.RealX = realX;
@@ -109,7 +133,10 @@ namespace Genus2D.GameData
                 mapEvent.EventDirection = direction;
                 mapEvent.SpriteID = spriteID;
                 mapEvent.TriggerType = triggerType;
-                mapEvent.Passable = passable;
+                mapEvent.Enabled = enabled;
+                mapEvent.Priority = priority;
+                mapEvent.Speed = speed;
+                mapEvent.OnBridge = onBridge;
                 return mapEvent;
             }
         }
@@ -126,24 +153,87 @@ namespace Genus2D.GameData
             return false;
         }
 
+        public float GetMovementSpeed()
+        {
+            float speed = 0;
+            switch (Speed)
+            {
+                case MovementSpeed.ExtraFast:
+                    speed = 80f;
+                    break;
+                case MovementSpeed.Fast:
+                    speed = 64f;
+                    break;
+                case MovementSpeed.Normal:
+                    speed = 48f;
+                    break;
+                case MovementSpeed.Slow:
+                    speed = 32f;
+                    break;
+                case MovementSpeed.ExtraSlow:
+                    speed = 16f;
+                    break;
+            }
+            return speed;
+        }
+
+        public bool Move(int x, int y)
+        {
+            if (Enabled)
+            {
+                if (!Moving() && _frequencyTimer <= 0f)
+                {
+                    MapX = x;
+                    MapY = y;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public void UpdateMovement(float deltaTime)
         {
-            if (Moving())
+            if (Enabled)
             {
-                Vector2 realPos = new Vector2(RealX, RealY);
-                Vector2 dir = new Vector2(MapX * 32, MapY * 32) - realPos;
-                dir.Normalize();
-                realPos += (dir * 64.0f * deltaTime);
+                if (_frequencyTimer > 0)
+                    _frequencyTimer -= deltaTime;
 
-                dir = new Vector2(MapX * 32, MapY * 32) - realPos;
-                if (dir.Length <= 0.1f)
+                if (Moving())
                 {
-                    realPos = new OpenTK.Vector2(MapX * 32, MapY * 32);
-                }
+                    Vector2 realPos = new Vector2(RealX, RealY);
+                    Vector2 dir = new Vector2(MapX * 32, MapY * 32) - realPos;
+                    dir.Normalize();
+                    realPos += (dir * GetMovementSpeed() * deltaTime);
 
-                RealX = realPos.X;
-                RealY = realPos.Y;
-                Moved = true;
+                    dir = new Vector2(MapX * 32, MapY * 32) - realPos;
+                    if (dir.Length <= 0.1f)
+                    {
+                        realPos = new OpenTK.Vector2(MapX * 32, MapY * 32);
+                        switch (Frequency)
+                        {
+                            case MovementFrequency.VeryLow:
+                                _frequencyTimer = 2f;
+                                break;
+                            case MovementFrequency.Low:
+                                _frequencyTimer = 1.5f;
+                                break;
+                            case MovementFrequency.Normal:
+                                _frequencyTimer = 1f;
+                                break;
+                            case MovementFrequency.High:
+                                _frequencyTimer = 0.5f;
+                                break;
+                            case MovementFrequency.Instant:
+                                _frequencyTimer = 0f;
+                                break;
+                        }
+                    }
+
+                    RealX = realPos.X;
+                    RealY = realPos.Y;
+                    Moved = true;
+                }
             }
         }
     }

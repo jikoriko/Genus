@@ -57,6 +57,8 @@ namespace RpgEditor.CommandDataPresets
 
             QuestStatus.SelectedIndex = (int)command.GetParameter("QuestStatus");
             SelectedOptionControl.Value = (int)command.GetParameter("SelectedOption");
+            TerrainTagControl.Value = (int)command.GetParameter("TerrainTag");
+            PlayerDirectionSelection.SelectedIndex = (int)command.GetParameter("PlayerDirection");
 
         }
 
@@ -85,6 +87,12 @@ namespace RpgEditor.CommandDataPresets
                 case Genus2D.GameData.ConditionalBranchType.SelectedOption:
                     SelectedOptionCheck.Checked = true;
                     break;
+                case Genus2D.GameData.ConditionalBranchType.TerrainTag:
+                    TerrainTagCheck.Checked = true;
+                    break;
+                case Genus2D.GameData.ConditionalBranchType.PlayerDirection:
+                    PlayerDirectionCheck.Checked = true;
+                    break;
             }
         }
 
@@ -102,8 +110,11 @@ namespace RpgEditor.CommandDataPresets
                 return Genus2D.GameData.ConditionalBranchType.SystemVariable;
             if (QuestStatusCheck.Checked)
                 return Genus2D.GameData.ConditionalBranchType.QuestStatus;
-
-            return Genus2D.GameData.ConditionalBranchType.SelectedOption;
+            if (SelectedOptionCheck.Checked)
+                return Genus2D.GameData.ConditionalBranchType.SelectedOption;
+            if (PlayerDirectionCheck.Checked)
+                return Genus2D.GameData.ConditionalBranchType.PlayerDirection;
+            return Genus2D.GameData.ConditionalBranchType.TerrainTag;
         }
 
         private void SetVariableType(Genus2D.GameData.VariableType type)
@@ -272,6 +283,12 @@ namespace RpgEditor.CommandDataPresets
                     break;
                 case Genus2D.GameData.ConditionalBranchType.SelectedOption:
                     _command.SetParameter("SelectedOption", (int)SelectedOptionControl.Value);
+                    break;
+                case Genus2D.GameData.ConditionalBranchType.TerrainTag:
+                    _command.SetParameter("TerrainTag", (int)TerrainTagControl.Value);
+                    break;
+                case Genus2D.GameData.ConditionalBranchType.PlayerDirection:
+                    _command.SetParameter("PlayerDirection", (Genus2D.GameData.FacingDirection)PlayerDirectionSelection.SelectedIndex);
                     break;
             }
 

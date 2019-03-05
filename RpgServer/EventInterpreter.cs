@@ -10,10 +10,12 @@ namespace RpgServer
 {
     public class EventInterpreter
     {
+        private MapInstance _mapInstance;
         private List<TriggeringEvent> _triggeringEvents;
 
-        public EventInterpreter()
+        public EventInterpreter(MapInstance mapInstance)
         {
+            _mapInstance = mapInstance;
             _triggeringEvents = new List<TriggeringEvent>();
         }
 
@@ -21,11 +23,14 @@ namespace RpgServer
         {
             for (int i = 0; i < _triggeringEvents.Count; i++)
             {
-                TriggerEvent(_triggeringEvents[i], deltaTime);
-                if (_triggeringEvents[i].Complete)
+                if (_triggeringEvents[i] != null)
                 {
-                    _triggeringEvents.RemoveAt(i);
-                    i--;
+                    TriggerEvent(_triggeringEvents[i], deltaTime);
+                    if (_triggeringEvents[i].Complete)
+                    {
+                        _triggeringEvents.RemoveAt(i);
+                        i--;
+                    }
                 }
             }
         }
@@ -67,6 +72,7 @@ namespace RpgServer
             if (triggeringEvent.CommandID < eventData.EventCommands.Count - 1)
             {
                 triggeringEvent.CommandID++;
+
                 EventCommand eventCommand = eventData.EventCommands[triggeringEvent.CommandID];
 
                 ServerCommand serverCommand;
@@ -76,6 +82,7 @@ namespace RpgServer
                 int mapY;
                 FacingDirection facingDirection;
                 MovementDirection movementDirection;
+                int spriteID;
                 int itemID;
                 int itemAmount;
                 int variableID;
@@ -85,6 +92,7 @@ namespace RpgServer
                 switch (eventCommand.Type)
                 {
                     case EventCommand.CommandType.WaitTimer:
+                        if (client != null) break;
 
                         float timer = (float)eventCommand.GetParameter("Time");
                         triggeringEvent.WaitTimer = timer;
@@ -105,11 +113,6 @@ namespace RpgServer
 
                         if (client == null || !client.Connected()) break;
 
-                        if (client.Moving())
-                        {
-                            triggeringEvent.CommandID--;
-                            break;
-                        }
                         movementDirection = (MovementDirection)eventCommand.GetParameter("Direction");
                         client.Move(movementDirection);
 
@@ -122,46 +125,16 @@ namespace RpgServer
                         client.ChangeDirection(facingDirection);
 
                         break;
-                    case EventCommand.CommandType.TeleportMapEvent:
+
+                    case EventCommand.CommandType.ChangeMapEvent:
+
+                        if (client != null) break;
 
                         mapID = (int)eventCommand.GetParameter("MapID");
                         eventID = (int)eventCommand.GetParameter("EventID");
-                        if (Server.Instance.GetMapInstance(mapID).GetMapData().GetMapEvent(eventID).Moving())
-                        {
-                            triggeringEvent.CommandID--;
-                            break;
-                        }
-                        mapX = (int)eventCommand.GetParameter("MapX");
-                        mapY = (int)eventCommand.GetParameter("MapY");
-                        if (!Server.Instance.GetMapInstance(mapID).TeleportMapEvent(eventID, mapX, mapY))
-                            triggeringEvent.CommandID--;
 
-                        break;
-                    case EventCommand.CommandType.MoveMapEvent:
-
-                        mapID = (int)eventCommand.GetParameter("MapID");
-                        eventID = (int)eventCommand.GetParameter("EventID");
-                        if (Server.Instance.GetMapInstance(mapID).GetMapData().GetMapEvent(eventID).Moving())
-                        {
+                        if (!Server.Instance.GetMapInstance(mapID).ChangeMapEvent(eventID, eventCommand))
                             triggeringEvent.CommandID--;
-                            break;
-                        }
-                        movementDirection = (MovementDirection)eventCommand.GetParameter("Direction");
-                        if (!Server.Instance.GetMapInstance(mapID).MoveMapEvent(eventID, movementDirection))
-                            triggeringEvent.CommandID--;
-
-                        break;
-                    case EventCommand.CommandType.ChangeMapEventDirection:
-
-                        mapID = (int)eventCommand.GetParameter("MapID");
-                        eventID = (int)eventCommand.GetParameter("EventID");
-                        if (Server.Instance.GetMapInstance(mapID).GetMapData().GetMapEvent(eventID).Moving())
-                        {
-                            triggeringEvent.CommandID--;
-                            break;
-                        }
-                        facingDirection = (FacingDirection)eventCommand.GetParameter("Direction");
-                        Server.Instance.GetMapInstance(mapID).ChangeMapEventDirection(eventID, facingDirection);
 
                         break;
                     case EventCommand.CommandType.ShowMessage:
@@ -204,13 +177,38 @@ namespace RpgServer
                         break;
 
                     case EventCommand.CommandType.ChangeSystemVariable:
+                        if (client != null) break;
 
                         variableID = (int)eventCommand.GetParameter("VariableID");
                         variableType = (VariableType)eventCommand.GetParameter("VariableType");
                         variableValue = eventCommand.GetParameter("VariableValue");
 
-                        SystemVariable.GetSystemVariable(variableID).SetVariableType(variableType);
-                        SystemVariable.GetSystemVariable(variableID).SetValue(variableValue);
+                        bool randomInt = (bool)eventCommand.GetParameter("RandomInt");
+                        bool randomFloat = (bool)eventCommand.GetParameter("RandomFloat");
+
+                        if (randomInt)
+                        {
+                            int randomMin = (int)eventCommand.GetParameter("RandomMin");
+                            int randomMax = (int)eventCommand.GetParameter("RandomMax");
+                            int randomValue = new Random().Next(randomMin, randomMax);
+                            SystemVariable.GetSystemVariable(variableID).SetVariableType(variableType);
+                            SystemVariable.GetSystemVariable(variableID).SetValue(randomValue);
+                        }
+                        else if (randomFloat)
+                        {
+                            float randomMin = (float)eventCommand.GetParameter("RandomMin");
+                            float randomMax = (float)eventCommand.GetParameter("RandomMax");
+                            float randomValue = (float)new Random().NextDouble();
+                            float difference = randomMax - randomMin;
+                            randomValue = randomMin + (difference * randomValue);
+                            SystemVariable.GetSystemVariable(variableID).SetVariableType(variableType);
+                            SystemVariable.GetSystemVariable(variableID).SetValue(randomValue);
+                        }
+                        else
+                        {
+                            SystemVariable.GetSystemVariable(variableID).SetVariableType(variableType);
+                            SystemVariable.GetSystemVariable(variableID).SetValue(variableValue);
+                        }
 
                         break;
 
@@ -368,7 +366,6 @@ namespace RpgServer
                                     }
                                 }
 
-
                                 break;
                             case ConditionalBranchType.QuestStatus:
 
@@ -382,6 +379,22 @@ namespace RpgServer
 
                                 int option = (int)eventCommand.GetParameter("SelectedOption");
                                 if (option == triggeringEvent.SelectedOption)
+                                    conditionMet = true;
+
+                                break;
+                            case ConditionalBranchType.TerrainTag:
+                                if (client == null || !client.Connected()) break;
+
+                                int tag = (int)eventCommand.GetParameter("TerrainTag");
+                                if (client.TerrainTagCheck(tag))
+                                    conditionMet = true;
+
+                                break;
+                            case ConditionalBranchType.PlayerDirection:
+                                if (client == null || !client.Connected()) break;
+
+                                FacingDirection dir = (FacingDirection)eventCommand.GetParameter("PlayerDirection");
+                                if (client.GetPacket().Direction == dir)
                                     conditionMet = true;
 
                                 break;
@@ -450,16 +463,18 @@ namespace RpgServer
                     case EventCommand.CommandType.ChangePlayerSprite:
                         if (client == null || !client.Connected()) break;
 
-                        int spriteID = (int)eventCommand.GetParameter("SpriteID");
+                        spriteID = (int)eventCommand.GetParameter("SpriteID");
                         client.GetPacket().SpriteID = spriteID;
 
                         break;
-                    case EventCommand.CommandType.ChangeMapEventSprite:
+                    case EventCommand.CommandType.WaitForMovementCompletion:
 
-                        mapID = (int)eventCommand.GetParameter("MapID");
-                        eventID = (int)eventCommand.GetParameter("EventID");
-                        spriteID = (int)eventCommand.GetParameter("SpriteID");
-                        Server.Instance.GetMapInstance(mapID).ChangeMapEventSprite(eventID, spriteID);
+                        if (client == null || !client.Connected()) break;
+
+                        if (client.Moving())
+                        {
+                            triggeringEvent.CommandID--;
+                        }
 
                         break;
                 }
@@ -473,8 +488,28 @@ namespace RpgServer
         public void TriggerEventData(GameClient client, MapEvent mapEvent)
         {
             if (mapEvent.Locked) // add player lock id so others can interact
+            {
                 return;
+            }
+
             _triggeringEvents.Add(new TriggeringEvent(client, mapEvent));
+            if (client == null)
+            {
+                _triggeringEvents.Add(new TriggeringEvent(client, mapEvent));
+                GameClient[] clients = _mapInstance.GetClients();
+                for (int i = 0; i < clients.Length; i++)
+                {
+                    _triggeringEvents.Add(new TriggeringEvent(clients[i], mapEvent));
+                }
+            }
+            else
+            {
+                _triggeringEvents.Add(new TriggeringEvent(null, mapEvent));
+                _triggeringEvents.Add(new TriggeringEvent(client, mapEvent));
+            }
+
+            mapEvent.Locked = true;
+
         }
 
 

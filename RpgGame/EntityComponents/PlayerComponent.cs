@@ -47,7 +47,7 @@ namespace RpgGame.EntityComponents
         public void SetRealPosition()
         {
             Vector3 pos = new Vector3(_playerPacket.RealX + 16, _playerPacket.RealY + 16, 0);
-            pos.Z = -(_playerPacket.PositionY * 32);
+            pos.Z = -((_playerPacket.PositionY + (_playerPacket.OnBridge ? 3 : 0)) * (32 * (_playerPacket.OnBridge ? 3 : 1))) - 1;
             Transform.LocalPosition = pos;
         }
 
@@ -143,6 +143,25 @@ namespace RpgGame.EntityComponents
                     //Renderer.DisableDepthTest();
                     Renderer.PrintText(_playerPacket.Username, ref pos, ref colour);
                     //Renderer.EnableDepthTest();
+
+                    Renderer.PushStencilDepth(OpenTK.Graphics.OpenGL.StencilOp.Keep, OpenTK.Graphics.OpenGL.StencilFunction.Less);
+                    Renderer.PushWorldMatrix();
+                    Renderer.SetFlipUV(false, true);
+
+                    Renderer.TranslateWorld(0, GetFrameHeight(), 0);
+                    OpenTK.Graphics.Color4 prevColor = GetColour();
+                    OpenTK.Graphics.Color4 color = prevColor;
+                    color.A = 0.2f;
+
+                    SetColour(color);
+                    base.Render(e);
+                    SetColour(prevColor);
+
+                    Renderer.SetFlipUV(false, false);
+                    Renderer.PopWorldMatrix();
+                    Renderer.PopStencilDepth();
+
+
                 }
             }
         }

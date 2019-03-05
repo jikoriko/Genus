@@ -364,6 +364,7 @@ namespace RpgGame
                         realX = float.Parse(command.GetParameter("RealX"));
                         realY = float.Parse(command.GetParameter("RealY"));
                         direction = (FacingDirection)int.Parse(command.GetParameter("Direction"));
+                        bool onBridge = int.Parse(command.GetParameter("OnBridge")) == 1 ? true : false;
 
                         map = ((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).GetMapData();
                         if (map != null)
@@ -373,6 +374,7 @@ namespace RpgGame
                             map.GetMapEvent(eventID).RealX = realX;
                             map.GetMapEvent(eventID).RealY = realY;
                             map.GetMapEvent(eventID).EventDirection = direction;
+                            map.GetMapEvent(eventID).OnBridge = onBridge;
                         }
                     }
 
@@ -405,6 +407,26 @@ namespace RpgGame
                     }
 
                     break;
+                case ServerCommand.CommandType.ChangeMapEventRenderPriority:
+
+                    mapID = int.Parse(command.GetParameter("MapID"));
+                    if (((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).MapID == mapID)
+                    {
+                        eventID = int.Parse(command.GetParameter("EventID"));
+                        RenderPriority priority = (RenderPriority)int.Parse(command.GetParameter("RenderPriority"));
+                        ((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).ChangeMapEventRenderPriority(eventID, priority);
+                    }
+
+                    break;
+                case ServerCommand.CommandType.ChangeMapEventEnabled:
+                    mapID = int.Parse(command.GetParameter("MapID"));
+                    if (((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).MapID == mapID)
+                    {
+                        eventID = int.Parse(command.GetParameter("EventID"));
+                        bool enabled = int.Parse(command.GetParameter("Enabled")) == 1 ? true : false;
+                        ((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).ChangeMapEventEnabled(eventID, enabled);
+                    }
+                    break;
 
             }
         }
@@ -421,6 +443,7 @@ namespace RpgGame
             _stream.Write(bytes, 0, sizeof(int));
             for (int i = 0; i < numCommands; i++)
             {
+                while (_clientCommands[i] == null) ;
                 bytes = _clientCommands[i].GetBytes();
                 _stream.Write(BitConverter.GetBytes(bytes.Length), 0, sizeof(int));
                 _stream.Write(bytes, 0, bytes.Length);

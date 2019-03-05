@@ -32,7 +32,7 @@ namespace RpgEditor
 
         public enum TilesetProperties
         {
-            Passabilities, Passabilities8Dir, Priorities, TerrainTags, BushFlags, CounterFlags, None
+            Passabilities, Passabilities8Dir, Priorities, TerrainTags, BushFlags, CounterFlags, ReflectionFlags, BridgeFlags, None
         }
 
         public EditorForm()
@@ -442,6 +442,8 @@ namespace RpgEditor
             else if (TerrainTagButton.Checked) return TilesetProperties.TerrainTags;
             else if (BushFlagsButton.Checked) return TilesetProperties.BushFlags;
             else if (CounterFlagsButton.Checked) return TilesetProperties.CounterFlags;
+            else if (ReflectionFlagsButton.Checked) return TilesetProperties.ReflectionFlags;
+            else if (BridgeFlagsButton.Checked) return TilesetProperties.BridgeFlags;
             return TilesetProperties.None;
         }
 
@@ -574,15 +576,6 @@ namespace RpgEditor
                     case Genus2D.GameData.EventCommand.CommandType.ChangePlayerDirection:
                         control = new CommandDataPresets.ChangePlayerDirectionPreset(command);
                         break;
-                    case Genus2D.GameData.EventCommand.CommandType.TeleportMapEvent:
-                        control = new CommandDataPresets.TeleportMapEventPreset(command);
-                        break;
-                    case Genus2D.GameData.EventCommand.CommandType.MoveMapEvent:
-                        control = new CommandDataPresets.MoveMapEventPreset(command);
-                        break;
-                    case Genus2D.GameData.EventCommand.CommandType.ChangeMapEventDirection:
-                        control = new CommandDataPresets.ChangeMapEventDirection(command);
-                        break;
                     case Genus2D.GameData.EventCommand.CommandType.ShowMessage:
                         control = new CommandDataPresets.ShowMessagePreset(command);
                         break;
@@ -604,8 +597,8 @@ namespace RpgEditor
                     case Genus2D.GameData.EventCommand.CommandType.ChangePlayerSprite:
                         control = new CommandDataPresets.ChangePlayerSpritePreset(command);
                         break;
-                    case Genus2D.GameData.EventCommand.CommandType.ChangeMapEventSprite:
-                        control = new CommandDataPresets.ChangeMapEventSprite(command);
+                    case Genus2D.GameData.EventCommand.CommandType.ChangeMapEvent:
+                        control = new CommandDataPresets.ChangeMapEventPreset(command);
                         break;
                 }
 

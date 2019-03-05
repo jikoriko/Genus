@@ -42,13 +42,19 @@ namespace RpgGame.EntityComponents
         public void SetRealPosition()
         {
             Vector3 pos = new Vector3(_mapEvent.RealX + 16, _mapEvent.RealY + 16, 0);
-            pos.Z = -(_mapEvent.MapY * 32);
+            if (_mapEvent.Priority == RenderPriority.BelowPlayer)
+                pos.Z = -((_mapEvent.MapY + (_mapEvent.OnBridge ? 3 : 0)) * (32 * (_mapEvent.OnBridge ? 3 : 1)));
+            else if (_mapEvent.Priority == RenderPriority.AbovePlayer)
+                pos.Z = -((_mapEvent.MapY + (_mapEvent.OnBridge ? 3 : 0)) * (32 * (_mapEvent.OnBridge ? 3 : 1))) - 1;
+            else
+                pos.Z = -((_mapEvent.MapY + 3) * (32 * 5));
             Transform.LocalPosition = pos;
         }
 
         public override void Update(OpenTK.FrameEventArgs e)
         {
             base.Update(e);
+            if (!_mapEvent.Enabled) return;
 
             SetRealPosition();// we could do some movement prediction here based on target pos, real pos and movement speed?
             SetYFrame((int)_mapEvent.EventDirection);
@@ -68,11 +74,12 @@ namespace RpgGame.EntityComponents
                     IncrementXFrame();
                 }
             }
-            
+
         }
 
         public override bool BushFlag()
         {
+            if (_mapEvent.Priority == RenderPriority.OnTop) return false;
             MapData data = MapComponent.Instance.GetMapData();
             for (int i = 0; i < 3; i++)
             {
@@ -89,11 +96,14 @@ namespace RpgGame.EntityComponents
                     y = (int)Math.Ceiling(y / 32);
 
                 Tuple<int, int> tileInfo = data.GetTile(i, (int)x, (int)y);
-                TilesetData.Tileset tileset = TilesetData.GetTileset(tileInfo.Item2);
-                if (tileset != null)
+                if (tileInfo != null)
                 {
-                    if (tileset.GetBushFlag(tileInfo.Item1))
-                        return true;
+                    TilesetData.Tileset tileset = TilesetData.GetTileset(tileInfo.Item2);
+                    if (tileset != null)
+                    {
+                        if (tileset.GetBushFlag(tileInfo.Item1))
+                            return true;
+                    }
                 }
             }
 
@@ -102,16 +112,30 @@ namespace RpgGame.EntityComponents
 
         public override void Render(FrameEventArgs e)
         {
-            PlayerPacket localPacket = RpgClientConnection.Instance.GetLocalPlayerPacket();
-            if (localPacket != null && !(localPacket.PositionX == _mapEvent.MapX && localPacket.PositionY == _mapEvent.MapY))
-            {
-                base.Render(e);
-            }
-            else
-            {
-                base.Render(e);
-            }
+            if (!_mapEvent.Enabled) return;
 
+            PlayerPacket localPacket = RpgClientConnection.Instance.GetLocalPlayerPacket();
+            if (localPacket == null || !(localPacket.PositionX == _mapEvent.MapX && localPacket.PositionY == _mapEvent.MapY))
+            {
+                base.Render(e);
+
+                Renderer.PushStencilDepth(OpenTK.Graphics.OpenGL.StencilOp.Keep, OpenTK.Graphics.OpenGL.StencilFunction.Less);
+                Renderer.PushWorldMatrix();
+                Renderer.SetFlipUV(false, true);
+
+                Renderer.TranslateWorld(0, GetFrameHeight(), 0);
+                OpenTK.Graphics.Color4 prevColor = GetColour();
+                OpenTK.Graphics.Color4 color = prevColor;
+                color.A = 0.2f;
+
+                SetColour(color);
+                base.Render(e);
+                SetColour(prevColor);
+
+                Renderer.SetFlipUV(false, false);
+                Renderer.PopWorldMatrix();
+                Renderer.PopStencilDepth();
+            }
         }
     }
 }

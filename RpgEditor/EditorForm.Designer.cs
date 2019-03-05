@@ -93,14 +93,17 @@
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel4 = new System.Windows.Forms.Panel();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.UndoEventChangesButton = new System.Windows.Forms.Button();
-            this.AddEventButton = new System.Windows.Forms.Button();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.RemoveEventCommandButton = new System.Windows.Forms.Button();
+            this.MoveCommandDownButton = new System.Windows.Forms.Button();
+            this.AddEventCommandButton = new System.Windows.Forms.Button();
+            this.EventCommandsList = new System.Windows.Forms.ListBox();
+            this.MoveCommandUpButton = new System.Windows.Forms.Button();
             this.CopyEventCommandButton = new System.Windows.Forms.Button();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.EventCommandDataPanel = new System.Windows.Forms.Panel();
-            this.RemoveEventCommandButton = new System.Windows.Forms.Button();
-            this.AddEventCommandButton = new System.Windows.Forms.Button();
-            this.EventCommandsList = new System.Windows.Forms.ListBox();
+            this.UndoEventChangesButton = new System.Windows.Forms.Button();
+            this.AddEventButton = new System.Windows.Forms.Button();
             this.RemoveEventButton = new System.Windows.Forms.Button();
             this.ApplyEventChangesButton = new System.Windows.Forms.Button();
             this.EventsList = new System.Windows.Forms.ListBox();
@@ -142,6 +145,7 @@
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.panel6 = new System.Windows.Forms.Panel();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.UndoItemButton = new System.Windows.Forms.Button();
             this.AddItemButton = new System.Windows.Forms.Button();
             this.RemoveItemButton = new System.Windows.Forms.Button();
@@ -172,10 +176,8 @@
             this.AddVariableButton = new System.Windows.Forms.Button();
             this.SystemVariablesList = new System.Windows.Forms.ListBox();
             this.label19 = new System.Windows.Forms.Label();
-            this.MoveCommandUpButton = new System.Windows.Forms.Button();
-            this.MoveCommandDownButton = new System.Windows.Forms.Button();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.ReflectionFlagsButton = new System.Windows.Forms.RadioButton();
+            this.BridgeFlagsButton = new System.Windows.Forms.RadioButton();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -200,6 +202,7 @@
             this.tabPage3.SuspendLayout();
             this.panel4.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.panel5.SuspendLayout();
@@ -218,7 +221,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.ItemMaxStack)).BeginInit();
             this.tabPage7.SuspendLayout();
             this.panel7.SuspendLayout();
-            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -929,6 +931,8 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.BridgeFlagsButton);
+            this.groupBox3.Controls.Add(this.ReflectionFlagsButton);
             this.groupBox3.Controls.Add(this.CounterFlagsButton);
             this.groupBox3.Controls.Add(this.BushFlagsButton);
             this.groupBox3.Controls.Add(this.TerrainTagButton);
@@ -937,7 +941,7 @@
             this.groupBox3.Controls.Add(this.PassabilitiesButton);
             this.groupBox3.Location = new System.Drawing.Point(702, 21);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(166, 168);
+            this.groupBox3.Size = new System.Drawing.Size(166, 199);
             this.groupBox3.TabIndex = 6;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Properties";
@@ -1110,27 +1114,78 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Event Data";
             // 
-            // UndoEventChangesButton
+            // groupBox5
             // 
-            this.UndoEventChangesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.UndoEventChangesButton.Location = new System.Drawing.Point(884, 646);
-            this.UndoEventChangesButton.Name = "UndoEventChangesButton";
-            this.UndoEventChangesButton.Size = new System.Drawing.Size(122, 47);
-            this.UndoEventChangesButton.TabIndex = 9;
-            this.UndoEventChangesButton.Text = "Undo Changes";
-            this.UndoEventChangesButton.UseVisualStyleBackColor = true;
-            this.UndoEventChangesButton.Click += new System.EventHandler(this.UndoEventChangesButton_Click);
+            this.groupBox5.Controls.Add(this.RemoveEventCommandButton);
+            this.groupBox5.Controls.Add(this.MoveCommandDownButton);
+            this.groupBox5.Controls.Add(this.AddEventCommandButton);
+            this.groupBox5.Controls.Add(this.EventCommandsList);
+            this.groupBox5.Controls.Add(this.MoveCommandUpButton);
+            this.groupBox5.Controls.Add(this.CopyEventCommandButton);
+            this.groupBox5.Location = new System.Drawing.Point(197, 19);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(185, 674);
+            this.groupBox5.TabIndex = 11;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Commands";
             // 
-            // AddEventButton
+            // RemoveEventCommandButton
             // 
-            this.AddEventButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.AddEventButton.Location = new System.Drawing.Point(6, 593);
-            this.AddEventButton.Name = "AddEventButton";
-            this.AddEventButton.Size = new System.Drawing.Size(185, 47);
-            this.AddEventButton.TabIndex = 7;
-            this.AddEventButton.Text = "Add Event";
-            this.AddEventButton.UseVisualStyleBackColor = true;
-            this.AddEventButton.Click += new System.EventHandler(this.AddEventButton_Click);
+            this.RemoveEventCommandButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveEventCommandButton.Location = new System.Drawing.Point(6, 515);
+            this.RemoveEventCommandButton.Name = "RemoveEventCommandButton";
+            this.RemoveEventCommandButton.Size = new System.Drawing.Size(173, 47);
+            this.RemoveEventCommandButton.TabIndex = 9;
+            this.RemoveEventCommandButton.Text = "Remove Command";
+            this.RemoveEventCommandButton.UseVisualStyleBackColor = true;
+            this.RemoveEventCommandButton.Click += new System.EventHandler(this.RemoveEventCommandButton_Click);
+            // 
+            // MoveCommandDownButton
+            // 
+            this.MoveCommandDownButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.MoveCommandDownButton.Location = new System.Drawing.Point(6, 621);
+            this.MoveCommandDownButton.Name = "MoveCommandDownButton";
+            this.MoveCommandDownButton.Size = new System.Drawing.Size(173, 47);
+            this.MoveCommandDownButton.TabIndex = 13;
+            this.MoveCommandDownButton.Text = "Move Command Down";
+            this.MoveCommandDownButton.UseVisualStyleBackColor = true;
+            this.MoveCommandDownButton.Click += new System.EventHandler(this.MoveCommandDownButton_Click);
+            // 
+            // AddEventCommandButton
+            // 
+            this.AddEventCommandButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddEventCommandButton.Location = new System.Drawing.Point(6, 409);
+            this.AddEventCommandButton.Name = "AddEventCommandButton";
+            this.AddEventCommandButton.Size = new System.Drawing.Size(173, 47);
+            this.AddEventCommandButton.TabIndex = 8;
+            this.AddEventCommandButton.Text = "Add Command";
+            this.AddEventCommandButton.UseVisualStyleBackColor = true;
+            this.AddEventCommandButton.Click += new System.EventHandler(this.AddEventCommandButton_Click);
+            // 
+            // EventCommandsList
+            // 
+            this.EventCommandsList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.EventCommandsList.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.EventCommandsList.FormattingEnabled = true;
+            this.EventCommandsList.HorizontalScrollbar = true;
+            this.EventCommandsList.ItemHeight = 20;
+            this.EventCommandsList.Location = new System.Drawing.Point(6, 20);
+            this.EventCommandsList.Name = "EventCommandsList";
+            this.EventCommandsList.Size = new System.Drawing.Size(173, 384);
+            this.EventCommandsList.TabIndex = 4;
+            this.EventCommandsList.SelectedIndexChanged += new System.EventHandler(this.EventCommandsList_SelectedIndexChanged);
+            // 
+            // MoveCommandUpButton
+            // 
+            this.MoveCommandUpButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.MoveCommandUpButton.Location = new System.Drawing.Point(6, 568);
+            this.MoveCommandUpButton.Name = "MoveCommandUpButton";
+            this.MoveCommandUpButton.Size = new System.Drawing.Size(173, 47);
+            this.MoveCommandUpButton.TabIndex = 12;
+            this.MoveCommandUpButton.Text = "Move Command Up";
+            this.MoveCommandUpButton.UseVisualStyleBackColor = true;
+            this.MoveCommandUpButton.Click += new System.EventHandler(this.MoveCommandUpButton_Click);
             // 
             // CopyEventCommandButton
             // 
@@ -1161,41 +1216,27 @@
             this.EventCommandDataPanel.Size = new System.Drawing.Size(734, 595);
             this.EventCommandDataPanel.TabIndex = 0;
             // 
-            // RemoveEventCommandButton
+            // UndoEventChangesButton
             // 
-            this.RemoveEventCommandButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.RemoveEventCommandButton.Location = new System.Drawing.Point(6, 515);
-            this.RemoveEventCommandButton.Name = "RemoveEventCommandButton";
-            this.RemoveEventCommandButton.Size = new System.Drawing.Size(173, 47);
-            this.RemoveEventCommandButton.TabIndex = 9;
-            this.RemoveEventCommandButton.Text = "Remove Command";
-            this.RemoveEventCommandButton.UseVisualStyleBackColor = true;
-            this.RemoveEventCommandButton.Click += new System.EventHandler(this.RemoveEventCommandButton_Click);
+            this.UndoEventChangesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.UndoEventChangesButton.Location = new System.Drawing.Point(884, 646);
+            this.UndoEventChangesButton.Name = "UndoEventChangesButton";
+            this.UndoEventChangesButton.Size = new System.Drawing.Size(122, 47);
+            this.UndoEventChangesButton.TabIndex = 9;
+            this.UndoEventChangesButton.Text = "Undo Changes";
+            this.UndoEventChangesButton.UseVisualStyleBackColor = true;
+            this.UndoEventChangesButton.Click += new System.EventHandler(this.UndoEventChangesButton_Click);
             // 
-            // AddEventCommandButton
+            // AddEventButton
             // 
-            this.AddEventCommandButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.AddEventCommandButton.Location = new System.Drawing.Point(6, 409);
-            this.AddEventCommandButton.Name = "AddEventCommandButton";
-            this.AddEventCommandButton.Size = new System.Drawing.Size(173, 47);
-            this.AddEventCommandButton.TabIndex = 8;
-            this.AddEventCommandButton.Text = "Add Command";
-            this.AddEventCommandButton.UseVisualStyleBackColor = true;
-            this.AddEventCommandButton.Click += new System.EventHandler(this.AddEventCommandButton_Click);
-            // 
-            // EventCommandsList
-            // 
-            this.EventCommandsList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.EventCommandsList.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.EventCommandsList.FormattingEnabled = true;
-            this.EventCommandsList.HorizontalScrollbar = true;
-            this.EventCommandsList.ItemHeight = 20;
-            this.EventCommandsList.Location = new System.Drawing.Point(6, 20);
-            this.EventCommandsList.Name = "EventCommandsList";
-            this.EventCommandsList.Size = new System.Drawing.Size(173, 384);
-            this.EventCommandsList.TabIndex = 4;
-            this.EventCommandsList.SelectedIndexChanged += new System.EventHandler(this.EventCommandsList_SelectedIndexChanged);
+            this.AddEventButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddEventButton.Location = new System.Drawing.Point(6, 593);
+            this.AddEventButton.Name = "AddEventButton";
+            this.AddEventButton.Size = new System.Drawing.Size(185, 47);
+            this.AddEventButton.TabIndex = 7;
+            this.AddEventButton.Text = "Add Event";
+            this.AddEventButton.UseVisualStyleBackColor = true;
+            this.AddEventButton.Click += new System.EventHandler(this.AddEventButton_Click);
             // 
             // RemoveEventButton
             // 
@@ -1696,6 +1737,14 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Item Data";
             // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.White;
+            this.panel1.Location = new System.Drawing.Point(421, 31);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(256, 256);
+            this.panel1.TabIndex = 10;
+            // 
             // UndoItemButton
             // 
             this.UndoItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -2014,50 +2063,27 @@
             this.label19.TabIndex = 7;
             this.label19.Text = "System Variables";
             // 
-            // MoveCommandUpButton
+            // ReflectionFlagsButton
             // 
-            this.MoveCommandUpButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.MoveCommandUpButton.Location = new System.Drawing.Point(6, 568);
-            this.MoveCommandUpButton.Name = "MoveCommandUpButton";
-            this.MoveCommandUpButton.Size = new System.Drawing.Size(173, 47);
-            this.MoveCommandUpButton.TabIndex = 12;
-            this.MoveCommandUpButton.Text = "Move Command Up";
-            this.MoveCommandUpButton.UseVisualStyleBackColor = true;
-            this.MoveCommandUpButton.Click += new System.EventHandler(this.MoveCommandUpButton_Click);
+            this.ReflectionFlagsButton.AutoSize = true;
+            this.ReflectionFlagsButton.Location = new System.Drawing.Point(6, 155);
+            this.ReflectionFlagsButton.Name = "ReflectionFlagsButton";
+            this.ReflectionFlagsButton.Size = new System.Drawing.Size(101, 17);
+            this.ReflectionFlagsButton.TabIndex = 6;
+            this.ReflectionFlagsButton.TabStop = true;
+            this.ReflectionFlagsButton.Text = "Reflection Flags";
+            this.ReflectionFlagsButton.UseVisualStyleBackColor = true;
             // 
-            // MoveCommandDownButton
+            // BridgeFlagsButton
             // 
-            this.MoveCommandDownButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.MoveCommandDownButton.Location = new System.Drawing.Point(6, 621);
-            this.MoveCommandDownButton.Name = "MoveCommandDownButton";
-            this.MoveCommandDownButton.Size = new System.Drawing.Size(173, 47);
-            this.MoveCommandDownButton.TabIndex = 13;
-            this.MoveCommandDownButton.Text = "Move Command Down";
-            this.MoveCommandDownButton.UseVisualStyleBackColor = true;
-            this.MoveCommandDownButton.Click += new System.EventHandler(this.MoveCommandDownButton_Click);
-            // 
-            // groupBox5
-            // 
-            this.groupBox5.Controls.Add(this.RemoveEventCommandButton);
-            this.groupBox5.Controls.Add(this.MoveCommandDownButton);
-            this.groupBox5.Controls.Add(this.AddEventCommandButton);
-            this.groupBox5.Controls.Add(this.EventCommandsList);
-            this.groupBox5.Controls.Add(this.MoveCommandUpButton);
-            this.groupBox5.Controls.Add(this.CopyEventCommandButton);
-            this.groupBox5.Location = new System.Drawing.Point(197, 19);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(185, 674);
-            this.groupBox5.TabIndex = 11;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Commands";
-            // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.Color.White;
-            this.panel1.Location = new System.Drawing.Point(421, 31);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(256, 256);
-            this.panel1.TabIndex = 10;
+            this.BridgeFlagsButton.AutoSize = true;
+            this.BridgeFlagsButton.Location = new System.Drawing.Point(6, 177);
+            this.BridgeFlagsButton.Name = "BridgeFlagsButton";
+            this.BridgeFlagsButton.Size = new System.Drawing.Size(83, 17);
+            this.BridgeFlagsButton.TabIndex = 7;
+            this.BridgeFlagsButton.TabStop = true;
+            this.BridgeFlagsButton.Text = "Bridge Flags";
+            this.BridgeFlagsButton.UseVisualStyleBackColor = true;
             // 
             // EditorForm
             // 
@@ -2093,6 +2119,7 @@
             this.panel4.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
@@ -2114,7 +2141,6 @@
             this.tabPage7.ResumeLayout(false);
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
-            this.groupBox5.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -2269,6 +2295,8 @@
         private System.Windows.Forms.Button MoveCommandDownButton;
         private System.Windows.Forms.Button MoveCommandUpButton;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.RadioButton ReflectionFlagsButton;
+        private System.Windows.Forms.RadioButton BridgeFlagsButton;
     }
 }
 

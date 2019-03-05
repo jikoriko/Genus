@@ -37,7 +37,6 @@ namespace RpgServer
             SelectedOption = -1;
 
             Complete = false;
-            mapEvent.Locked = true;
         }
 
         public EventData GetEventData()

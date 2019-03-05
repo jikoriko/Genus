@@ -36,6 +36,8 @@ namespace Genus2D.Graphics
         private static Stack _clipStack = new Stack();
         private static bool _screenClip = false;
 
+        private static bool[] _flipUV = { false, false };
+
         private static int _stencilDepth = -1;
         private class StencilDepthParamaters
         {
@@ -78,6 +80,7 @@ namespace Genus2D.Graphics
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
             SetColour(ref _defaultColour, ref _defaultColour);
+            SetFlipUV(false, false);
             _currentFont = Assets.GetFont("arial.ttf", 20);
             _resolution = Vector2.Zero;
             SetScreenBounds(new Rectangle(0, 0, StateWindow.Instance.Width, StateWindow.Instance.Height));
@@ -193,6 +196,12 @@ namespace Genus2D.Graphics
                 GL.Uniform4(uColorLocation, endColour);
                 _endColour = endColour;
             }
+        }
+
+        public static void SetFlipUV(bool flipX, bool flipY)
+        {
+            int uxLocation = _currentShader.GetUniformLocation("uFlipUV");
+            GL.Uniform2(uxLocation, flipX == true ? 1.0f : 0.0f, flipY == true ? 1.0f : 0.0f);
         }
 
         public static void Clear()
@@ -472,7 +481,7 @@ namespace Genus2D.Graphics
             {
                 GL.Enable(EnableCap.StencilTest);
                 GL.StencilMask(0xFF);
-                GL.Clear(ClearBufferMask.StencilBufferBit);
+                //GL.Clear(ClearBufferMask.StencilBufferBit);
             }
             _stencilDepth++;
 

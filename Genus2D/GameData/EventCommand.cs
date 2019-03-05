@@ -13,12 +13,6 @@ namespace Genus2D.GameData
         public enum CommandType
         {
             WaitTimer,
-            TeleportPlayer,
-            MovePlayer,
-            ChangePlayerDirection,
-            TeleportMapEvent,
-            MoveMapEvent,
-            ChangeMapEventDirection,
             ShowMessage,
             ShowOptions,
             ChangeSystemVariable,
@@ -27,9 +21,12 @@ namespace Genus2D.GameData
             ConditionalBranchEnd,
             AddInventoryItem,
             RemoveInventoryItem,
+            TeleportPlayer,
+            MovePlayer,
+            ChangePlayerDirection,
             ChangePlayerSprite,
-            ChangeMapEventSprite
-
+            ChangeMapEvent,
+            WaitForMovementCompletion
         }
 
         public CommandType Type { get; private set; }
@@ -45,33 +42,6 @@ namespace Genus2D.GameData
                 case CommandType.WaitTimer:
                     _parameters.Add("Time", 0.0f);
                     break;
-                case CommandType.TeleportPlayer:
-                    _parameters.Add("MapID", 0);
-                    _parameters.Add("MapX", 0);
-                    _parameters.Add("MapY", 0);
-                    break;
-                case CommandType.MovePlayer:
-                    _parameters.Add("Direction", MovementDirection.Down);
-                    break;
-                case CommandType.ChangePlayerDirection:
-                    _parameters.Add("Direction", FacingDirection.Down);
-                    break;
-                case CommandType.TeleportMapEvent:
-                    _parameters.Add("MapID", -1);
-                    _parameters.Add("EventID", -1);
-                    _parameters.Add("MapX", 0);
-                    _parameters.Add("MapY", 0);
-                    break;
-                case CommandType.MoveMapEvent:
-                    _parameters.Add("MapID", -1);
-                    _parameters.Add("EventID", -1);
-                    _parameters.Add("Direction", MovementDirection.Down);
-                    break;
-                case CommandType.ChangeMapEventDirection:
-                    _parameters.Add("MapID", -1);
-                    _parameters.Add("EventID", -1);
-                    _parameters.Add("Direction", FacingDirection.Down);
-                    break;
                 case CommandType.ShowMessage:
                     _parameters.Add("Message", "");
                     break;
@@ -83,6 +53,10 @@ namespace Genus2D.GameData
                     _parameters.Add("VariableID", -1);
                     _parameters.Add("VariableType", 0);
                     _parameters.Add("VariableValue", 0);
+                    _parameters.Add("RandomInt", false);
+                    _parameters.Add("RandomFloat", false);
+                    _parameters.Add("RandomMin", 0);
+                    _parameters.Add("RandomMax", 0);
                     break;
                 case CommandType.ConditionalBranchStart:
                     _parameters.Add("ConditionalBranchType", ConditionalBranchType.PlayerPosition);
@@ -106,6 +80,8 @@ namespace Genus2D.GameData
                     _parameters.Add("TextCondition", ConditionalTextCheck.Equal);
                     _parameters.Add("QuestStatus", QuestStatus.NotStarted);
                     _parameters.Add("SelectedOption", 0);
+                    _parameters.Add("TerrainTag", 0);
+                    _parameters.Add("PlayerDirection", FacingDirection.Down);
                     break;
                 case CommandType.AddInventoryItem:
                     _parameters.Add("ItemID", -1);
@@ -115,13 +91,35 @@ namespace Genus2D.GameData
                     _parameters.Add("ItemID", -1);
                     _parameters.Add("ItemAmount", 1);
                     break;
+                case CommandType.TeleportPlayer:
+                    _parameters.Add("MapID", 0);
+                    _parameters.Add("MapX", 0);
+                    _parameters.Add("MapY", 0);
+                    break;
+                case CommandType.MovePlayer:
+                    _parameters.Add("Direction", MovementDirection.Down);
+                    break;
+                case CommandType.ChangePlayerDirection:
+                    _parameters.Add("Direction", FacingDirection.Down);
+                    break;
                 case CommandType.ChangePlayerSprite:
                     _parameters.Add("SpriteID", -1);
                     break;
-                case CommandType.ChangeMapEventSprite:
+                case CommandType.ChangeMapEvent:
                     _parameters.Add("MapID", -1);
                     _parameters.Add("EventID", -1);
+                    _parameters.Add("Property", ChangeMapEventProperty.Teleport);
+                    _parameters.Add("MapX", 0);
+                    _parameters.Add("MapY", 0);
+                    _parameters.Add("MovementDirection", MovementDirection.Down);
+                    _parameters.Add("FacingDirection", FacingDirection.Down);
                     _parameters.Add("SpriteID", -1);
+                    _parameters.Add("RenderPriority", RenderPriority.BelowPlayer);
+                    _parameters.Add("MovementSpeed", MovementSpeed.Normal);
+                    _parameters.Add("MovementFrequency", MovementFrequency.Normal);
+                    _parameters.Add("Passable", false);
+                    _parameters.Add("RandomMovement", false);
+                    _parameters.Add("Enabled", true);
                     break;
             }
 
@@ -150,6 +148,7 @@ namespace Genus2D.GameData
         {
             if (_parameters.ContainsKey(name))
                 return _parameters[name];
+            else _parameters.Add(name, FacingDirection.Down);
             return null;
         }
 

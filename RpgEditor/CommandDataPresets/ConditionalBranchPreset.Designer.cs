@@ -76,9 +76,17 @@
             this.label10 = new System.Windows.Forms.Label();
             this.QuestStatus = new System.Windows.Forms.ComboBox();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.SelectedOptionControl = new System.Windows.Forms.NumericUpDown();
             this.label14 = new System.Windows.Forms.Label();
             this.SelectedOptionCheck = new System.Windows.Forms.RadioButton();
-            this.SelectedOptionControl = new System.Windows.Forms.NumericUpDown();
+            this.TerrainTagCheck = new System.Windows.Forms.RadioButton();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.TerrainTagControl = new System.Windows.Forms.NumericUpDown();
+            this.label15 = new System.Windows.Forms.Label();
+            this.PlayerDirectionCheck = new System.Windows.Forms.RadioButton();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.PlayerDirectionSelection = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PlayerY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PlayerX)).BeginInit();
@@ -94,6 +102,9 @@
             this.groupBox6.SuspendLayout();
             this.groupBox7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SelectedOptionControl)).BeginInit();
+            this.groupBox8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.TerrainTagControl)).BeginInit();
+            this.groupBox9.SuspendLayout();
             this.SuspendLayout();
             // 
             // PlayerPositionCheck
@@ -371,7 +382,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(36, 48);
+            this.label13.Location = new System.Drawing.Point(28, 48);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(38, 13);
             this.label13.TabIndex = 16;
@@ -608,6 +619,13 @@
             this.groupBox7.TabIndex = 18;
             this.groupBox7.TabStop = false;
             // 
+            // SelectedOptionControl
+            // 
+            this.SelectedOptionControl.Location = new System.Drawing.Point(78, 20);
+            this.SelectedOptionControl.Name = "SelectedOptionControl";
+            this.SelectedOptionControl.Size = new System.Drawing.Size(120, 20);
+            this.SelectedOptionControl.TabIndex = 15;
+            // 
             // label14
             // 
             this.label14.AutoSize = true;
@@ -628,17 +646,99 @@
             this.SelectedOptionCheck.Text = "Selected Option:";
             this.SelectedOptionCheck.UseVisualStyleBackColor = true;
             // 
-            // SelectedOptionControl
+            // TerrainTagCheck
             // 
-            this.SelectedOptionControl.Location = new System.Drawing.Point(78, 20);
-            this.SelectedOptionControl.Name = "SelectedOptionControl";
-            this.SelectedOptionControl.Size = new System.Drawing.Size(120, 20);
-            this.SelectedOptionControl.TabIndex = 15;
+            this.TerrainTagCheck.AutoSize = true;
+            this.TerrainTagCheck.Location = new System.Drawing.Point(286, 298);
+            this.TerrainTagCheck.Name = "TerrainTagCheck";
+            this.TerrainTagCheck.Size = new System.Drawing.Size(115, 17);
+            this.TerrainTagCheck.TabIndex = 19;
+            this.TerrainTagCheck.TabStop = true;
+            this.TerrainTagCheck.Text = "Player Terrain Tag:";
+            this.TerrainTagCheck.UseVisualStyleBackColor = true;
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.TerrainTagControl);
+            this.groupBox8.Controls.Add(this.label15);
+            this.groupBox8.Location = new System.Drawing.Point(304, 321);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(227, 52);
+            this.groupBox8.TabIndex = 19;
+            this.groupBox8.TabStop = false;
+            // 
+            // TerrainTagControl
+            // 
+            this.TerrainTagControl.Location = new System.Drawing.Point(78, 20);
+            this.TerrainTagControl.Maximum = new decimal(new int[] {
+            9,
+            0,
+            0,
+            0});
+            this.TerrainTagControl.Name = "TerrainTagControl";
+            this.TerrainTagControl.Size = new System.Drawing.Size(120, 20);
+            this.TerrainTagControl.TabIndex = 15;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(43, 22);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(29, 13);
+            this.label15.TabIndex = 8;
+            this.label15.Text = "Tag:";
+            // 
+            // PlayerDirectionCheck
+            // 
+            this.PlayerDirectionCheck.AutoSize = true;
+            this.PlayerDirectionCheck.Location = new System.Drawing.Point(286, 379);
+            this.PlayerDirectionCheck.Name = "PlayerDirectionCheck";
+            this.PlayerDirectionCheck.Size = new System.Drawing.Size(102, 17);
+            this.PlayerDirectionCheck.TabIndex = 20;
+            this.PlayerDirectionCheck.TabStop = true;
+            this.PlayerDirectionCheck.Text = "Player Direction:";
+            this.PlayerDirectionCheck.UseVisualStyleBackColor = true;
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.PlayerDirectionSelection);
+            this.groupBox9.Controls.Add(this.label16);
+            this.groupBox9.Location = new System.Drawing.Point(304, 402);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(227, 52);
+            this.groupBox9.TabIndex = 20;
+            this.groupBox9.TabStop = false;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(20, 22);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(52, 13);
+            this.label16.TabIndex = 8;
+            this.label16.Text = "Direction:";
+            // 
+            // PlayerDirectionSelection
+            // 
+            this.PlayerDirectionSelection.FormattingEnabled = true;
+            this.PlayerDirectionSelection.Items.AddRange(new object[] {
+            "Down",
+            "Left",
+            "Right",
+            "Up"});
+            this.PlayerDirectionSelection.Location = new System.Drawing.Point(78, 19);
+            this.PlayerDirectionSelection.Name = "PlayerDirectionSelection";
+            this.PlayerDirectionSelection.Size = new System.Drawing.Size(121, 21);
+            this.PlayerDirectionSelection.TabIndex = 17;
             // 
             // ConditionalBranchPreset
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.groupBox9);
+            this.Controls.Add(this.PlayerDirectionCheck);
+            this.Controls.Add(this.groupBox8);
+            this.Controls.Add(this.TerrainTagCheck);
             this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.SelectedOptionCheck);
             this.Controls.Add(this.groupBox6);
@@ -677,6 +777,11 @@
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SelectedOptionControl)).EndInit();
+            this.groupBox8.ResumeLayout(false);
+            this.groupBox8.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.TerrainTagControl)).EndInit();
+            this.groupBox9.ResumeLayout(false);
+            this.groupBox9.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -735,5 +840,13 @@
         private System.Windows.Forms.NumericUpDown SelectedOptionControl;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.RadioButton SelectedOptionCheck;
+        private System.Windows.Forms.RadioButton TerrainTagCheck;
+        private System.Windows.Forms.GroupBox groupBox8;
+        private System.Windows.Forms.NumericUpDown TerrainTagControl;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.RadioButton PlayerDirectionCheck;
+        private System.Windows.Forms.GroupBox groupBox9;
+        private System.Windows.Forms.ComboBox PlayerDirectionSelection;
+        private System.Windows.Forms.Label label16;
     }
 }
