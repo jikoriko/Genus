@@ -146,6 +146,15 @@ namespace Genus2D.GameData
     }
 
     [Serializable]
+    public enum AttackStyle
+    {
+        None,
+        Melee,
+        Ranged,
+        Magic
+    }
+
+    [Serializable]
     public enum ToolType
     {
         Axe,
@@ -158,7 +167,8 @@ namespace Genus2D.GameData
     {
         Integer,
         ToolType,
-        EquipmentSlot
+        EquipmentSlot,
+        AttackStyle
     }
 
 

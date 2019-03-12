@@ -48,7 +48,6 @@
             this.NewMapButton = new System.Windows.Forms.Button();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.panel3 = new System.Windows.Forms.Panel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.AutoTimer7 = new System.Windows.Forms.NumericUpDown();
             this.AutoTimer6 = new System.Windows.Forms.NumericUpDown();
@@ -78,6 +77,8 @@
             this.UndoTilesetButton = new System.Windows.Forms.Button();
             this.ImportTilesetButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.BridgeFlagsButton = new System.Windows.Forms.RadioButton();
+            this.ReflectionFlagsButton = new System.Windows.Forms.RadioButton();
             this.CounterFlagsButton = new System.Windows.Forms.RadioButton();
             this.BushFlagsButton = new System.Windows.Forms.RadioButton();
             this.TerrainTagButton = new System.Windows.Forms.RadioButton();
@@ -91,7 +92,6 @@
             this.TilesetSelectionBox = new System.Windows.Forms.ComboBox();
             this.TilesetNameBox = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.panel4 = new System.Windows.Forms.Panel();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.RemoveEventCommandButton = new System.Windows.Forms.Button();
@@ -110,7 +110,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.EventNameBox = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.panel5 = new System.Windows.Forms.Panel();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.UndoSpriteButton = new System.Windows.Forms.Button();
             this.RemoveSpriteButton = new System.Windows.Forms.Button();
@@ -143,7 +142,31 @@
             this.label9 = new System.Windows.Forms.Label();
             this.SpriteSelectionBox = new System.Windows.Forms.ComboBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.panel6 = new System.Windows.Forms.Panel();
+            this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.label59 = new System.Windows.Forms.Label();
+            this.label55 = new System.Windows.Forms.Label();
+            this.label56 = new System.Windows.Forms.Label();
+            this.label57 = new System.Windows.Forms.Label();
+            this.label58 = new System.Windows.Forms.Label();
+            this.ProjectileBoundsHeight = new System.Windows.Forms.NumericUpDown();
+            this.ProjectileBoundsWidth = new System.Windows.Forms.NumericUpDown();
+            this.ProjectileAnchorY = new System.Windows.Forms.NumericUpDown();
+            this.ProjectileAnchorX = new System.Windows.Forms.NumericUpDown();
+            this.label44 = new System.Windows.Forms.Label();
+            this.label43 = new System.Windows.Forms.Label();
+            this.ProjectileLifespan = new System.Windows.Forms.NumericUpDown();
+            this.ProjectileSpeed = new System.Windows.Forms.NumericUpDown();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.UndoProjectileButton = new System.Windows.Forms.Button();
+            this.AddProjectileButton = new System.Windows.Forms.Button();
+            this.RemoveProjectileButton = new System.Windows.Forms.Button();
+            this.ProjectileListBox = new System.Windows.Forms.ListBox();
+            this.label53 = new System.Windows.Forms.Label();
+            this.ProjectileNameBox = new System.Windows.Forms.TextBox();
+            this.ApplyProjectileButton = new System.Windows.Forms.Button();
+            this.label54 = new System.Windows.Forms.Label();
+            this.ProjectileIconSelection = new System.Windows.Forms.ComboBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.UndoItemButton = new System.Windows.Forms.Button();
@@ -162,6 +185,56 @@
             this.label33 = new System.Windows.Forms.Label();
             this.ItemIconSelection = new System.Windows.Forms.ComboBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.label45 = new System.Windows.Forms.Label();
+            this.ClassMagicDefenceControl = new System.Windows.Forms.NumericUpDown();
+            this.label46 = new System.Windows.Forms.Label();
+            this.ClassRangeDefenceControl = new System.Windows.Forms.NumericUpDown();
+            this.label47 = new System.Windows.Forms.Label();
+            this.ClassMeleeDefenceControl = new System.Windows.Forms.NumericUpDown();
+            this.label48 = new System.Windows.Forms.Label();
+            this.ClassAgilityControl = new System.Windows.Forms.NumericUpDown();
+            this.label49 = new System.Windows.Forms.Label();
+            this.ClassStrengthControl = new System.Windows.Forms.NumericUpDown();
+            this.label50 = new System.Windows.Forms.Label();
+            this.ClassInteligenceControl = new System.Windows.Forms.NumericUpDown();
+            this.label51 = new System.Windows.Forms.Label();
+            this.ClassVitalityControl = new System.Windows.Forms.NumericUpDown();
+            this.UndoClassButton = new System.Windows.Forms.Button();
+            this.AddClassButton = new System.Windows.Forms.Button();
+            this.RemoveClassButton = new System.Windows.Forms.Button();
+            this.ClassDataList = new System.Windows.Forms.ListBox();
+            this.label52 = new System.Windows.Forms.Label();
+            this.ClassNameBox = new System.Windows.Forms.TextBox();
+            this.SaveClassButton = new System.Windows.Forms.Button();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.label42 = new System.Windows.Forms.Label();
+            this.EnemyAttackRangeSelection = new System.Windows.Forms.NumericUpDown();
+            this.label41 = new System.Windows.Forms.Label();
+            this.EnemyVisionRangeSelection = new System.Windows.Forms.NumericUpDown();
+            this.label40 = new System.Windows.Forms.Label();
+            this.EnemyMagicDefenceControl = new System.Windows.Forms.NumericUpDown();
+            this.label39 = new System.Windows.Forms.Label();
+            this.EnemyRangeDefenceControl = new System.Windows.Forms.NumericUpDown();
+            this.label38 = new System.Windows.Forms.Label();
+            this.EnemyMeleeDefenceControl = new System.Windows.Forms.NumericUpDown();
+            this.label37 = new System.Windows.Forms.Label();
+            this.EnemyAgilityControl = new System.Windows.Forms.NumericUpDown();
+            this.label21 = new System.Windows.Forms.Label();
+            this.EnemyStrengthControl = new System.Windows.Forms.NumericUpDown();
+            this.label5 = new System.Windows.Forms.Label();
+            this.EnemyInteligenceControl = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            this.EnemyVitalityControl = new System.Windows.Forms.NumericUpDown();
+            this.UndoEnemyChanges = new System.Windows.Forms.Button();
+            this.AddEnemyButton = new System.Windows.Forms.Button();
+            this.RemoveEnemyButton = new System.Windows.Forms.Button();
+            this.EnemyDataList = new System.Windows.Forms.ListBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.EnemyNameBox = new System.Windows.Forms.TextBox();
+            this.SaveEnemyChanges = new System.Windows.Forms.Button();
+            this.panel9 = new System.Windows.Forms.Panel();
             this.tabPage7 = new System.Windows.Forms.TabPage();
             this.panel7 = new System.Windows.Forms.Panel();
             this.label27 = new System.Windows.Forms.Label();
@@ -176,8 +249,6 @@
             this.AddVariableButton = new System.Windows.Forms.Button();
             this.SystemVariablesList = new System.Windows.Forms.ListBox();
             this.label19 = new System.Windows.Forms.Label();
-            this.ReflectionFlagsButton = new System.Windows.Forms.RadioButton();
-            this.BridgeFlagsButton = new System.Windows.Forms.RadioButton();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -189,7 +260,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            this.panel3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AutoTimer7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.AutoTimer6)).BeginInit();
@@ -200,12 +270,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.AutoTimer1)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            this.panel4.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.tabPage4.SuspendLayout();
-            this.panel5.SuspendLayout();
             this.groupBox7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.HorizontalSpriteBoundsHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.HorizontalSpriteBoundsWidth)).BeginInit();
@@ -216,9 +284,35 @@
             ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteAnchorY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteAnchorX)).BeginInit();
             this.tabPage5.SuspendLayout();
-            this.panel6.SuspendLayout();
+            this.groupBox11.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ProjectileBoundsHeight)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ProjectileBoundsWidth)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ProjectileAnchorY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ProjectileAnchorX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ProjectileLifespan)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ProjectileSpeed)).BeginInit();
             this.groupBox8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ItemMaxStack)).BeginInit();
+            this.tabPage6.SuspendLayout();
+            this.panel8.SuspendLayout();
+            this.groupBox10.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ClassMagicDefenceControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ClassRangeDefenceControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ClassMeleeDefenceControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ClassAgilityControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ClassStrengthControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ClassInteligenceControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ClassVitalityControl)).BeginInit();
+            this.groupBox9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyAttackRangeSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyVisionRangeSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyMagicDefenceControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyRangeDefenceControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyMeleeDefenceControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyAgilityControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyStrengthControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyInteligenceControl)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyVitalityControl)).BeginInit();
             this.tabPage7.SuspendLayout();
             this.panel7.SuspendLayout();
             this.SuspendLayout();
@@ -399,6 +493,7 @@
             this.FloodFillButton.TabStop = true;
             this.FloodFillButton.Text = "Flood Fill";
             this.FloodFillButton.UseVisualStyleBackColor = true;
+            this.FloodFillButton.CheckedChanged += new System.EventHandler(this.FloodFillButton_CheckedChanged);
             // 
             // RectangleButton
             // 
@@ -481,25 +576,13 @@
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.Color.DarkGray;
-            this.tabPage2.Controls.Add(this.panel3);
+            this.tabPage2.Controls.Add(this.groupBox2);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(1152, 711);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Tilesets";
-            // 
-            // panel3
-            // 
-            this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel3.BackColor = System.Drawing.Color.Gainsboro;
-            this.panel3.Controls.Add(this.groupBox2);
-            this.panel3.Location = new System.Drawing.Point(3, 3);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1146, 705);
-            this.panel3.TabIndex = 6;
             // 
             // groupBox2
             // 
@@ -543,7 +626,7 @@
             this.groupBox2.Controls.Add(this.TilesetNameBox);
             this.groupBox2.Location = new System.Drawing.Point(3, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1140, 699);
+            this.groupBox2.Size = new System.Drawing.Size(1146, 705);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Tileset Data";
@@ -757,7 +840,7 @@
             // RemoveTilesetButton
             // 
             this.RemoveTilesetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.RemoveTilesetButton.Location = new System.Drawing.Point(6, 646);
+            this.RemoveTilesetButton.Location = new System.Drawing.Point(6, 652);
             this.RemoveTilesetButton.Name = "RemoveTilesetButton";
             this.RemoveTilesetButton.Size = new System.Drawing.Size(185, 47);
             this.RemoveTilesetButton.TabIndex = 5;
@@ -768,7 +851,7 @@
             // AddTilesetButton
             // 
             this.AddTilesetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.AddTilesetButton.Location = new System.Drawing.Point(6, 593);
+            this.AddTilesetButton.Location = new System.Drawing.Point(6, 599);
             this.AddTilesetButton.Name = "AddTilesetButton";
             this.AddTilesetButton.Size = new System.Drawing.Size(185, 47);
             this.AddTilesetButton.TabIndex = 5;
@@ -911,7 +994,7 @@
             // UndoTilesetButton
             // 
             this.UndoTilesetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.UndoTilesetButton.Location = new System.Drawing.Point(884, 646);
+            this.UndoTilesetButton.Location = new System.Drawing.Point(890, 652);
             this.UndoTilesetButton.Name = "UndoTilesetButton";
             this.UndoTilesetButton.Size = new System.Drawing.Size(122, 47);
             this.UndoTilesetButton.TabIndex = 8;
@@ -945,6 +1028,28 @@
             this.groupBox3.TabIndex = 6;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Properties";
+            // 
+            // BridgeFlagsButton
+            // 
+            this.BridgeFlagsButton.AutoSize = true;
+            this.BridgeFlagsButton.Location = new System.Drawing.Point(6, 177);
+            this.BridgeFlagsButton.Name = "BridgeFlagsButton";
+            this.BridgeFlagsButton.Size = new System.Drawing.Size(83, 17);
+            this.BridgeFlagsButton.TabIndex = 7;
+            this.BridgeFlagsButton.TabStop = true;
+            this.BridgeFlagsButton.Text = "Bridge Flags";
+            this.BridgeFlagsButton.UseVisualStyleBackColor = true;
+            // 
+            // ReflectionFlagsButton
+            // 
+            this.ReflectionFlagsButton.AutoSize = true;
+            this.ReflectionFlagsButton.Location = new System.Drawing.Point(6, 155);
+            this.ReflectionFlagsButton.Name = "ReflectionFlagsButton";
+            this.ReflectionFlagsButton.Size = new System.Drawing.Size(101, 17);
+            this.ReflectionFlagsButton.TabIndex = 6;
+            this.ReflectionFlagsButton.TabStop = true;
+            this.ReflectionFlagsButton.Text = "Reflection Flags";
+            this.ReflectionFlagsButton.UseVisualStyleBackColor = true;
             // 
             // CounterFlagsButton
             // 
@@ -1029,7 +1134,7 @@
             // ApplyTilesetButton
             // 
             this.ApplyTilesetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ApplyTilesetButton.Location = new System.Drawing.Point(1012, 646);
+            this.ApplyTilesetButton.Location = new System.Drawing.Point(1018, 652);
             this.ApplyTilesetButton.Name = "ApplyTilesetButton";
             this.ApplyTilesetButton.Size = new System.Drawing.Size(122, 47);
             this.ApplyTilesetButton.TabIndex = 4;
@@ -1073,24 +1178,12 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.DarkGray;
-            this.tabPage3.Controls.Add(this.panel4);
+            this.tabPage3.Controls.Add(this.groupBox4);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(1152, 711);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Event Data";
-            // 
-            // panel4
-            // 
-            this.panel4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel4.BackColor = System.Drawing.Color.Gainsboro;
-            this.panel4.Controls.Add(this.groupBox4);
-            this.panel4.Location = new System.Drawing.Point(3, 3);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1146, 705);
-            this.panel4.TabIndex = 8;
             // 
             // groupBox4
             // 
@@ -1109,7 +1202,7 @@
             this.groupBox4.Controls.Add(this.EventNameBox);
             this.groupBox4.Location = new System.Drawing.Point(3, 3);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(1140, 699);
+            this.groupBox4.Size = new System.Drawing.Size(1146, 705);
             this.groupBox4.TabIndex = 2;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Event Data";
@@ -1203,7 +1296,7 @@
             this.groupBox6.Controls.Add(this.EventCommandDataPanel);
             this.groupBox6.Location = new System.Drawing.Point(388, 19);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(746, 621);
+            this.groupBox6.Size = new System.Drawing.Size(752, 627);
             this.groupBox6.TabIndex = 10;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Command Data";
@@ -1213,13 +1306,13 @@
             this.EventCommandDataPanel.BackColor = System.Drawing.Color.Transparent;
             this.EventCommandDataPanel.Location = new System.Drawing.Point(6, 20);
             this.EventCommandDataPanel.Name = "EventCommandDataPanel";
-            this.EventCommandDataPanel.Size = new System.Drawing.Size(734, 595);
+            this.EventCommandDataPanel.Size = new System.Drawing.Size(740, 601);
             this.EventCommandDataPanel.TabIndex = 0;
             // 
             // UndoEventChangesButton
             // 
             this.UndoEventChangesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.UndoEventChangesButton.Location = new System.Drawing.Point(884, 646);
+            this.UndoEventChangesButton.Location = new System.Drawing.Point(890, 652);
             this.UndoEventChangesButton.Name = "UndoEventChangesButton";
             this.UndoEventChangesButton.Size = new System.Drawing.Size(122, 47);
             this.UndoEventChangesButton.TabIndex = 9;
@@ -1230,7 +1323,7 @@
             // AddEventButton
             // 
             this.AddEventButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.AddEventButton.Location = new System.Drawing.Point(6, 593);
+            this.AddEventButton.Location = new System.Drawing.Point(6, 599);
             this.AddEventButton.Name = "AddEventButton";
             this.AddEventButton.Size = new System.Drawing.Size(185, 47);
             this.AddEventButton.TabIndex = 7;
@@ -1241,7 +1334,7 @@
             // RemoveEventButton
             // 
             this.RemoveEventButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.RemoveEventButton.Location = new System.Drawing.Point(6, 646);
+            this.RemoveEventButton.Location = new System.Drawing.Point(6, 652);
             this.RemoveEventButton.Name = "RemoveEventButton";
             this.RemoveEventButton.Size = new System.Drawing.Size(185, 47);
             this.RemoveEventButton.TabIndex = 6;
@@ -1252,7 +1345,7 @@
             // ApplyEventChangesButton
             // 
             this.ApplyEventChangesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ApplyEventChangesButton.Location = new System.Drawing.Point(1012, 646);
+            this.ApplyEventChangesButton.Location = new System.Drawing.Point(1018, 652);
             this.ApplyEventChangesButton.Name = "ApplyEventChangesButton";
             this.ApplyEventChangesButton.Size = new System.Drawing.Size(122, 47);
             this.ApplyEventChangesButton.TabIndex = 4;
@@ -1292,24 +1385,12 @@
             // tabPage4
             // 
             this.tabPage4.BackColor = System.Drawing.Color.DarkGray;
-            this.tabPage4.Controls.Add(this.panel5);
+            this.tabPage4.Controls.Add(this.groupBox7);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Size = new System.Drawing.Size(1152, 711);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Sprites";
-            // 
-            // panel5
-            // 
-            this.panel5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel5.BackColor = System.Drawing.Color.Gainsboro;
-            this.panel5.Controls.Add(this.groupBox7);
-            this.panel5.Location = new System.Drawing.Point(3, 3);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(1146, 705);
-            this.panel5.TabIndex = 10;
             // 
             // groupBox7
             // 
@@ -1349,7 +1430,7 @@
             this.groupBox7.Controls.Add(this.SpriteSelectionBox);
             this.groupBox7.Location = new System.Drawing.Point(3, 3);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(1140, 699);
+            this.groupBox7.Size = new System.Drawing.Size(1146, 705);
             this.groupBox7.TabIndex = 2;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Sprite Data";
@@ -1357,7 +1438,7 @@
             // UndoSpriteButton
             // 
             this.UndoSpriteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.UndoSpriteButton.Location = new System.Drawing.Point(884, 646);
+            this.UndoSpriteButton.Location = new System.Drawing.Point(890, 652);
             this.UndoSpriteButton.Name = "UndoSpriteButton";
             this.UndoSpriteButton.Size = new System.Drawing.Size(122, 47);
             this.UndoSpriteButton.TabIndex = 27;
@@ -1368,7 +1449,7 @@
             // RemoveSpriteButton
             // 
             this.RemoveSpriteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.RemoveSpriteButton.Location = new System.Drawing.Point(6, 646);
+            this.RemoveSpriteButton.Location = new System.Drawing.Point(6, 652);
             this.RemoveSpriteButton.Name = "RemoveSpriteButton";
             this.RemoveSpriteButton.Size = new System.Drawing.Size(185, 47);
             this.RemoveSpriteButton.TabIndex = 9;
@@ -1388,7 +1469,7 @@
             // AddSpriteButton
             // 
             this.AddSpriteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.AddSpriteButton.Location = new System.Drawing.Point(6, 593);
+            this.AddSpriteButton.Location = new System.Drawing.Point(6, 599);
             this.AddSpriteButton.Name = "AddSpriteButton";
             this.AddSpriteButton.Size = new System.Drawing.Size(185, 47);
             this.AddSpriteButton.TabIndex = 8;
@@ -1513,18 +1594,18 @@
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(213, 312);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(57, 13);
+            this.label10.Size = new System.Drawing.Size(90, 13);
             this.label10.TabIndex = 15;
-            this.label10.Text = "Horizontal:";
+            this.label10.Text = "Horizontal Hitbox:";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(225, 166);
+            this.label8.Location = new System.Drawing.Point(214, 164);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(45, 13);
+            this.label8.Size = new System.Drawing.Size(78, 13);
             this.label8.TabIndex = 14;
-            this.label8.Text = "Vertical:";
+            this.label8.Text = "Vertical Hitbox:";
             // 
             // HorizontalSpriteBoundsHeight
             // 
@@ -1593,7 +1674,7 @@
             this.SpriteViewerParent.BackColor = System.Drawing.Color.White;
             this.SpriteViewerParent.Location = new System.Drawing.Point(441, 19);
             this.SpriteViewerParent.Name = "SpriteViewerParent";
-            this.SpriteViewerParent.Size = new System.Drawing.Size(680, 615);
+            this.SpriteViewerParent.Size = new System.Drawing.Size(699, 627);
             this.SpriteViewerParent.TabIndex = 9;
             // 
             // VerticalSpriteBoundsHeight
@@ -1661,7 +1742,7 @@
             // ApplySpriteButton
             // 
             this.ApplySpriteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ApplySpriteButton.Location = new System.Drawing.Point(1012, 646);
+            this.ApplySpriteButton.Location = new System.Drawing.Point(1018, 652);
             this.ApplySpriteButton.Name = "ApplySpriteButton";
             this.ApplySpriteButton.Size = new System.Drawing.Size(122, 47);
             this.ApplySpriteButton.TabIndex = 4;
@@ -1689,24 +1770,327 @@
             // tabPage5
             // 
             this.tabPage5.BackColor = System.Drawing.Color.DarkGray;
-            this.tabPage5.Controls.Add(this.panel6);
+            this.tabPage5.Controls.Add(this.groupBox11);
+            this.tabPage5.Controls.Add(this.groupBox8);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Size = new System.Drawing.Size(1152, 711);
             this.tabPage5.TabIndex = 4;
-            this.tabPage5.Text = "Items";
+            this.tabPage5.Text = "Items / Projectiles";
             // 
-            // panel6
+            // groupBox11
             // 
-            this.panel6.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.groupBox11.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel6.BackColor = System.Drawing.Color.Gainsboro;
-            this.panel6.Controls.Add(this.groupBox8);
-            this.panel6.Location = new System.Drawing.Point(3, 3);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1146, 705);
-            this.panel6.TabIndex = 12;
+            this.groupBox11.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.groupBox11.Controls.Add(this.panel4);
+            this.groupBox11.Controls.Add(this.label59);
+            this.groupBox11.Controls.Add(this.label55);
+            this.groupBox11.Controls.Add(this.label56);
+            this.groupBox11.Controls.Add(this.label57);
+            this.groupBox11.Controls.Add(this.label58);
+            this.groupBox11.Controls.Add(this.ProjectileBoundsHeight);
+            this.groupBox11.Controls.Add(this.ProjectileBoundsWidth);
+            this.groupBox11.Controls.Add(this.ProjectileAnchorY);
+            this.groupBox11.Controls.Add(this.ProjectileAnchorX);
+            this.groupBox11.Controls.Add(this.label44);
+            this.groupBox11.Controls.Add(this.label43);
+            this.groupBox11.Controls.Add(this.ProjectileLifespan);
+            this.groupBox11.Controls.Add(this.ProjectileSpeed);
+            this.groupBox11.Controls.Add(this.panel3);
+            this.groupBox11.Controls.Add(this.UndoProjectileButton);
+            this.groupBox11.Controls.Add(this.AddProjectileButton);
+            this.groupBox11.Controls.Add(this.RemoveProjectileButton);
+            this.groupBox11.Controls.Add(this.ProjectileListBox);
+            this.groupBox11.Controls.Add(this.label53);
+            this.groupBox11.Controls.Add(this.ProjectileNameBox);
+            this.groupBox11.Controls.Add(this.ApplyProjectileButton);
+            this.groupBox11.Controls.Add(this.label54);
+            this.groupBox11.Controls.Add(this.ProjectileIconSelection);
+            this.groupBox11.Location = new System.Drawing.Point(693, 3);
+            this.groupBox11.Name = "groupBox11";
+            this.groupBox11.Size = new System.Drawing.Size(456, 705);
+            this.groupBox11.TabIndex = 33;
+            this.groupBox11.TabStop = false;
+            this.groupBox11.Text = "Projectile Data";
+            // 
+            // panel4
+            // 
+            this.panel4.BackColor = System.Drawing.Color.White;
+            this.panel4.Location = new System.Drawing.Point(301, 535);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(32, 32);
+            this.panel4.TabIndex = 12;
+            // 
+            // label59
+            // 
+            this.label59.AutoSize = true;
+            this.label59.Location = new System.Drawing.Point(215, 407);
+            this.label59.Name = "label59";
+            this.label59.Size = new System.Drawing.Size(40, 13);
+            this.label59.TabIndex = 45;
+            this.label59.Text = "Hitbox:";
+            // 
+            // label55
+            // 
+            this.label55.AutoSize = true;
+            this.label55.Location = new System.Drawing.Point(215, 511);
+            this.label55.Name = "label55";
+            this.label55.Size = new System.Drawing.Size(80, 13);
+            this.label55.TabIndex = 44;
+            this.label55.Text = "Bounds Height:";
+            // 
+            // label56
+            // 
+            this.label56.AutoSize = true;
+            this.label56.Location = new System.Drawing.Point(218, 485);
+            this.label56.Name = "label56";
+            this.label56.Size = new System.Drawing.Size(77, 13);
+            this.label56.TabIndex = 43;
+            this.label56.Text = "Bounds Width:";
+            // 
+            // label57
+            // 
+            this.label57.AutoSize = true;
+            this.label57.Location = new System.Drawing.Point(241, 459);
+            this.label57.Name = "label57";
+            this.label57.Size = new System.Drawing.Size(54, 13);
+            this.label57.TabIndex = 42;
+            this.label57.Text = "Anchor Y:";
+            // 
+            // label58
+            // 
+            this.label58.AutoSize = true;
+            this.label58.Location = new System.Drawing.Point(241, 433);
+            this.label58.Name = "label58";
+            this.label58.Size = new System.Drawing.Size(54, 13);
+            this.label58.TabIndex = 41;
+            this.label58.Text = "Anchor X:";
+            // 
+            // ProjectileBoundsHeight
+            // 
+            this.ProjectileBoundsHeight.Increment = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.ProjectileBoundsHeight.Location = new System.Drawing.Point(301, 509);
+            this.ProjectileBoundsHeight.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.ProjectileBoundsHeight.Name = "ProjectileBoundsHeight";
+            this.ProjectileBoundsHeight.Size = new System.Drawing.Size(120, 20);
+            this.ProjectileBoundsHeight.TabIndex = 40;
+            this.ProjectileBoundsHeight.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.ProjectileBoundsHeight.ValueChanged += new System.EventHandler(this.ProjectileBoundsHeight_ValueChanged);
+            // 
+            // ProjectileBoundsWidth
+            // 
+            this.ProjectileBoundsWidth.Increment = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.ProjectileBoundsWidth.Location = new System.Drawing.Point(301, 483);
+            this.ProjectileBoundsWidth.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.ProjectileBoundsWidth.Name = "ProjectileBoundsWidth";
+            this.ProjectileBoundsWidth.Size = new System.Drawing.Size(120, 20);
+            this.ProjectileBoundsWidth.TabIndex = 39;
+            this.ProjectileBoundsWidth.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.ProjectileBoundsWidth.ValueChanged += new System.EventHandler(this.ProjectileBoundsWidth_ValueChanged);
+            // 
+            // ProjectileAnchorY
+            // 
+            this.ProjectileAnchorY.Location = new System.Drawing.Point(301, 457);
+            this.ProjectileAnchorY.Name = "ProjectileAnchorY";
+            this.ProjectileAnchorY.Size = new System.Drawing.Size(120, 20);
+            this.ProjectileAnchorY.TabIndex = 38;
+            this.ProjectileAnchorY.ValueChanged += new System.EventHandler(this.ProjectileAnchorY_ValueChanged);
+            // 
+            // ProjectileAnchorX
+            // 
+            this.ProjectileAnchorX.Location = new System.Drawing.Point(301, 431);
+            this.ProjectileAnchorX.Name = "ProjectileAnchorX";
+            this.ProjectileAnchorX.Size = new System.Drawing.Size(120, 20);
+            this.ProjectileAnchorX.TabIndex = 37;
+            this.ProjectileAnchorX.ValueChanged += new System.EventHandler(this.ProjectileAnchorX_ValueChanged);
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(224, 374);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(50, 13);
+            this.label44.TabIndex = 36;
+            this.label44.Text = "Lifespan:";
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Location = new System.Drawing.Point(233, 348);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(41, 13);
+            this.label43.TabIndex = 35;
+            this.label43.Text = "Speed:";
+            // 
+            // ProjectileLifespan
+            // 
+            this.ProjectileLifespan.DecimalPlaces = 3;
+            this.ProjectileLifespan.Increment = new decimal(new int[] {
+            2,
+            0,
+            0,
+            65536});
+            this.ProjectileLifespan.Location = new System.Drawing.Point(280, 372);
+            this.ProjectileLifespan.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ProjectileLifespan.Name = "ProjectileLifespan";
+            this.ProjectileLifespan.Size = new System.Drawing.Size(141, 20);
+            this.ProjectileLifespan.TabIndex = 34;
+            this.ProjectileLifespan.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            // 
+            // ProjectileSpeed
+            // 
+            this.ProjectileSpeed.DecimalPlaces = 3;
+            this.ProjectileSpeed.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ProjectileSpeed.Location = new System.Drawing.Point(280, 346);
+            this.ProjectileSpeed.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ProjectileSpeed.Name = "ProjectileSpeed";
+            this.ProjectileSpeed.Size = new System.Drawing.Size(141, 20);
+            this.ProjectileSpeed.TabIndex = 33;
+            this.ProjectileSpeed.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            // 
+            // panel3
+            // 
+            this.panel3.BackColor = System.Drawing.Color.White;
+            this.panel3.Location = new System.Drawing.Point(196, 84);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(256, 256);
+            this.panel3.TabIndex = 11;
+            // 
+            // UndoProjectileButton
+            // 
+            this.UndoProjectileButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.UndoProjectileButton.Location = new System.Drawing.Point(199, 652);
+            this.UndoProjectileButton.Name = "UndoProjectileButton";
+            this.UndoProjectileButton.Size = new System.Drawing.Size(122, 47);
+            this.UndoProjectileButton.TabIndex = 32;
+            this.UndoProjectileButton.Text = "Undo Changes";
+            this.UndoProjectileButton.UseVisualStyleBackColor = true;
+            this.UndoProjectileButton.Click += new System.EventHandler(this.UndoProjectileButton_Click);
+            // 
+            // AddProjectileButton
+            // 
+            this.AddProjectileButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddProjectileButton.Location = new System.Drawing.Point(6, 599);
+            this.AddProjectileButton.Name = "AddProjectileButton";
+            this.AddProjectileButton.Size = new System.Drawing.Size(185, 47);
+            this.AddProjectileButton.TabIndex = 10;
+            this.AddProjectileButton.Text = "Add Projectile";
+            this.AddProjectileButton.UseVisualStyleBackColor = true;
+            this.AddProjectileButton.Click += new System.EventHandler(this.AddProjectileButton_Click);
+            // 
+            // RemoveProjectileButton
+            // 
+            this.RemoveProjectileButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveProjectileButton.Location = new System.Drawing.Point(6, 652);
+            this.RemoveProjectileButton.Name = "RemoveProjectileButton";
+            this.RemoveProjectileButton.Size = new System.Drawing.Size(185, 47);
+            this.RemoveProjectileButton.TabIndex = 11;
+            this.RemoveProjectileButton.Text = "Remove Projectile";
+            this.RemoveProjectileButton.UseVisualStyleBackColor = true;
+            this.RemoveProjectileButton.Click += new System.EventHandler(this.RemoveProjectileButton_Click);
+            // 
+            // ProjectileListBox
+            // 
+            this.ProjectileListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.ProjectileListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ProjectileListBox.FormattingEnabled = true;
+            this.ProjectileListBox.ItemHeight = 20;
+            this.ProjectileListBox.Location = new System.Drawing.Point(6, 19);
+            this.ProjectileListBox.Name = "ProjectileListBox";
+            this.ProjectileListBox.Size = new System.Drawing.Size(185, 564);
+            this.ProjectileListBox.TabIndex = 5;
+            this.ProjectileListBox.SelectedIndexChanged += new System.EventHandler(this.ProjectileListBox_SelectedIndexChanged);
+            // 
+            // label53
+            // 
+            this.label53.AutoSize = true;
+            this.label53.Location = new System.Drawing.Point(237, 34);
+            this.label53.Name = "label53";
+            this.label53.Size = new System.Drawing.Size(38, 13);
+            this.label53.TabIndex = 26;
+            this.label53.Text = "Name:";
+            // 
+            // ProjectileNameBox
+            // 
+            this.ProjectileNameBox.Location = new System.Drawing.Point(280, 31);
+            this.ProjectileNameBox.Name = "ProjectileNameBox";
+            this.ProjectileNameBox.Size = new System.Drawing.Size(141, 20);
+            this.ProjectileNameBox.TabIndex = 25;
+            // 
+            // ApplyProjectileButton
+            // 
+            this.ApplyProjectileButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ApplyProjectileButton.Location = new System.Drawing.Point(327, 652);
+            this.ApplyProjectileButton.Name = "ApplyProjectileButton";
+            this.ApplyProjectileButton.Size = new System.Drawing.Size(122, 47);
+            this.ApplyProjectileButton.TabIndex = 4;
+            this.ApplyProjectileButton.Text = "Save Changes";
+            this.ApplyProjectileButton.UseVisualStyleBackColor = true;
+            this.ApplyProjectileButton.Click += new System.EventHandler(this.ApplyProjectileButton_Click);
+            // 
+            // label54
+            // 
+            this.label54.AutoSize = true;
+            this.label54.Location = new System.Drawing.Point(218, 60);
+            this.label54.Name = "label54";
+            this.label54.Size = new System.Drawing.Size(62, 13);
+            this.label54.TabIndex = 2;
+            this.label54.Text = "Icon Sheet:";
+            // 
+            // ProjectileIconSelection
+            // 
+            this.ProjectileIconSelection.FormattingEnabled = true;
+            this.ProjectileIconSelection.Location = new System.Drawing.Point(280, 57);
+            this.ProjectileIconSelection.Name = "ProjectileIconSelection";
+            this.ProjectileIconSelection.Size = new System.Drawing.Size(141, 21);
+            this.ProjectileIconSelection.TabIndex = 1;
             // 
             // groupBox8
             // 
@@ -1732,7 +2116,7 @@
             this.groupBox8.Controls.Add(this.ItemIconSelection);
             this.groupBox8.Location = new System.Drawing.Point(3, 3);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(1140, 699);
+            this.groupBox8.Size = new System.Drawing.Size(684, 705);
             this.groupBox8.TabIndex = 2;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Item Data";
@@ -1740,7 +2124,7 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.White;
-            this.panel1.Location = new System.Drawing.Point(421, 31);
+            this.panel1.Location = new System.Drawing.Point(422, 31);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(256, 256);
             this.panel1.TabIndex = 10;
@@ -1748,7 +2132,7 @@
             // UndoItemButton
             // 
             this.UndoItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.UndoItemButton.Location = new System.Drawing.Point(884, 646);
+            this.UndoItemButton.Location = new System.Drawing.Point(427, 652);
             this.UndoItemButton.Name = "UndoItemButton";
             this.UndoItemButton.Size = new System.Drawing.Size(122, 47);
             this.UndoItemButton.TabIndex = 32;
@@ -1759,7 +2143,7 @@
             // AddItemButton
             // 
             this.AddItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.AddItemButton.Location = new System.Drawing.Point(6, 593);
+            this.AddItemButton.Location = new System.Drawing.Point(6, 599);
             this.AddItemButton.Name = "AddItemButton";
             this.AddItemButton.Size = new System.Drawing.Size(185, 47);
             this.AddItemButton.TabIndex = 10;
@@ -1770,7 +2154,7 @@
             // RemoveItemButton
             // 
             this.RemoveItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.RemoveItemButton.Location = new System.Drawing.Point(6, 646);
+            this.RemoveItemButton.Location = new System.Drawing.Point(6, 652);
             this.RemoveItemButton.Name = "RemoveItemButton";
             this.RemoveItemButton.Size = new System.Drawing.Size(185, 47);
             this.RemoveItemButton.TabIndex = 11;
@@ -1843,7 +2227,8 @@
             "Tool",
             "Consumble",
             "Material",
-            "Equipment"});
+            "Equipment",
+            "Ammo"});
             this.ItemTypeSelection.Location = new System.Drawing.Point(274, 137);
             this.ItemTypeSelection.Name = "ItemTypeSelection";
             this.ItemTypeSelection.Size = new System.Drawing.Size(141, 21);
@@ -1868,15 +2253,15 @@
             // ItemStatsPanel
             // 
             this.ItemStatsPanel.BackColor = System.Drawing.Color.Transparent;
-            this.ItemStatsPanel.Location = new System.Drawing.Point(210, 190);
+            this.ItemStatsPanel.Location = new System.Drawing.Point(197, 190);
             this.ItemStatsPanel.Name = "ItemStatsPanel";
-            this.ItemStatsPanel.Size = new System.Drawing.Size(205, 393);
+            this.ItemStatsPanel.Size = new System.Drawing.Size(218, 393);
             this.ItemStatsPanel.TabIndex = 9;
             // 
             // ApplyItemButton
             // 
             this.ApplyItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ApplyItemButton.Location = new System.Drawing.Point(1012, 646);
+            this.ApplyItemButton.Location = new System.Drawing.Point(555, 652);
             this.ApplyItemButton.Name = "ApplyItemButton";
             this.ApplyItemButton.Size = new System.Drawing.Size(122, 47);
             this.ApplyItemButton.TabIndex = 4;
@@ -1903,12 +2288,532 @@
             // 
             // tabPage6
             // 
-            this.tabPage6.BackColor = System.Drawing.Color.DarkGray;
+            this.tabPage6.Controls.Add(this.panel8);
+            this.tabPage6.Controls.Add(this.panel9);
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Size = new System.Drawing.Size(1152, 711);
-            this.tabPage6.TabIndex = 5;
-            this.tabPage6.Text = "Enemies";
+            this.tabPage6.TabIndex = 7;
+            this.tabPage6.Text = "Classes / Enemies";
+            this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // panel8
+            // 
+            this.panel8.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel8.BackColor = System.Drawing.Color.DarkGray;
+            this.panel8.Controls.Add(this.groupBox10);
+            this.panel8.Controls.Add(this.groupBox9);
+            this.panel8.Location = new System.Drawing.Point(0, 0);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(1152, 705);
+            this.panel8.TabIndex = 13;
+            // 
+            // groupBox10
+            // 
+            this.groupBox10.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox10.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.groupBox10.Controls.Add(this.label45);
+            this.groupBox10.Controls.Add(this.ClassMagicDefenceControl);
+            this.groupBox10.Controls.Add(this.label46);
+            this.groupBox10.Controls.Add(this.ClassRangeDefenceControl);
+            this.groupBox10.Controls.Add(this.label47);
+            this.groupBox10.Controls.Add(this.ClassMeleeDefenceControl);
+            this.groupBox10.Controls.Add(this.label48);
+            this.groupBox10.Controls.Add(this.ClassAgilityControl);
+            this.groupBox10.Controls.Add(this.label49);
+            this.groupBox10.Controls.Add(this.ClassStrengthControl);
+            this.groupBox10.Controls.Add(this.label50);
+            this.groupBox10.Controls.Add(this.ClassInteligenceControl);
+            this.groupBox10.Controls.Add(this.label51);
+            this.groupBox10.Controls.Add(this.ClassVitalityControl);
+            this.groupBox10.Controls.Add(this.UndoClassButton);
+            this.groupBox10.Controls.Add(this.AddClassButton);
+            this.groupBox10.Controls.Add(this.RemoveClassButton);
+            this.groupBox10.Controls.Add(this.ClassDataList);
+            this.groupBox10.Controls.Add(this.label52);
+            this.groupBox10.Controls.Add(this.ClassNameBox);
+            this.groupBox10.Controls.Add(this.SaveClassButton);
+            this.groupBox10.Location = new System.Drawing.Point(3, 3);
+            this.groupBox10.Name = "groupBox10";
+            this.groupBox10.Size = new System.Drawing.Size(574, 699);
+            this.groupBox10.TabIndex = 2;
+            this.groupBox10.TabStop = false;
+            this.groupBox10.Text = "Class Data";
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(203, 218);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(110, 13);
+            this.label45.TabIndex = 46;
+            this.label45.Text = "Base Magic Defence:";
+            // 
+            // ClassMagicDefenceControl
+            // 
+            this.ClassMagicDefenceControl.Location = new System.Drawing.Point(318, 216);
+            this.ClassMagicDefenceControl.Name = "ClassMagicDefenceControl";
+            this.ClassMagicDefenceControl.Size = new System.Drawing.Size(141, 20);
+            this.ClassMagicDefenceControl.TabIndex = 45;
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.Location = new System.Drawing.Point(199, 192);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(113, 13);
+            this.label46.TabIndex = 44;
+            this.label46.Text = "Base Range Defence:";
+            // 
+            // ClassRangeDefenceControl
+            // 
+            this.ClassRangeDefenceControl.Location = new System.Drawing.Point(318, 190);
+            this.ClassRangeDefenceControl.Name = "ClassRangeDefenceControl";
+            this.ClassRangeDefenceControl.Size = new System.Drawing.Size(141, 20);
+            this.ClassRangeDefenceControl.TabIndex = 43;
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.Location = new System.Drawing.Point(202, 166);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(110, 13);
+            this.label47.TabIndex = 42;
+            this.label47.Text = "Base Melee Defence:";
+            // 
+            // ClassMeleeDefenceControl
+            // 
+            this.ClassMeleeDefenceControl.Location = new System.Drawing.Point(318, 164);
+            this.ClassMeleeDefenceControl.Name = "ClassMeleeDefenceControl";
+            this.ClassMeleeDefenceControl.Size = new System.Drawing.Size(141, 20);
+            this.ClassMeleeDefenceControl.TabIndex = 41;
+            // 
+            // label48
+            // 
+            this.label48.AutoSize = true;
+            this.label48.Location = new System.Drawing.Point(248, 140);
+            this.label48.Name = "label48";
+            this.label48.Size = new System.Drawing.Size(64, 13);
+            this.label48.TabIndex = 40;
+            this.label48.Text = "Base Agility:";
+            // 
+            // ClassAgilityControl
+            // 
+            this.ClassAgilityControl.Location = new System.Drawing.Point(318, 138);
+            this.ClassAgilityControl.Name = "ClassAgilityControl";
+            this.ClassAgilityControl.Size = new System.Drawing.Size(141, 20);
+            this.ClassAgilityControl.TabIndex = 39;
+            // 
+            // label49
+            // 
+            this.label49.AutoSize = true;
+            this.label49.Location = new System.Drawing.Point(235, 114);
+            this.label49.Name = "label49";
+            this.label49.Size = new System.Drawing.Size(77, 13);
+            this.label49.TabIndex = 38;
+            this.label49.Text = "Base Strength:";
+            // 
+            // ClassStrengthControl
+            // 
+            this.ClassStrengthControl.Location = new System.Drawing.Point(318, 112);
+            this.ClassStrengthControl.Name = "ClassStrengthControl";
+            this.ClassStrengthControl.Size = new System.Drawing.Size(141, 20);
+            this.ClassStrengthControl.TabIndex = 37;
+            // 
+            // label50
+            // 
+            this.label50.AutoSize = true;
+            this.label50.Location = new System.Drawing.Point(223, 88);
+            this.label50.Name = "label50";
+            this.label50.Size = new System.Drawing.Size(89, 13);
+            this.label50.TabIndex = 36;
+            this.label50.Text = "Base Inteligence:";
+            // 
+            // ClassInteligenceControl
+            // 
+            this.ClassInteligenceControl.Location = new System.Drawing.Point(318, 86);
+            this.ClassInteligenceControl.Name = "ClassInteligenceControl";
+            this.ClassInteligenceControl.Size = new System.Drawing.Size(141, 20);
+            this.ClassInteligenceControl.TabIndex = 35;
+            // 
+            // label51
+            // 
+            this.label51.AutoSize = true;
+            this.label51.Location = new System.Drawing.Point(245, 62);
+            this.label51.Name = "label51";
+            this.label51.Size = new System.Drawing.Size(67, 13);
+            this.label51.TabIndex = 34;
+            this.label51.Text = "Base Vitality:";
+            // 
+            // ClassVitalityControl
+            // 
+            this.ClassVitalityControl.Location = new System.Drawing.Point(318, 60);
+            this.ClassVitalityControl.Name = "ClassVitalityControl";
+            this.ClassVitalityControl.Size = new System.Drawing.Size(141, 20);
+            this.ClassVitalityControl.TabIndex = 33;
+            // 
+            // UndoClassButton
+            // 
+            this.UndoClassButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.UndoClassButton.Location = new System.Drawing.Point(318, 646);
+            this.UndoClassButton.Name = "UndoClassButton";
+            this.UndoClassButton.Size = new System.Drawing.Size(122, 47);
+            this.UndoClassButton.TabIndex = 32;
+            this.UndoClassButton.Text = "Undo Changes";
+            this.UndoClassButton.UseVisualStyleBackColor = true;
+            this.UndoClassButton.Click += new System.EventHandler(this.UndoClassButton_Click);
+            // 
+            // AddClassButton
+            // 
+            this.AddClassButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddClassButton.Location = new System.Drawing.Point(6, 593);
+            this.AddClassButton.Name = "AddClassButton";
+            this.AddClassButton.Size = new System.Drawing.Size(185, 47);
+            this.AddClassButton.TabIndex = 10;
+            this.AddClassButton.Text = "Add Class";
+            this.AddClassButton.UseVisualStyleBackColor = true;
+            this.AddClassButton.Click += new System.EventHandler(this.AddClassButton_Click);
+            // 
+            // RemoveClassButton
+            // 
+            this.RemoveClassButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveClassButton.Location = new System.Drawing.Point(6, 646);
+            this.RemoveClassButton.Name = "RemoveClassButton";
+            this.RemoveClassButton.Size = new System.Drawing.Size(185, 47);
+            this.RemoveClassButton.TabIndex = 11;
+            this.RemoveClassButton.Text = "Remove Class";
+            this.RemoveClassButton.UseVisualStyleBackColor = true;
+            this.RemoveClassButton.Click += new System.EventHandler(this.RemoveClassButton_Click);
+            // 
+            // ClassDataList
+            // 
+            this.ClassDataList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.ClassDataList.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ClassDataList.FormattingEnabled = true;
+            this.ClassDataList.ItemHeight = 20;
+            this.ClassDataList.Location = new System.Drawing.Point(6, 19);
+            this.ClassDataList.Name = "ClassDataList";
+            this.ClassDataList.Size = new System.Drawing.Size(185, 564);
+            this.ClassDataList.TabIndex = 5;
+            this.ClassDataList.SelectedIndexChanged += new System.EventHandler(this.ClassDataList_SelectedIndexChanged);
+            // 
+            // label52
+            // 
+            this.label52.AutoSize = true;
+            this.label52.Location = new System.Drawing.Point(275, 37);
+            this.label52.Name = "label52";
+            this.label52.Size = new System.Drawing.Size(38, 13);
+            this.label52.TabIndex = 26;
+            this.label52.Text = "Name:";
+            // 
+            // ClassNameBox
+            // 
+            this.ClassNameBox.Location = new System.Drawing.Point(318, 34);
+            this.ClassNameBox.Name = "ClassNameBox";
+            this.ClassNameBox.Size = new System.Drawing.Size(141, 20);
+            this.ClassNameBox.TabIndex = 25;
+            // 
+            // SaveClassButton
+            // 
+            this.SaveClassButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.SaveClassButton.Location = new System.Drawing.Point(446, 646);
+            this.SaveClassButton.Name = "SaveClassButton";
+            this.SaveClassButton.Size = new System.Drawing.Size(122, 47);
+            this.SaveClassButton.TabIndex = 4;
+            this.SaveClassButton.Text = "Save Changes";
+            this.SaveClassButton.UseVisualStyleBackColor = true;
+            this.SaveClassButton.Click += new System.EventHandler(this.SaveClassButton_Click);
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox9.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.groupBox9.Controls.Add(this.label42);
+            this.groupBox9.Controls.Add(this.EnemyAttackRangeSelection);
+            this.groupBox9.Controls.Add(this.label41);
+            this.groupBox9.Controls.Add(this.EnemyVisionRangeSelection);
+            this.groupBox9.Controls.Add(this.label40);
+            this.groupBox9.Controls.Add(this.EnemyMagicDefenceControl);
+            this.groupBox9.Controls.Add(this.label39);
+            this.groupBox9.Controls.Add(this.EnemyRangeDefenceControl);
+            this.groupBox9.Controls.Add(this.label38);
+            this.groupBox9.Controls.Add(this.EnemyMeleeDefenceControl);
+            this.groupBox9.Controls.Add(this.label37);
+            this.groupBox9.Controls.Add(this.EnemyAgilityControl);
+            this.groupBox9.Controls.Add(this.label21);
+            this.groupBox9.Controls.Add(this.EnemyStrengthControl);
+            this.groupBox9.Controls.Add(this.label5);
+            this.groupBox9.Controls.Add(this.EnemyInteligenceControl);
+            this.groupBox9.Controls.Add(this.label2);
+            this.groupBox9.Controls.Add(this.EnemyVitalityControl);
+            this.groupBox9.Controls.Add(this.UndoEnemyChanges);
+            this.groupBox9.Controls.Add(this.AddEnemyButton);
+            this.groupBox9.Controls.Add(this.RemoveEnemyButton);
+            this.groupBox9.Controls.Add(this.EnemyDataList);
+            this.groupBox9.Controls.Add(this.label6);
+            this.groupBox9.Controls.Add(this.EnemyNameBox);
+            this.groupBox9.Controls.Add(this.SaveEnemyChanges);
+            this.groupBox9.Location = new System.Drawing.Point(583, 3);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(566, 699);
+            this.groupBox9.TabIndex = 2;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "Enemy Data";
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(212, 270);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(76, 13);
+            this.label42.TabIndex = 50;
+            this.label42.Text = "Attack Range:";
+            // 
+            // EnemyAttackRangeSelection
+            // 
+            this.EnemyAttackRangeSelection.Location = new System.Drawing.Point(294, 268);
+            this.EnemyAttackRangeSelection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.EnemyAttackRangeSelection.Name = "EnemyAttackRangeSelection";
+            this.EnemyAttackRangeSelection.Size = new System.Drawing.Size(141, 20);
+            this.EnemyAttackRangeSelection.TabIndex = 49;
+            this.EnemyAttackRangeSelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(215, 244);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(73, 13);
+            this.label41.TabIndex = 48;
+            this.label41.Text = "Vision Range:";
+            // 
+            // EnemyVisionRangeSelection
+            // 
+            this.EnemyVisionRangeSelection.Location = new System.Drawing.Point(294, 242);
+            this.EnemyVisionRangeSelection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.EnemyVisionRangeSelection.Name = "EnemyVisionRangeSelection";
+            this.EnemyVisionRangeSelection.Size = new System.Drawing.Size(141, 20);
+            this.EnemyVisionRangeSelection.TabIndex = 47;
+            this.EnemyVisionRangeSelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Location = new System.Drawing.Point(205, 218);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(83, 13);
+            this.label40.TabIndex = 46;
+            this.label40.Text = "Magic Defence:";
+            // 
+            // EnemyMagicDefenceControl
+            // 
+            this.EnemyMagicDefenceControl.Location = new System.Drawing.Point(294, 216);
+            this.EnemyMagicDefenceControl.Name = "EnemyMagicDefenceControl";
+            this.EnemyMagicDefenceControl.Size = new System.Drawing.Size(141, 20);
+            this.EnemyMagicDefenceControl.TabIndex = 45;
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(202, 192);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(86, 13);
+            this.label39.TabIndex = 44;
+            this.label39.Text = "Range Defence:";
+            // 
+            // EnemyRangeDefenceControl
+            // 
+            this.EnemyRangeDefenceControl.Location = new System.Drawing.Point(294, 190);
+            this.EnemyRangeDefenceControl.Name = "EnemyRangeDefenceControl";
+            this.EnemyRangeDefenceControl.Size = new System.Drawing.Size(141, 20);
+            this.EnemyRangeDefenceControl.TabIndex = 43;
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(205, 166);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(83, 13);
+            this.label38.TabIndex = 42;
+            this.label38.Text = "Melee Defence:";
+            // 
+            // EnemyMeleeDefenceControl
+            // 
+            this.EnemyMeleeDefenceControl.Location = new System.Drawing.Point(294, 164);
+            this.EnemyMeleeDefenceControl.Name = "EnemyMeleeDefenceControl";
+            this.EnemyMeleeDefenceControl.Size = new System.Drawing.Size(141, 20);
+            this.EnemyMeleeDefenceControl.TabIndex = 41;
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(251, 140);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(37, 13);
+            this.label37.TabIndex = 40;
+            this.label37.Text = "Agility:";
+            // 
+            // EnemyAgilityControl
+            // 
+            this.EnemyAgilityControl.Location = new System.Drawing.Point(294, 138);
+            this.EnemyAgilityControl.Name = "EnemyAgilityControl";
+            this.EnemyAgilityControl.Size = new System.Drawing.Size(141, 20);
+            this.EnemyAgilityControl.TabIndex = 39;
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(238, 114);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(50, 13);
+            this.label21.TabIndex = 38;
+            this.label21.Text = "Strength:";
+            // 
+            // EnemyStrengthControl
+            // 
+            this.EnemyStrengthControl.Location = new System.Drawing.Point(294, 112);
+            this.EnemyStrengthControl.Name = "EnemyStrengthControl";
+            this.EnemyStrengthControl.Size = new System.Drawing.Size(141, 20);
+            this.EnemyStrengthControl.TabIndex = 37;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(226, 88);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(62, 13);
+            this.label5.TabIndex = 36;
+            this.label5.Text = "Inteligence:";
+            // 
+            // EnemyInteligenceControl
+            // 
+            this.EnemyInteligenceControl.Location = new System.Drawing.Point(294, 86);
+            this.EnemyInteligenceControl.Name = "EnemyInteligenceControl";
+            this.EnemyInteligenceControl.Size = new System.Drawing.Size(141, 20);
+            this.EnemyInteligenceControl.TabIndex = 35;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(251, 62);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(40, 13);
+            this.label2.TabIndex = 34;
+            this.label2.Text = "Vitality:";
+            // 
+            // EnemyVitalityControl
+            // 
+            this.EnemyVitalityControl.Location = new System.Drawing.Point(294, 60);
+            this.EnemyVitalityControl.Name = "EnemyVitalityControl";
+            this.EnemyVitalityControl.Size = new System.Drawing.Size(141, 20);
+            this.EnemyVitalityControl.TabIndex = 33;
+            // 
+            // UndoEnemyChanges
+            // 
+            this.UndoEnemyChanges.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.UndoEnemyChanges.Location = new System.Drawing.Point(310, 646);
+            this.UndoEnemyChanges.Name = "UndoEnemyChanges";
+            this.UndoEnemyChanges.Size = new System.Drawing.Size(122, 47);
+            this.UndoEnemyChanges.TabIndex = 32;
+            this.UndoEnemyChanges.Text = "Undo Changes";
+            this.UndoEnemyChanges.UseVisualStyleBackColor = true;
+            this.UndoEnemyChanges.Click += new System.EventHandler(this.UndoEnemyChanges_Click);
+            // 
+            // AddEnemyButton
+            // 
+            this.AddEnemyButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddEnemyButton.Location = new System.Drawing.Point(6, 593);
+            this.AddEnemyButton.Name = "AddEnemyButton";
+            this.AddEnemyButton.Size = new System.Drawing.Size(185, 47);
+            this.AddEnemyButton.TabIndex = 10;
+            this.AddEnemyButton.Text = "Add Enemy";
+            this.AddEnemyButton.UseVisualStyleBackColor = true;
+            this.AddEnemyButton.Click += new System.EventHandler(this.AddEnemyButton_Click);
+            // 
+            // RemoveEnemyButton
+            // 
+            this.RemoveEnemyButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveEnemyButton.Location = new System.Drawing.Point(6, 646);
+            this.RemoveEnemyButton.Name = "RemoveEnemyButton";
+            this.RemoveEnemyButton.Size = new System.Drawing.Size(185, 47);
+            this.RemoveEnemyButton.TabIndex = 11;
+            this.RemoveEnemyButton.Text = "Remove Enemy";
+            this.RemoveEnemyButton.UseVisualStyleBackColor = true;
+            this.RemoveEnemyButton.Click += new System.EventHandler(this.RemoveEnemyButton_Click);
+            // 
+            // EnemyDataList
+            // 
+            this.EnemyDataList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.EnemyDataList.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.EnemyDataList.FormattingEnabled = true;
+            this.EnemyDataList.ItemHeight = 20;
+            this.EnemyDataList.Location = new System.Drawing.Point(6, 19);
+            this.EnemyDataList.Name = "EnemyDataList";
+            this.EnemyDataList.Size = new System.Drawing.Size(185, 564);
+            this.EnemyDataList.TabIndex = 5;
+            this.EnemyDataList.SelectedIndexChanged += new System.EventHandler(this.EnemyDataList_SelectedIndexChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(251, 37);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(38, 13);
+            this.label6.TabIndex = 26;
+            this.label6.Text = "Name:";
+            // 
+            // EnemyNameBox
+            // 
+            this.EnemyNameBox.Location = new System.Drawing.Point(294, 34);
+            this.EnemyNameBox.Name = "EnemyNameBox";
+            this.EnemyNameBox.Size = new System.Drawing.Size(141, 20);
+            this.EnemyNameBox.TabIndex = 25;
+            // 
+            // SaveEnemyChanges
+            // 
+            this.SaveEnemyChanges.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.SaveEnemyChanges.Location = new System.Drawing.Point(438, 646);
+            this.SaveEnemyChanges.Name = "SaveEnemyChanges";
+            this.SaveEnemyChanges.Size = new System.Drawing.Size(122, 47);
+            this.SaveEnemyChanges.TabIndex = 4;
+            this.SaveEnemyChanges.Text = "Save Changes";
+            this.SaveEnemyChanges.UseVisualStyleBackColor = true;
+            this.SaveEnemyChanges.Click += new System.EventHandler(this.SaveEnemyChanges_Click);
+            // 
+            // panel9
+            // 
+            this.panel9.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel9.BackColor = System.Drawing.Color.Gainsboro;
+            this.panel9.Location = new System.Drawing.Point(3, 3);
+            this.panel9.Name = "panel9";
+            this.panel9.Size = new System.Drawing.Size(1146, 705);
+            this.panel9.TabIndex = 14;
             // 
             // tabPage7
             // 
@@ -2063,28 +2968,6 @@
             this.label19.TabIndex = 7;
             this.label19.Text = "System Variables";
             // 
-            // ReflectionFlagsButton
-            // 
-            this.ReflectionFlagsButton.AutoSize = true;
-            this.ReflectionFlagsButton.Location = new System.Drawing.Point(6, 155);
-            this.ReflectionFlagsButton.Name = "ReflectionFlagsButton";
-            this.ReflectionFlagsButton.Size = new System.Drawing.Size(101, 17);
-            this.ReflectionFlagsButton.TabIndex = 6;
-            this.ReflectionFlagsButton.TabStop = true;
-            this.ReflectionFlagsButton.Text = "Reflection Flags";
-            this.ReflectionFlagsButton.UseVisualStyleBackColor = true;
-            // 
-            // BridgeFlagsButton
-            // 
-            this.BridgeFlagsButton.AutoSize = true;
-            this.BridgeFlagsButton.Location = new System.Drawing.Point(6, 177);
-            this.BridgeFlagsButton.Name = "BridgeFlagsButton";
-            this.BridgeFlagsButton.Size = new System.Drawing.Size(83, 17);
-            this.BridgeFlagsButton.TabIndex = 7;
-            this.BridgeFlagsButton.TabStop = true;
-            this.BridgeFlagsButton.Text = "Bridge Flags";
-            this.BridgeFlagsButton.UseVisualStyleBackColor = true;
-            // 
             // EditorForm
             // 
             this.ClientSize = new System.Drawing.Size(1184, 761);
@@ -2103,7 +2986,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
-            this.panel3.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AutoTimer7)).EndInit();
@@ -2116,13 +2998,11 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.tabPage3.ResumeLayout(false);
-            this.panel4.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
-            this.panel5.ResumeLayout(false);
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.HorizontalSpriteBoundsHeight)).EndInit();
@@ -2134,10 +3014,39 @@
             ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteAnchorY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.VerticalSpriteAnchorX)).EndInit();
             this.tabPage5.ResumeLayout(false);
-            this.panel6.ResumeLayout(false);
+            this.groupBox11.ResumeLayout(false);
+            this.groupBox11.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ProjectileBoundsHeight)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ProjectileBoundsWidth)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ProjectileAnchorY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ProjectileAnchorX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ProjectileLifespan)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ProjectileSpeed)).EndInit();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ItemMaxStack)).EndInit();
+            this.tabPage6.ResumeLayout(false);
+            this.panel8.ResumeLayout(false);
+            this.groupBox10.ResumeLayout(false);
+            this.groupBox10.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ClassMagicDefenceControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ClassRangeDefenceControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ClassMeleeDefenceControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ClassAgilityControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ClassStrengthControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ClassInteligenceControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ClassVitalityControl)).EndInit();
+            this.groupBox9.ResumeLayout(false);
+            this.groupBox9.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyAttackRangeSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyVisionRangeSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyMagicDefenceControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyRangeDefenceControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyMeleeDefenceControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyAgilityControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyStrengthControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyInteligenceControl)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyVitalityControl)).EndInit();
             this.tabPage7.ResumeLayout(false);
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
@@ -2153,7 +3062,6 @@
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.TabPage tabPage5;
-        private System.Windows.Forms.TabPage tabPage6;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.Button NewMapButton;
@@ -2180,11 +3088,9 @@
         private System.Windows.Forms.RadioButton PrioritiesButton;
         private System.Windows.Forms.RadioButton PassabilitiesButton;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.ListBox EventsList;
         private System.Windows.Forms.Button AddEventButton;
         private System.Windows.Forms.Button RemoveEventButton;
-        private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Button ApplyEventChangesButton;
         private System.Windows.Forms.Label label7;
@@ -2195,7 +3101,6 @@
         private System.Windows.Forms.Button AddEventCommandButton;
         private System.Windows.Forms.ListBox EventCommandsList;
         private System.Windows.Forms.ListBox SpritesList;
-        private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.Button ApplySpriteButton;
         private System.Windows.Forms.Label label9;
@@ -2226,7 +3131,6 @@
         private System.Windows.Forms.Button ImportSpriteButton;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.TextBox SpriteNameBox;
-        private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.TextBox ItemNameBox;
@@ -2297,6 +3201,82 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.RadioButton ReflectionFlagsButton;
         private System.Windows.Forms.RadioButton BridgeFlagsButton;
+        private System.Windows.Forms.TabPage tabPage6;
+        private System.Windows.Forms.Panel panel8;
+        private System.Windows.Forms.GroupBox groupBox10;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.NumericUpDown ClassMagicDefenceControl;
+        private System.Windows.Forms.Label label46;
+        private System.Windows.Forms.NumericUpDown ClassRangeDefenceControl;
+        private System.Windows.Forms.Label label47;
+        private System.Windows.Forms.NumericUpDown ClassMeleeDefenceControl;
+        private System.Windows.Forms.Label label48;
+        private System.Windows.Forms.NumericUpDown ClassAgilityControl;
+        private System.Windows.Forms.Label label49;
+        private System.Windows.Forms.NumericUpDown ClassStrengthControl;
+        private System.Windows.Forms.Label label50;
+        private System.Windows.Forms.NumericUpDown ClassInteligenceControl;
+        private System.Windows.Forms.Label label51;
+        private System.Windows.Forms.NumericUpDown ClassVitalityControl;
+        private System.Windows.Forms.Button UndoClassButton;
+        private System.Windows.Forms.Button AddClassButton;
+        private System.Windows.Forms.Button RemoveClassButton;
+        private System.Windows.Forms.ListBox ClassDataList;
+        private System.Windows.Forms.Label label52;
+        private System.Windows.Forms.TextBox ClassNameBox;
+        private System.Windows.Forms.Button SaveClassButton;
+        private System.Windows.Forms.GroupBox groupBox9;
+        private System.Windows.Forms.Label label42;
+        private System.Windows.Forms.NumericUpDown EnemyAttackRangeSelection;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.NumericUpDown EnemyVisionRangeSelection;
+        private System.Windows.Forms.Label label40;
+        private System.Windows.Forms.NumericUpDown EnemyMagicDefenceControl;
+        private System.Windows.Forms.Label label39;
+        private System.Windows.Forms.NumericUpDown EnemyRangeDefenceControl;
+        private System.Windows.Forms.Label label38;
+        private System.Windows.Forms.NumericUpDown EnemyMeleeDefenceControl;
+        private System.Windows.Forms.Label label37;
+        private System.Windows.Forms.NumericUpDown EnemyAgilityControl;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.NumericUpDown EnemyStrengthControl;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.NumericUpDown EnemyInteligenceControl;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.NumericUpDown EnemyVitalityControl;
+        private System.Windows.Forms.Button UndoEnemyChanges;
+        private System.Windows.Forms.Button AddEnemyButton;
+        private System.Windows.Forms.Button RemoveEnemyButton;
+        private System.Windows.Forms.ListBox EnemyDataList;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox EnemyNameBox;
+        private System.Windows.Forms.Button SaveEnemyChanges;
+        private System.Windows.Forms.Panel panel9;
+        private System.Windows.Forms.GroupBox groupBox11;
+        private System.Windows.Forms.Button UndoProjectileButton;
+        private System.Windows.Forms.Button AddProjectileButton;
+        private System.Windows.Forms.Button RemoveProjectileButton;
+        private System.Windows.Forms.ListBox ProjectileListBox;
+        private System.Windows.Forms.Label label53;
+        private System.Windows.Forms.TextBox ProjectileNameBox;
+        private System.Windows.Forms.Button ApplyProjectileButton;
+        private System.Windows.Forms.Label label54;
+        private System.Windows.Forms.ComboBox ProjectileIconSelection;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Label label43;
+        private System.Windows.Forms.NumericUpDown ProjectileLifespan;
+        private System.Windows.Forms.NumericUpDown ProjectileSpeed;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Label label59;
+        private System.Windows.Forms.Label label55;
+        private System.Windows.Forms.Label label56;
+        private System.Windows.Forms.Label label57;
+        private System.Windows.Forms.Label label58;
+        private System.Windows.Forms.NumericUpDown ProjectileBoundsHeight;
+        private System.Windows.Forms.NumericUpDown ProjectileBoundsWidth;
+        private System.Windows.Forms.NumericUpDown ProjectileAnchorY;
+        private System.Windows.Forms.NumericUpDown ProjectileAnchorX;
+        private System.Windows.Forms.Label label44;
     }
 }
 

@@ -358,6 +358,36 @@ namespace RpgServer
                     case ClientCommand.CommandType.ActionTrigger:
                         ActionTrigger();
                         break;
+                    case ClientCommand.CommandType.SelectItem:
+                        int index = int.Parse(command.GetParameter("ItemIndex"));
+                        Tuple<int, int> itemInfo = _playerPacket.Data.GetInventoryItem(index);
+                        if (itemInfo != null)
+                        {
+                            ItemData data = ItemData.GetItemData(itemInfo.Item1);
+                            switch (data.GetItemType())
+                            {
+                                case ItemData.ItemType.Tool:
+
+                                    break;
+                                case ItemData.ItemType.Consumable:
+
+                                    break;
+                                case ItemData.ItemType.Material:
+
+                                    break;
+                                case ItemData.ItemType.Equipment:
+                                    _playerPacket.Data.EquipItem(index);
+                                    break;
+                                case ItemData.ItemType.Ammo:
+
+                                    break;
+                            }
+                        }
+                        break;
+                    case ClientCommand.CommandType.RemoveEquipment:
+                        EquipmentSlot slot = (EquipmentSlot)int.Parse(command.GetParameter("EquipmentIndex"));
+                        _playerPacket.Data.UnequipItem(slot);
+                        break;
                 }
                 
             }
@@ -471,7 +501,10 @@ namespace RpgServer
                     }
                 }
 
-                CheckEventTriggers(targetX, targetY, EventTriggerType.Action);
+                if (!CheckEventTriggers(targetX, targetY, EventTriggerType.Action))
+                {
+                    CombatCheck(targetX, targetY);
+                }
             }
         }
 
@@ -598,7 +631,7 @@ namespace RpgServer
             _playerPacket.Direction = direction;
         }
 
-        private void CheckEventTriggers(int x, int y, EventTriggerType triggerType)
+        private bool CheckEventTriggers(int x, int y, EventTriggerType triggerType)
         {
             MapData mapData = _mapInstance.GetMapData();
             for (int i = 0; i < mapData.MapEventsCount(); i++)
@@ -608,15 +641,65 @@ namespace RpgServer
                 if (mapEvent.MapX == x && mapEvent.MapY == y)
                 {
                     if (mapEvent.EventID == -1)
-                        return;
+                        return false;
                     if (mapEvent.TriggerType == triggerType)
                     {
                         _mapInstance.GetEventInterpreter().TriggerEventData(this, mapEvent);
-                        break;
+                        return true;
                     }
                 }
             }
+            return false;
         }
+
+        private void CombatCheck(int x, int y)
+        {
+            int weaponID = _playerPacket.Data.GetEquipedItemID((int)EquipmentSlot.Weapon);
+            if (weaponID != -1)
+            {
+                ItemData data = ItemData.GetItemData(weaponID);
+                switch ((AttackStyle)data.GetItemStat("AttackStyle"))
+                {
+                    case AttackStyle.Melee:
+                        Console.WriteLine("melee");
+                        GameClient[] clients = _mapInstance.GetClients();
+                        for (int i = 0; i < clients.Length; i++)
+                        {
+                            if (clients[i]._playerPacket.PositionX == x && clients[i]._playerPacket.PositionY == y)
+                            {
+                                CombatTrigger(clients[i]);
+                            }
+                        }
+                        break;
+                    case AttackStyle.Ranged:
+
+                        break;
+                    case AttackStyle.Magic:
+
+                        break;
+                }
+            }
+        }
+
+        private void CombatTrigger(GameClient other)
+        {
+            Random rand = new Random();
+            CombatStats stats1 = _playerPacket.Data.GetCombinedCombatStats();
+            CombatStats stats2 = other._playerPacket.Data.GetCombinedCombatStats();
+            int critModifier = rand.Next(1, 6) > 4 ? (stats1.Strength / 2) : 0;
+            double accuracy = Math.Min(stats1.Strength / stats1.Agility, 1.0);
+            int meleePower = (int)((stats1.Strength + critModifier) * accuracy) - (stats2.MeleeDefence / 2);
+            meleePower = Math.Max(meleePower, 0);
+            other._playerPacket.Data.HP -= meleePower;
+            Console.WriteLine(accuracy + "," + meleePower);
+            
+            if (other._playerPacket.Data.HP <= 0)
+            {
+                //death
+                other._playerPacket.Data.HP = _playerPacket.Data.GetMaxHP();
+            }
+        }
+
 
         public bool TerrainTagCheck(int tag)
         {

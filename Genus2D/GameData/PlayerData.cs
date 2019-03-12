@@ -10,24 +10,102 @@ namespace Genus2D.GameData
     [Serializable]
     public class PlayerData
     {
-
         public int Level;
-        public int MaxHealth, Health;
-        public int MaxStamina, Stamina;
+        public int HP, MP, Stamina;
+        public int InvestmentPoints;
+
+        private int _classID;
+        public CombatStats BaseStats { get; private set; }
+        public CombatStats InvestedStats { get; private set; }
 
         private static int InventorySize = 30; // hardcoded inventory size
-
         private List<Tuple<int, int>> _inventory; //item id, item count
         private int[] _equipment;
 
         public PlayerData()
         {
-            Level = 1;
-            MaxHealth = Health = 100;
-            MaxStamina = Stamina = 100;
-
+            Level = 0;
+            HP = 0;
+            MP = 0;
+            Stamina = 0;
+            SetClassID(-1);
+            InvestedStats = new CombatStats();
             _inventory = new List<Tuple<int, int>>();
             _equipment = new int[(int)EquipmentSlot.Ring + 1];
+        }
+
+        public void SetClassID(int id)
+        {
+            _classID = id;
+            if (id != -1)
+            {
+                Genus2D.GameData.ClassData data = Genus2D.GameData.ClassData.GetClass(id);
+                BaseStats = data.BaseStats;
+            }
+            else
+            {
+                BaseStats = new CombatStats();
+                BaseStats.Vitality = 1;
+                BaseStats.Inteligence = 1;
+                BaseStats.Strength = 1;
+                BaseStats.Agility = 1;
+                BaseStats.MeleeDefence = 1;
+                BaseStats.RangeDefence = 1;
+                BaseStats.MagicDefence = 1;
+            }
+        }
+
+        public int GetClassID()
+        {
+            return _classID;
+        }
+
+        public CombatStats GetCombinedCombatStats()
+        {
+            CombatStats combined = new CombatStats();
+
+            combined.Vitality = BaseStats.Vitality + InvestedStats.Vitality;
+            combined.Inteligence = BaseStats.Inteligence + InvestedStats.Inteligence;
+            combined.Strength = BaseStats.Strength + InvestedStats.Strength;
+            combined.Agility = BaseStats.Agility + InvestedStats.Agility;
+            combined.MeleeDefence = BaseStats.MeleeDefence + InvestedStats.MeleeDefence;
+            combined.RangeDefence = BaseStats.RangeDefence + InvestedStats.RangeDefence;
+            combined.MagicDefence = BaseStats.MagicDefence + InvestedStats.MagicDefence;
+
+            for (int i = 0; i < _equipment.Length; i++)
+            {
+                if (_equipment[i] != 0)
+                {
+                    ItemData data = ItemData.GetItemData(_equipment[i] - 1);
+                    combined.Vitality += (int)data.GetItemStat("VitalityBonus");
+                    combined.Inteligence += (int)data.GetItemStat("InteligenceBonus");
+                    combined.Strength += (int)data.GetItemStat("StrengthBonus");
+                    combined.Agility += (int)data.GetItemStat("AgilityBonus");
+                    combined.MeleeDefence += (int)data.GetItemStat("MeleeDefenceBonus");
+                    combined.RangeDefence += (int)data.GetItemStat("RangeDefenceBonus");
+                    combined.MagicDefence += (int)data.GetItemStat("MagicDefenceBonus");
+                }
+            }
+
+            return combined;
+        }
+
+        public int GetMaxHP()
+        {
+            CombatStats combined = GetCombinedCombatStats();
+            return combined.Vitality * 10;
+        }
+
+        public int GetMapMP()
+        {
+            CombatStats combined = GetCombinedCombatStats();
+            return combined.Inteligence * 10;
+        }
+
+        public int GetMaxStamina()
+        {
+            CombatStats combined = GetCombinedCombatStats();
+            return combined.Agility * 10;
         }
 
         public int AddInventoryItem(int itemID, int count)
@@ -121,6 +199,15 @@ namespace Genus2D.GameData
             }
         }
 
+        public Tuple<int, int> GetInventoryItem(int index)
+        {
+            if (index >= 0 && index < _inventory.Count)
+            {
+                return _inventory[index];
+            }
+            return null;
+        }
+
         public bool EquipItem(int itemIndex)
         {
             if (itemIndex >= 0 && itemIndex < _inventory.Count)
@@ -128,13 +215,18 @@ namespace Genus2D.GameData
                 ItemData data = ItemData.GetItemData(_inventory[itemIndex].Item1);
                 if (data.Equipable())
                 {
-                    EquipmentSlot slot = (EquipmentSlot)data.GetItemStat("EquipmentSlot").Item2;
-                    if (GetEquipedItemID(slot) == -1)
+                    EquipmentSlot slot = (EquipmentSlot)data.GetItemStat("EquipmentSlot");
+                    int prev = GetEquipedItemID(slot);
+                    EquipItem(slot, _inventory[itemIndex].Item1);
+                    if (prev != -1)
                     {
-                        EquipItem(slot, _inventory[itemIndex].Item1);
-                        _inventory.RemoveAt(itemIndex);
-                        return true;
+                        _inventory[itemIndex] = new Tuple<int, int>(prev, 1);
                     }
+                    else
+                    {
+                        _inventory.RemoveAt(itemIndex);
+                    }
+                    return true;
                 }
             }
             return false;
@@ -144,9 +236,10 @@ namespace Genus2D.GameData
         {
             if (GetEquipedItemID(slot) != -1)
             {
-                if (AddInventoryItem(GetEquipedItemID(slot), 1) == 0)
+                if (AddInventoryItem(GetEquipedItemID(slot), 1) == 1)
                 {
                     EquipItem(slot, -1);
+                    return true;
                 }
             }
             return false;
@@ -192,10 +285,26 @@ namespace Genus2D.GameData
             using (MemoryStream stream = new MemoryStream())
             {
                 stream.Write(BitConverter.GetBytes(Level), 0, sizeof(int));
-                stream.Write(BitConverter.GetBytes(MaxHealth), 0, sizeof(int));
-                stream.Write(BitConverter.GetBytes(Health), 0, sizeof(int));
-                stream.Write(BitConverter.GetBytes(MaxStamina), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(HP), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(MP), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(Stamina), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(_classID), 0, sizeof(int));
+
+                stream.Write(BitConverter.GetBytes(BaseStats.Vitality), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(BaseStats.Inteligence), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(BaseStats.Strength), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(BaseStats.Agility), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(BaseStats.MeleeDefence), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(BaseStats.RangeDefence), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(BaseStats.MagicDefence), 0, sizeof(int));
+
+                stream.Write(BitConverter.GetBytes(InvestedStats.Vitality), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(InvestedStats.Inteligence), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(InvestedStats.Strength), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(InvestedStats.Agility), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(InvestedStats.MeleeDefence), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(InvestedStats.RangeDefence), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(InvestedStats.MagicDefence), 0, sizeof(int));
 
                 if (isLocalPlayer)
                 {
@@ -233,28 +342,84 @@ namespace Genus2D.GameData
                 data.Level = level;
 
                 stream.Read(tempBytes, 0, sizeof(int));
-                int maxHP = BitConverter.ToInt32(tempBytes, 0);
-                data.MaxHealth = maxHP;
-
-                stream.Read(tempBytes, 0, sizeof(int));
                 int hp = BitConverter.ToInt32(tempBytes, 0);
-                data.Health = hp;
+                data.HP = hp;
 
                 stream.Read(tempBytes, 0, sizeof(int));
-                int maxStamina = BitConverter.ToInt32(tempBytes, 0);
-                data.MaxStamina = maxStamina;
+                int mp = BitConverter.ToInt32(tempBytes, 0);
+                data.MP = mp;
 
                 stream.Read(tempBytes, 0, sizeof(int));
                 int stamina = BitConverter.ToInt32(tempBytes, 0);
                 data.Stamina = stamina;
 
                 stream.Read(tempBytes, 0, sizeof(int));
-                int iventorySize = BitConverter.ToInt32(tempBytes, 0);
+                int classID = BitConverter.ToInt32(tempBytes, 0);
+                data.SetClassID(classID);
 
-                if (InventorySize > 0)
+                stream.Read(tempBytes, 0, sizeof(int));
+                int vitality = BitConverter.ToInt32(tempBytes, 0);
+                data.BaseStats.Vitality = vitality;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                int inteligence = BitConverter.ToInt32(tempBytes, 0);
+                data.BaseStats.Inteligence = inteligence;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                int strength = BitConverter.ToInt32(tempBytes, 0);
+                data.BaseStats.Strength = strength;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                int agility = BitConverter.ToInt32(tempBytes, 0);
+                data.BaseStats.Agility = agility;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                int meleeDefence = BitConverter.ToInt32(tempBytes, 0);
+                data.BaseStats.MeleeDefence = meleeDefence;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                int rangeDefence = BitConverter.ToInt32(tempBytes, 0);
+                data.BaseStats.RangeDefence = rangeDefence;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                int magicDefence = BitConverter.ToInt32(tempBytes, 0);
+                data.BaseStats.MagicDefence = magicDefence;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                vitality = BitConverter.ToInt32(tempBytes, 0);
+                data.InvestedStats.Vitality = vitality;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                inteligence = BitConverter.ToInt32(tempBytes, 0);
+                data.InvestedStats.Inteligence = inteligence;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                strength = BitConverter.ToInt32(tempBytes, 0);
+                data.InvestedStats.Strength = strength;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                agility = BitConverter.ToInt32(tempBytes, 0);
+                data.InvestedStats.Agility = agility;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                meleeDefence = BitConverter.ToInt32(tempBytes, 0);
+                data.InvestedStats.MeleeDefence = meleeDefence;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                rangeDefence = BitConverter.ToInt32(tempBytes, 0);
+                data.InvestedStats.RangeDefence = rangeDefence;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                magicDefence = BitConverter.ToInt32(tempBytes, 0);
+                data.InvestedStats.MagicDefence = magicDefence;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                int inventorySize = BitConverter.ToInt32(tempBytes, 0);
+
+                if (inventorySize > 0)
                 {
                     List<Tuple<int, int>> inventory = new List<Tuple<int, int>>();
-                    for (int i = 0; i < InventorySize; i++)
+                    for (int i = 0; i < inventorySize; i++)
                     {
                         stream.Read(tempBytes, 0, sizeof(int));
                         int itemId = BitConverter.ToInt32(tempBytes, 0);

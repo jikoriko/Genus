@@ -34,3 +34,8 @@ C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.csproj.CoreC
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.csproj.CopyComplete
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.exe
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.pdb
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.ItemDataPresets.EquipmentPreset.resources
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.ItemDataPresets.AmmoPreset.resources
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.ItemDataPresets.MatarialPreset.resources
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.ItemDataPresets.ConsumablePreset.resources
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.ItemDataPresets.ToolPreset.resources

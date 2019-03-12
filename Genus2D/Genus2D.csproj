@@ -68,6 +68,9 @@
     <Compile Include="Entities\EntityManager.cs" />
     <Compile Include="Entities\SpriteComponent.cs" />
     <Compile Include="Entities\Transform.cs" />
+    <Compile Include="GameData\ClassData.cs" />
+    <Compile Include="GameData\CombatStats.cs" />
+    <Compile Include="GameData\EnemyData.cs" />
     <Compile Include="GameData\Enums.cs" />
     <Compile Include="GameData\EventCommand.cs" />
     <Compile Include="GameData\ItemData.cs" />
@@ -76,6 +79,7 @@
     <Compile Include="GameData\EventData.cs" />
     <Compile Include="GameData\MapInfo.cs" />
     <Compile Include="GameData\PlayerData.cs" />
+    <Compile Include="GameData\ProjectileData.cs" />
     <Compile Include="GameData\SpawnPoint.cs" />
     <Compile Include="GameData\SpriteData.cs" />
     <Compile Include="GameData\SystemVariable.cs" />
@@ -85,6 +89,7 @@
     <Compile Include="Networking\ClientCommand.cs" />
     <Compile Include="Networking\ServerCommand.cs" />
     <Compile Include="Networking\Packets.cs" />
+    <Compile Include="Utilities\CircularQueue.cs" />
     <Compile Include="Utilities\Clock.cs" />
     <Compile Include="Graphics\Triangulator.cs" />
     <Compile Include="GUI\DropDownMenu.cs" />
@@ -115,6 +120,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\State.cs" />
     <Compile Include="Core\StateWindow.cs" />
+    <Compile Include="Utilities\Counter.cs" />
+    <Compile Include="Utilities\GridCounter.cs" />
+    <Compile Include="Utilities\ReversedStack.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

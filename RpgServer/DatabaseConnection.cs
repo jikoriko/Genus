@@ -109,6 +109,7 @@ namespace RpgServer
             {
                 string createTableQuery = @"CREATE TABLE Players(
                 PlayerID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                Connected INTEGER,
                 Username TEXT,
                 Password TEXT,
                 MapID INTEGER,
@@ -116,9 +117,20 @@ namespace RpgServer
                 Direction INTEGER,
                 MapX INTEGER,
                 MapY INTEGER,
-                Health INTEGER,
-                MaxHealth INTEGER,
-                OnBridge INTEGER
+                OnBridge INTEGER,
+                Level INTEGER,
+                ClassID INTEGER,
+                HP INTEGER,
+                MP INTEGER,
+                Stamina INTEGER,
+                InvestmentPoints INTEGER,
+                VitalityPoints INTEGER,
+                InteligencePoints INTEGER,
+                StrengthPoints INTEGER,
+                AgilityPoints INTEGER,
+                MeleeDefencePoints INTEGER,
+                RangeDefencePoints INTEGER,
+                MagicDefencePoints INTEGER
                 )";
 
                 // create table in database
@@ -128,6 +140,7 @@ namespace RpgServer
             {
                 string createTableQuery = @"CREATE TABLE Players(
                 PlayerID int IDENTITY (1, 1) NOT NULL PRIMARY KEY,
+                Connected int,
                 Username varchar(50),
                 Password varchar(50),
                 MapID int,
@@ -135,9 +148,20 @@ namespace RpgServer
                 Direction int,
                 MapX int,
                 MapY int,
-                Health int,
-                MaxHealth int,
-                OnBridge int
+                OnBridge int,
+                Level int,
+                ClassID int,
+                HP int,
+                MP int,
+                Stamina int,
+                InvestmentPoints int,
+                VitalityPoints int,
+                InteligencePoints int,
+                StrengthPoints int,
+                AgilityPoints int,
+                MeleeDefencePoints int,
+                RangeDefencePoints int,
+                MagicDefencePoints int
                 )";
 
                 // create table in database
@@ -207,7 +231,7 @@ namespace RpgServer
                     SQLiteDataReader rdr = cmd.ExecuteReader();
                     if (rdr.Read())
                     {
-                        if (password == rdr.GetString(2))
+                        if (password == rdr.GetString(3))
                         {
                             login = true;
                             playerID = rdr.GetInt32(0);
@@ -222,7 +246,7 @@ namespace RpgServer
                     SqlDataReader rdr = cmd.ExecuteReader();
                     if (rdr.Read())
                     {
-                        if (password == rdr.GetString(2))
+                        if (password == rdr.GetString(3))
                         {
                             login = true;
                             playerID = rdr.GetInt32(0);
@@ -257,6 +281,13 @@ namespace RpgServer
             {
                 try
                 {
+                    SpawnPoint spawn = Genus2D.GameData.MapInfo.GetSpawnPoint(0);
+                    if (spawn == null) spawn = new SpawnPoint(0, 0, 0, "default");
+                    string insertQuery = "INSERT INTO Players (Connected, Username, Password, MapID, SpriteID, Direction, MapX, MapY, OnBridge, Level, ClassID, " +
+                        "HP, MP, Stamina, " +
+                        "InvestmentPoints, VitalityPoints, InteligencePoints, StrengthPoints, AgilityPoints, MeleeDefencePoints, RangeDefencePoints, MagicDefencePoints) " +
+                        "VALUES (0, '" + username + "', '" + password + "', " + spawn.MapID + ", 0, 0, " + spawn.MapX + ", " + spawn.MapY + ", 0, 1, -1, 10, 10, 10, 0, 0, 0, 0, 0, 0, 0, 0)";
+
                     if (_sqlite)
                     {
                         SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Players WHERE Username='" + username + "'", _sqliteConnection);
@@ -264,11 +295,6 @@ namespace RpgServer
 
                         if (!rdr.Read())
                         {
-                            SpawnPoint spawn = Genus2D.GameData.MapInfo.GetSpawnPoint(0);
-                            if (spawn == null) spawn = new SpawnPoint(0, 0, 0, "default");
-                            string insertQuery = "INSERT INTO Players (Username, Password, MapID, SpriteID, Direction, MapX, MapY, Health, MaxHealth, OnBridge) " +
-                                "VALUES ('" + username + "', '" + password + "', " + spawn.MapID + ", 0," + (int)FacingDirection.Down + ", " + spawn.MapX + ", " + spawn.MapY + ", 1000, 1000, 0)";
-
                             Insert(insertQuery);
                             inserted = true;
                         }
@@ -286,9 +312,6 @@ namespace RpgServer
 
                         if (!rdr.Read())
                         {
-                            string insertQuery = "INSERT INTO Players (Username, Password, MapID, SpriteID, Direction, MapX, MapY, Health, MaxHealth, OnBridge) " +
-                                "VALUES ('" + username + "', '" + password + "', " + "0, 0, " + (int)FacingDirection.Down + ", 0, 0, 1000, 1000, 0)";
-
                             Insert(insertQuery);
                             inserted = true;
                         }
@@ -311,14 +334,26 @@ namespace RpgServer
             bool updated = false;
             try
             {
-                string updateQuery = "UPDATE Players " +
-                    "SET MapID=" + packet.MapID + "," +
+                string updateQuery = "UPDATE Players SET " +
+                    "MapID=" + packet.MapID + "," +
                     "SpriteID=" + packet.SpriteID + "," +
                     "Direction=" + (int)packet.Direction + "," +
                     "MapX=" + packet.PositionX + "," +
                     "MapY=" + packet.PositionY + "," +
-                    "OnBridge=" + (packet.OnBridge ? 1 : 0) + " " +
-                    //hp and max hp?
+                    "OnBridge=" + (packet.OnBridge ? 1 : 0) + "," +
+                    "Level=" + packet.Data.Level + "," +
+                    "HP=" + packet.Data.HP + "," +
+                    "MP=" + packet.Data.MP + "," +
+                    "Stamina=" + packet.Data.Stamina + "," +
+                    "ClassID=" + packet.Data.GetClassID() + "," +
+                    "InvestmentPoints=" + packet.Data.InvestmentPoints + "," +
+                    "VitalityPoints=" + packet.Data.InvestedStats.Vitality + "," +
+                    "InteligencePoints=" + packet.Data.InvestedStats.Inteligence + "," +
+                    "StrengthPoints=" + packet.Data.InvestedStats.Strength  + "," +
+                    "AgilityPoints=" + packet.Data.InvestedStats.Agility + "," +
+                    "MeleeDefencePoints=" + packet.Data.InvestedStats.MeleeDefence + "," +
+                    "RangeDefencePoints=" + packet.Data.InvestedStats.RangeDefence  + "," +
+                    "MagicDefencePoints=" + packet.Data.InvestedStats.MagicDefence + " " +
                     "WHERE Username='" + packet.Username + "'";
 
                 Insert(updateQuery);
@@ -352,8 +387,19 @@ namespace RpgServer
                         packet.RealX = packet.PositionX * 32;
                         packet.RealY = packet.PositionY * 32;
                         packet.OnBridge = Convert.ToInt32(rdr["OnBridge"]) == 1 ? true : false;
-
                         packet.Data = new PlayerData();
+                        packet.Data.Level = Convert.ToInt32(rdr["Level"]);
+                        packet.Data.HP = Convert.ToInt32(rdr["HP"]);
+                        packet.Data.MP = Convert.ToInt32(rdr["MP"]);
+                        packet.Data.Stamina = Convert.ToInt32(rdr["Stamina"]);
+                        packet.Data.SetClassID(Convert.ToInt32(rdr["ClassID"]));
+                        packet.Data.InvestedStats.Vitality = Convert.ToInt32(rdr["VitalityPoints"]);
+                        packet.Data.InvestedStats.Inteligence = Convert.ToInt32(rdr["InteligencePoints"]);
+                        packet.Data.InvestedStats.Strength = Convert.ToInt32(rdr["StrengthPoints"]);
+                        packet.Data.InvestedStats.Agility = Convert.ToInt32(rdr["AgilityPoints"]);
+                        packet.Data.InvestedStats.MeleeDefence = Convert.ToInt32(rdr["MeleeDefencePoints"]);
+                        packet.Data.InvestedStats.RangeDefence = Convert.ToInt32(rdr["RangeDefencePoints"]);
+                        packet.Data.InvestedStats.MagicDefence = Convert.ToInt32(rdr["MagicDefencePoints"]);
                     }
 
                     rdr.Close();
@@ -364,20 +410,30 @@ namespace RpgServer
                     SqlDataReader rdr = cmd.ExecuteReader();
                     if (rdr.Read())
                     {
-
                         packet = new PlayerPacket();
-                        packet.PlayerID = rdr.GetInt32(0);
-                        packet.Username = rdr.GetString(1);
-                        packet.MapID = rdr.GetInt32(3);
-                        packet.SpriteID = rdr.GetInt32(4);
-                        packet.Direction = (FacingDirection)rdr.GetInt32(5);
-                        packet.PositionX = rdr.GetInt32(6);
-                        packet.PositionY = rdr.GetInt32(7);
+                        packet.PlayerID = Convert.ToInt32(rdr["PlayerID"]);
+                        packet.Username = (string)rdr["Username"];
+                        packet.MapID = Convert.ToInt32(rdr["MapID"]);
+                        packet.SpriteID = Convert.ToInt32(rdr["SpriteID"]);
+                        packet.Direction = (FacingDirection)(Convert.ToInt32(rdr["Direction"]));
+                        packet.PositionX = Convert.ToInt32(rdr["MapX"]);
+                        packet.PositionY = Convert.ToInt32(rdr["MapY"]);
                         packet.RealX = packet.PositionX * 32;
                         packet.RealY = packet.PositionY * 32;
-                        packet.OnBridge = rdr.GetInt32(10) == 1 ? true : false;
-
+                        packet.OnBridge = Convert.ToInt32(rdr["OnBridge"]) == 1 ? true : false;
                         packet.Data = new PlayerData();
+                        packet.Data.Level = Convert.ToInt32(rdr["Level"]);
+                        packet.Data.HP = Convert.ToInt32(rdr["HP"]);
+                        packet.Data.MP = Convert.ToInt32(rdr["MP"]);
+                        packet.Data.Stamina = Convert.ToInt32(rdr["Stamina"]);
+                        packet.Data.SetClassID(Convert.ToInt32(rdr["ClassID"]));
+                        packet.Data.InvestedStats.Vitality = Convert.ToInt32(rdr["VitalityPoints"]);
+                        packet.Data.InvestedStats.Inteligence = Convert.ToInt32(rdr["InteligencePoints"]);
+                        packet.Data.InvestedStats.Strength = Convert.ToInt32(rdr["StrengthPoints"]);
+                        packet.Data.InvestedStats.Agility = Convert.ToInt32(rdr["AgilityPoints"]);
+                        packet.Data.InvestedStats.MeleeDefence = Convert.ToInt32(rdr["MeleeDefencePoints"]);
+                        packet.Data.InvestedStats.RangeDefence = Convert.ToInt32(rdr["RangeDefencePoints"]);
+                        packet.Data.InvestedStats.MagicDefence = Convert.ToInt32(rdr["MagicDefencePoints"]);
                     }
 
                     rdr.Close();
@@ -386,6 +442,7 @@ namespace RpgServer
             catch(Exception e)
             {
                 Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
             }
 
             return packet;

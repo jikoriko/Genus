@@ -142,6 +142,30 @@ namespace RpgGame.EntityComponents
 
                     //Renderer.DisableDepthTest();
                     Renderer.PrintText(_playerPacket.Username, ref pos, ref colour);
+
+                    int nameHeight = Renderer.GetFont().GetTextHeight(_playerPacket.Username);
+                    Vector3 size = new Vector3(GetFrameWidth(), 21, 1);
+                    pos.X = Transform.Position.X - (GetFrameWidth() / 2);
+                    pos.Y += nameHeight + 5;
+                    colour = OpenTK.Graphics.Color4.Black;
+                    Renderer.FillShape(ShapeFactory.Rectangle, ref pos, ref size, ref colour);
+
+                    pos.X += 2;
+                    pos.Y += 2;
+                    size.Y = 5;
+                    size.X = (GetFrameWidth() - 4) * ((float)_playerPacket.Data.HP / _playerPacket.Data.GetMaxHP());
+                    colour = OpenTK.Graphics.Color4.Red;
+                    Renderer.FillShape(ShapeFactory.Rectangle, ref pos, ref size, ref colour);
+
+                    pos.Y += 7;
+                    size.X = (GetFrameWidth() - 4) * ((float)_playerPacket.Data.MP / _playerPacket.Data.GetMapMP());
+                    colour = OpenTK.Graphics.Color4.Blue;
+                    Renderer.FillShape(ShapeFactory.Rectangle, ref pos, ref size, ref colour);
+
+                    pos.Y += 7;
+                    size.X = (GetFrameWidth() - 4) * ((float)_playerPacket.Data.Stamina / _playerPacket.Data.GetMaxStamina());
+                    colour = OpenTK.Graphics.Color4.Yellow;
+                    Renderer.FillShape(ShapeFactory.Rectangle, ref pos, ref size, ref colour);
                     //Renderer.EnableDepthTest();
 
                     Renderer.PushStencilDepth(OpenTK.Graphics.OpenGL.StencilOp.Keep, OpenTK.Graphics.OpenGL.StencilFunction.Less);

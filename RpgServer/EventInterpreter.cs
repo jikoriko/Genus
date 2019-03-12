@@ -492,7 +492,6 @@ namespace RpgServer
                 return;
             }
 
-            _triggeringEvents.Add(new TriggeringEvent(client, mapEvent));
             if (client == null)
             {
                 _triggeringEvents.Add(new TriggeringEvent(client, mapEvent));

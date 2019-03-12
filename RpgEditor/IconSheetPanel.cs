@@ -12,11 +12,13 @@ namespace RpgEditor
     {
 
         private Genus2D.GameData.ItemData _itemData;
+        private Genus2D.GameData.ProjectileData _projectileData;
         private Image _iconSheetImage;
 
         public IconSheetPanel()
         {
             _itemData = null;
+            _projectileData = null;
             _iconSheetImage = null;
             this.DoubleBuffered = true;
         }
@@ -41,10 +43,30 @@ namespace RpgEditor
             this.Refresh();
         }
 
+        public void SetProjectileData(Genus2D.GameData.ProjectileData data)
+        {
+            _projectileData = data;
+            if (_iconSheetImage != null)
+            {
+                _iconSheetImage.Dispose();
+                _iconSheetImage = null;
+            }
+
+            if (_projectileData != null)
+            {
+                if (_projectileData.IconSheetImage != "")
+                {
+                    _iconSheetImage = Image.FromFile("Assets/Textures/Icons/" + _projectileData.IconSheetImage);
+                }
+            }
+
+            this.Refresh();
+        }
+
         protected override void OnClick(EventArgs e)
         {
             base.OnClick(e);
-            if (_itemData != null)
+            if (_itemData != null || _projectileData != null)
             {
                 if (((MouseEventArgs)e).Button == MouseButtons.Left)
                 {
@@ -53,7 +75,10 @@ namespace RpgEditor
                     int y = mouse.Y / 32;
 
                     int id = x + (y * 8);
-                    _itemData.IconID = id;
+                    if (_itemData != null)
+                        _itemData.IconID = id;
+                    else
+                        _projectileData.IconID = id;
                     this.Refresh();
                 }
             }
@@ -71,6 +96,12 @@ namespace RpgEditor
             if (_itemData != null)
             {
                 Rectangle src = new Rectangle(2 + (_itemData.IconID % 8) * 32, 2 + (_itemData.IconID / 8) * 32, 28, 28);
+                e.Graphics.DrawRectangle(new Pen(Color.Black, 8), src);
+                e.Graphics.DrawRectangle(new Pen(Color.White, 2), src);
+            }
+            else if (_projectileData != null)
+            {
+                Rectangle src = new Rectangle(2 + (_projectileData.IconID % 8) * 32, 2 + (_projectileData.IconID / 8) * 32, 28, 28);
                 e.Graphics.DrawRectangle(new Pen(Color.Black, 8), src);
                 e.Graphics.DrawRectangle(new Pen(Color.White, 2), src);
             }

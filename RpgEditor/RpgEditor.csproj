@@ -88,8 +88,41 @@
     <Compile Include="EditorForm.Designer.cs">
       <DependentUpon>EditorForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProjectileViewerPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="IconSheetPanel.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ItemDataPresets\EquipmentPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ItemDataPresets\EquipmentPreset.Designer.cs">
+      <DependentUpon>EquipmentPreset.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDataPresets\AmmoPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ItemDataPresets\AmmoPreset.Designer.cs">
+      <DependentUpon>AmmoPreset.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDataPresets\MatarialPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ItemDataPresets\MatarialPreset.Designer.cs">
+      <DependentUpon>MatarialPreset.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDataPresets\ConsumablePreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ItemDataPresets\ConsumablePreset.Designer.cs">
+      <DependentUpon>ConsumablePreset.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ItemDataPresets\ToolPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ItemDataPresets\ToolPreset.Designer.cs">
+      <DependentUpon>ToolPreset.cs</DependentUpon>
     </Compile>
     <Compile Include="LoadMapForm.cs">
       <SubType>Form</SubType>
@@ -191,6 +224,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EditorForm.resx">
       <DependentUpon>EditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ItemDataPresets\EquipmentPreset.resx">
+      <DependentUpon>EquipmentPreset.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ItemDataPresets\AmmoPreset.resx">
+      <DependentUpon>AmmoPreset.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ItemDataPresets\MatarialPreset.resx">
+      <DependentUpon>MatarialPreset.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ItemDataPresets\ConsumablePreset.resx">
+      <DependentUpon>ConsumablePreset.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ItemDataPresets\ToolPreset.resx">
+      <DependentUpon>ToolPreset.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoadMapForm.resx">
       <DependentUpon>LoadMapForm.cs</DependentUpon>

@@ -357,6 +357,13 @@ namespace Genus2D.GUI
             return false;
         }
 
+        public Vector2 GetLocalMousePosition()
+        {
+            Vector2 mouse = StateWindow.Instance.GetMousePosition();
+            mouse -= GetWorldContentPosition().Xy;
+            return mouse;
+        }
+
         public bool MouseInsideBody()
         {
             Vector2 mouse = StateWindow.Instance.GetMousePosition();

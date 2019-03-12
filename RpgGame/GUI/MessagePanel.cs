@@ -23,7 +23,7 @@ namespace RpgGame.GUI
         private Button _sendMessageButton;
 
         public MessagePanel(GameState state) 
-            : base(0, (int)Renderer.GetResoultion().Y - 200, (int)Renderer.GetResoultion().X, 200, BarMode.Empty, state)
+            : base(0, (int)Renderer.GetResoultion().Y - 200, (int)Renderer.GetResoultion().X - 400, 200, BarMode.Empty, state)
         {
             Instance = this;
             _gameState = state;

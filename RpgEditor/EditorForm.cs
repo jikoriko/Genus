@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RpgEditor.ItemDataPresets;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -20,7 +21,9 @@ namespace RpgEditor
         public MapPanel mapPanel;
         public TilesetDataPanel tilesetDataPanel;
         public SpriteViewerPanel spriteViewerPanel;
-        public IconSheetPanel iconSheetPanel;
+        public IconSheetPanel itemIconSheetPanel;
+        public IconSheetPanel projectileIconSheetPanel;
+        public ProjectileViewerPanel projectileViewerPanel;
 
         private List<ComboBox> _autoTileSelections;
         private List<NumericUpDown> _autoTimers;
@@ -52,13 +55,21 @@ namespace RpgEditor
             spriteViewerPanel = new SpriteViewerPanel();
             spriteViewerPanel.Size = SpriteViewerParent.Size;
 
-            iconSheetPanel = new IconSheetPanel();
-            iconSheetPanel.Size = panel1.Size;
+            itemIconSheetPanel = new IconSheetPanel();
+            itemIconSheetPanel.Size = panel1.Size;
+
+            projectileIconSheetPanel = new IconSheetPanel();
+            projectileIconSheetPanel.Size = panel3.Size;
+
+            projectileViewerPanel = new ProjectileViewerPanel(this);
+            projectileViewerPanel.Size = panel4.Size;
 
             splitContainer2.Panel1.Controls.Add(tilesetSelectionPanel);
             splitContainer2.Panel2.Controls.Add(mapPanel);
             panel2.Controls.Add(tilesetDataPanel);
-            panel1.Controls.Add(iconSheetPanel);
+            panel1.Controls.Add(itemIconSheetPanel);
+            panel3.Controls.Add(projectileIconSheetPanel);
+            panel4.Controls.Add(projectileViewerPanel);
             SpriteViewerParent.Controls.Add(spriteViewerPanel);
 
             PencilButton.Checked = true;
@@ -106,7 +117,10 @@ namespace RpgEditor
             PopulateSpritesList();
             PopulateSpriteSelections();
             PopulateItemList();
-            PopulateItemIconSelections();
+            PopulateIconSelections();
+            PopulateProjectilesList();
+            PopulateClassesList();
+            PopulateEnemyList();
             PopulateSystemVariables();
         }
 
@@ -237,6 +251,11 @@ namespace RpgEditor
                 EditMapForm form = new EditMapForm(this, mapData);
                 form.ShowDialog(this);
             }
+        }
+
+        private void FloodFillButton_CheckedChanged(object sender, EventArgs e)
+        {
+            tilesetSelectionPanel.UpdateMapTool();
         }
 
         #endregion
@@ -1036,9 +1055,10 @@ namespace RpgEditor
 
         }
 
-        private void PopulateItemIconSelections()
+        private void PopulateIconSelections()
         {
             ItemIconSelection.Items.Clear();
+            ProjectileIconSelection.Items.Clear();
             if (Directory.Exists("Assets/Textures/Icons"))
             {
                 string[] files = Directory.GetFiles("Assets/Textures/Icons", "*.png");
@@ -1047,6 +1067,7 @@ namespace RpgEditor
                     files[i] = Path.GetFileName(files[i]);
                 }
                 ItemIconSelection.Items.AddRange(files);
+                ProjectileIconSelection.Items.AddRange(files);
             }
         }
 
@@ -1084,7 +1105,7 @@ namespace RpgEditor
                 ItemIconSelection.Text = data.IconSheetImage;
                 ItemTypeSelection.SelectedIndex = (int)data.GetItemType();
                 ItemMaxStack.Value = data.GetMaxStack();
-                iconSheetPanel.SetItemData(data);
+                itemIconSheetPanel.SetItemData(data);
             }
             else
             {
@@ -1092,7 +1113,7 @@ namespace RpgEditor
                 ItemIconSelection.SelectedIndex = -1;
                 ItemTypeSelection.SelectedIndex = 0;
                 ItemMaxStack.Value = 1;
-                iconSheetPanel.SetItemData(null);
+                itemIconSheetPanel.SetItemData(null);
             }
             PopulateItemStatPanel();
         }
@@ -1108,67 +1129,47 @@ namespace RpgEditor
                 {
                     case Genus2D.GameData.ItemData.ItemType.Tool:
 
-                        ComboBox toolSelection = new ComboBox();
-                        toolSelection.Location = new Point(10, 10);
-
-                        for (int i = 0; i < 3; i++)
-                        {
-                            Genus2D.GameData.ToolType toolType = (Genus2D.GameData.ToolType)i;
-                            toolSelection.Items.Add(toolType.ToString());
-                        }
-                        toolSelection.SelectedIndex = (int)data.GetItemStat("ToolType").Item2;
-
-                        ItemStatsPanel.Controls.Add(toolSelection);
+                        ToolPreset toolPreset = new ToolPreset();
+                        toolPreset.SetToolType((Genus2D.GameData.ToolType)data.GetItemStat("ToolType"));
+                        ItemStatsPanel.Controls.Add(toolPreset);
 
                         break;
                     case Genus2D.GameData.ItemData.ItemType.Consumable:
 
-                        NumericUpDown hpControl = new NumericUpDown();
-                        hpControl.Location = new Point(10, 10);
-                        hpControl.Value = (int)data.GetItemStat("HP").Item2;
-
-                        NumericUpDown staminaControl = new NumericUpDown();
-                        staminaControl.Location = new Point(10, 20 + hpControl.Size.Height);
-                        staminaControl.Value = (int)data.GetItemStat("Stamina").Item2;
-
-                        ItemStatsPanel.Controls.Add(hpControl);
-                        ItemStatsPanel.Controls.Add(staminaControl);
+                        ConsumablePreset consumablePreset = new ConsumablePreset();
+                        consumablePreset.SetHpHeal((int)data.GetItemStat("HpHeal"));
+                        consumablePreset.SetMpHeal((int)data.GetItemStat("MpHeal"));
+                        consumablePreset.SetStaminaHeal((int)data.GetItemStat("StaminaHeal"));
+                        ItemStatsPanel.Controls.Add(consumablePreset);
 
                         break;
                     case Genus2D.GameData.ItemData.ItemType.Material:
 
-                        NumericUpDown matIdControl = new NumericUpDown();
-                        matIdControl.Location = new Point(10, 10);
-                        matIdControl.Value = (int)data.GetItemStat("MaterialID").Item2;
-
-                        ItemStatsPanel.Controls.Add(matIdControl);
+                        MatarialPreset materialPreset = new MatarialPreset();
+                        materialPreset.SetMaterialID((int)data.GetItemStat("MaterialID"));
+                        ItemStatsPanel.Controls.Add(materialPreset);
 
                         break;
                     case Genus2D.GameData.ItemData.ItemType.Equipment:
 
-                        ComboBox equipmentSlotSelection = new ComboBox();
-                        equipmentSlotSelection.Location = new Point(10, 10);
+                        EquipmentPreset equipmentPreset = new EquipmentPreset();
+                        equipmentPreset.SetEquipmentSlot((Genus2D.GameData.EquipmentSlot)data.GetItemStat("EquipmentSlot"));
+                        equipmentPreset.SetAttackStyle((Genus2D.GameData.AttackStyle)data.GetItemStat("AttackStyle"));
+                        equipmentPreset.SetVitalityBonus((int)data.GetItemStat("VitalityBonus"));
+                        equipmentPreset.SetInteligenceBonus((int)data.GetItemStat("InteligenceBonus"));
+                        equipmentPreset.SetStrengthBonus((int)data.GetItemStat("StrengthBonus"));
+                        equipmentPreset.SetAgilityBonus((int)data.GetItemStat("AgilityBonus"));
+                        equipmentPreset.SetMeleeDefenceBonus((int)data.GetItemStat("MeleeDefenceBonus"));
+                        equipmentPreset.SetRangeDefenceBonus((int)data.GetItemStat("RangeDefenceBonus"));
+                        equipmentPreset.SetMagicDefenceBonus((int)data.GetItemStat("MagicDefenceBonus"));
+                        ItemStatsPanel.Controls.Add(equipmentPreset);
 
-                        for (int i = 0; i < 9; i++)
-                        {
-                            Genus2D.GameData.EquipmentSlot slot = (Genus2D.GameData.EquipmentSlot)i;
-                            equipmentSlotSelection.Items.Add(slot.ToString());
-                        }
-                        equipmentSlotSelection.SelectedIndex = (int)data.GetItemStat("EquipmentSlot").Item2;
+                        break;
+                    case Genus2D.GameData.ItemData.ItemType.Ammo:
 
-                        int y = 20 + equipmentSlotSelection.Size.Height;
-                        NumericUpDown atkStrengthControl = new NumericUpDown();
-                        atkStrengthControl.Location = new Point(10, y);
-                        atkStrengthControl.Value = (int)data.GetItemStat("AttackStrength").Item2;
-
-                        y += atkStrengthControl.Size.Height + 10;
-                        NumericUpDown defenceControl = new NumericUpDown();
-                        defenceControl.Location = new Point(10, y);
-                        defenceControl.Value = (int)data.GetItemStat("Defence").Item2;
-
-                        ItemStatsPanel.Controls.Add(equipmentSlotSelection);
-                        ItemStatsPanel.Controls.Add(atkStrengthControl);
-                        ItemStatsPanel.Controls.Add(defenceControl);
+                        AmmoPreset ammoPreset = new AmmoPreset();
+                        ammoPreset.SetStrengthBonus((int)data.GetItemStat("StrengthBonus"));
+                        ItemStatsPanel.Controls.Add(ammoPreset);
 
                         break;
                 }
@@ -1194,7 +1195,7 @@ namespace RpgEditor
                         Directory.CreateDirectory("Assets/Textures/Icons");
                     string targetPath = "Assets/Textures/Icons/" + Path.GetFileName(sourcePath);
                     File.Copy(sourcePath, targetPath, true);
-                    PopulateItemIconSelections();
+                    PopulateIconSelections();
                 }
             }
         }
@@ -1218,32 +1219,42 @@ namespace RpgEditor
                     {
                         case Genus2D.GameData.ItemData.ItemType.Tool:
 
-                            ComboBox toolSelection = (ComboBox)ItemStatsPanel.Controls[0];
-                            data.SetItemStat("ToolType", toolSelection.SelectedIndex);
+                            ToolPreset toolPreset = (ToolPreset)ItemStatsPanel.Controls[0];
+                            data.SetItemStat("ToolType", toolPreset.GetToolType());
 
                             break;
                         case Genus2D.GameData.ItemData.ItemType.Consumable:
 
-                            NumericUpDown hpControl = (NumericUpDown)ItemStatsPanel.Controls[0];
-                            NumericUpDown staminaControl = (NumericUpDown)ItemStatsPanel.Controls[1];
-                            data.SetItemStat("HP", (int)hpControl.Value);
-                            data.SetItemStat("Stamina", (int)staminaControl.Value);
+                            ConsumablePreset consumablePreset = (ConsumablePreset)ItemStatsPanel.Controls[0];
+                            data.SetItemStat("HpHeal", consumablePreset.GetHpHeal());
+                            data.SetItemStat("MpHeal", consumablePreset.GetMpHeal());
+                            data.SetItemStat("StaminaHeal", consumablePreset.GetStaminaHeal());
 
                             break;
                         case Genus2D.GameData.ItemData.ItemType.Material:
 
-                            NumericUpDown matIdControl = (NumericUpDown)ItemStatsPanel.Controls[0];
-                            data.SetItemStat("MaterialID", (int)matIdControl.Value);
+                            MatarialPreset materialPreset = (MatarialPreset)ItemStatsPanel.Controls[0];
+                            data.SetItemStat("MaterialID", materialPreset.GetMaterialID());
 
                             break;
                         case Genus2D.GameData.ItemData.ItemType.Equipment:
 
-                            ComboBox equipmentSlotSelection = (ComboBox)ItemStatsPanel.Controls[0];
-                            NumericUpDown atkStrengthControl = (NumericUpDown)ItemStatsPanel.Controls[1];
-                            NumericUpDown defenceControl = (NumericUpDown)ItemStatsPanel.Controls[2];
-                            data.SetItemStat("EquipmentSlot", equipmentSlotSelection.SelectedIndex);
-                            data.SetItemStat("AttackStrength", (int)atkStrengthControl.Value);
-                            data.SetItemStat("Defence", (int)defenceControl.Value);
+                            EquipmentPreset equipmentPreset = (EquipmentPreset)ItemStatsPanel.Controls[0];
+                            data.SetItemStat("EquipmentSlot", equipmentPreset.GetEquipmentSlot());
+                            data.SetItemStat("AttackStyle", equipmentPreset.GetAttackStyle());
+                            data.SetItemStat("VitalityBonus", equipmentPreset.GetVitalityBonus());
+                            data.SetItemStat("InteligenceBonus", equipmentPreset.GetInteligenceBonus());
+                            data.SetItemStat("StrengthBonus", equipmentPreset.GetStrengthBonus());
+                            data.SetItemStat("AgilityBonus", equipmentPreset.GetAgilityBonus());
+                            data.SetItemStat("MeleeDefenceBonus", equipmentPreset.GetMeleeDefenceBonus());
+                            data.SetItemStat("RangeDefenceBonus", equipmentPreset.GetRangeDefenceBonus());
+                            data.SetItemStat("MagicDefenceBonus", equipmentPreset.GetMagicDefenceBonus());
+
+                            break;
+                        case Genus2D.GameData.ItemData.ItemType.Ammo:
+
+                            AmmoPreset ammoPreset = (AmmoPreset)ItemStatsPanel.Controls[0];
+                            data.SetItemStat("StrengthBonus", ammoPreset.GetStrengthBonus());
 
                             break;
                     }
@@ -1262,6 +1273,324 @@ namespace RpgEditor
         {
             Genus2D.GameData.ItemData.ReloadData();
             PopulateItemList();
+        }
+
+        #endregion
+
+        #region Projectile Functions
+
+        private void PopulateProjectilesList()
+        {
+            int selection = ProjectileListBox.SelectedIndex;
+            ProjectileListBox.Items.Clear();
+            for (int i = 0; i < Genus2D.GameData.ProjectileData.GetProjectileDataCount(); i++)
+            {
+                ProjectileListBox.Items.Add(Genus2D.GameData.ProjectileData.GetProjectileData(i).Name);
+            }
+            if (selection < ProjectileListBox.Items.Count)
+                ProjectileListBox.SelectedIndex = selection;
+            else
+                SelectProjectile();
+        }
+
+        private void ProjectileListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SelectProjectile();
+        }
+
+        private void SelectProjectile()
+        {
+            int selection = ProjectileListBox.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.ProjectileData data = Genus2D.GameData.ProjectileData.GetProjectileData(selection);
+                ProjectileNameBox.Text = data.Name;
+                ProjectileIconSelection.Text = data.IconSheetImage;
+                ProjectileSpeed.Value = (decimal)data.Speed;
+                ProjectileLifespan.Value = (decimal)data.Lifespan;
+                ProjectileAnchorX.Value = data.AnchorX;
+                ProjectileAnchorY.Value = data.AnchorY;
+                ProjectileBoundsWidth.Value = data.BoundsWidth;
+                ProjectileBoundsHeight.Value = data.BoundsHeight;
+                projectileIconSheetPanel.SetProjectileData(data);
+                projectileViewerPanel.SetProjectileData(data);
+            }
+            else
+            {
+                ProjectileNameBox.Text = "";
+                ProjectileIconSelection.SelectedIndex = -1;
+                ProjectileSpeed.Value = (decimal)0.1f;
+                ProjectileLifespan.Value = (decimal)0.1f;
+                ProjectileAnchorX.Value = 0;
+                ProjectileAnchorY.Value = 0;
+                ProjectileBoundsWidth.Value = 2;
+                ProjectileBoundsHeight.Value = 2;
+                projectileIconSheetPanel.SetProjectileData(null);
+                projectileViewerPanel.SetProjectileData(null);
+            }
+        }
+
+        private void AddProjectileButton_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.ProjectileData data = new Genus2D.GameData.ProjectileData("Projectile " + (ProjectileListBox.Items.Count + 1).ToString("000"));
+            Genus2D.GameData.ProjectileData.AddProjectileData(data);
+            PopulateProjectilesList();
+            ProjectileListBox.SelectedIndex = ProjectileListBox.Items.Count - 1;
+        }
+
+        private void RemoveProjectileButton_Click(object sender, EventArgs e)
+        {
+            int selection = ProjectileListBox.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.ProjectileData.RemoveProjectileData(selection);
+                PopulateProjectilesList();
+            }
+        }
+
+        private void UndoProjectileButton_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.ProjectileData.ReloadData();
+            PopulateProjectilesList();
+        }
+
+        private void ApplyProjectileButton_Click(object sender, EventArgs e)
+        {
+            int selection = ProjectileListBox.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.ProjectileData data = Genus2D.GameData.ProjectileData.GetProjectileData(selection);
+                data.Name = ProjectileNameBox.Text;
+                data.IconSheetImage = ProjectileIconSelection.Text;
+                data.Speed = (float)ProjectileSpeed.Value;
+                data.Lifespan = (float)ProjectileLifespan.Value;
+                data.AnchorX = (int)ProjectileAnchorX.Value;
+                data.AnchorY = (int)ProjectileAnchorY.Value;
+                data.BoundsWidth = (int)ProjectileBoundsWidth.Value;
+                data.BoundsHeight = (int)ProjectileBoundsHeight.Value;
+
+                projectileIconSheetPanel.SetProjectileData(data);
+                projectileViewerPanel.SetProjectileData(data);
+            }
+            Genus2D.GameData.ProjectileData.SaveItemData();
+        }
+
+        public Point GetProjectilelAnchor()
+        {
+            return new Point((int)ProjectileAnchorX.Value, (int)ProjectileAnchorY.Value);
+        }
+
+        public Point GetProjectileBounds()
+        {
+            return new Point((int)ProjectileBoundsWidth.Value, (int)ProjectileBoundsHeight.Value);
+        }
+
+        private void ProjectileAnchorX_ValueChanged(object sender, EventArgs e)
+        {
+            projectileViewerPanel.Refresh();
+        }
+
+        private void ProjectileAnchorY_ValueChanged(object sender, EventArgs e)
+        {
+            projectileViewerPanel.Refresh();
+        }
+
+        private void ProjectileBoundsWidth_ValueChanged(object sender, EventArgs e)
+        {
+            projectileViewerPanel.Refresh();
+        }
+
+        private void ProjectileBoundsHeight_ValueChanged(object sender, EventArgs e)
+        {
+            projectileViewerPanel.Refresh();
+        }
+
+        #endregion
+
+        #region Classes Variable
+
+        private void PopulateClassesList()
+        {
+            int selection = ClassDataList.SelectedIndex;
+            ClassDataList.Items.Clear();
+            List<string> data = Genus2D.GameData.ClassData.GetClassNames();
+            ClassDataList.Items.AddRange(data.ToArray());
+            if (selection < data.Count - 1)
+                ClassDataList.SelectedIndex = selection;
+            else
+                ChangeClassData();
+        }
+
+        private void ClassDataList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ChangeClassData();
+        }
+
+        private void ChangeClassData()
+        {
+            int selection = ClassDataList.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.ClassData data = Genus2D.GameData.ClassData.GetClass(selection);
+                ClassNameBox.Text = data.Name;
+                ClassVitalityControl.Value = data.BaseStats.Vitality;
+                ClassInteligenceControl.Value = data.BaseStats.Inteligence;
+                ClassStrengthControl.Value = data.BaseStats.Strength;
+                ClassAgilityControl.Value = data.BaseStats.Agility;
+                ClassMeleeDefenceControl.Value = data.BaseStats.MeleeDefence;
+                ClassRangeDefenceControl.Value = data.BaseStats.RangeDefence;
+                ClassMagicDefenceControl.Value = data.BaseStats.MagicDefence;
+            }
+            else
+            {
+                ClassNameBox.Text = "";
+                ClassVitalityControl.Value = 0;
+                ClassInteligenceControl.Value = 0;
+                ClassStrengthControl.Value = 0;
+                ClassAgilityControl.Value = 0;
+                ClassMeleeDefenceControl.Value = 0;
+                ClassRangeDefenceControl.Value = 0;
+                ClassMagicDefenceControl.Value = 0;
+            }
+        }
+
+        private void AddClassButton_Click(object sender, EventArgs e)
+        {
+            string name = "Class " + (Genus2D.GameData.ClassData.ClassesCount() + 1).ToString("000");
+            Genus2D.GameData.ClassData.AddClass(name);
+            PopulateClassesList();
+            ClassDataList.SelectedIndex = ClassDataList.Items.Count - 1;
+        }
+
+        private void RemoveClassButton_Click(object sender, EventArgs e)
+        {
+            int selection = ClassDataList.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.ClassData.RemoveClass(selection);
+                PopulateClassesList();
+            }
+        }
+
+        private void UndoClassButton_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.ClassData.ReloadData();
+            PopulateClassesList();
+        }
+
+        private void SaveClassButton_Click(object sender, EventArgs e)
+        {
+            int selection = ClassDataList.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.ClassData data = Genus2D.GameData.ClassData.GetClass(selection);
+                data.Name = ClassNameBox.Text;
+                data.BaseStats.Vitality = (int)ClassVitalityControl.Value;
+                data.BaseStats.Inteligence = (int)ClassInteligenceControl.Value;
+                data.BaseStats.Strength = (int)ClassStrengthControl.Value;
+                data.BaseStats.Agility = (int)ClassAgilityControl.Value;
+                data.BaseStats.MeleeDefence = (int)ClassMeleeDefenceControl.Value;
+                data.BaseStats.RangeDefence = (int)ClassRangeDefenceControl.Value;
+                data.BaseStats.MagicDefence = (int)ClassMagicDefenceControl.Value;
+            }
+            Genus2D.GameData.ClassData.SaveData();
+        }
+
+        #endregion
+
+        #region Enemy Functions
+
+        private void PopulateEnemyList()
+        {
+            int selection = EnemyDataList.SelectedIndex;
+            EnemyDataList.Items.Clear();
+            List<string> data = Genus2D.GameData.EnemyData.GetEnemyNames();
+            EnemyDataList.Items.AddRange(data.ToArray());
+            if (selection < data.Count - 1)
+                EnemyDataList.SelectedIndex = selection;
+            else
+                ChangeEnemyData();
+        }
+
+        private void EnemyDataList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ChangeEnemyData();
+        }
+
+        private void ChangeEnemyData()
+        {
+            int selection = EnemyDataList.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.EnemyData data = Genus2D.GameData.EnemyData.GetEnemy(selection);
+                EnemyNameBox.Text = data.Name;
+                EnemyVitalityControl.Value = data.BaseStats.Vitality;
+                EnemyInteligenceControl.Value = data.BaseStats.Inteligence;
+                EnemyStrengthControl.Value = data.BaseStats.Strength;
+                EnemyAgilityControl.Value = data.BaseStats.Agility;
+                EnemyMeleeDefenceControl.Value = data.BaseStats.MeleeDefence;
+                EnemyRangeDefenceControl.Value = data.BaseStats.RangeDefence;
+                EnemyMagicDefenceControl.Value = data.BaseStats.MagicDefence;
+                EnemyVisionRangeSelection.Value = data.VisionRage;
+                EnemyAttackRangeSelection.Value = data.AttackRange;
+            }
+            else
+            {
+                EnemyNameBox.Text = "";
+                EnemyVitalityControl.Value = 0;
+                EnemyInteligenceControl.Value = 0;
+                EnemyStrengthControl.Value = 0;
+                EnemyAgilityControl.Value = 0;
+                EnemyMeleeDefenceControl.Value = 0;
+                EnemyRangeDefenceControl.Value = 0;
+                EnemyMagicDefenceControl.Value = 0;
+                EnemyVisionRangeSelection.Value = 0;
+                EnemyAttackRangeSelection.Value = 0;
+            }
+        }
+
+        private void AddEnemyButton_Click(object sender, EventArgs e)
+        {
+            string name = "Enemy " + (Genus2D.GameData.EnemyData.EmemiesCount() + 1).ToString("000");
+            Genus2D.GameData.EnemyData.AddEnemy(name);
+            PopulateEnemyList();
+            EnemyDataList.SelectedIndex = EnemyDataList.Items.Count - 1;
+        }
+
+        private void RemoveEnemyButton_Click(object sender, EventArgs e)
+        {
+            int selection = EnemyDataList.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.EnemyData.RemoveEnemy(selection);
+                PopulateEnemyList();
+            }
+        }
+
+        private void UndoEnemyChanges_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.EnemyData.ReloadData();
+            PopulateEnemyList();
+        }
+
+        private void SaveEnemyChanges_Click(object sender, EventArgs e)
+        {
+            int selection = EnemyDataList.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.EnemyData data = Genus2D.GameData.EnemyData.GetEnemy(selection);
+                data.Name = EnemyNameBox.Text;
+                data.BaseStats.Vitality = (int)EnemyVitalityControl.Value;
+                data.BaseStats.Inteligence = (int)EnemyInteligenceControl.Value;
+                data.BaseStats.Strength = (int)EnemyStrengthControl.Value;
+                data.BaseStats.Agility = (int)EnemyAgilityControl.Value;
+                data.BaseStats.MeleeDefence = (int)EnemyMeleeDefenceControl.Value;
+                data.BaseStats.RangeDefence = (int)EnemyRangeDefenceControl.Value;
+                data.BaseStats.MagicDefence = (int)EnemyMagicDefenceControl.Value;
+                data.VisionRage = (int)EnemyVisionRangeSelection.Value;
+                data.AttackRange = (int)EnemyAttackRangeSelection.Value;
+            }
+            Genus2D.GameData.EnemyData.SaveData();
         }
 
         #endregion

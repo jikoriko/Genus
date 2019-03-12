@@ -26,9 +26,9 @@ namespace RpgGame.States
             INSTANCE = this;
 
             Renderer.SetResolutionMode(Renderer.ResolutionMode.Fixed);
-            Renderer.SetResolution(640, 480);
+            Renderer.SetResolution(1200, 800);
 
-            _loginPanel = new Panel(70, 90, 500, 300, Panel.BarMode.Empty, this);
+            _loginPanel = new Panel(350, 250, 500, 300, Panel.BarMode.Empty, this);
             _usernameTextBox = new TextField(30, 50, 440, 40, this);
             _passwordTextBox = new TextField(30, 100, 440, 40, this);
 

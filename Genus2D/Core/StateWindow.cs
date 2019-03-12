@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Genus2D.Graphics;
 using Genus2D.Utililities;
 
@@ -57,12 +58,14 @@ namespace Genus2D.Core
         protected override void OnKeyPress(KeyPressEventArgs e)
         {
             base.OnKeyPress(e);
+            if (!this.Focused) return;
             if (_stateList.Count > 0)
                 _stateList[_stateList.Count - 1].OnKeyPress(e);
         }
 
         protected override void OnKeyDown(KeyboardKeyEventArgs e)
         {
+            if (!this.Focused) return;
             base.OnKeyDown(e);
             if (_stateList.Count > 0)
                 _stateList[_stateList.Count - 1].OnKeyDown(e);
@@ -70,6 +73,7 @@ namespace Genus2D.Core
 
         protected override void OnKeyUp(KeyboardKeyEventArgs e)
         {
+            if (!this.Focused) return;
             base.OnKeyUp(e);
             if (_stateList.Count > 0)
                 _stateList[_stateList.Count - 1].OnKeyUp(e);
@@ -106,6 +110,7 @@ namespace Genus2D.Core
                 _curMousePosition.Y = e.Y;
             }
 
+            if (!this.Focused) return;
             if (_stateList.Count > 0)
                 _stateList[_stateList.Count - 1].OnMouseMove(e);
         }
@@ -162,6 +167,7 @@ namespace Genus2D.Core
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
             base.OnMouseWheel(e);
+            if (!this.Focused) return;
             if (_stateList.Count > 0)
                 _stateList[_stateList.Count - 1].OnMouseWheel(e);
         }
@@ -174,6 +180,7 @@ namespace Genus2D.Core
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            if (!this.Focused) return;
             base.OnUpdateFrame(e);
 
             if (_stateList.Count > 0)

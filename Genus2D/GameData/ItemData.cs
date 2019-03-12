@@ -18,7 +18,8 @@ namespace Genus2D.GameData
             Tool,
             Consumable,
             Material,
-            Equipment
+            Equipment,
+            Ammo
         }
 
         public string Name;
@@ -26,7 +27,7 @@ namespace Genus2D.GameData
         public int IconID;
         private ItemType _itemType;
         private int _maxStack;
-        private Dictionary<string, Tuple<ItemStatType, object>> _itemStats;
+        private Dictionary<string, object> _itemStats;
 
         public ItemData(string name)
         {
@@ -35,7 +36,7 @@ namespace Genus2D.GameData
             IconID = 0;
             _itemType = ItemType.Tool;
             _maxStack = 1;
-            _itemStats = new Dictionary<string, Tuple<ItemStatType, object>>();
+            _itemStats = new Dictionary<string, object>();
             PopulateItemStats();
         }
 
@@ -49,7 +50,7 @@ namespace Genus2D.GameData
             if (_itemType != type)
             {
                 _itemType = type;
-                if (_itemType != ItemType.Consumable || _itemType != ItemType.Material)
+                if (_itemType != ItemType.Consumable || _itemType != ItemType.Material || _itemType != ItemType.Ammo)
                     _maxStack = 1;
 
                 PopulateItemStats();
@@ -63,19 +64,29 @@ namespace Genus2D.GameData
             switch(_itemType)
             {
                 case ItemType.Tool:
-                    _itemStats.Add("ToolType", Tuple.Create(ItemStatType.ToolType, (object)ToolType.Axe));
+                    _itemStats.Add("ToolType", ToolType.Axe);
                     break;
                 case ItemType.Consumable:
-                    _itemStats.Add("HP", Tuple.Create(ItemStatType.Integer, (object)0));
-                    _itemStats.Add("Stamina", Tuple.Create(ItemStatType.Integer, (object)0));
+                    _itemStats.Add("HpHeal", 0);
+                    _itemStats.Add("MpHeal", 0);
+                    _itemStats.Add("StaminaHeal", 0);
                     break;
                 case ItemType.Material:
-                    _itemStats.Add("MaterialID", Tuple.Create(ItemStatType.Integer, (object)0));
+                    _itemStats.Add("MaterialID", 0);
                     break;
                 case ItemType.Equipment:
-                    _itemStats.Add("EquipmentSlot", Tuple.Create(ItemStatType.Integer, (object)EquipmentSlot.Weapon));
-                    _itemStats.Add("AttackStrength", Tuple.Create(ItemStatType.Integer, (object)0));
-                    _itemStats.Add("Defence", Tuple.Create(ItemStatType.Integer, (object)0));
+                    _itemStats.Add("EquipmentSlot", EquipmentSlot.Weapon);
+                    _itemStats.Add("AttackStyle", AttackStyle.None);
+                    _itemStats.Add("VitalityBonus", 0);
+                    _itemStats.Add("InteligenceBonus", 0);
+                    _itemStats.Add("StrengthBonus", 0);
+                    _itemStats.Add("AgilityBonus", 0);
+                    _itemStats.Add("MeleeDefenceBonus", 0);
+                    _itemStats.Add("RangeDefenceBonus", 0);
+                    _itemStats.Add("MagicDefenceBonus", 0);
+                    break;
+                case ItemType.Ammo:
+                    _itemStats.Add("StrengthBonus", 0);
                     break;
             }
         }
@@ -96,7 +107,7 @@ namespace Genus2D.GameData
                 _maxStack = max;
         }
 
-        public Tuple<ItemStatType, object> GetItemStat(string name)
+        public object GetItemStat(string name)
         {
             if (_itemStats.ContainsKey(name))
                 return _itemStats[name];
@@ -106,7 +117,7 @@ namespace Genus2D.GameData
         public void SetItemStat(string name, object value)
         {
             if (_itemStats.ContainsKey(name))
-                _itemStats[name] = Tuple.Create(_itemStats[name].Item1, value);
+                _itemStats[name] = value;
         }
 
 
@@ -114,6 +125,39 @@ namespace Genus2D.GameData
         //static
 
         private static List<ItemData> _itemData = LoadItemData();
+        private static List<ItemData> LoadItemData()
+        {
+            List<ItemData> data = null;
+
+            if (File.Exists("Data/ItemData.data"))
+            {
+                FileStream stream = File.Open("Data/ItemData.data", FileMode.Open, FileAccess.Read);
+                BinaryFormatter formatter = new BinaryFormatter();
+                data = (List<ItemData>)formatter.Deserialize(stream);
+                stream.Close();
+            }
+            else
+            {
+                data = new List<ItemData>();
+            }
+
+            return data;
+        }
+
+        public static void ReloadData()
+        {
+            _itemData = LoadItemData();
+        }
+
+        public static void SaveItemData()
+        {
+            if (!Directory.Exists("Data"))
+                Directory.CreateDirectory("Data");
+            FileStream stream = File.Create("Data/ItemData.data");
+            BinaryFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(stream, _itemData);
+            stream.Close();
+        }
 
         public static void AddItemData(ItemData data)
         {
@@ -152,40 +196,6 @@ namespace Genus2D.GameData
             }
 
             return names;
-        }
-
-        private static List<ItemData> LoadItemData()
-        {
-            List<ItemData> data = null;
-
-            if (File.Exists("Data/ItemData.data"))
-            {
-                FileStream stream = File.Open("Data/ItemData.data", FileMode.Open, FileAccess.Read);
-                BinaryFormatter formatter = new BinaryFormatter();
-                data = (List<ItemData>)formatter.Deserialize(stream);
-                stream.Close();
-            }
-            else
-            {
-                data = new List<ItemData>();
-            }
-
-            return data;
-        }
-
-        public static void ReloadData()
-        {
-            _itemData = LoadItemData();
-        }
-
-        public static void SaveItemData()
-        {
-            if (!Directory.Exists("Data"))
-                Directory.CreateDirectory("Data");
-            FileStream stream = File.Create("Data/ItemData.data");
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, _itemData);
-            stream.Close();
         }
 
     }

@@ -22,6 +22,10 @@ namespace RpgGame.States
         private RpgClientConnection _connection;
 
         private MessagePanel _messagePanel;
+        private MenuPanel _menuPanel;
+        private InventoryPanel _inventoryPanel;
+        private EquipmentPanel _equipmentPanel;
+        private StatsPanel _statsPanel;
 
         public Entity MapEntity;
 
@@ -35,7 +39,88 @@ namespace RpgGame.States
             _connection = null;
 
             _messagePanel = new MessagePanel(this);
+            _menuPanel = new MenuPanel(this);
+            _inventoryPanel = null;
+            _equipmentPanel = null;
+            _statsPanel = null;
+
             this.AddControl(_messagePanel);
+            this.AddControl(_menuPanel);
+        }
+
+        public void ToggleInventory()
+        {
+            if (_equipmentPanel != null)
+            {
+                _equipmentPanel.Close();
+                _equipmentPanel = null;
+            }
+            if (_statsPanel != null)
+            {
+                _statsPanel.Close();
+                _statsPanel = null;
+            }
+
+            if (_inventoryPanel != null)
+            {
+                _inventoryPanel.Close();
+                _inventoryPanel = null;
+            }
+            else
+            {
+                _inventoryPanel = new InventoryPanel(this);
+                this.AddControl(_inventoryPanel);
+            }
+        }
+
+        public void ToggleEquipmentPanel()
+        {
+            if (_inventoryPanel != null)
+            {
+                _inventoryPanel.Close();
+                _inventoryPanel = null;
+            }
+            if (_statsPanel != null)
+            {
+                _statsPanel.Close();
+                _statsPanel = null;
+            }
+
+            if (_equipmentPanel != null)
+            {
+                _equipmentPanel.Close();
+                _equipmentPanel = null;
+            }
+            else
+            {
+                _equipmentPanel = new EquipmentPanel(this);
+                this.AddControl(_equipmentPanel);
+            }
+        }
+
+        public void ToggleStatsPanel()
+        {
+            if (_inventoryPanel != null)
+            {
+                _inventoryPanel.Close();
+                _inventoryPanel = null;
+            }
+            if (_equipmentPanel != null)
+            {
+                _equipmentPanel.Close();
+                _equipmentPanel = null;
+            }
+
+            if (_statsPanel != null)
+            {
+                _statsPanel.Close();
+                _statsPanel = null;
+            }
+            else
+            {
+                _statsPanel = new StatsPanel(this);
+                this.AddControl(_statsPanel);
+            }
         }
 
         public void SetRpgClientConnection(RpgClientConnection connection)

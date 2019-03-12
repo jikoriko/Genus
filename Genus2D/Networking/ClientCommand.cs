@@ -15,7 +15,9 @@ namespace Genus2D.Networking
             SelectOption,
             MovePlayer,
             ToggleRunning,
-            ActionTrigger
+            ActionTrigger,
+            SelectItem,
+            RemoveEquipment
 
         }
 
@@ -43,6 +45,12 @@ namespace Genus2D.Networking
                     break;
                 case CommandType.ActionTrigger:
 
+                    break;
+                case CommandType.SelectItem:
+                    _parameters.Add("ItemIndex", "");
+                    break;
+                case CommandType.RemoveEquipment:
+                    _parameters.Add("EquipmentIndex", "");
                     break;
 
             }

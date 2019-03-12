@@ -203,7 +203,30 @@ namespace RpgEditor
 
         private Rectangle GetSelectionRectangle()
         {
-            if (_leftGrabbed && EditorForm.Instance.GetMapTool() == EditorForm.MapTool.Rectangle)
+            if (EditorForm.Instance.GetMapTool() == EditorForm.MapTool.Pencil)
+            {
+                Point mouse = this.PointToClient(Cursor.Position);
+                int x = (mouse.X + HorizontalScroll.Value) / 32;
+                int y = (mouse.Y + VerticalScroll.Value) / 32;
+                int width = 1;
+                int height = 1;
+
+                int tileset = EditorForm.Instance.GetSelectedMapTileset();
+                if (tileset != -1)
+                {
+                    Rectangle tilesetSelection = EditorForm.Instance.tilesetSelectionPanel.GetSelectionRectangle();
+                    width = tilesetSelection.Width;
+                    height = tilesetSelection.Height;
+
+                    if (width > MapData.GetWidth() - x)
+                        width = MapData.GetWidth() - x;
+                    if (height > MapData.GetHeight() - y)
+                        height = MapData.GetHeight() - y;
+                }
+
+                return new Rectangle(x, y, width, height);
+            }
+            else if (_leftGrabbed && EditorForm.Instance.GetMapTool() == EditorForm.MapTool.Rectangle)
             {
                 int x = _startX <= _endX ? _startX : _endX;
                 int y = _startY <= _endY ? _startY : _endY;
@@ -220,9 +243,9 @@ namespace RpgEditor
             else
             {
                 Point mouse = this.PointToClient(Cursor.Position);
-                int tileX = (mouse.X + HorizontalScroll.Value) / 32;
-                int tileY = (mouse.Y + VerticalScroll.Value) / 32;
-                return new Rectangle(tileX, tileY, 1, 1);
+                int x = (mouse.X + HorizontalScroll.Value) / 32;
+                int y = (mouse.Y + VerticalScroll.Value) / 32;
+                return new Rectangle(x, y, 1, 1);
             }
         }
 

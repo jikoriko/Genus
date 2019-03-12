@@ -159,6 +159,19 @@ namespace RpgEditor
             }
         }
 
+        public void UpdateMapTool()
+        {
+            if (EditorForm.Instance.GetMapTool() == EditorForm.MapTool.FloodFill)
+            {
+                Rectangle selection = GetSelectionRectangle();
+                _selectedTileStartX = selection.X;
+                _selectedTileEndX = selection.X;
+                _selectedTileStartY = selection.Y;
+                _selectedTileEndY = selection.Y;
+                this.Refresh();
+            }
+        }
+
         public Rectangle GetSelectionRectangle()
         {
             int x = _selectedTileStartX <= _selectedTileEndX ? _selectedTileStartX : _selectedTileEndX;
