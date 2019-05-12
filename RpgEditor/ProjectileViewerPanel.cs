@@ -52,7 +52,7 @@ namespace RpgEditor
                 Rectangle dest;
                 if (_iconSheetImage != null)
                 {
-                    Rectangle src = new Rectangle(_projectileData.IconID % 8 * 32, _projectileData.IconID / 8 * 32, 32, 32);
+                    Rectangle src = new Rectangle((_projectileData.IconID % 8) * 32, (_projectileData.IconID / 8) * 32, 32, 32);
                     dest = new Rectangle(0, 0, 32, 32);
                     e.Graphics.DrawImage(_iconSheetImage, dest, src, GraphicsUnit.Pixel);
 

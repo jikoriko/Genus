@@ -92,13 +92,13 @@ namespace Genus2D.Entities
                 _components.Add(component);
         }
 
-        public EntityComponent FindComponent<T>()
+        public T FindComponent<T>() where T : EntityComponent
         {
             foreach (EntityComponent component in _components)
             {
                 if (component.GetType() == typeof(T))
                 {
-                    return component;
+                    return (T)component;
                 }
             }
             return null;

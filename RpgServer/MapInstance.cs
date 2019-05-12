@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Genus2D.GameData;
 using Genus2D.Networking;
+using OpenTK;
 
 namespace RpgServer
 {
@@ -18,6 +20,7 @@ namespace RpgServer
         private List<GameClient> _clientsToRemove;
 
         private EventInterpreter _eventInterpreter;
+        private List<Dictionary<MapEnemy, float>> _enemyTrackers;
         private float _updateMapTimer;
         private Random _random = new Random();
 
@@ -27,15 +30,20 @@ namespace RpgServer
             _mapID = mapID;
             _mapData = MapInfo.LoadMap(mapID);
 
-            _mapPacket = new MapPacket();
-            _mapPacket.MapID = _mapID;
-            _mapPacket.mapData = _mapData;
+            _mapPacket = new MapPacket(_mapID, _mapData);
+
             _clients = new List<GameClient>();
             _clientsToAdd = new List<GameClient>();
             _clientsToRemove = new List<GameClient>();
 
             _eventInterpreter = new EventInterpreter(this);
-            _updateMapTimer = 0.06f;
+            _enemyTrackers = new List<Dictionary<MapEnemy, float>>();
+            for (int i = 0; i < _mapData.MapEventsCount(); i++)
+            {
+                _enemyTrackers.Add(new Dictionary<MapEnemy, float>());
+            }
+
+            _updateMapTimer = 0.0f;
         }
 
         public Server GetServer()
@@ -85,6 +93,25 @@ namespace RpgServer
             return _eventInterpreter;
         }
 
+        public Dictionary<MapEnemy, float> GetEnemyTracker(MapEvent mapEvent)
+        {
+            int mapEventIndex = -1;
+            for (int i = 0; i < _mapData.MapEventsCount(); i++)
+            {
+                if (_mapData.GetMapEvent(i) == mapEvent)
+                {
+                    mapEventIndex = i;
+                    break;
+                }
+            }
+
+            if (mapEventIndex != -1)
+            {
+                return _enemyTrackers[mapEventIndex];
+            }
+            return null;
+        }
+
         public bool TileInsideMap(int x, int y)
         {
             if (x < 0 || y < 0 || x >= _mapData.GetWidth() || y >= _mapData.GetHeight())
@@ -92,7 +119,7 @@ namespace RpgServer
             return true;
         }
 
-        public bool MapTilePassable(int x, int y)
+        public bool MapTilesetPassable(int x, int y)
         {
             if (!TileInsideMap(x, y))
                 return false;
@@ -102,31 +129,18 @@ namespace RpgServer
                 Tuple<int, int> tileInfo = _mapData.GetTile(i, x, y);
                 if (tileInfo.Item2 == -1)
                     continue;
+
                 if (!TilesetData.GetTileset(tileInfo.Item2).GetPassable(tileInfo.Item1))
-                {
                     return false;
-                }
             }
 
             return true;
         }
 
-        public bool MapTilePassable(int x, int y, int eventID, bool onBridge, bool bridgeEntry)
-        {
-            return MapTilePassable(x, y, MovementDirection.Down, eventID, onBridge, bridgeEntry, false);
-        }
-
-        public bool MapTilePassable(int x, int y, MovementDirection dir, int eventID, bool onBridge, bool bridgeEntry, bool checkDirections = true, bool checkCharacters = true)
+        public bool MapTilePassable(int x, int y, bool checkDirections, bool onBridge, bool bridgeEntry, MovementDirection dir)
         {
             if (!TileInsideMap(x, y))
                 return false;
-
-            if (eventID != -1)
-            {
-                MapEvent mapEvent = _mapData.GetMapEvent(eventID);
-                if (mapEvent.Passable)
-                    return true;
-            }
 
             for (int i = MapData.NUM_LAYERS - 1; i >= 0; i--)
             {
@@ -143,7 +157,7 @@ namespace RpgServer
                 {
                     if (onBridge)
                     {
-                        if (bridgeEntry && MapTilePassable(x, y))
+                        if (bridgeEntry && TilesetData.GetTileset(tileInfo.Item2).GetPassable(tileInfo.Item1))
                             return true;
                         else
                             return false;
@@ -165,48 +179,77 @@ namespace RpgServer
                             }
                         }
                     }
-
-                }
-            }
-
-            if (checkCharacters)
-            {
-                int tileEvent = TileHasEvent(x, y, eventID);
-                if (tileEvent != -1)
-                {
-                    MapEvent mapEvent = _mapData.GetMapEvent(tileEvent);
-                    if (onBridge == mapEvent.OnBridge)
-                    {
-                        return false;
-                    }
-                }
-
-                if (eventID != -1)
-                {
-                    MapEvent mapEvent = _mapData.GetMapEvent(eventID);
-                    if (TileHasPlayers(x, y, onBridge) && !mapEvent.Passable)
-                        return false;
                 }
             }
 
             return true;
         }
 
-        public bool GetBridgeFlag(int mapX, int mapY)
-        {
-            for (int i = MapData.NUM_LAYERS - 1; i >= 0; i--)
-            {
-                Tuple<int, int> tileInfo = _mapData.GetTile(i, mapX, mapY);
-                if (tileInfo.Item2 == -1)
-                    continue;
 
-                if (TilesetData.GetTileset(tileInfo.Item2).GetBridgeFlag(tileInfo.Item1))
-                    return true;
+        public bool MapTileCharacterPassable(int x, int y, bool checkDirections, bool onBridge, bool bridgeEntry, MovementDirection dir)
+        {
+            if (!MapTilePassable(x, y, checkDirections, onBridge, bridgeEntry, dir))
+                return false;
+
+            int tileEvent = TileHasNonePassableEvent(x, y, -1);
+            if (tileEvent != -1)
+            {
+                MapEvent mapEvent = _mapData.GetMapEvent(tileEvent);
+                if (onBridge == mapEvent.OnBridge)
+                {
+                    return false;
+                }
             }
-            return false;
+
+            return true;
         }
 
-        public int TileHasEvent(int mapX, int mapY, int ignoreID)
+        public bool MapTileEventPassable(int x, int y, int eventID, bool checkDirections, bool onBridge, bool bridgeEntry, MovementDirection dir)
+        {
+            if (!MapTilePassable(x, y, checkDirections, onBridge, bridgeEntry, dir))
+                return false;
+
+            MapEvent mapEvent = _mapData.GetMapEvent(eventID);
+            if (mapEvent.Passable)
+                return true;
+            else
+            {
+                if (TileHasPlayers(x, y, onBridge))
+                    return false;
+
+                int tileEvent = TileHasNonePassableEvent(x, y, eventID);
+                if (tileEvent != -1)
+                {
+                    mapEvent = _mapData.GetMapEvent(tileEvent);
+                    if (onBridge == mapEvent.OnBridge)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public bool MapTileProjectilePassable(int x, int y, bool onBridge, bool bridgeEntry, MovementDirection dir)
+        {
+            if (!MapTilePassable(x, y, true, onBridge, bridgeEntry, dir))
+                return false;
+
+            int tileEvent = TileHasNonePassableEvent(x, y, -1);
+            if (tileEvent != -1)
+            {
+                MapEvent mapEvent = _mapData.GetMapEvent(tileEvent);
+                if (onBridge == mapEvent.OnBridge)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public int TileHasNonePassableEvent(int mapX, int mapY, int ignoreID)
         {
             int id = -1;
             for (int i = 0; i < _mapData.MapEventsCount(); i++)
@@ -232,6 +275,20 @@ namespace RpgServer
             {
                 PlayerPacket packet = _clients[i].GetPacket();
                 if (packet.PositionX == mapX && packet.PositionY == mapY && packet.OnBridge == onBridge)
+                    return true;
+            }
+            return false;
+        }
+
+        public bool GetBridgeFlag(int mapX, int mapY)
+        {
+            for (int i = MapData.NUM_LAYERS - 1; i >= 0; i--)
+            {
+                Tuple<int, int> tileInfo = _mapData.GetTile(i, mapX, mapY);
+                if (tileInfo.Item2 == -1)
+                    continue;
+
+                if (TilesetData.GetTileset(tileInfo.Item2).GetBridgeFlag(tileInfo.Item1))
                     return true;
             }
             return false;
@@ -299,7 +356,7 @@ namespace RpgServer
 
         public bool TeleportMapEvent(int eventID, int mapX, int mapY)
         {
-            if (MapTilePassable(mapX, mapY, eventID, false, false))
+            if (MapTileEventPassable(mapX, mapY, eventID, false, false, false, MovementDirection.Down))
             {
                 MapEvent mapEvent = GetMapData().GetMapEvent(eventID);
                 mapEvent.MapX = mapX;
@@ -372,15 +429,15 @@ namespace RpgServer
                     break;
             }
 
-            bool bridgeEntry = MapTilePassable(x, y) && mapEvent.OnBridge;
-            if ((MapTilePassable(x, y, direction, eventID, mapEvent.OnBridge, bridgeEntry, true, false) && 
-                MapTilePassable(targetX, targetY, entryDirection, eventID, mapEvent.OnBridge, bridgeEntry)))
+            bool bridgeEntry = MapTilesetPassable(x, y) && mapEvent.OnBridge;
+            if (MapTileEventPassable(x, y, eventID, true, mapEvent.OnBridge, bridgeEntry, direction) &&
+                MapTileEventPassable(targetX, targetY, eventID, true, mapEvent.OnBridge, bridgeEntry, entryDirection))
             {
                 if (mapEvent.Move(targetX, targetY))
                 {
                     if (GetBridgeFlag(targetX, targetY))
                     {
-                        if (MapTilePassable(targetX, targetY))
+                        if (MapTilesetPassable(targetX, targetY))
                             mapEvent.OnBridge = true;
                     }
                     else
@@ -401,9 +458,9 @@ namespace RpgServer
             {
                 GetMapData().GetMapEvent(eventID).EventDirection = direction;
                 ServerCommand serverCommand = new ServerCommand(ServerCommand.CommandType.ChangeMapEventDirection);
-                serverCommand.SetParameter("EventID", eventID.ToString());
-                serverCommand.SetParameter("MapID", _mapID.ToString());
-                serverCommand.SetParameter("Direction", ((int)direction).ToString());
+                serverCommand.SetParameter("EventID", eventID);
+                serverCommand.SetParameter("MapID", _mapID);
+                serverCommand.SetParameter("Direction", (int)direction);
                 for (int i = 0; i < _clients.Count; i++)
                 {
                     _clients[i].AddServerCommand(serverCommand);
@@ -417,9 +474,9 @@ namespace RpgServer
             {
                 GetMapData().GetMapEvent(eventID).SpriteID = spriteID;
                 ServerCommand serverCommand = new ServerCommand(ServerCommand.CommandType.ChangeMapEventSprite);
-                serverCommand.SetParameter("EventID", eventID.ToString());
-                serverCommand.SetParameter("MapID", _mapID.ToString());
-                serverCommand.SetParameter("SpriteID", spriteID.ToString());
+                serverCommand.SetParameter("EventID", eventID);
+                serverCommand.SetParameter("MapID", _mapID);
+                serverCommand.SetParameter("SpriteID", spriteID);
                 for (int i = 0; i < _clients.Count; i++)
                 {
                     _clients[i].AddServerCommand(serverCommand);
@@ -433,9 +490,9 @@ namespace RpgServer
             {
                 GetMapData().GetMapEvent(eventID).Priority = priority;
                 ServerCommand serverCommand = new ServerCommand(ServerCommand.CommandType.ChangeMapEventRenderPriority);
-                serverCommand.SetParameter("EventID", eventID.ToString());
-                serverCommand.SetParameter("MapID", _mapID.ToString());
-                serverCommand.SetParameter("RenderPriority", ((int)priority).ToString());
+                serverCommand.SetParameter("EventID", eventID);
+                serverCommand.SetParameter("MapID", _mapID);
+                serverCommand.SetParameter("RenderPriority", (int)priority);
                 for (int i = 0; i < _clients.Count; i++)
                 {
                     _clients[i].AddServerCommand(serverCommand);
@@ -449,9 +506,9 @@ namespace RpgServer
             {
                 GetMapData().GetMapEvent(eventID).Enabled = enabled;
                 ServerCommand serverCommand = new ServerCommand(ServerCommand.CommandType.ChangeMapEventEnabled);
-                serverCommand.SetParameter("EventID", eventID.ToString());
-                serverCommand.SetParameter("MapID", _mapID.ToString());
-                serverCommand.SetParameter("Enabled", (enabled ? 1 : 0).ToString());
+                serverCommand.SetParameter("EventID", eventID);
+                serverCommand.SetParameter("MapID", _mapID);
+                serverCommand.SetParameter("Enabled", enabled);
                 for (int i = 0; i < _clients.Count; i++)
                 {
                     _clients[i].AddServerCommand(serverCommand);
@@ -459,21 +516,150 @@ namespace RpgServer
             }
         }
 
-        public void UpdateMapEventOnClients(int eventID)
+        public void AddMapEnemy(MapEnemy mapEnemy)
         {
-            ServerCommand serverCommand = new ServerCommand(ServerCommand.CommandType.UpdateMapEvent);
-            serverCommand.SetParameter("EventID", eventID.ToString());
-            serverCommand.SetParameter("MapID", _mapID.ToString());
-            MapEvent mapEvent = GetMapData().GetMapEvent(eventID);
-            serverCommand.SetParameter("MapX", (mapEvent.MapX).ToString());
-            serverCommand.SetParameter("MapY", (mapEvent.MapY).ToString());
-            serverCommand.SetParameter("RealX", (mapEvent.RealX).ToString());
-            serverCommand.SetParameter("RealY", (mapEvent.RealY).ToString());
-            serverCommand.SetParameter("Direction", ((int)mapEvent.EventDirection).ToString());
-            serverCommand.SetParameter("OnBridge", (mapEvent.OnBridge ? 1 : 0).ToString());
+            _mapPacket.Enemies.Add(mapEnemy);
+            ServerCommand serverCommand = new ServerCommand(ServerCommand.CommandType.AddMapEnemy);
+            serverCommand.SetParameter("EnemyID", mapEnemy.GetEnemyID());
+            serverCommand.SetParameter("MapID", _mapID);
+            serverCommand.SetParameter("MapX", mapEnemy.MapX);
+            serverCommand.SetParameter("MapY", mapEnemy.MapY);
+            serverCommand.SetParameter("OnBridge", mapEnemy.OnBridge);
+
             for (int i = 0; i < _clients.Count; i++)
             {
                 _clients[i].AddServerCommand(serverCommand);
+            }
+        }
+
+        public void UpdateMapEnemyOnClient(int index)
+        {
+            MapEnemy mapEnemy = _mapPacket.Enemies[index];
+            ServerCommand serverCommand = new ServerCommand(ServerCommand.CommandType.UpdateMapEnemy);
+            serverCommand.SetParameter("EnemyIndex", index);
+            serverCommand.SetParameter("MapID", _mapID);
+            serverCommand.SetParameter("HP", mapEnemy.HP);
+            serverCommand.SetParameter("MapX", mapEnemy.MapX);
+            serverCommand.SetParameter("MapY", mapEnemy.MapY);
+            serverCommand.SetParameter("RealX", mapEnemy.RealX);
+            serverCommand.SetParameter("RealY", mapEnemy.RealY);
+            serverCommand.SetParameter("Direction", (int)mapEnemy.Direction);
+            serverCommand.SetParameter("OnBridge", mapEnemy.OnBridge);
+            serverCommand.SetParameter("Dead", mapEnemy.Dead);
+
+            for (int i = 0; i < _clients.Count; i++)
+            {
+                _clients[i].AddServerCommand(serverCommand);
+            }
+        }
+
+        public void UpdateMapEventOnClients(int eventID)
+        {
+            ServerCommand serverCommand = new ServerCommand(ServerCommand.CommandType.UpdateMapEvent);
+            serverCommand.SetParameter("EventID", eventID);
+            serverCommand.SetParameter("MapID", _mapID);
+            MapEvent mapEvent = GetMapData().GetMapEvent(eventID);
+            serverCommand.SetParameter("MapX", mapEvent.MapX);
+            serverCommand.SetParameter("MapY", mapEvent.MapY);
+            serverCommand.SetParameter("RealX", mapEvent.RealX);
+            serverCommand.SetParameter("RealY", mapEvent.RealY);
+            serverCommand.SetParameter("Direction", (int)mapEvent.EventDirection);
+            serverCommand.SetParameter("OnBridge", mapEvent.OnBridge);
+            for (int i = 0; i < _clients.Count; i++)
+            {
+                _clients[i].AddServerCommand(serverCommand);
+            }
+        }
+
+        public void AddProjectile(Projectile projectile)
+        {
+            _mapPacket.Projectiles.Add(projectile);
+
+            ServerCommand command = new ServerCommand(ServerCommand.CommandType.AddProjectile);
+            command.SetParameter("MapID", _mapID);
+            command.SetParameter("DataID", projectile.ProjectileID);
+            command.SetParameter("RealX", projectile.Position.X);
+            command.SetParameter("RealY", projectile.Position.Y);
+            command.SetParameter("VelocityX", projectile.Velocity.X);
+            command.SetParameter("VelocityY", projectile.Velocity.Y);
+            command.SetParameter("Direction", (int)projectile.Direction);
+            command.SetParameter("OnBridge", projectile.OnBridge);
+
+            for (int i = 0; i < _clients.Count; i++)
+            {
+                _clients[i].AddServerCommand(command);
+            }
+        }
+
+        public void UpdateProjectileOnClients(int projectileID)
+        {
+            ServerCommand serverCommand = new ServerCommand(ServerCommand.CommandType.UpdateProjectile);
+            Projectile projectile = _mapPacket.Projectiles[projectileID];
+            serverCommand.SetParameter("MapID", _mapID);
+            serverCommand.SetParameter("ProjectileID", projectileID);
+            serverCommand.SetParameter("RealX", projectile.Position.X);
+            serverCommand.SetParameter("RealY", projectile.Position.Y);
+            serverCommand.SetParameter("OnBridge", projectile.OnBridge);
+            serverCommand.SetParameter("Destroyed", projectile.Destroyed);
+            for (int i = 0; i < _clients.Count; i++)
+            {
+                _clients[i].AddServerCommand(serverCommand);
+            }
+        }
+
+        public MapItem GetMapItem(int index)
+        {
+            if (index >= 0 && index < _mapPacket.Items.Count)
+                return _mapPacket.Items[index];
+
+            return null;
+        }
+
+        public void AddMapItem(MapItem mapItem)
+        {
+            _mapPacket.Items.Add(mapItem);
+            ServerCommand command = new ServerCommand(ServerCommand.CommandType.AddMapItem);
+            command.SetParameter("MapID", _mapPacket.MapID);
+            command.SetParameter("ItemID", mapItem.ItemID);
+            command.SetParameter("Count", mapItem.Count);
+            command.SetParameter("MapX", mapItem.MapX);
+            command.SetParameter("MapY", mapItem.MapY);
+            command.SetParameter("PlayerID", mapItem.PlayerID);
+            command.SetParameter("OnBridge", mapItem.OnBridge);
+            for (int i = 0; i < _clients.Count; i++)
+            {
+                _clients[i].AddServerCommand(command);
+            }
+        }
+
+        public void RemoveMapItem(int index)
+        {
+            if (index >= 0 && index < _mapPacket.Items.Count)
+            {
+                _mapPacket.Items.RemoveAt(index);
+                ServerCommand command = new ServerCommand(ServerCommand.CommandType.RemoveMapItem);
+                command.SetParameter("MapID", _mapPacket.MapID);
+                command.SetParameter("ItemIndex", index);
+                for (int i = 0; i < _clients.Count; i++)
+                {
+                    _clients[i].AddServerCommand(command);
+                }
+            }
+        }
+
+        public void UpdateMapItem(int index)
+        {
+            if (index >= 0 && index < _mapPacket.Items.Count)
+            {
+                ServerCommand command = new ServerCommand(ServerCommand.CommandType.UpdateMapItem);
+                command.SetParameter("MapID", _mapPacket.MapID);
+                command.SetParameter("ItemIndex", index);
+                command.SetParameter("PlayerID", _mapPacket.Items[index].PlayerID);
+                command.SetParameter("Count", _mapPacket.Items[index].Count);
+                for (int i = 0; i < _clients.Count; i++)
+                {
+                    _clients[i].AddServerCommand(command);
+                }
             }
         }
 
@@ -493,6 +679,7 @@ namespace RpgServer
 
         public void Update(float deltaTime)
         {
+            //add clients
             while (_clientsToAdd.Count > 0)
             {
                 GameClient client = _clientsToAdd[0];
@@ -503,6 +690,7 @@ namespace RpgServer
                 }
             }
 
+            //remove clients
             while (_clientsToRemove.Count > 0)
             {
                 GameClient client = _clientsToRemove[0];
@@ -513,8 +701,10 @@ namespace RpgServer
                 }
             }
 
+            //update interpreter
             _eventInterpreter.Update(deltaTime);
 
+            //update clients
             for (int i = 0; i < _clients.Count; i++)
             {
                 _clients[i].Update(deltaTime);
@@ -522,13 +712,57 @@ namespace RpgServer
                     RemoveClient(_clients[i]);
             }
 
+            //update map packet timer
             if (_updateMapTimer > 0f)
             {
                 _updateMapTimer -= deltaTime;
             }
 
-            bool movedMapEvent = false;
+            //update enemies
+            for (int i = 0; i < _mapPacket.Enemies.Count; i++)
+            {
+                MapEnemy mapEnemy = _mapPacket.Enemies[i];
 
+                if (mapEnemy.AttackTimer > 0)
+                    mapEnemy.AttackTimer -= deltaTime;
+
+                if (mapEnemy.MovementTimer > 0)
+                    mapEnemy.MovementTimer -= deltaTime;
+
+                UpdateMapEnemy(mapEnemy);
+                mapEnemy.Update(deltaTime);
+
+                //update enemy packet
+                if (_updateMapTimer <= 0)
+                {
+                    UpdateMapEnemyOnClient(i);
+                    if (mapEnemy.Dead)
+                    {
+                        _mapPacket.Enemies.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+
+            //update enemy death/respawn trackers
+            for (int i = 0; i < _enemyTrackers.Count; i++)
+            {
+                for (int j = 0; j < _enemyTrackers[i].Count; j++)
+                {
+                    MapEnemy mapEnemy = _enemyTrackers[i].ElementAt(j).Key;
+                    if (mapEnemy.Dead)
+                    {
+                        _enemyTrackers[i][mapEnemy] -= deltaTime;
+                        if (_enemyTrackers[i][mapEnemy] <= 0)
+                        {
+                            _enemyTrackers[i].Remove(mapEnemy);
+                            j--;
+                        }
+                    }
+                }
+            }
+
+            //update map events
             for (int i = 0; i < GetMapData().MapEventsCount(); i++)
             {
                 MapEvent mapEvent = GetMapData().GetMapEvent(i);
@@ -549,16 +783,581 @@ namespace RpgServer
                 if (_updateMapTimer <= 0f && mapEvent.Moved)
                 {
                     UpdateMapEventOnClients(i);
-                    movedMapEvent = true;
                     mapEvent.Moved = false;
                 }
             }
 
-            if (movedMapEvent && _updateMapTimer <= 0)
+            //update projectiles
+            for (int i = 0; i < _mapPacket.Projectiles.Count; i++)
             {
-                _updateMapTimer = 0.06f;
+                Projectile projectile = _mapPacket.Projectiles[i];
+                if (_updateMapTimer <= 0f || projectile.Destroyed)
+                {
+                    UpdateProjectileOnClients(i);
+                }
+
+                if (!projectile.Destroyed)
+                {
+                    UpdateProjectile(projectile, deltaTime);
+                }
+                else
+                {
+                    _mapPacket.Projectiles.RemoveAt(i);
+                    i--;
+                }
             }
 
+            //update map items
+            for (int i = 0; i < _mapPacket.Items.Count; i++)
+            {
+                MapItem mapItem = _mapPacket.Items[i];
+                if (mapItem.PickedUp)
+                {
+                    RemoveMapItem(i);
+                    i--;
+                }
+                else
+                {
+                    if (mapItem.PlayerLockTimer > 0)
+                    {
+                        mapItem.PlayerLockTimer -= deltaTime;
+                        if (mapItem.PlayerLockTimer <= 0)
+                        {
+                            mapItem.PlayerID = -1;
+                            UpdateMapItem(i);
+                        }
+                    }
+                    else
+                    {
+                        mapItem.DespawnTimer -= deltaTime;
+                        if (mapItem.DespawnTimer <= 0)
+                        {
+                            RemoveMapItem(i);
+                            i--;
+                        }
+                    }
+                }
+            }
+
+            //refresh packet timer
+            if (_updateMapTimer <= 0)
+            {
+                _updateMapTimer = 0.05f;
+            }
+
+        }
+
+        private void UpdateProjectile(Projectile projectile, float deltaTime)
+        {
+            ProjectileData data = projectile.GetData();
+            projectile.Lifespan += deltaTime;
+            if (projectile.Lifespan >= data.Lifespan)
+            {
+                projectile.Destroyed = true;
+            }
+            else
+            {
+                int mapX = (int)(projectile.Position.X / 32);
+                int mapY = (int)(projectile.Position.Y / 32);
+                Vector2 targetPos = projectile.Position + (projectile.Velocity * deltaTime);
+                int targetX = (int)(targetPos.X / 32);
+                int targetY = (int)(targetPos.Y / 32);
+
+                bool canMove = false;
+
+                if (targetX == mapX && targetY == mapY)
+                {
+                    canMove = true;
+                }
+                else
+                {
+                    MovementDirection exitDir = MovementDirection.Down;
+                    MovementDirection entryDir = MovementDirection.Up;
+                    switch (projectile.Direction)
+                    {
+                        case FacingDirection.Left:
+                            exitDir = MovementDirection.Left;
+                            entryDir = MovementDirection.Right;
+                            break;
+                        case FacingDirection.Right:
+                            exitDir = MovementDirection.Right;
+                            entryDir = MovementDirection.Left;
+                            break;
+                        case FacingDirection.Up:
+                            exitDir = MovementDirection.Up;
+                            entryDir = MovementDirection.Down;
+                            break;
+                    }
+
+                    bool bridgeEntry = MapTilesetPassable(mapX, mapY) && projectile.OnBridge;
+                    if (MapTileProjectilePassable(mapX, mapY, projectile.OnBridge, bridgeEntry, exitDir) &&
+                        MapTileProjectilePassable(targetX, targetY, projectile.OnBridge, bridgeEntry, entryDir))
+                        canMove = true;
+                }
+
+                if (canMove)
+                {
+                    projectile.Position = targetPos;
+                    CheckProjectileHit(projectile);
+                    if (GetBridgeFlag(targetX, targetY))
+                    {
+                        if (MapTilesetPassable(targetX, targetY))
+                            projectile.OnBridge = true;
+                    }
+                    else
+                    {
+                        projectile.OnBridge = false;
+                    }
+                }
+                else
+                {
+                    projectile.Destroyed = true;
+                }
+
+
+            }
+        }
+
+        private void UpdateMapEnemy(MapEnemy mapEnemy)
+        {
+            EnemyData enemyData = mapEnemy.GetEnemyData();
+            if (mapEnemy.TargetPlayerID == -1)
+            {
+                //find player
+                for (int i = 0; i < _clients.Count; i++)
+                {
+                    if (_clients[i].EnemyCanAttack(CharacterType.Enemy, _mapPacket.Enemies.IndexOf(mapEnemy)))
+                    {
+                        PlayerPacket player = _clients[i].GetPacket();
+
+                        if (player.Data.Level <= enemyData.AgroLvl)
+                        {
+                            int xDistance = player.PositionX - mapEnemy.MapX;
+                            int yDistance = player.PositionY - mapEnemy.MapY;
+                            int sxDistance = player.PositionX - mapEnemy.SpawnX;
+                            int syDistance = player.PositionY - mapEnemy.SpawnY;
+                            int distance = (int)new Vector2(xDistance, yDistance).Length;
+                            int spawnDistance = (int)new Vector2(sxDistance, syDistance).Length;
+                            if (distance <= enemyData.VisionRage && spawnDistance <= enemyData.WanderRange + 1)
+                            {
+                                mapEnemy.TargetPlayerID = _clients[i].GetPacket().PlayerID;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                //update/track target player
+                bool canFight = false;
+                int distance = 0;
+                int spawnDistance = 0;
+                GameClient client = null;
+                PlayerPacket player = null;
+                for (int i = 0; i < _clients.Count; i++)
+                {
+                    if (_clients[i].EnemyCanAttack(CharacterType.Enemy, _mapPacket.Enemies.IndexOf(mapEnemy)))
+                    {
+                        client = _clients[i];
+                        player = client.GetPacket();
+
+                        if (player.PlayerID == mapEnemy.TargetPlayerID)
+                        {
+                            int xDistance = player.PositionX - mapEnemy.MapX;
+                            int yDistance = player.PositionY - mapEnemy.MapY;
+                            int sxDistance = player.PositionX - mapEnemy.SpawnX;
+                            int syDistance = player.PositionY - mapEnemy.SpawnY;
+                            distance = (int)new Vector2(xDistance, yDistance).Length;
+                            spawnDistance = (int)new Vector2(sxDistance, syDistance).Length;
+                            if (distance <= enemyData.VisionRage && spawnDistance <= enemyData.WanderRange + 1)
+                            {
+                                canFight = true;
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                if (canFight)
+                {
+                    if (distance == 0)
+                    {
+                        MoveEnemyRandomly(mapEnemy);
+                    }
+                    else
+                    {
+                        if (EnemyAttackCheck(mapEnemy, client.GetPacket(), distance))
+                        {
+                            TurnEnemyTowardsPlayer(mapEnemy, client.GetPacket());
+
+                            switch (mapEnemy.GetEnemyData().AtkStyle)
+                            {
+                                case AttackStyle.Melee:
+                                    EnemyMeleeAttack(mapEnemy, client);
+                                    break;
+                                case AttackStyle.Ranged:
+                                    EnemyRangeAttack(mapEnemy, player);
+                                    break;
+                                case AttackStyle.Magic:
+                                    EnemyMagicAttack(mapEnemy, player);
+                                    break;
+                            }
+
+                        }
+                        else
+                        {
+                            MoveEnemyTowardsPlayer(mapEnemy, player);
+                        }
+                    }
+                }
+                else
+                {
+                    mapEnemy.TargetPlayerID = -1;
+                }
+            }
+
+            if (mapEnemy.TargetPlayerID == -1 && mapEnemy.MovementTimer <= 0)
+            {
+                MoveEnemyRandomly(mapEnemy);
+                mapEnemy.MovementTimer = (float)_random.NextDouble() * 3;
+            }
+        }
+
+        private void TurnEnemyTowardsPlayer(MapEnemy mapEnemy, PlayerPacket player)
+        {
+            if (player.PositionY < mapEnemy.MapY)
+                mapEnemy.Direction = FacingDirection.Up;
+            else if (player.PositionY > mapEnemy.MapY)
+                mapEnemy.Direction = FacingDirection.Down;
+
+            if (player.PositionX < mapEnemy.MapX)
+                mapEnemy.Direction = FacingDirection.Left;
+            else if (player.PositionX > mapEnemy.MapX)
+                mapEnemy.Direction = FacingDirection.Right;
+        }
+
+        private void MoveEnemyTowardsPlayer(MapEnemy mapEnemy, PlayerPacket player)
+        {
+            if (mapEnemy.Moving()) return;
+
+            MovementDirection direction = MovementDirection.Down;
+            MovementDirection entryDirection = MovementDirection.Up;
+            int targetX = mapEnemy.MapX;
+            int targetY = mapEnemy.MapY;
+            int xDist = Math.Abs(mapEnemy.MapX - player.PositionX);
+            int yDist = Math.Abs(mapEnemy.MapY - player.PositionY);
+
+            bool move = false;
+            if (xDist > 0 || yDist > 0)
+            {
+                if (player.PositionX < mapEnemy.MapX)
+                    targetX--;
+                else if (player.PositionX > mapEnemy.MapX)
+                    targetX++;
+                move = true;
+            }
+
+            if ((xDist != 1 && yDist > 0) || yDist > 1)
+            {
+                if (player.PositionY < mapEnemy.MapY)
+                    targetY--;
+                else if (player.PositionY > mapEnemy.MapY)
+                    targetY++;
+                move = true;
+            }
+
+            if (targetX < mapEnemy.MapX && targetY < mapEnemy.MapY)
+            {
+                direction = MovementDirection.UpperLeft;
+                entryDirection = MovementDirection.LowerRight;
+            }
+            if (targetX == mapEnemy.MapX && targetY < mapEnemy.MapY)
+            {
+                direction = MovementDirection.Up;
+                entryDirection = MovementDirection.Down;
+            }
+            if (targetX > mapEnemy.MapX && targetY < mapEnemy.MapY)
+            {
+                direction = MovementDirection.UpperRight;
+                entryDirection = MovementDirection.LowerLeft;
+            }
+            if (targetX < mapEnemy.MapX && targetY == mapEnemy.MapY)
+            {
+                direction = MovementDirection.Left;
+                entryDirection = MovementDirection.Right;
+            }
+            if (targetX > mapEnemy.MapX && targetY == mapEnemy.MapY)
+            {
+                direction = MovementDirection.Right;
+                entryDirection = MovementDirection.Left;
+            }
+            if (targetX < mapEnemy.MapX && targetY > mapEnemy.MapY)
+            {
+                direction = MovementDirection.LowerLeft;
+                entryDirection = MovementDirection.UpperRight;
+            }
+            if (targetX == mapEnemy.MapX && targetY > mapEnemy.MapY)
+            {
+                direction = MovementDirection.Down;
+                entryDirection = MovementDirection.Up;
+            }
+            if (targetX > mapEnemy.MapX && targetY > mapEnemy.MapY)
+            {
+                direction = MovementDirection.LowerRight;
+                entryDirection = MovementDirection.UpperRight;
+            }
+
+            if (move)
+            {
+                bool bridgeEntry = MapTilesetPassable(mapEnemy.MapX, mapEnemy.MapY) && mapEnemy.OnBridge;
+                if (MapTileCharacterPassable(mapEnemy.MapX, mapEnemy.MapY, true, mapEnemy.OnBridge, bridgeEntry, direction) &&
+                    MapTileCharacterPassable(targetX, targetY, true, mapEnemy.OnBridge, bridgeEntry, entryDirection))
+                {
+                    if (mapEnemy.Move(direction))
+                    {
+                        if (GetBridgeFlag(targetX, targetY))
+                        {
+                            if (MapTilesetPassable(targetX, targetY))
+                                mapEnemy.OnBridge = true;
+                        }
+                        else
+                        {
+                            mapEnemy.OnBridge = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void MoveEnemyRandomly(MapEnemy mapEnemy)
+        {
+            MovementDirection direction = (MovementDirection)_random.Next(0, 7);
+            MovementDirection entryDirection = MovementDirection.Down;
+            int targetX = mapEnemy.MapX;
+            int targetY = mapEnemy.MapY;
+
+            switch (direction)
+            {
+                case MovementDirection.UpperLeft:
+                    targetX -= 1;
+                    targetY -= 1;
+                    entryDirection = MovementDirection.LowerRight;
+                    break;
+                case MovementDirection.Up:
+                    targetY -= 1;
+                    entryDirection = MovementDirection.Down;
+                    break;
+                case MovementDirection.UpperRight:
+                    targetX += 1;
+                    targetY -= 1;
+                    entryDirection = MovementDirection.LowerLeft;
+                    break;
+                case MovementDirection.Left:
+                    targetX -= 1;
+                    entryDirection = MovementDirection.Right;
+                    break;
+                case MovementDirection.Right:
+                    targetX += 1;
+                    entryDirection = MovementDirection.Left;
+                    break;
+                case MovementDirection.LowerLeft:
+                    targetX -= 1;
+                    targetY += 1;
+                    entryDirection = MovementDirection.UpperRight;
+                    break;
+                case MovementDirection.Down:
+                    targetY += 1;
+                    entryDirection = MovementDirection.Up;
+                    break;
+                case MovementDirection.LowerRight:
+                    targetX += 1;
+                    targetY += 1;
+                    entryDirection = MovementDirection.UpperLeft;
+                    break;
+            }
+
+            bool bridgeEntry = MapTilesetPassable(mapEnemy.MapX, mapEnemy.MapY) && mapEnemy.OnBridge;
+            if (MapTileCharacterPassable(mapEnemy.MapX, mapEnemy.MapY, true, mapEnemy.OnBridge, bridgeEntry, direction) &&
+                MapTileCharacterPassable(targetX, targetY, true, mapEnemy.OnBridge, bridgeEntry, entryDirection))
+            {
+                int spawnDistance = (int)new Vector2(mapEnemy.SpawnX - targetX, mapEnemy.SpawnY - targetY).Length;
+                if (spawnDistance <= mapEnemy.GetEnemyData().WanderRange)
+                {
+                    if (mapEnemy.Move(direction))
+                    {
+                        if (GetBridgeFlag(targetX, targetY))
+                        {
+                            if (MapTilesetPassable(targetX, targetY))
+                                mapEnemy.OnBridge = true;
+                        }
+                        else
+                        {
+                            mapEnemy.OnBridge = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        private bool EnemyAttackCheck(MapEnemy enemy, PlayerPacket player, int distance)
+        {
+            if (enemy.OnBridge != player.OnBridge || enemy.Moving())
+                return false;
+
+            if (enemy.MapX == player.PositionX || enemy.MapY == player.PositionY)
+            {
+                switch (enemy.GetEnemyData().AtkStyle)
+                {
+                    case AttackStyle.Melee:
+                        if (distance == 1)
+                            return true;
+                        break;
+                    case AttackStyle.Ranged:
+                    case AttackStyle.Magic:
+                        if (distance <= enemy.GetEnemyData().AttackRange)
+                            return true;
+                        break;
+                }
+            }
+
+            return false;
+        }
+
+        private void EnemyMeleeAttack(MapEnemy enemy, GameClient client)
+        {
+            if (enemy.AttackTimer > 0) return;
+
+            PlayerPacket player = client.GetPacket();
+            Random rand = new Random();
+            CombatStats stats1 = enemy.GetEnemyData().BaseStats;
+            CombatStats stats2 = player.Data.GetCombinedCombatStats();
+            int critModifier = rand.Next(1, 6) > 4 ? (stats1.Strength / 2) : 0;
+            double accuracy = Math.Min(stats1.Strength / stats1.Agility, 1.0);
+            int meleePower = (int)((stats1.Strength + critModifier) * accuracy) - (stats2.MeleeDefence / 2);
+            meleePower = Math.Max(meleePower, 1);
+            client.TakeDamage(CharacterType.Enemy, _mapPacket.Enemies.IndexOf(enemy), meleePower);
+            enemy.AttackTimer = Math.Max((1 / stats1.Agility) - 1.0f, 0.1f) * 10;
+        }
+
+        private void EnemyRangeAttack(MapEnemy enemy, PlayerPacket player)
+        {
+            if (enemy.AttackTimer > 0) return;
+
+            Hitbox hitbox = enemy.GetHitbox();
+            Vector2 position = new Vector2(hitbox.X, hitbox.Y);
+            int projectileID = enemy.GetEnemyData().ProjectileID;
+            int enemyID = _mapPacket.Enemies.IndexOf(enemy);
+            Projectile projectile = new Projectile(projectileID, CharacterType.Enemy, enemyID, position, enemy.Direction);
+            projectile.OnBridge = enemy.OnBridge;
+            projectile.TargetType = CharacterType.Player;
+            projectile.TargetID = player.PlayerID;
+            projectile.Style = AttackStyle.Ranged;
+
+            Random rand = new Random();
+            CombatStats stats = enemy.GetEnemyData().BaseStats;
+            int critModifier = rand.Next(1, 6) > 4 ? (stats.Strength / 2) : 0;
+            double accuracy = Math.Min(stats.Strength / stats.Agility, 1.0);
+            int rangePower = (int)((stats.Strength + critModifier) * accuracy);
+            projectile.AttackPower = rangePower;
+
+            AddProjectile(projectile);
+            enemy.AttackTimer = Math.Max((1 / stats.Agility) - 1.0f, 0.1f) * 10;
+        }
+
+        private void EnemyMagicAttack(MapEnemy enemy, PlayerPacket player)
+        {
+            if (enemy.AttackTimer > 0) return;
+
+            Hitbox hitbox = enemy.GetHitbox();
+            Vector2 position = new Vector2(hitbox.X, hitbox.Y);
+            int projectileID = enemy.GetEnemyData().ProjectileID;
+            int enemyID = _mapPacket.Enemies.IndexOf(enemy);
+            Projectile projectile = new Projectile(projectileID, CharacterType.Enemy, enemyID, position, enemy.Direction);
+            projectile.OnBridge = enemy.OnBridge;
+            projectile.TargetType = CharacterType.Player;
+            projectile.TargetID = player.PlayerID;
+            projectile.Style = AttackStyle.Magic;
+
+            Random rand = new Random();
+            CombatStats stats = enemy.GetEnemyData().BaseStats;
+            int critModifier = rand.Next(1, 6) > 4 ? (stats.Strength / 2) : 0;
+            double accuracy = Math.Min(stats.Strength / stats.Agility, 1.0);
+            int magicPower = (int)((stats.Inteligence + critModifier) * accuracy);
+            projectile.AttackPower = magicPower;
+
+            AddProjectile(projectile);
+            enemy.AttackTimer = Math.Max((1 / stats.Agility) - 1.0f, 0.1f) * 10;
+        }
+
+        private void CheckProjectileHit(Projectile projectile)
+        {
+            GameClient[] clients = GetClients();
+            Hitbox hitBox = projectile.GetHitBox();
+            if (projectile.Direction == FacingDirection.Left || projectile.Direction == FacingDirection.Right)
+            {
+                float width = hitBox.Width;
+                hitBox.Width = hitBox.Height;
+                hitBox.Height = width;
+            }
+
+            if (projectile.TargetID == -1 || projectile.TargetType == CharacterType.Player)
+            {
+                foreach (GameClient client in clients)
+                {
+                    if (!(projectile.ParentType == CharacterType.Player && projectile.CharacterID == client.GetPacket().PlayerID))
+                    {
+                        if (projectile.TargetID == -1 || projectile.TargetID == client.GetPacket().PlayerID)
+                        {
+                            Hitbox playerHitbox = client.GetHitbox();
+                            if (hitBox.Intersects(playerHitbox))
+                            {
+                                CombatStats stats = client.GetPacket().Data.GetCombinedCombatStats();
+                                int defence = projectile.Style == AttackStyle.Ranged ? stats.RangeDefence : stats.MagicDefence;
+                                int attackPower = projectile.AttackPower - defence;
+                                attackPower = Math.Max(attackPower, 1);
+                                client.TakeDamage(projectile.ParentType, projectile.CharacterID, attackPower);
+                                projectile.Destroyed = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //it is actually possible for enemy projectiles to target other enemies with this code - if ever needed?
+            if (projectile.TargetID == -1 || projectile.TargetType == CharacterType.Enemy)
+            {
+                for(int i = 0; i < _mapPacket.Enemies.Count; i++)
+                {
+                    MapEnemy enemy = _mapPacket.Enemies[i];
+                    if (!(projectile.ParentType == CharacterType.Enemy && projectile.CharacterID == i))
+                    {
+                        if (projectile.TargetID == -1 || projectile.TargetID == i)
+                        {
+                            Hitbox enemyHitBox = enemy.GetHitbox();
+                            if (hitBox.Intersects(enemyHitBox))
+                            {
+                                CombatStats stats = enemy.GetEnemyData().BaseStats;
+                                int defence = projectile.Style == AttackStyle.Ranged ? stats.RangeDefence : stats.MagicDefence;
+                                int attackPower = projectile.AttackPower - defence;
+                                attackPower = Math.Max(attackPower, 1);
+                                enemy.TakeDamage(projectile.ParentType, projectile.CharacterID, attackPower);
+                                projectile.Destroyed = true;
+
+                                if (enemy.Dead && projectile.ParentType == CharacterType.Player)
+                                {
+                                    GameClient client = Server.Instance.FindClientByID(projectile.CharacterID);
+                                    if (client != null)
+                                        client.GainExperience(enemy.GetEnemyData().Experience);
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
         
         public List<PlayerPacket> GetPlayerPackets()

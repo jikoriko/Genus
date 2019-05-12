@@ -10,7 +10,6 @@ C:\Users\perry\Documents\GitHub\Genus\RpgEditor\bin\Debug\SharpFont.dll.config
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\RpgEditor.exe.config
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\RpgEditor.exe
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\RpgEditor.pdb
-C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.csprojAssemblyReference.cache
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.AddEventCommandForm.resources
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.ChangeMapEventPreset.resources
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.EditMapEventForm.resources
@@ -39,3 +38,6 @@ C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.ItemDataPres
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.ItemDataPresets.MatarialPreset.resources
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.ItemDataPresets.ConsumablePreset.resources
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.ItemDataPresets.ToolPreset.resources
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.ChangeGoldPreset.resources
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.EnemySpawnPreset.resources
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.EditDropItemForm.resources

@@ -59,6 +59,7 @@ namespace RpgEditor.CommandDataPresets
             SelectedOptionControl.Value = (int)command.GetParameter("SelectedOption");
             TerrainTagControl.Value = (int)command.GetParameter("TerrainTag");
             PlayerDirectionSelection.SelectedIndex = (int)command.GetParameter("PlayerDirection");
+            GoldControl.Value = (int)command.GetParameter("Gold");
 
         }
 
@@ -93,6 +94,9 @@ namespace RpgEditor.CommandDataPresets
                 case Genus2D.GameData.ConditionalBranchType.PlayerDirection:
                     PlayerDirectionCheck.Checked = true;
                     break;
+                case Genus2D.GameData.ConditionalBranchType.PlayerGold:
+                    PlayerGoldCheck.Checked = true;
+                    break;
             }
         }
 
@@ -114,7 +118,9 @@ namespace RpgEditor.CommandDataPresets
                 return Genus2D.GameData.ConditionalBranchType.SelectedOption;
             if (PlayerDirectionCheck.Checked)
                 return Genus2D.GameData.ConditionalBranchType.PlayerDirection;
-            return Genus2D.GameData.ConditionalBranchType.TerrainTag;
+            if (TerrainTagCheck.Checked)
+                return Genus2D.GameData.ConditionalBranchType.TerrainTag;
+            return Genus2D.GameData.ConditionalBranchType.PlayerGold;
         }
 
         private void SetVariableType(Genus2D.GameData.VariableType type)
@@ -289,6 +295,9 @@ namespace RpgEditor.CommandDataPresets
                     break;
                 case Genus2D.GameData.ConditionalBranchType.PlayerDirection:
                     _command.SetParameter("PlayerDirection", (Genus2D.GameData.FacingDirection)PlayerDirectionSelection.SelectedIndex);
+                    break;
+                case Genus2D.GameData.ConditionalBranchType.PlayerGold:
+                    _command.SetParameter("Gold", (int)GoldControl.Value);
                     break;
             }
 

@@ -40,7 +40,7 @@ namespace RpgGame.GUI
             {
                 CombatStats stats = playerPacket.Data.GetCombinedCombatStats();
                 int y = 10;
-                for (int i = 0; i < 7; i++)
+                for (int i = 0; i < 11; i++)
                 {
                     string text = "";
                     switch (i)
@@ -65,6 +65,18 @@ namespace RpgGame.GUI
                             break;
                         case 6:
                             text = "Magic Defence: " + stats.MagicDefence;
+                            break;
+                        case 7:
+                            text += "Level: " + playerPacket.Data.Level;
+                            break;
+                        case 8:
+                            text += "Experience: " + playerPacket.Data.Experience;
+                            break;
+                        case 9:
+                            text += "Target Experience: " + playerPacket.Data.ExperienceToLevel();
+                            break;
+                        case 10:
+                            text += "Investment Points: " + playerPacket.Data.InvestmentPoints;
                             break;
 
                     }

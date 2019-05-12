@@ -121,7 +121,9 @@ namespace RpgEditor
             PopulateProjectilesList();
             PopulateClassesList();
             PopulateEnemyList();
+            PopulateDropTablesList();
             PopulateSystemVariables();
+            PopulateSytemData();
         }
 
         #region Map Functions
@@ -619,6 +621,15 @@ namespace RpgEditor
                     case Genus2D.GameData.EventCommand.CommandType.ChangeMapEvent:
                         control = new CommandDataPresets.ChangeMapEventPreset(command);
                         break;
+                    case Genus2D.GameData.EventCommand.CommandType.AddGold:
+                        control = new CommandDataPresets.ChangeGoldPreset(command);
+                        break;
+                    case Genus2D.GameData.EventCommand.CommandType.RemoveGold:
+                        control = new CommandDataPresets.ChangeGoldPreset(command);
+                        break;
+                    case Genus2D.GameData.EventCommand.CommandType.SpawnEnemy:
+                        control = new CommandDataPresets.EnemySpawnPreset(command);
+                        break;
                 }
 
                 if (control != null)
@@ -869,9 +880,12 @@ namespace RpgEditor
             int selection = SpritesList.SelectedIndex;
 
             SpritesList.Items.Clear();
+            EnemySpriteSelection.Items.Clear();
+            EnemySpriteSelection.Items.Add("None");
 
             List<string> spriteNames = Genus2D.GameData.SpriteData.GetSpriteNames();
             SpritesList.Items.AddRange(spriteNames.ToArray());
+            EnemySpriteSelection.Items.AddRange(spriteNames.ToArray());
 
             if (selection < SpritesList.Items.Count)
                 SpritesList.SelectedIndex = selection;
@@ -1162,6 +1176,8 @@ namespace RpgEditor
                         equipmentPreset.SetMeleeDefenceBonus((int)data.GetItemStat("MeleeDefenceBonus"));
                         equipmentPreset.SetRangeDefenceBonus((int)data.GetItemStat("RangeDefenceBonus"));
                         equipmentPreset.SetMagicDefenceBonus((int)data.GetItemStat("MagicDefenceBonus"));
+                        equipmentPreset.SetProjectileID((int)data.GetItemStat("ProjectileID"));
+                        equipmentPreset.SetMpDrain((int)data.GetItemStat("MP"));
                         ItemStatsPanel.Controls.Add(equipmentPreset);
 
                         break;
@@ -1169,6 +1185,7 @@ namespace RpgEditor
 
                         AmmoPreset ammoPreset = new AmmoPreset();
                         ammoPreset.SetStrengthBonus((int)data.GetItemStat("StrengthBonus"));
+                        ammoPreset.SetProjectileID((int)data.GetItemStat("ProjectileID"));
                         ItemStatsPanel.Controls.Add(ammoPreset);
 
                         break;
@@ -1249,12 +1266,15 @@ namespace RpgEditor
                             data.SetItemStat("MeleeDefenceBonus", equipmentPreset.GetMeleeDefenceBonus());
                             data.SetItemStat("RangeDefenceBonus", equipmentPreset.GetRangeDefenceBonus());
                             data.SetItemStat("MagicDefenceBonus", equipmentPreset.GetMagicDefenceBonus());
+                            data.SetItemStat("ProjectileID", equipmentPreset.GetProjectileID());
+                            data.SetItemStat("MP", equipmentPreset.GetMpDrain());
 
                             break;
                         case Genus2D.GameData.ItemData.ItemType.Ammo:
 
                             AmmoPreset ammoPreset = (AmmoPreset)ItemStatsPanel.Controls[0];
                             data.SetItemStat("StrengthBonus", ammoPreset.GetStrengthBonus());
+                            data.SetItemStat("ProjectileID", ammoPreset.GetProjectileID());
 
                             break;
                     }
@@ -1283,14 +1303,19 @@ namespace RpgEditor
         {
             int selection = ProjectileListBox.SelectedIndex;
             ProjectileListBox.Items.Clear();
+            EnemyProjectileSelection.Items.Clear();
+            EnemyProjectileSelection.Items.Add("None");
             for (int i = 0; i < Genus2D.GameData.ProjectileData.GetProjectileDataCount(); i++)
             {
                 ProjectileListBox.Items.Add(Genus2D.GameData.ProjectileData.GetProjectileData(i).Name);
+                EnemyProjectileSelection.Items.Add(Genus2D.GameData.ProjectileData.GetProjectileData(i).Name);
             }
             if (selection < ProjectileListBox.Items.Count)
                 ProjectileListBox.SelectedIndex = selection;
             else
                 SelectProjectile();
+
+            ItemStatsPanel.Refresh();
         }
 
         private void ProjectileListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -1407,7 +1432,7 @@ namespace RpgEditor
 
         #endregion
 
-        #region Classes Variable
+        #region Class Functions
 
         private void PopulateClassesList()
         {
@@ -1533,6 +1558,14 @@ namespace RpgEditor
                 EnemyMagicDefenceControl.Value = data.BaseStats.MagicDefence;
                 EnemyVisionRangeSelection.Value = data.VisionRage;
                 EnemyAttackRangeSelection.Value = data.AttackRange;
+                EnemyWanderRangeSelection.Value = data.WanderRange;
+                EnemyExperienceSelection.Value = data.Experience;
+                EnemyAgroLvlSelection.Value = data.AgroLvl;
+                EnemyAtkStyleSelection.SelectedIndex = (int)data.AtkStyle - 1;
+                EnemyProjectileSelection.SelectedIndex = data.ProjectileID + 1;
+                EnemySpriteSelection.SelectedIndex = data.SpriteID + 1;
+                EnemySpeedSelection.SelectedIndex = (int)data.Speed;
+                EnemyDropTableSelection.SelectedIndex = data.DropTable + 1;
             }
             else
             {
@@ -1544,8 +1577,16 @@ namespace RpgEditor
                 EnemyMeleeDefenceControl.Value = 0;
                 EnemyRangeDefenceControl.Value = 0;
                 EnemyMagicDefenceControl.Value = 0;
-                EnemyVisionRangeSelection.Value = 0;
-                EnemyAttackRangeSelection.Value = 0;
+                EnemyVisionRangeSelection.Value = 1;
+                EnemyAttackRangeSelection.Value = 1;
+                EnemyWanderRangeSelection.Value = 5;
+                EnemyExperienceSelection.Value = 0;
+                EnemyAgroLvlSelection.Value = 1;
+                EnemyAtkStyleSelection.SelectedIndex = 0;
+                EnemyProjectileSelection.SelectedIndex = 0;
+                EnemySpriteSelection.SelectedIndex = 0;
+                EnemySpeedSelection.SelectedIndex = 0;
+                EnemyDropTableSelection.SelectedIndex = 0;
             }
         }
 
@@ -1589,8 +1630,139 @@ namespace RpgEditor
                 data.BaseStats.MagicDefence = (int)EnemyMagicDefenceControl.Value;
                 data.VisionRage = (int)EnemyVisionRangeSelection.Value;
                 data.AttackRange = (int)EnemyAttackRangeSelection.Value;
+                data.WanderRange = (int)EnemyWanderRangeSelection.Value;
+                data.Experience = (int)EnemyExperienceSelection.Value;
+                data.AgroLvl = (int)EnemyAgroLvlSelection.Value;
+                data.AtkStyle = (Genus2D.GameData.AttackStyle)(EnemyAtkStyleSelection.SelectedIndex + 1);
+                data.ProjectileID = EnemyProjectileSelection.SelectedIndex - 1;
+                data.SpriteID = EnemySpriteSelection.SelectedIndex - 1;
+                data.Speed = (Genus2D.GameData.MovementSpeed)EnemySpeedSelection.SelectedIndex;
+                data.DropTable = EnemyDropTableSelection.SelectedIndex - 1;
             }
             Genus2D.GameData.EnemyData.SaveData();
+        }
+
+        #endregion
+
+        #region Drop Table Data
+
+        private void PopulateDropTablesList()
+        {
+            List<String> tables = Genus2D.GameData.DropTableData.GetDropTableNames();
+            int selection = DropTableList.SelectedIndex;
+
+            DropTableList.Items.Clear();
+            DropTableList.Items.AddRange(tables.ToArray());
+
+            EnemyDropTableSelection.Items.Clear();
+            EnemyDropTableSelection.Items.Add("None");
+            EnemyDropTableSelection.Items.AddRange(tables.ToArray());
+
+            if (selection >= 0 && selection < DropTableList.Items.Count)
+                DropTableList.SelectedIndex = selection;
+            else
+                SelectDropTable(-1);
+        }
+
+        private void DropTableList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SelectDropTable(DropTableList.SelectedIndex);
+        }
+
+        private void SelectDropTable(int selection)
+        {
+            DropTableItemsList.Items.Clear();
+            if (selection >= 0)
+            {
+                Genus2D.GameData.DropTableData table = Genus2D.GameData.DropTableData.GetDropTable(selection);
+                DropTableNameBox.Text = table.Name;
+                List<Genus2D.GameData.DropTableData.DropTableItem> items = table.TableItems;
+                for (int i = 0; i < items.Count; i++)
+                {
+                    DropTableItemsList.Items.Add(items[i].ToString());
+                }
+            }
+            else
+            {
+                DropTableNameBox.Text = "";
+            }
+
+        }
+
+        private void AddDropTableButton_Click(object sender, EventArgs e)
+        {
+            string name = "Drop Table " + (DropTableList.Items.Count + 1);
+            Genus2D.GameData.DropTableData.AddDropTable(name);
+            PopulateDropTablesList();
+        }
+
+        private void RemoveDropTableButton_Click(object sender, EventArgs e)
+        {
+            int selection = DropTableList.SelectedIndex;
+            if (selection >= 0)
+            {
+                Genus2D.GameData.DropTableData.RemoveDropTable(selection);
+                PopulateDropTablesList();
+            }
+        }
+
+        private void AddDropItemButton_Click(object sender, EventArgs e)
+        {
+            int selection = DropTableList.SelectedIndex;
+            if (selection >= 0)
+            {
+                Genus2D.GameData.DropTableData table = Genus2D.GameData.DropTableData.GetDropTable(selection);
+                table.TableItems.Add(new Genus2D.GameData.DropTableData.DropTableItem());
+                SelectDropTable(selection);
+            }
+        }
+
+        private void EditDropItemButton_Click(object sender, EventArgs e)
+        {
+            int selection = DropTableList.SelectedIndex;
+            if (selection >= 0)
+            {
+                int itemSelection = DropTableItemsList.SelectedIndex;
+                if (itemSelection >= 0)
+                {
+                    Genus2D.GameData.DropTableData table = Genus2D.GameData.DropTableData.GetDropTable(selection);
+                    EditDropItemForm form = new EditDropItemForm(table.TableItems[itemSelection]);
+                    form.ShowDialog(this);
+                    SelectDropTable(selection);
+                }
+            }
+        }
+
+        private void RemoveDropItemButton_Click(object sender, EventArgs e)
+        {
+            int selection = DropTableList.SelectedIndex;
+            if (selection >= 0)
+            {
+                int itemSelection = DropTableItemsList.SelectedIndex;
+                if (itemSelection >= 0)
+                {
+                    Genus2D.GameData.DropTableData table = Genus2D.GameData.DropTableData.GetDropTable(selection);
+                    table.TableItems.RemoveAt(itemSelection);
+                    SelectDropTable(selection);
+                }
+            }
+        }
+
+        private void UndoDropTable_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.DropTableData.ReloadData();
+            PopulateDropTablesList();
+        }
+
+        private void ApplyDrobTable_Click(object sender, EventArgs e)
+        {
+            int selection = DropTableList.SelectedIndex;
+            if (selection >= 0)
+            {
+                Genus2D.GameData.DropTableData.GetDropTable(selection).Name = DropTableNameBox.Text;
+                PopulateDropTablesList();
+            }
+            Genus2D.GameData.DropTableData.SaveData();
         }
 
         #endregion
@@ -1679,6 +1851,67 @@ namespace RpgEditor
 
             }
             Genus2D.GameData.SystemVariable.SaveData();
+        }
+
+        #endregion
+
+        #region System Data
+
+        private void PopulateSytemData()
+        {
+            BaseXpCurveSelection.Value = Genus2D.GameData.SystemData.GetData().BaseXpCurve;
+            XpPowSelection.Value = (decimal)Genus2D.GameData.SystemData.GetData().XpPower;
+            XpDivSelection.Value = (decimal)Genus2D.GameData.SystemData.GetData().XpDivision;
+            MaxLvlSelection.Value = Genus2D.GameData.SystemData.GetData().MaxLvl;
+        }
+
+        private void BaseXpCurveSelection_ValueChanged(object sender, EventArgs e)
+        {
+            SetTestExperience();
+        }
+
+        private void XpPowSelection_ValueChanged(object sender, EventArgs e)
+        {
+            SetTestExperience();
+        }
+
+        private void XpDivSelection_ValueChanged(object sender, EventArgs e)
+        {
+            SetTestExperience();
+        }
+
+        private void TestLvlSelection_ValueChanged(object sender, EventArgs e)
+        {
+            SetTestExperience();
+        }
+
+        private void SetTestExperience()
+        {
+            int baseXp = (int)BaseXpCurveSelection.Value;
+            int targetLvl = (int)TestLvlSelection.Value;
+            int targetXp = baseXp;
+
+            for (int i = 1; i < targetLvl; i++)
+            {
+                targetXp += (int)(Math.Floor(i + baseXp * Math.Pow(2, i / (float)XpPowSelection.Value)) / (float)XpDivSelection.Value);
+            }
+
+            TestLvlLabel.Text = "(" + targetLvl + " to " + (targetLvl + 1) + ") " + targetXp;
+        }
+
+        private void UndoSystemDataButton_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.SystemData.ReloadData();
+            PopulateSytemData();
+        }
+
+        private void ApplySystemDataButton_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.SystemData.GetData().BaseXpCurve = (int)BaseXpCurveSelection.Value;
+            Genus2D.GameData.SystemData.GetData().XpPower = (float)XpPowSelection.Value;
+            Genus2D.GameData.SystemData.GetData().XpDivision = (float)XpDivSelection.Value;
+            Genus2D.GameData.SystemData.GetData().MaxLvl = (int)MaxLvlSelection.Value;
+            Genus2D.GameData.SystemData.SaveData();
         }
 
         #endregion

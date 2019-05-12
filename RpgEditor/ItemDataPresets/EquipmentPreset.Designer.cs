@@ -46,6 +46,10 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.ProjectileSelection = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.MpDrain = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.VitalityBonus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InteligenceBonus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.StrengthBonus)).BeginInit();
@@ -53,6 +57,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.MeleeDefenceBonus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RangeDefenceBonus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MagicDefenceBonus)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MpDrain)).BeginInit();
             this.SuspendLayout();
             // 
             // VitalityBonus
@@ -218,10 +223,49 @@
             this.label10.TabIndex = 19;
             this.label10.Text = "Magic Defence Bonus:";
             // 
+            // ProjectileSelection
+            // 
+            this.ProjectileSelection.FormattingEnabled = true;
+            this.ProjectileSelection.Location = new System.Drawing.Point(130, 239);
+            this.ProjectileSelection.Name = "ProjectileSelection";
+            this.ProjectileSelection.Size = new System.Drawing.Size(85, 21);
+            this.ProjectileSelection.TabIndex = 20;
+            this.ProjectileSelection.SelectedIndexChanged += new System.EventHandler(this.ProjectileSelection_SelectedIndexChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(72, 242);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(53, 13);
+            this.label1.TabIndex = 21;
+            this.label1.Text = "Projectile:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(70, 268);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(54, 13);
+            this.label11.TabIndex = 23;
+            this.label11.Text = "MP Drain:";
+            // 
+            // MpDrain
+            // 
+            this.MpDrain.Location = new System.Drawing.Point(131, 266);
+            this.MpDrain.Name = "MpDrain";
+            this.MpDrain.Size = new System.Drawing.Size(84, 20);
+            this.MpDrain.TabIndex = 22;
+            this.MpDrain.ValueChanged += new System.EventHandler(this.MpDrain_ValueChanged);
+            // 
             // EquipmentPreset
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.MpDrain);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.ProjectileSelection);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
@@ -241,7 +285,7 @@
             this.Controls.Add(this.EquipmentSlotSelection);
             this.Controls.Add(this.VitalityBonus);
             this.Name = "EquipmentPreset";
-            this.Size = new System.Drawing.Size(218, 241);
+            this.Size = new System.Drawing.Size(218, 310);
             ((System.ComponentModel.ISupportInitialize)(this.VitalityBonus)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.InteligenceBonus)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.StrengthBonus)).EndInit();
@@ -249,6 +293,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.MeleeDefenceBonus)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.RangeDefenceBonus)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MagicDefenceBonus)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MpDrain)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -273,5 +318,9 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ComboBox ProjectileSelection;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.NumericUpDown MpDrain;
     }
 }

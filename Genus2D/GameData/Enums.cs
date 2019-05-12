@@ -5,7 +5,13 @@ using System.Text;
 
 namespace Genus2D.GameData
 {
-    
+    [Serializable]
+    public enum CharacterType
+    {
+        Player,
+        Enemy
+    }
+
     [Serializable]
     public enum FacingDirection
     {
@@ -101,7 +107,8 @@ namespace Genus2D.GameData
         QuestStatus,
         SelectedOption,
         TerrainTag,
-        PlayerDirection
+        PlayerDirection,
+        PlayerGold
     }
 
     [Serializable]

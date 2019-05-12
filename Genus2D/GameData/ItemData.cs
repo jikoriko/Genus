@@ -84,9 +84,12 @@ namespace Genus2D.GameData
                     _itemStats.Add("MeleeDefenceBonus", 0);
                     _itemStats.Add("RangeDefenceBonus", 0);
                     _itemStats.Add("MagicDefenceBonus", 0);
+                    _itemStats.Add("ProjectileID", -1);
+                    _itemStats.Add("MP", 0);
                     break;
                 case ItemType.Ammo:
                     _itemStats.Add("StrengthBonus", 0);
+                    _itemStats.Add("ProjectileID", -1);
                     break;
             }
         }
@@ -103,7 +106,7 @@ namespace Genus2D.GameData
 
         public void SetMaxStack(int max)
         {
-            if (_itemType == ItemType.Consumable || _itemType == ItemType.Material)
+            if (_itemType == ItemType.Consumable || _itemType == ItemType.Material || _itemType == ItemType.Ammo)
                 _maxStack = max;
         }
 

@@ -70,6 +70,24 @@
       <DependentUpon>ChangeMapEventPreset.cs</DependentUpon>
     </Compile>
     <Compile Include="CommandDataPresets\CommandDataInterface.cs" />
+    <Compile Include="CommandDataPresets\ChangeGoldPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\ChangeGoldPreset.Designer.cs">
+      <DependentUpon>ChangeGoldPreset.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CommandDataPresets\EnemySpawnPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\EnemySpawnPreset.Designer.cs">
+      <DependentUpon>EnemySpawnPreset.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditDropItemForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditDropItemForm.Designer.cs">
+      <DependentUpon>EditDropItemForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditMapEventForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -215,6 +233,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CommandDataPresets\ChangeMapEventPreset.resx">
       <DependentUpon>ChangeMapEventPreset.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CommandDataPresets\ChangeGoldPreset.resx">
+      <DependentUpon>ChangeGoldPreset.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CommandDataPresets\EnemySpawnPreset.resx">
+      <DependentUpon>EnemySpawnPreset.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditDropItemForm.resx">
+      <DependentUpon>EditDropItemForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditMapEventForm.resx">
       <DependentUpon>EditMapEventForm.cs</DependentUpon>

@@ -85,8 +85,12 @@
             this.label15 = new System.Windows.Forms.Label();
             this.PlayerDirectionCheck = new System.Windows.Forms.RadioButton();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.label16 = new System.Windows.Forms.Label();
             this.PlayerDirectionSelection = new System.Windows.Forms.ComboBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.GoldControl = new System.Windows.Forms.NumericUpDown();
+            this.label17 = new System.Windows.Forms.Label();
+            this.PlayerGoldCheck = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PlayerY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PlayerX)).BeginInit();
@@ -105,6 +109,8 @@
             this.groupBox8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TerrainTagControl)).BeginInit();
             this.groupBox9.SuspendLayout();
+            this.groupBox10.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.GoldControl)).BeginInit();
             this.SuspendLayout();
             // 
             // PlayerPositionCheck
@@ -709,15 +715,6 @@
             this.groupBox9.TabIndex = 20;
             this.groupBox9.TabStop = false;
             // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(20, 22);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(52, 13);
-            this.label16.TabIndex = 8;
-            this.label16.Text = "Direction:";
-            // 
             // PlayerDirectionSelection
             // 
             this.PlayerDirectionSelection.FormattingEnabled = true;
@@ -731,10 +728,63 @@
             this.PlayerDirectionSelection.Size = new System.Drawing.Size(121, 21);
             this.PlayerDirectionSelection.TabIndex = 17;
             // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(20, 22);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(52, 13);
+            this.label16.TabIndex = 8;
+            this.label16.Text = "Direction:";
+            // 
+            // groupBox10
+            // 
+            this.groupBox10.Controls.Add(this.GoldControl);
+            this.groupBox10.Controls.Add(this.label17);
+            this.groupBox10.Location = new System.Drawing.Point(304, 483);
+            this.groupBox10.Name = "groupBox10";
+            this.groupBox10.Size = new System.Drawing.Size(227, 52);
+            this.groupBox10.TabIndex = 21;
+            this.groupBox10.TabStop = false;
+            // 
+            // GoldControl
+            // 
+            this.GoldControl.Location = new System.Drawing.Point(78, 20);
+            this.GoldControl.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
+            this.GoldControl.Name = "GoldControl";
+            this.GoldControl.Size = new System.Drawing.Size(120, 20);
+            this.GoldControl.TabIndex = 15;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(25, 22);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(47, 13);
+            this.label17.TabIndex = 8;
+            this.label17.Text = "Gold >=:";
+            // 
+            // PlayerGoldCheck
+            // 
+            this.PlayerGoldCheck.AutoSize = true;
+            this.PlayerGoldCheck.Location = new System.Drawing.Point(286, 460);
+            this.PlayerGoldCheck.Name = "PlayerGoldCheck";
+            this.PlayerGoldCheck.Size = new System.Drawing.Size(82, 17);
+            this.PlayerGoldCheck.TabIndex = 22;
+            this.PlayerGoldCheck.TabStop = true;
+            this.PlayerGoldCheck.Text = "Player Gold:";
+            this.PlayerGoldCheck.UseVisualStyleBackColor = true;
+            // 
             // ConditionalBranchPreset
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.groupBox10);
+            this.Controls.Add(this.PlayerGoldCheck);
             this.Controls.Add(this.groupBox9);
             this.Controls.Add(this.PlayerDirectionCheck);
             this.Controls.Add(this.groupBox8);
@@ -782,6 +832,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.TerrainTagControl)).EndInit();
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
+            this.groupBox10.ResumeLayout(false);
+            this.groupBox10.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.GoldControl)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -848,5 +901,9 @@
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.ComboBox PlayerDirectionSelection;
         private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.GroupBox groupBox10;
+        private System.Windows.Forms.NumericUpDown GoldControl;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.RadioButton PlayerGoldCheck;
     }
 }

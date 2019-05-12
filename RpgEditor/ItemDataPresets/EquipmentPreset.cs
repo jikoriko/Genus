@@ -16,6 +16,11 @@ namespace RpgEditor.ItemDataPresets
         public EquipmentPreset()
         {
             InitializeComponent();
+
+            ProjectileSelection.Items.Add("None");
+            List<string> projectiles = ProjectileData.GetProjectileNames();
+            ProjectileSelection.Items.AddRange(projectiles.ToArray());
+            ProjectileSelection.SelectedIndex = 0;
         }
 
         public EquipmentSlot GetEquipmentSlot()
@@ -119,6 +124,38 @@ namespace RpgEditor.ItemDataPresets
         {
             if (EquipmentSlotSelection.SelectedIndex == 0)
                 AttackStyleSelection.SelectedIndex = 0;
+        }
+
+        private void ProjectileSelection_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (GetAttackStyle() != AttackStyle.Magic && ProjectileSelection.SelectedIndex != 0)
+                ProjectileSelection.SelectedIndex = 0;
+        }
+
+        public int GetProjectileID()
+        {
+            return ProjectileSelection.SelectedIndex - 1;
+        }
+
+        public void SetProjectileID(int id)
+        {
+            ProjectileSelection.SelectedIndex = id + 1;
+        }
+
+        public int GetMpDrain()
+        {
+            return (int)MpDrain.Value;
+        }
+
+        public void SetMpDrain(int value)
+        {
+            MpDrain.Value = value;
+        }
+
+        private void MpDrain_ValueChanged(object sender, EventArgs e)
+        {
+            if (GetAttackStyle() != AttackStyle.Magic && MpDrain.Value != 0)
+                MpDrain.Value = 0;
         }
     }
 }

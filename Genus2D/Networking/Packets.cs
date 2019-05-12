@@ -312,7 +312,6 @@ namespace Genus2D.Networking
 
                 tempBytes = new byte[dataSize];
                 stream.Read(tempBytes, 0, dataSize);
-
                 PlayerData data = PlayerData.FromBytes(tempBytes);
 
                 PlayerPacket packet = new PlayerPacket();
@@ -347,14 +346,54 @@ namespace Genus2D.Networking
         public int MapID;
         public MapData mapData;
 
+        public List<MapEnemy> Enemies;
+        public List<Projectile> Projectiles;
+        public List<MapItem> Items;
+
+        public MapPacket(int id, MapData data)
+        {
+            MapID = id;
+            mapData = data;
+
+            Enemies = new List<MapEnemy>();
+            Projectiles = new List<Projectile>();
+            Items = new List<MapItem>();
+        }
+
         public byte[] GetBytes()
         {
             using (MemoryStream stream = new MemoryStream())
             {
                 stream.Write(BitConverter.GetBytes(MapID), 0, sizeof(int));
+
                 byte[] mapBytes = mapData.GetBytes();
                 stream.Write(BitConverter.GetBytes(mapBytes.Length), 0, sizeof(int));
                 stream.Write(mapBytes, 0, mapBytes.Length);
+
+                stream.Write(BitConverter.GetBytes(Enemies.Count), 0, sizeof(int));
+                for (int i = 0; i < Enemies.Count; i++)
+                {
+                    byte[] enemyBytes = Enemies[i].GetBytes();
+                    stream.Write(BitConverter.GetBytes(enemyBytes.Length), 0, sizeof(int));
+                    stream.Write(enemyBytes, 0, enemyBytes.Length);
+                }
+
+                stream.Write(BitConverter.GetBytes(Projectiles.Count), 0, sizeof(int));
+                for (int i = 0; i < Projectiles.Count; i++)
+                {
+                    byte[] projectileBytes = Projectiles[i].GetBytes();
+                    stream.Write(BitConverter.GetBytes(projectileBytes.Length), 0, sizeof(int));
+                    stream.Write(projectileBytes, 0, projectileBytes.Length);
+                }
+
+                stream.Write(BitConverter.GetBytes(Items.Count), 0, sizeof(int));
+                for (int i = 0; i < Items.Count; i++)
+                {
+                    byte[] itemBytes = Items[i].GetBytes();
+                    stream.Write(BitConverter.GetBytes(itemBytes.Length), 0, sizeof(int));
+                    stream.Write(itemBytes, 0, itemBytes.Length);
+                }
+
                 return stream.ToArray();
             }
         }
@@ -373,9 +412,56 @@ namespace Genus2D.Networking
                 tempBytes = new byte[dataSize];
                 stream.Read(tempBytes, 0, dataSize);
 
-                MapPacket mapPacket = new MapPacket();
-                mapPacket.MapID = mapID;
-                mapPacket.mapData = MapData.FromBytes(tempBytes);
+                MapPacket mapPacket = new MapPacket(mapID, MapData.FromBytes(tempBytes));
+
+                tempBytes = new byte[sizeof(int)];
+                stream.Read(tempBytes, 0, sizeof(int));
+                int enemiesCount = BitConverter.ToInt32(tempBytes, 0);
+
+                for (int i = 0; i < enemiesCount; i++)
+                {
+                    tempBytes = new byte[sizeof(int)];
+                    stream.Read(tempBytes, 0, sizeof(int));
+                    int size = BitConverter.ToInt32(tempBytes, 0);
+
+                    tempBytes = new byte[size];
+                    stream.Read(tempBytes, 0, size);
+                    MapEnemy enemy = MapEnemy.FromBytes(tempBytes);
+                    mapPacket.Enemies.Add(enemy);
+                }
+
+                tempBytes = new byte[sizeof(int)];
+                stream.Read(tempBytes, 0, sizeof(int));
+                int projectilesCount = BitConverter.ToInt32(tempBytes, 0);
+
+                for (int i = 0; i < projectilesCount; i++)
+                {
+                    tempBytes = new byte[sizeof(int)];
+                    stream.Read(tempBytes, 0, sizeof(int));
+                    int size = BitConverter.ToInt32(tempBytes, 0);
+
+                    tempBytes = new byte[size];
+                    stream.Read(tempBytes, 0, size);
+                    Projectile projectile = Projectile.FromBytes(tempBytes);
+                    mapPacket.Projectiles.Add(projectile);
+                }
+
+                tempBytes = new byte[sizeof(int)];
+                stream.Read(tempBytes, 0, sizeof(int));
+                int itemsCount = BitConverter.ToInt32(tempBytes, 0);
+
+                for (int i = 0; i < itemsCount; i++)
+                {
+                    tempBytes = new byte[sizeof(int)];
+                    stream.Read(tempBytes, 0, sizeof(int));
+                    int size = BitConverter.ToInt32(tempBytes, 0);
+
+                    tempBytes = new byte[size];
+                    stream.Read(tempBytes, 0, size);
+                    MapItem item = MapItem.FromBytes(tempBytes);
+                    mapPacket.Items.Add(item);
+                }
+
                 return mapPacket;
             }
         }

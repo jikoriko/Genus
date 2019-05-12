@@ -186,6 +186,19 @@
             this.ItemIconSelection = new System.Windows.Forms.ComboBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.panel8 = new System.Windows.Forms.Panel();
+            this.groupBox13 = new System.Windows.Forms.GroupBox();
+            this.EditDropItemButton = new System.Windows.Forms.Button();
+            this.label75 = new System.Windows.Forms.Label();
+            this.AddDropItemButton = new System.Windows.Forms.Button();
+            this.RemoveDropItemButton = new System.Windows.Forms.Button();
+            this.DropTableItemsList = new System.Windows.Forms.ListBox();
+            this.UndoDropTable = new System.Windows.Forms.Button();
+            this.AddDropTableButton = new System.Windows.Forms.Button();
+            this.RemoveDropTableButton = new System.Windows.Forms.Button();
+            this.DropTableList = new System.Windows.Forms.ListBox();
+            this.label92 = new System.Windows.Forms.Label();
+            this.ApplyDrobTable = new System.Windows.Forms.Button();
+            this.DropTableNameBox = new System.Windows.Forms.TextBox();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
             this.label45 = new System.Windows.Forms.Label();
             this.ClassMagicDefenceControl = new System.Windows.Forms.NumericUpDown();
@@ -209,6 +222,22 @@
             this.ClassNameBox = new System.Windows.Forms.TextBox();
             this.SaveClassButton = new System.Windows.Forms.Button();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.label67 = new System.Windows.Forms.Label();
+            this.EnemyAgroLvlSelection = new System.Windows.Forms.NumericUpDown();
+            this.label66 = new System.Windows.Forms.Label();
+            this.EnemyExperienceSelection = new System.Windows.Forms.NumericUpDown();
+            this.label65 = new System.Windows.Forms.Label();
+            this.EnemyWanderRangeSelection = new System.Windows.Forms.NumericUpDown();
+            this.label64 = new System.Windows.Forms.Label();
+            this.EnemyDropTableSelection = new System.Windows.Forms.ComboBox();
+            this.label63 = new System.Windows.Forms.Label();
+            this.EnemySpeedSelection = new System.Windows.Forms.ComboBox();
+            this.label62 = new System.Windows.Forms.Label();
+            this.label61 = new System.Windows.Forms.Label();
+            this.label60 = new System.Windows.Forms.Label();
+            this.EnemySpriteSelection = new System.Windows.Forms.ComboBox();
+            this.EnemyProjectileSelection = new System.Windows.Forms.ComboBox();
+            this.EnemyAtkStyleSelection = new System.Windows.Forms.ComboBox();
             this.label42 = new System.Windows.Forms.Label();
             this.EnemyAttackRangeSelection = new System.Windows.Forms.NumericUpDown();
             this.label41 = new System.Windows.Forms.Label();
@@ -236,6 +265,23 @@
             this.SaveEnemyChanges = new System.Windows.Forms.Button();
             this.panel9 = new System.Windows.Forms.Panel();
             this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.groupBox12 = new System.Windows.Forms.GroupBox();
+            this.BaseXpCurveSelection = new System.Windows.Forms.NumericUpDown();
+            this.label74 = new System.Windows.Forms.Label();
+            this.label68 = new System.Windows.Forms.Label();
+            this.XpDivSelection = new System.Windows.Forms.NumericUpDown();
+            this.MaxLvlSelection = new System.Windows.Forms.NumericUpDown();
+            this.label72 = new System.Windows.Forms.Label();
+            this.TestLvlSelection = new System.Windows.Forms.NumericUpDown();
+            this.XpPowSelection = new System.Windows.Forms.NumericUpDown();
+            this.label69 = new System.Windows.Forms.Label();
+            this.label70 = new System.Windows.Forms.Label();
+            this.TestLvlLabel = new System.Windows.Forms.Label();
+            this.label73 = new System.Windows.Forms.Label();
+            this.ApplySystemDataButton = new System.Windows.Forms.Button();
+            this.UndoSystemDataButton = new System.Windows.Forms.Button();
+            this.label71 = new System.Windows.Forms.Label();
             this.panel7 = new System.Windows.Forms.Panel();
             this.label27 = new System.Windows.Forms.Label();
             this.VariableValueBox = new System.Windows.Forms.TextBox();
@@ -295,6 +341,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.ItemMaxStack)).BeginInit();
             this.tabPage6.SuspendLayout();
             this.panel8.SuspendLayout();
+            this.groupBox13.SuspendLayout();
             this.groupBox10.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ClassMagicDefenceControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ClassRangeDefenceControl)).BeginInit();
@@ -304,6 +351,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.ClassInteligenceControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ClassVitalityControl)).BeginInit();
             this.groupBox9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyAgroLvlSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyExperienceSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyWanderRangeSelection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EnemyAttackRangeSelection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EnemyVisionRangeSelection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EnemyMagicDefenceControl)).BeginInit();
@@ -314,6 +364,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.EnemyInteligenceControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EnemyVitalityControl)).BeginInit();
             this.tabPage7.SuspendLayout();
+            this.panel5.SuspendLayout();
+            this.groupBox12.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BaseXpCurveSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.XpDivSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MaxLvlSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TestLvlSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.XpPowSelection)).BeginInit();
             this.panel7.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -2094,9 +2151,8 @@
             // 
             // groupBox8
             // 
-            this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox8.BackColor = System.Drawing.Color.WhiteSmoke;
             this.groupBox8.Controls.Add(this.panel1);
             this.groupBox8.Controls.Add(this.UndoItemButton);
@@ -2294,7 +2350,7 @@
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Size = new System.Drawing.Size(1152, 711);
             this.tabPage6.TabIndex = 7;
-            this.tabPage6.Text = "Classes / Enemies";
+            this.tabPage6.Text = "Classes / Enemies / Drop Tables";
             this.tabPage6.UseVisualStyleBackColor = true;
             // 
             // panel8
@@ -2303,6 +2359,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel8.BackColor = System.Drawing.Color.DarkGray;
+            this.panel8.Controls.Add(this.groupBox13);
             this.panel8.Controls.Add(this.groupBox10);
             this.panel8.Controls.Add(this.groupBox9);
             this.panel8.Location = new System.Drawing.Point(0, 0);
@@ -2310,11 +2367,164 @@
             this.panel8.Size = new System.Drawing.Size(1152, 705);
             this.panel8.TabIndex = 13;
             // 
-            // groupBox10
+            // groupBox13
             // 
-            this.groupBox10.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.groupBox13.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox13.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.groupBox13.Controls.Add(this.EditDropItemButton);
+            this.groupBox13.Controls.Add(this.label75);
+            this.groupBox13.Controls.Add(this.AddDropItemButton);
+            this.groupBox13.Controls.Add(this.RemoveDropItemButton);
+            this.groupBox13.Controls.Add(this.DropTableItemsList);
+            this.groupBox13.Controls.Add(this.UndoDropTable);
+            this.groupBox13.Controls.Add(this.AddDropTableButton);
+            this.groupBox13.Controls.Add(this.RemoveDropTableButton);
+            this.groupBox13.Controls.Add(this.DropTableList);
+            this.groupBox13.Controls.Add(this.label92);
+            this.groupBox13.Controls.Add(this.ApplyDrobTable);
+            this.groupBox13.Controls.Add(this.DropTableNameBox);
+            this.groupBox13.Location = new System.Drawing.Point(926, 3);
+            this.groupBox13.Name = "groupBox13";
+            this.groupBox13.Size = new System.Drawing.Size(220, 699);
+            this.groupBox13.TabIndex = 67;
+            this.groupBox13.TabStop = false;
+            this.groupBox13.Text = "Drop Table Data";
+            // 
+            // EditDropItemButton
+            // 
+            this.EditDropItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.EditDropItemButton.Location = new System.Drawing.Point(6, 540);
+            this.EditDropItemButton.Name = "EditDropItemButton";
+            this.EditDropItemButton.Size = new System.Drawing.Size(208, 47);
+            this.EditDropItemButton.TabIndex = 37;
+            this.EditDropItemButton.Text = "Edit Drop Item";
+            this.EditDropItemButton.UseVisualStyleBackColor = true;
+            this.EditDropItemButton.Click += new System.EventHandler(this.EditDropItemButton_Click);
+            // 
+            // label75
+            // 
+            this.label75.AutoSize = true;
+            this.label75.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label75.Location = new System.Drawing.Point(6, 341);
+            this.label75.Name = "label75";
+            this.label75.Size = new System.Drawing.Size(41, 13);
+            this.label75.TabIndex = 36;
+            this.label75.Text = "Items:";
+            // 
+            // AddDropItemButton
+            // 
+            this.AddDropItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddDropItemButton.Location = new System.Drawing.Point(6, 487);
+            this.AddDropItemButton.Name = "AddDropItemButton";
+            this.AddDropItemButton.Size = new System.Drawing.Size(208, 47);
+            this.AddDropItemButton.TabIndex = 34;
+            this.AddDropItemButton.Text = "Add Drop Item";
+            this.AddDropItemButton.UseVisualStyleBackColor = true;
+            this.AddDropItemButton.Click += new System.EventHandler(this.AddDropItemButton_Click);
+            // 
+            // RemoveDropItemButton
+            // 
+            this.RemoveDropItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveDropItemButton.Location = new System.Drawing.Point(6, 593);
+            this.RemoveDropItemButton.Name = "RemoveDropItemButton";
+            this.RemoveDropItemButton.Size = new System.Drawing.Size(208, 47);
+            this.RemoveDropItemButton.TabIndex = 35;
+            this.RemoveDropItemButton.Text = "Remove Drop Item";
+            this.RemoveDropItemButton.UseVisualStyleBackColor = true;
+            this.RemoveDropItemButton.Click += new System.EventHandler(this.RemoveDropItemButton_Click);
+            // 
+            // DropTableItemsList
+            // 
+            this.DropTableItemsList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.DropTableItemsList.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.DropTableItemsList.FormattingEnabled = true;
+            this.DropTableItemsList.HorizontalScrollbar = true;
+            this.DropTableItemsList.ItemHeight = 20;
+            this.DropTableItemsList.Location = new System.Drawing.Point(6, 357);
+            this.DropTableItemsList.Name = "DropTableItemsList";
+            this.DropTableItemsList.Size = new System.Drawing.Size(208, 124);
+            this.DropTableItemsList.TabIndex = 33;
+            // 
+            // UndoDropTable
+            // 
+            this.UndoDropTable.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.UndoDropTable.Location = new System.Drawing.Point(6, 646);
+            this.UndoDropTable.Name = "UndoDropTable";
+            this.UndoDropTable.Size = new System.Drawing.Size(98, 47);
+            this.UndoDropTable.TabIndex = 32;
+            this.UndoDropTable.Text = "Undo Changes";
+            this.UndoDropTable.UseVisualStyleBackColor = true;
+            this.UndoDropTable.Click += new System.EventHandler(this.UndoDropTable_Click);
+            // 
+            // AddDropTableButton
+            // 
+            this.AddDropTableButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddDropTableButton.Location = new System.Drawing.Point(6, 235);
+            this.AddDropTableButton.Name = "AddDropTableButton";
+            this.AddDropTableButton.Size = new System.Drawing.Size(208, 47);
+            this.AddDropTableButton.TabIndex = 10;
+            this.AddDropTableButton.Text = "Add Drop Table";
+            this.AddDropTableButton.UseVisualStyleBackColor = true;
+            this.AddDropTableButton.Click += new System.EventHandler(this.AddDropTableButton_Click);
+            // 
+            // RemoveDropTableButton
+            // 
+            this.RemoveDropTableButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveDropTableButton.Location = new System.Drawing.Point(6, 288);
+            this.RemoveDropTableButton.Name = "RemoveDropTableButton";
+            this.RemoveDropTableButton.Size = new System.Drawing.Size(208, 47);
+            this.RemoveDropTableButton.TabIndex = 11;
+            this.RemoveDropTableButton.Text = "Remove Drop Table";
+            this.RemoveDropTableButton.UseVisualStyleBackColor = true;
+            this.RemoveDropTableButton.Click += new System.EventHandler(this.RemoveDropTableButton_Click);
+            // 
+            // DropTableList
+            // 
+            this.DropTableList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.DropTableList.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.DropTableList.FormattingEnabled = true;
+            this.DropTableList.ItemHeight = 20;
+            this.DropTableList.Location = new System.Drawing.Point(6, 45);
+            this.DropTableList.Name = "DropTableList";
+            this.DropTableList.Size = new System.Drawing.Size(208, 184);
+            this.DropTableList.TabIndex = 5;
+            this.DropTableList.SelectedIndexChanged += new System.EventHandler(this.DropTableList_SelectedIndexChanged);
+            // 
+            // label92
+            // 
+            this.label92.AutoSize = true;
+            this.label92.Location = new System.Drawing.Point(6, 22);
+            this.label92.Name = "label92";
+            this.label92.Size = new System.Drawing.Size(38, 13);
+            this.label92.TabIndex = 26;
+            this.label92.Text = "Name:";
+            // 
+            // ApplyDrobTable
+            // 
+            this.ApplyDrobTable.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.ApplyDrobTable.Location = new System.Drawing.Point(116, 646);
+            this.ApplyDrobTable.Name = "ApplyDrobTable";
+            this.ApplyDrobTable.Size = new System.Drawing.Size(98, 47);
+            this.ApplyDrobTable.TabIndex = 4;
+            this.ApplyDrobTable.Text = "Save Changes";
+            this.ApplyDrobTable.UseVisualStyleBackColor = true;
+            this.ApplyDrobTable.Click += new System.EventHandler(this.ApplyDrobTable_Click);
+            // 
+            // DropTableNameBox
+            // 
+            this.DropTableNameBox.Location = new System.Drawing.Point(49, 19);
+            this.DropTableNameBox.Name = "DropTableNameBox";
+            this.DropTableNameBox.Size = new System.Drawing.Size(165, 20);
+            this.DropTableNameBox.TabIndex = 25;
+            // 
+            // groupBox10
+            // 
+            this.groupBox10.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox10.BackColor = System.Drawing.Color.WhiteSmoke;
             this.groupBox10.Controls.Add(this.label45);
             this.groupBox10.Controls.Add(this.ClassMagicDefenceControl);
@@ -2339,7 +2549,7 @@
             this.groupBox10.Controls.Add(this.SaveClassButton);
             this.groupBox10.Location = new System.Drawing.Point(3, 3);
             this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(574, 699);
+            this.groupBox10.Size = new System.Drawing.Size(467, 699);
             this.groupBox10.TabIndex = 2;
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "Class Data";
@@ -2459,7 +2669,7 @@
             // UndoClassButton
             // 
             this.UndoClassButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.UndoClassButton.Location = new System.Drawing.Point(318, 646);
+            this.UndoClassButton.Location = new System.Drawing.Point(211, 646);
             this.UndoClassButton.Name = "UndoClassButton";
             this.UndoClassButton.Size = new System.Drawing.Size(122, 47);
             this.UndoClassButton.TabIndex = 32;
@@ -2521,7 +2731,7 @@
             // SaveClassButton
             // 
             this.SaveClassButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.SaveClassButton.Location = new System.Drawing.Point(446, 646);
+            this.SaveClassButton.Location = new System.Drawing.Point(339, 646);
             this.SaveClassButton.Name = "SaveClassButton";
             this.SaveClassButton.Size = new System.Drawing.Size(122, 47);
             this.SaveClassButton.TabIndex = 4;
@@ -2531,10 +2741,25 @@
             // 
             // groupBox9
             // 
-            this.groupBox9.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox9.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox9.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.groupBox9.Controls.Add(this.label67);
+            this.groupBox9.Controls.Add(this.EnemyAgroLvlSelection);
+            this.groupBox9.Controls.Add(this.label66);
+            this.groupBox9.Controls.Add(this.EnemyExperienceSelection);
+            this.groupBox9.Controls.Add(this.label65);
+            this.groupBox9.Controls.Add(this.EnemyWanderRangeSelection);
+            this.groupBox9.Controls.Add(this.label64);
+            this.groupBox9.Controls.Add(this.EnemyDropTableSelection);
+            this.groupBox9.Controls.Add(this.label63);
+            this.groupBox9.Controls.Add(this.EnemySpeedSelection);
+            this.groupBox9.Controls.Add(this.label62);
+            this.groupBox9.Controls.Add(this.label61);
+            this.groupBox9.Controls.Add(this.label60);
+            this.groupBox9.Controls.Add(this.EnemySpriteSelection);
+            this.groupBox9.Controls.Add(this.EnemyProjectileSelection);
+            this.groupBox9.Controls.Add(this.EnemyAtkStyleSelection);
             this.groupBox9.Controls.Add(this.label42);
             this.groupBox9.Controls.Add(this.EnemyAttackRangeSelection);
             this.groupBox9.Controls.Add(this.label41);
@@ -2560,12 +2785,190 @@
             this.groupBox9.Controls.Add(this.label6);
             this.groupBox9.Controls.Add(this.EnemyNameBox);
             this.groupBox9.Controls.Add(this.SaveEnemyChanges);
-            this.groupBox9.Location = new System.Drawing.Point(583, 3);
+            this.groupBox9.Location = new System.Drawing.Point(476, 3);
             this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(566, 699);
+            this.groupBox9.Size = new System.Drawing.Size(444, 699);
             this.groupBox9.TabIndex = 2;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Enemy Data";
+            // 
+            // label67
+            // 
+            this.label67.AutoSize = true;
+            this.label67.Location = new System.Drawing.Point(239, 348);
+            this.label67.Name = "label67";
+            this.label67.Size = new System.Drawing.Size(49, 13);
+            this.label67.TabIndex = 66;
+            this.label67.Text = "Agro Lvl:";
+            // 
+            // EnemyAgroLvlSelection
+            // 
+            this.EnemyAgroLvlSelection.Location = new System.Drawing.Point(294, 346);
+            this.EnemyAgroLvlSelection.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.EnemyAgroLvlSelection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.EnemyAgroLvlSelection.Name = "EnemyAgroLvlSelection";
+            this.EnemyAgroLvlSelection.Size = new System.Drawing.Size(141, 20);
+            this.EnemyAgroLvlSelection.TabIndex = 65;
+            this.EnemyAgroLvlSelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label66
+            // 
+            this.label66.AutoSize = true;
+            this.label66.Location = new System.Drawing.Point(222, 322);
+            this.label66.Name = "label66";
+            this.label66.Size = new System.Drawing.Size(63, 13);
+            this.label66.TabIndex = 64;
+            this.label66.Text = "Experience:";
+            // 
+            // EnemyExperienceSelection
+            // 
+            this.EnemyExperienceSelection.Location = new System.Drawing.Point(294, 320);
+            this.EnemyExperienceSelection.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.EnemyExperienceSelection.Name = "EnemyExperienceSelection";
+            this.EnemyExperienceSelection.Size = new System.Drawing.Size(141, 20);
+            this.EnemyExperienceSelection.TabIndex = 63;
+            // 
+            // label65
+            // 
+            this.label65.AutoSize = true;
+            this.label65.Location = new System.Drawing.Point(205, 296);
+            this.label65.Name = "label65";
+            this.label65.Size = new System.Drawing.Size(83, 13);
+            this.label65.TabIndex = 62;
+            this.label65.Text = "Wander Range:";
+            // 
+            // EnemyWanderRangeSelection
+            // 
+            this.EnemyWanderRangeSelection.Location = new System.Drawing.Point(294, 294);
+            this.EnemyWanderRangeSelection.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            this.EnemyWanderRangeSelection.Minimum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.EnemyWanderRangeSelection.Name = "EnemyWanderRangeSelection";
+            this.EnemyWanderRangeSelection.Size = new System.Drawing.Size(141, 20);
+            this.EnemyWanderRangeSelection.TabIndex = 61;
+            this.EnemyWanderRangeSelection.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            // 
+            // label64
+            // 
+            this.label64.AutoSize = true;
+            this.label64.Location = new System.Drawing.Point(225, 483);
+            this.label64.Name = "label64";
+            this.label64.Size = new System.Drawing.Size(63, 13);
+            this.label64.TabIndex = 60;
+            this.label64.Text = "Drop Table:";
+            // 
+            // EnemyDropTableSelection
+            // 
+            this.EnemyDropTableSelection.FormattingEnabled = true;
+            this.EnemyDropTableSelection.Location = new System.Drawing.Point(294, 480);
+            this.EnemyDropTableSelection.Name = "EnemyDropTableSelection";
+            this.EnemyDropTableSelection.Size = new System.Drawing.Size(141, 21);
+            this.EnemyDropTableSelection.TabIndex = 59;
+            // 
+            // label63
+            // 
+            this.label63.AutoSize = true;
+            this.label63.Location = new System.Drawing.Point(247, 456);
+            this.label63.Name = "label63";
+            this.label63.Size = new System.Drawing.Size(41, 13);
+            this.label63.TabIndex = 58;
+            this.label63.Text = "Speed:";
+            // 
+            // EnemySpeedSelection
+            // 
+            this.EnemySpeedSelection.FormattingEnabled = true;
+            this.EnemySpeedSelection.Items.AddRange(new object[] {
+            "Extra Fast",
+            "Fast",
+            "Normal",
+            "Slow",
+            "Extra Slow"});
+            this.EnemySpeedSelection.Location = new System.Drawing.Point(294, 453);
+            this.EnemySpeedSelection.Name = "EnemySpeedSelection";
+            this.EnemySpeedSelection.Size = new System.Drawing.Size(141, 21);
+            this.EnemySpeedSelection.TabIndex = 57;
+            // 
+            // label62
+            // 
+            this.label62.AutoSize = true;
+            this.label62.Location = new System.Drawing.Point(251, 429);
+            this.label62.Name = "label62";
+            this.label62.Size = new System.Drawing.Size(37, 13);
+            this.label62.TabIndex = 56;
+            this.label62.Text = "Sprite:";
+            // 
+            // label61
+            // 
+            this.label61.AutoSize = true;
+            this.label61.Location = new System.Drawing.Point(235, 402);
+            this.label61.Name = "label61";
+            this.label61.Size = new System.Drawing.Size(53, 13);
+            this.label61.TabIndex = 55;
+            this.label61.Text = "Projectile:";
+            // 
+            // label60
+            // 
+            this.label60.AutoSize = true;
+            this.label60.Location = new System.Drawing.Point(222, 375);
+            this.label60.Name = "label60";
+            this.label60.Size = new System.Drawing.Size(67, 13);
+            this.label60.TabIndex = 54;
+            this.label60.Text = "Attack Style:";
+            // 
+            // EnemySpriteSelection
+            // 
+            this.EnemySpriteSelection.FormattingEnabled = true;
+            this.EnemySpriteSelection.Location = new System.Drawing.Point(294, 426);
+            this.EnemySpriteSelection.Name = "EnemySpriteSelection";
+            this.EnemySpriteSelection.Size = new System.Drawing.Size(141, 21);
+            this.EnemySpriteSelection.TabIndex = 53;
+            // 
+            // EnemyProjectileSelection
+            // 
+            this.EnemyProjectileSelection.FormattingEnabled = true;
+            this.EnemyProjectileSelection.Location = new System.Drawing.Point(294, 399);
+            this.EnemyProjectileSelection.Name = "EnemyProjectileSelection";
+            this.EnemyProjectileSelection.Size = new System.Drawing.Size(141, 21);
+            this.EnemyProjectileSelection.TabIndex = 52;
+            // 
+            // EnemyAtkStyleSelection
+            // 
+            this.EnemyAtkStyleSelection.FormattingEnabled = true;
+            this.EnemyAtkStyleSelection.Items.AddRange(new object[] {
+            "Melee",
+            "Range",
+            "Magic"});
+            this.EnemyAtkStyleSelection.Location = new System.Drawing.Point(294, 372);
+            this.EnemyAtkStyleSelection.Name = "EnemyAtkStyleSelection";
+            this.EnemyAtkStyleSelection.Size = new System.Drawing.Size(141, 21);
+            this.EnemyAtkStyleSelection.TabIndex = 51;
             // 
             // label42
             // 
@@ -2734,7 +3137,7 @@
             // UndoEnemyChanges
             // 
             this.UndoEnemyChanges.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.UndoEnemyChanges.Location = new System.Drawing.Point(310, 646);
+            this.UndoEnemyChanges.Location = new System.Drawing.Point(188, 646);
             this.UndoEnemyChanges.Name = "UndoEnemyChanges";
             this.UndoEnemyChanges.Size = new System.Drawing.Size(122, 47);
             this.UndoEnemyChanges.TabIndex = 32;
@@ -2796,7 +3199,7 @@
             // SaveEnemyChanges
             // 
             this.SaveEnemyChanges.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.SaveEnemyChanges.Location = new System.Drawing.Point(438, 646);
+            this.SaveEnemyChanges.Location = new System.Drawing.Point(316, 646);
             this.SaveEnemyChanges.Name = "SaveEnemyChanges";
             this.SaveEnemyChanges.Size = new System.Drawing.Size(122, 47);
             this.SaveEnemyChanges.TabIndex = 4;
@@ -2818,12 +3221,259 @@
             // tabPage7
             // 
             this.tabPage7.BackColor = System.Drawing.Color.DarkGray;
+            this.tabPage7.Controls.Add(this.panel5);
             this.tabPage7.Controls.Add(this.panel7);
             this.tabPage7.Location = new System.Drawing.Point(4, 22);
             this.tabPage7.Name = "tabPage7";
             this.tabPage7.Size = new System.Drawing.Size(1152, 711);
             this.tabPage7.TabIndex = 6;
             this.tabPage7.Text = "Sytem";
+            // 
+            // panel5
+            // 
+            this.panel5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel5.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.panel5.Controls.Add(this.groupBox12);
+            this.panel5.Controls.Add(this.ApplySystemDataButton);
+            this.panel5.Controls.Add(this.UndoSystemDataButton);
+            this.panel5.Controls.Add(this.label71);
+            this.panel5.Location = new System.Drawing.Point(417, 3);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(732, 705);
+            this.panel5.TabIndex = 35;
+            // 
+            // groupBox12
+            // 
+            this.groupBox12.Controls.Add(this.BaseXpCurveSelection);
+            this.groupBox12.Controls.Add(this.label74);
+            this.groupBox12.Controls.Add(this.label68);
+            this.groupBox12.Controls.Add(this.XpDivSelection);
+            this.groupBox12.Controls.Add(this.MaxLvlSelection);
+            this.groupBox12.Controls.Add(this.label72);
+            this.groupBox12.Controls.Add(this.TestLvlSelection);
+            this.groupBox12.Controls.Add(this.XpPowSelection);
+            this.groupBox12.Controls.Add(this.label69);
+            this.groupBox12.Controls.Add(this.label70);
+            this.groupBox12.Controls.Add(this.TestLvlLabel);
+            this.groupBox12.Controls.Add(this.label73);
+            this.groupBox12.Location = new System.Drawing.Point(7, 27);
+            this.groupBox12.Name = "groupBox12";
+            this.groupBox12.Size = new System.Drawing.Size(295, 229);
+            this.groupBox12.TabIndex = 49;
+            this.groupBox12.TabStop = false;
+            this.groupBox12.Text = "Leveling";
+            // 
+            // BaseXpCurveSelection
+            // 
+            this.BaseXpCurveSelection.Location = new System.Drawing.Point(126, 19);
+            this.BaseXpCurveSelection.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.BaseXpCurveSelection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.BaseXpCurveSelection.Name = "BaseXpCurveSelection";
+            this.BaseXpCurveSelection.Size = new System.Drawing.Size(163, 20);
+            this.BaseXpCurveSelection.TabIndex = 36;
+            this.BaseXpCurveSelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.BaseXpCurveSelection.ValueChanged += new System.EventHandler(this.BaseXpCurveSelection_ValueChanged);
+            // 
+            // label74
+            // 
+            this.label74.AutoSize = true;
+            this.label74.Location = new System.Drawing.Point(77, 73);
+            this.label74.Name = "label74";
+            this.label74.Size = new System.Drawing.Size(43, 13);
+            this.label74.TabIndex = 48;
+            this.label74.Text = "XP Div:";
+            // 
+            // label68
+            // 
+            this.label68.AutoSize = true;
+            this.label68.Location = new System.Drawing.Point(16, 21);
+            this.label68.Name = "label68";
+            this.label68.Size = new System.Drawing.Size(104, 13);
+            this.label68.TabIndex = 35;
+            this.label68.Text = "Base XP (Lvl 1 to 2):";
+            // 
+            // XpDivSelection
+            // 
+            this.XpDivSelection.DecimalPlaces = 3;
+            this.XpDivSelection.Location = new System.Drawing.Point(126, 71);
+            this.XpDivSelection.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.XpDivSelection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.XpDivSelection.Name = "XpDivSelection";
+            this.XpDivSelection.Size = new System.Drawing.Size(163, 20);
+            this.XpDivSelection.TabIndex = 47;
+            this.XpDivSelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.XpDivSelection.ValueChanged += new System.EventHandler(this.XpDivSelection_ValueChanged);
+            // 
+            // MaxLvlSelection
+            // 
+            this.MaxLvlSelection.Location = new System.Drawing.Point(126, 97);
+            this.MaxLvlSelection.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.MaxLvlSelection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.MaxLvlSelection.Name = "MaxLvlSelection";
+            this.MaxLvlSelection.Size = new System.Drawing.Size(163, 20);
+            this.MaxLvlSelection.TabIndex = 37;
+            this.MaxLvlSelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label72
+            // 
+            this.label72.AutoSize = true;
+            this.label72.Location = new System.Drawing.Point(72, 48);
+            this.label72.Name = "label72";
+            this.label72.Size = new System.Drawing.Size(48, 13);
+            this.label72.TabIndex = 46;
+            this.label72.Text = "XP Pow:";
+            // 
+            // TestLvlSelection
+            // 
+            this.TestLvlSelection.Location = new System.Drawing.Point(126, 123);
+            this.TestLvlSelection.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.TestLvlSelection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.TestLvlSelection.Name = "TestLvlSelection";
+            this.TestLvlSelection.Size = new System.Drawing.Size(163, 20);
+            this.TestLvlSelection.TabIndex = 38;
+            this.TestLvlSelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.TestLvlSelection.ValueChanged += new System.EventHandler(this.TestLvlSelection_ValueChanged);
+            // 
+            // XpPowSelection
+            // 
+            this.XpPowSelection.DecimalPlaces = 3;
+            this.XpPowSelection.Location = new System.Drawing.Point(126, 45);
+            this.XpPowSelection.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.XpPowSelection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.XpPowSelection.Name = "XpPowSelection";
+            this.XpPowSelection.Size = new System.Drawing.Size(163, 20);
+            this.XpPowSelection.TabIndex = 45;
+            this.XpPowSelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.XpPowSelection.ValueChanged += new System.EventHandler(this.XpPowSelection_ValueChanged);
+            // 
+            // label69
+            // 
+            this.label69.AutoSize = true;
+            this.label69.Location = new System.Drawing.Point(73, 99);
+            this.label69.Name = "label69";
+            this.label69.Size = new System.Drawing.Size(47, 13);
+            this.label69.TabIndex = 39;
+            this.label69.Text = "Max Lvl:";
+            // 
+            // label70
+            // 
+            this.label70.AutoSize = true;
+            this.label70.Location = new System.Drawing.Point(72, 125);
+            this.label70.Name = "label70";
+            this.label70.Size = new System.Drawing.Size(48, 13);
+            this.label70.TabIndex = 40;
+            this.label70.Text = "Test Lvl:";
+            // 
+            // TestLvlLabel
+            // 
+            this.TestLvlLabel.AutoSize = true;
+            this.TestLvlLabel.Location = new System.Drawing.Point(123, 146);
+            this.TestLvlLabel.Name = "TestLvlLabel";
+            this.TestLvlLabel.Size = new System.Drawing.Size(0, 13);
+            this.TestLvlLabel.TabIndex = 41;
+            // 
+            // label73
+            // 
+            this.label73.AutoSize = true;
+            this.label73.Location = new System.Drawing.Point(56, 146);
+            this.label73.Name = "label73";
+            this.label73.Size = new System.Drawing.Size(64, 13);
+            this.label73.TabIndex = 42;
+            this.label73.Text = "Xp Needed:";
+            // 
+            // ApplySystemDataButton
+            // 
+            this.ApplySystemDataButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ApplySystemDataButton.Location = new System.Drawing.Point(510, 655);
+            this.ApplySystemDataButton.Name = "ApplySystemDataButton";
+            this.ApplySystemDataButton.Size = new System.Drawing.Size(219, 47);
+            this.ApplySystemDataButton.TabIndex = 44;
+            this.ApplySystemDataButton.Text = "Apply Changes";
+            this.ApplySystemDataButton.UseVisualStyleBackColor = true;
+            this.ApplySystemDataButton.Click += new System.EventHandler(this.ApplySystemDataButton_Click);
+            // 
+            // UndoSystemDataButton
+            // 
+            this.UndoSystemDataButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.UndoSystemDataButton.Location = new System.Drawing.Point(285, 655);
+            this.UndoSystemDataButton.Name = "UndoSystemDataButton";
+            this.UndoSystemDataButton.Size = new System.Drawing.Size(219, 47);
+            this.UndoSystemDataButton.TabIndex = 43;
+            this.UndoSystemDataButton.Text = "Undo Changes";
+            this.UndoSystemDataButton.UseVisualStyleBackColor = true;
+            this.UndoSystemDataButton.Click += new System.EventHandler(this.UndoSystemDataButton_Click);
+            // 
+            // label71
+            // 
+            this.label71.AutoSize = true;
+            this.label71.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label71.Location = new System.Drawing.Point(3, 0);
+            this.label71.Name = "label71";
+            this.label71.Size = new System.Drawing.Size(124, 24);
+            this.label71.TabIndex = 7;
+            this.label71.Text = "System Data";
             // 
             // panel7
             // 
@@ -3027,6 +3677,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.ItemMaxStack)).EndInit();
             this.tabPage6.ResumeLayout(false);
             this.panel8.ResumeLayout(false);
+            this.groupBox13.ResumeLayout(false);
+            this.groupBox13.PerformLayout();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ClassMagicDefenceControl)).EndInit();
@@ -3038,6 +3690,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.ClassVitalityControl)).EndInit();
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyAgroLvlSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyExperienceSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EnemyWanderRangeSelection)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.EnemyAttackRangeSelection)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.EnemyVisionRangeSelection)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.EnemyMagicDefenceControl)).EndInit();
@@ -3048,6 +3703,15 @@
             ((System.ComponentModel.ISupportInitialize)(this.EnemyInteligenceControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.EnemyVitalityControl)).EndInit();
             this.tabPage7.ResumeLayout(false);
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
+            this.groupBox12.ResumeLayout(false);
+            this.groupBox12.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BaseXpCurveSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.XpDivSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MaxLvlSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TestLvlSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.XpPowSelection)).EndInit();
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
             this.ResumeLayout(false);
@@ -3277,6 +3941,52 @@
         private System.Windows.Forms.NumericUpDown ProjectileAnchorY;
         private System.Windows.Forms.NumericUpDown ProjectileAnchorX;
         private System.Windows.Forms.Label label44;
+        private System.Windows.Forms.Label label62;
+        private System.Windows.Forms.Label label61;
+        private System.Windows.Forms.Label label60;
+        private System.Windows.Forms.ComboBox EnemySpriteSelection;
+        private System.Windows.Forms.ComboBox EnemyProjectileSelection;
+        private System.Windows.Forms.ComboBox EnemyAtkStyleSelection;
+        private System.Windows.Forms.Label label67;
+        private System.Windows.Forms.NumericUpDown EnemyAgroLvlSelection;
+        private System.Windows.Forms.Label label66;
+        private System.Windows.Forms.NumericUpDown EnemyExperienceSelection;
+        private System.Windows.Forms.Label label65;
+        private System.Windows.Forms.NumericUpDown EnemyWanderRangeSelection;
+        private System.Windows.Forms.Label label64;
+        private System.Windows.Forms.ComboBox EnemyDropTableSelection;
+        private System.Windows.Forms.Label label63;
+        private System.Windows.Forms.ComboBox EnemySpeedSelection;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Label label73;
+        private System.Windows.Forms.Label TestLvlLabel;
+        private System.Windows.Forms.Label label70;
+        private System.Windows.Forms.Label label69;
+        private System.Windows.Forms.NumericUpDown TestLvlSelection;
+        private System.Windows.Forms.NumericUpDown MaxLvlSelection;
+        private System.Windows.Forms.NumericUpDown BaseXpCurveSelection;
+        private System.Windows.Forms.Label label68;
+        private System.Windows.Forms.Label label71;
+        private System.Windows.Forms.Button ApplySystemDataButton;
+        private System.Windows.Forms.Button UndoSystemDataButton;
+        private System.Windows.Forms.Label label74;
+        private System.Windows.Forms.NumericUpDown XpDivSelection;
+        private System.Windows.Forms.Label label72;
+        private System.Windows.Forms.NumericUpDown XpPowSelection;
+        private System.Windows.Forms.GroupBox groupBox12;
+        private System.Windows.Forms.GroupBox groupBox13;
+        private System.Windows.Forms.Button UndoDropTable;
+        private System.Windows.Forms.Button AddDropTableButton;
+        private System.Windows.Forms.Button RemoveDropTableButton;
+        private System.Windows.Forms.ListBox DropTableList;
+        private System.Windows.Forms.Label label92;
+        private System.Windows.Forms.TextBox DropTableNameBox;
+        private System.Windows.Forms.Button ApplyDrobTable;
+        private System.Windows.Forms.Label label75;
+        private System.Windows.Forms.Button AddDropItemButton;
+        private System.Windows.Forms.Button RemoveDropItemButton;
+        private System.Windows.Forms.ListBox DropTableItemsList;
+        private System.Windows.Forms.Button EditDropItemButton;
     }
 }
 

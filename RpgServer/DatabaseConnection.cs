@@ -119,10 +119,14 @@ namespace RpgServer
                 MapY INTEGER,
                 OnBridge INTEGER,
                 Level INTEGER,
+                Experience INTEGER,
                 ClassID INTEGER,
                 HP INTEGER,
                 MP INTEGER,
                 Stamina INTEGER,
+                Gold INTEGER,
+                Inventory TEXT,
+                Equipment TEXT,
                 InvestmentPoints INTEGER,
                 VitalityPoints INTEGER,
                 InteligencePoints INTEGER,
@@ -150,10 +154,14 @@ namespace RpgServer
                 MapY int,
                 OnBridge int,
                 Level int,
+                Experience int,
                 ClassID int,
                 HP int,
                 MP int,
                 Stamina int,
+                Gold int,
+                Inventory varchar,
+                Equipment varchar,
                 InvestmentPoints int,
                 VitalityPoints int,
                 InteligencePoints int,
@@ -283,10 +291,12 @@ namespace RpgServer
                 {
                     SpawnPoint spawn = Genus2D.GameData.MapInfo.GetSpawnPoint(0);
                     if (spawn == null) spawn = new SpawnPoint(0, 0, 0, "default");
-                    string insertQuery = "INSERT INTO Players (Connected, Username, Password, MapID, SpriteID, Direction, MapX, MapY, OnBridge, Level, ClassID, " +
-                        "HP, MP, Stamina, " +
+                    string insertQuery = "INSERT INTO Players (Connected, Username, Password, MapID, SpriteID, Direction, MapX, MapY, OnBridge, Level, Experience, ClassID, " +
+                        "HP, MP, Stamina, Gold, Inventory, Equipment, " +
                         "InvestmentPoints, VitalityPoints, InteligencePoints, StrengthPoints, AgilityPoints, MeleeDefencePoints, RangeDefencePoints, MagicDefencePoints) " +
-                        "VALUES (0, '" + username + "', '" + password + "', " + spawn.MapID + ", 0, 0, " + spawn.MapX + ", " + spawn.MapY + ", 0, 1, -1, 10, 10, 10, 0, 0, 0, 0, 0, 0, 0, 0)";
+                        "VALUES (0, '" + username + "', '" + password + "', " + spawn.MapID + ", 0, 0, " + spawn.MapX + ", " + spawn.MapY + ", 0, 1, 0, -1, " +
+                            "10, 10, 10, 0, '', '0,0,0,0,0,0,0,0,0,-1,0', 0, 0, 0, 0, 0, 0, 0, 0)";
+
 
                     if (_sqlite)
                     {
@@ -342,10 +352,14 @@ namespace RpgServer
                     "MapY=" + packet.PositionY + "," +
                     "OnBridge=" + (packet.OnBridge ? 1 : 0) + "," +
                     "Level=" + packet.Data.Level + "," +
+                    "Experience=" + packet.Data.Experience + "," +
+                    "ClassID=" + packet.Data.GetClassID() + "," +
                     "HP=" + packet.Data.HP + "," +
                     "MP=" + packet.Data.MP + "," +
                     "Stamina=" + packet.Data.Stamina + "," +
-                    "ClassID=" + packet.Data.GetClassID() + "," +
+                    "Gold=" + packet.Data.Gold + "," +
+                    "Inventory='" + packet.Data.GetInventoryString() + "'," +
+                    "Equipment='" + packet.Data.GetEquipmentString() + "'," +
                     "InvestmentPoints=" + packet.Data.InvestmentPoints + "," +
                     "VitalityPoints=" + packet.Data.InvestedStats.Vitality + "," +
                     "InteligencePoints=" + packet.Data.InvestedStats.Inteligence + "," +
@@ -389,10 +403,14 @@ namespace RpgServer
                         packet.OnBridge = Convert.ToInt32(rdr["OnBridge"]) == 1 ? true : false;
                         packet.Data = new PlayerData();
                         packet.Data.Level = Convert.ToInt32(rdr["Level"]);
+                        packet.Data.Experience = Convert.ToInt32(rdr["Experience"]);
+                        packet.Data.SetClassID(Convert.ToInt32(rdr["ClassID"]));
                         packet.Data.HP = Convert.ToInt32(rdr["HP"]);
                         packet.Data.MP = Convert.ToInt32(rdr["MP"]);
                         packet.Data.Stamina = Convert.ToInt32(rdr["Stamina"]);
-                        packet.Data.SetClassID(Convert.ToInt32(rdr["ClassID"]));
+                        packet.Data.Gold = Convert.ToInt32(rdr["Gold"]);
+                        packet.Data.ParseInventoryString((string)rdr["Inventory"]);
+                        packet.Data.ParseEquipmentString((string)rdr["Equipment"]);
                         packet.Data.InvestedStats.Vitality = Convert.ToInt32(rdr["VitalityPoints"]);
                         packet.Data.InvestedStats.Inteligence = Convert.ToInt32(rdr["InteligencePoints"]);
                         packet.Data.InvestedStats.Strength = Convert.ToInt32(rdr["StrengthPoints"]);
@@ -423,10 +441,14 @@ namespace RpgServer
                         packet.OnBridge = Convert.ToInt32(rdr["OnBridge"]) == 1 ? true : false;
                         packet.Data = new PlayerData();
                         packet.Data.Level = Convert.ToInt32(rdr["Level"]);
+                        packet.Data.Experience = Convert.ToInt32(rdr["Experience"]);
+                        packet.Data.SetClassID(Convert.ToInt32(rdr["ClassID"]));
                         packet.Data.HP = Convert.ToInt32(rdr["HP"]);
                         packet.Data.MP = Convert.ToInt32(rdr["MP"]);
                         packet.Data.Stamina = Convert.ToInt32(rdr["Stamina"]);
-                        packet.Data.SetClassID(Convert.ToInt32(rdr["ClassID"]));
+                        packet.Data.Gold = Convert.ToInt32(rdr["Gold"]);
+                        packet.Data.ParseInventoryString((string)rdr["Inventory"]);
+                        packet.Data.ParseEquipmentString((string)rdr["Equipment"]);
                         packet.Data.InvestedStats.Vitality = Convert.ToInt32(rdr["VitalityPoints"]);
                         packet.Data.InvestedStats.Inteligence = Convert.ToInt32(rdr["InteligencePoints"]);
                         packet.Data.InvestedStats.Strength = Convert.ToInt32(rdr["StrengthPoints"]);

@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{75664004-1A54-425F-BBCC-D2F47E60093A}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RpgGame</RootNamespace>
     <AssemblyName>RpgGame</AssemblyName>
@@ -78,8 +78,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntityComponents\MapComponent.cs" />
+    <Compile Include="EntityComponents\MapEnemyComponent.cs" />
     <Compile Include="EntityComponents\MapEventComponent.cs" />
     <Compile Include="EntityComponents\PlayerComponent.cs" />
+    <Compile Include="EntityComponents\MapItemComponent.cs" />
+    <Compile Include="EntityComponents\ProjectileComponent.cs" />
+    <Compile Include="GUI\MapClickOptionsPanel.cs" />
     <Compile Include="GUI\StatsPanel.cs" />
     <Compile Include="GUI\EquipmentPanel.cs" />
     <Compile Include="GUI\InventoryPanel.cs" />

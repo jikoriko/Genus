@@ -35,7 +35,6 @@ namespace Genus2D.Core
 
             _entityManager = new EntityManager(this);
             _controls = new List<Control>();
-
         }
 
         public virtual void AddKeyListener(KeyListener listener)

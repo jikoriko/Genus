@@ -66,7 +66,7 @@ namespace RpgGame.EntityComponents
             KeyboardState keyState = Keyboard.GetState();
 
             bool running = false;
-            if (keyState.IsKeyDown(Key.LShift))
+            if (keyState.IsKeyDown(Key.LShift) && _playerPacket.Data.Stamina > 0)
                 running = true;
 
             Vector2 targetPos = GetTargetPosition();
@@ -158,7 +158,7 @@ namespace RpgGame.EntityComponents
                     Renderer.FillShape(ShapeFactory.Rectangle, ref pos, ref size, ref colour);
 
                     pos.Y += 7;
-                    size.X = (GetFrameWidth() - 4) * ((float)_playerPacket.Data.MP / _playerPacket.Data.GetMapMP());
+                    size.X = (GetFrameWidth() - 4) * ((float)_playerPacket.Data.MP / _playerPacket.Data.GetMaxMP());
                     colour = OpenTK.Graphics.Color4.Blue;
                     Renderer.FillShape(ShapeFactory.Rectangle, ref pos, ref size, ref colour);
 

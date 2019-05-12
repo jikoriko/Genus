@@ -27,5 +27,16 @@ namespace Genus2D.GameData
             RangeDefence = 0;
             MagicDefence = 0;
         }
+
+        public CombatStats(CombatStats other)
+        {
+            Vitality = other.Vitality;
+            Inteligence = other.Inteligence;
+            Strength = other.Strength;
+            Agility = other.Agility;
+            MeleeDefence = other.MeleeDefence;
+            RangeDefence = other.RangeDefence;
+            MagicDefence = other.MagicDefence;
+        }
     }
 }

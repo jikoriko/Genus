@@ -80,6 +80,7 @@ namespace RpgServer
                 int eventID;
                 int mapX;
                 int mapY;
+                MapEvent mapEvent;
                 FacingDirection facingDirection;
                 MovementDirection movementDirection;
                 int spriteID;
@@ -88,6 +89,7 @@ namespace RpgServer
                 int variableID;
                 VariableType variableType;
                 object variableValue;
+                int gold;
 
                 switch (eventCommand.Type)
                 {
@@ -240,7 +242,7 @@ namespace RpgServer
                                 mapX = (int)eventCommand.GetParameter("MapEventMapX");
                                 mapY = (int)eventCommand.GetParameter("MapEventMapY");
 
-                                MapEvent mapEvent = Server.Instance.GetMapInstance(mapID).GetMapData().GetMapEvent(eventID);
+                                mapEvent = Server.Instance.GetMapInstance(mapID).GetMapData().GetMapEvent(eventID);
                                 if (mapEvent.MapX == mapX && mapEvent.MapY == mapY)
                                     conditionMet = true;
 
@@ -398,6 +400,14 @@ namespace RpgServer
                                     conditionMet = true;
 
                                 break;
+                            case ConditionalBranchType.PlayerGold:
+                                if (client == null || !client.Connected()) break;
+
+                                gold = (int)eventCommand.GetParameter("Gold");
+                                if (client.GetPacket().Data.Gold >= gold)
+                                    conditionMet = true;
+
+                                break;
                         }
 
                         if (!conditionMet)
@@ -468,12 +478,65 @@ namespace RpgServer
 
                         break;
                     case EventCommand.CommandType.WaitForMovementCompletion:
-
                         if (client == null || !client.Connected()) break;
 
                         if (client.Moving())
                         {
                             triggeringEvent.CommandID--;
+                        }
+
+                        break;
+                    case EventCommand.CommandType.AddGold:
+                        if (client == null || !client.Connected()) break;
+
+                        gold = (int)eventCommand.GetParameter("Gold");
+                        client.GetPacket().Data.Gold += gold;
+
+                        break;
+                    case EventCommand.CommandType.RemoveGold:
+                        if (client == null || !client.Connected()) break;
+
+                        gold = (int)eventCommand.GetParameter("Gold");
+                        client.GetPacket().Data.Gold -= gold;
+                        if (client.GetPacket().Data.Gold < 0)
+                            client.GetPacket().Data.Gold = 0;
+
+                        break;
+                    case EventCommand.CommandType.SpawnEnemy:
+                        if (client != null) break;
+
+                        int enemyID = (int)eventCommand.GetParameter("EnemyID");
+                        if (enemyID == -1) break;
+
+                        int enemyCount = (int)eventCommand.GetParameter("Count");
+                        float respawnTime = (float)eventCommand.GetParameter("RespawnTime");
+                        int spawnRadius = (int)eventCommand.GetParameter("SpawnRadius");
+
+                        mapEvent = triggeringEvent.GetMapEvent();
+
+                        Dictionary<MapEnemy, float> enemyTracker = _mapInstance.GetEnemyTracker(mapEvent);
+                        Random r = new Random();
+                        while (enemyTracker.Count < enemyCount)
+                        {
+                            int minX = mapEvent.MapX - spawnRadius;
+                            int maxX = mapEvent.MapX + spawnRadius;
+                            int minY = mapEvent.MapY - spawnRadius;
+                            int maxY = mapEvent.MapY + spawnRadius;
+
+                            while (true)
+                            {
+                                int spawnX = r.Next(minX, maxX);
+                                int spawnY = r.Next(minY, maxY);
+                                bool onBridge = mapEvent.OnBridge && _mapInstance.GetBridgeFlag(spawnX, spawnY);
+                                bool bridgeEntry = onBridge && _mapInstance.MapTilesetPassable(spawnX, spawnY);
+                                if (_mapInstance.MapTileCharacterPassable(spawnX, spawnY, false, onBridge, bridgeEntry, MovementDirection.Down))
+                                {
+                                    MapEnemy enemy = new MapEnemy(enemyID, spawnX, spawnY, onBridge);
+                                    enemyTracker.Add(enemy, respawnTime);
+                                    _mapInstance.AddMapEnemy(enemy);
+                                    break;
+                                }
+                            }
                         }
 
                         break;

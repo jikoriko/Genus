@@ -26,7 +26,7 @@ namespace RpgGame.GUI
         {
             _gameState = state;
 
-            SetContentSize(GetContentWidth(), (GetContentWidth() / 5) * 6);
+            SetContentSize(GetContentWidth(), 30 + ((GetContentWidth() / 5) * 6));
             SetPosition((int)GetBodyPosition().X, (int)(Renderer.GetResoultion().Y - 60 - GetBodySize().Y));
         }
 
@@ -35,15 +35,20 @@ namespace RpgGame.GUI
             base.OnMouseDown(e);
             if (ContentSelectable())
             {
-                if (e.Button == MouseButton.Left)
+                if (e.Button == MouseButton.Left || e.Button == MouseButton.Right)
                 {
+                    ClientCommand command = null;
+
                     Vector2 mouse = GetLocalMousePosition();
                     int slotSize = GetContentWidth() / 5;
                     mouse.X /= slotSize;
                     mouse.Y /= slotSize;
                     int itemIndex = (int)mouse.X + ((int)mouse.Y * 5);
-                    ClientCommand command = new ClientCommand(ClientCommand.CommandType.SelectItem);
-                    command.SetParameter("ItemIndex", itemIndex.ToString());
+                    if (e.Button == MouseButton.Left)
+                        command = new ClientCommand(ClientCommand.CommandType.SelectItem);
+                    else
+                        command = new ClientCommand(ClientCommand.CommandType.DropItem);
+                    command.SetParameter("ItemIndex", itemIndex);
                     RpgClientConnection.Instance.AddClientCommand(command);
                 }
             }
@@ -56,6 +61,9 @@ namespace RpgGame.GUI
             PlayerPacket playerPacket = RpgClientConnection.Instance.GetLocalPlayerPacket();
             if (playerPacket != null)
             {
+                Vector3 pos = new Vector3(10, 5, 0);
+                Color4 colour = Color4.Black;
+                Renderer.PrintText("Gold: " + playerPacket.Data.Gold, ref pos, ref colour);
                 int slotSize = GetContentWidth() / 5;
                 Vector3 size = new Vector3(slotSize, slotSize, 1);
                 for (int i = 0; i < 30; i++)
@@ -64,16 +72,26 @@ namespace RpgGame.GUI
                     if (item == null) break;
 
                     int x = (i % 5) * slotSize;
-                    int y = (i / 5) * slotSize;
+                    int y = 30 + ((i / 5) * slotSize);
                     ItemData data = ItemData.GetItemData(item.Item1);
                     if (data != null)
                     {
-                        Vector3 pos = new Vector3(x, y, 0);
+                        pos = new Vector3(x, y, 0);
                         Rectangle source = new Rectangle((data.IconID % 8) * 32, (data.IconID / 8) * 32, 32, 32);
                         Rectangle dest = new Rectangle(x, y, slotSize, slotSize);
                         Texture texture = Assets.GetTexture("Icons/" + data.IconSheetImage);
-                        Color4 colour = Color4.White;
+                        colour = Color4.White;
                         Renderer.FillTexture(texture, ShapeFactory.Rectangle, ref pos, ref size, ref source, ref colour);
+
+                        int amount = item.Item2;
+                        if (amount > 1)
+                        {
+                            string text = amount.ToString();
+                            pos.X += 32 - Renderer.GetFont().GetTextWidth(text);
+                            pos.Y += 32 - Renderer.GetFont().GetTextHeight(text);
+                            colour = Color4.Red;
+                            Renderer.PrintText(text, ref pos, ref colour);
+                        }
                     }
                 }
             }

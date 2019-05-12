@@ -11,8 +11,10 @@ namespace Genus2D.GameData
     public class PlayerData
     {
         public int Level;
+        public int Experience;
         public int HP, MP, Stamina;
         public int InvestmentPoints;
+        public int Gold;
 
         private int _classID;
         public CombatStats BaseStats { get; private set; }
@@ -21,17 +23,22 @@ namespace Genus2D.GameData
         private static int InventorySize = 30; // hardcoded inventory size
         private List<Tuple<int, int>> _inventory; //item id, item count
         private int[] _equipment;
+        private Tuple<int, int> _equipedAmmo;
 
         public PlayerData()
         {
             Level = 0;
+            Experience = 0;
             HP = 0;
             MP = 0;
             Stamina = 0;
+            InvestmentPoints = 0;
+            Gold = 0;
             SetClassID(-1);
             InvestedStats = new CombatStats();
             _inventory = new List<Tuple<int, int>>();
             _equipment = new int[(int)EquipmentSlot.Ring + 1];
+            _equipedAmmo = new Tuple<int, int>(-1, 0);
         }
 
         public void SetClassID(int id)
@@ -58,6 +65,20 @@ namespace Genus2D.GameData
         public int GetClassID()
         {
             return _classID;
+        }
+
+        public int ExperienceToLevel()
+        {
+            int baseXp = SystemData.GetData().BaseXpCurve;
+            float xpPow = SystemData.GetData().XpPower;
+            float xpDiv = SystemData.GetData().XpDivision;
+            int targetXp = baseXp;
+            for (int i = 1; i < Level; i++)
+            {
+                targetXp += (int)(Math.Floor(i + baseXp * Math.Pow(2, i / xpPow)) / xpDiv);
+            }
+
+            return targetXp;
         }
 
         public CombatStats GetCombinedCombatStats()
@@ -96,7 +117,7 @@ namespace Genus2D.GameData
             return combined.Vitality * 10;
         }
 
-        public int GetMapMP()
+        public int GetMaxMP()
         {
             CombatStats combined = GetCombinedCombatStats();
             return combined.Inteligence * 10;
@@ -168,6 +189,14 @@ namespace Genus2D.GameData
             }
 
             return added;
+        }
+
+        public void RemoveInventoryItem(int itemIndex)
+        {
+            if (itemIndex >= 0 && itemIndex < _inventory.Count)
+            {
+                _inventory.RemoveAt(itemIndex);
+            }
         }
 
         public void RemoveInventoryItem(int itemID, int count)
@@ -280,11 +309,138 @@ namespace Genus2D.GameData
             return false;
         }
 
+        public void EquipAmmo(int itemIndex)
+        {
+            if (itemIndex >= 0 && itemIndex < _inventory.Count)
+            {
+                Tuple<int, int> itemInfo = _inventory[itemIndex];
+                ItemData data = ItemData.GetItemData(itemInfo.Item1);
+                if (data.GetItemType() == ItemData.ItemType.Ammo)
+                {
+                    if (_equipedAmmo.Item1 == -1)
+                    {
+                        _equipedAmmo = itemInfo;
+                        _inventory.RemoveAt(itemIndex);
+                    }
+                    else if (_equipedAmmo.Item1 == itemInfo.Item1)
+                    {
+                        int max = data.GetMaxStack() - _equipedAmmo.Item2;
+                        int amount = itemInfo.Item2 > max ? max : itemInfo.Item2;
+                        _equipedAmmo = new Tuple<int, int>(_equipedAmmo.Item1, _equipedAmmo.Item2 + amount);
+                        int remainder = itemInfo.Item2 - amount;
+                        if (remainder == 0)
+                            _inventory.RemoveAt(itemIndex);
+                        else
+                            _inventory[itemIndex] = new Tuple<int, int>(itemInfo.Item1, itemInfo.Item2 - amount);
+                    }
+                    else
+                    {
+                        _inventory.RemoveAt(itemIndex);
+                        _inventory.Add(_equipedAmmo);
+                        _equipedAmmo = itemInfo;
+                    }
+                }
+            }
+        }
+
+        public void UnequipAmmo()
+        {
+            if (_equipedAmmo.Item1 != -1)
+            {
+                if (_inventory.Count < 30)
+                {
+                    _inventory.Add(_equipedAmmo);
+                    _equipedAmmo = new Tuple<int, int>(-1, 0);
+                }
+            }
+        }
+
+        public Tuple<int, int> GetEquipedAmmo()
+        {
+            return _equipedAmmo;
+        }
+
+        public int ConsumeAmmo()
+        {
+            if (_equipedAmmo.Item1 != -1)
+            {
+                ItemData data = ItemData.GetItemData(_equipedAmmo.Item1);
+                int projectile = (int)data.GetItemStat("ProjectileID");
+                if (projectile != -1)
+                {
+                    int amount = _equipedAmmo.Item2 - 1;
+                    if (amount == 0)
+                        _equipedAmmo = new Tuple<int, int>(-1, 0);
+                    else
+                        _equipedAmmo = new Tuple<int, int>(_equipedAmmo.Item1, amount);
+                    return projectile;
+                }
+            }
+            return -1;
+        }
+
+        public string GetInventoryString()
+        {
+            string text = "";
+
+            for (int i = 0; i < _inventory.Count; i++)
+            {
+                text += _inventory[i].Item1 + "," + _inventory[i].Item2;
+                if (i < _inventory.Count - 1)
+                    text += ",";
+            }
+
+            return text;
+        }
+
+        public void ParseInventoryString(string text)
+        {
+            _inventory.Clear();
+            string[] parts = text.Split(',');
+            int numItems = parts.Length / 2;
+            for (int i = 0; i < numItems; i++)
+            {
+                int id = int.Parse(parts[i * 2]);
+                int count = int.Parse(parts[(i * 2) + 1]);
+                _inventory.Add(new Tuple<int, int>(id, count));
+            }
+        }
+
+        public string GetEquipmentString()
+        {
+            string text = "";
+
+            for (int i = 0; i < _equipment.Length; i++)
+            {
+                text += _equipment[i] + ",";
+            }
+            text += _equipedAmmo.Item1 + "," + _equipedAmmo.Item2;
+
+            return text;
+        }
+
+        public void ParseEquipmentString(string text)
+        {
+            string[] parts = text.Split(',');
+            for (int i = 0; i < parts.Length - 1; i++)
+            {
+                int id = int.Parse(parts[i]);
+                if (i < 9)
+                    _equipment[i] = id;
+                else
+                {
+                    int count = int.Parse(parts[i + 1]);
+                    _equipedAmmo = new Tuple<int, int>(id, count);
+                }
+            }
+        }
+
         public byte[] GetBytes(bool isLocalPlayer)
         {
             using (MemoryStream stream = new MemoryStream())
             {
                 stream.Write(BitConverter.GetBytes(Level), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(Experience), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(HP), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(MP), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(Stamina), 0, sizeof(int));
@@ -309,6 +465,7 @@ namespace Genus2D.GameData
                 if (isLocalPlayer)
                 {
                     stream.Write(BitConverter.GetBytes(_inventory.Count), 0, sizeof(int));
+                    stream.Write(BitConverter.GetBytes(Gold), 0, sizeof(int));
                     for (int i = 0; i < _inventory.Count; i++)
                     {
                         stream.Write(BitConverter.GetBytes(_inventory[i].Item1), 0, sizeof(int));
@@ -317,14 +474,16 @@ namespace Genus2D.GameData
                 }
                 else
                 {
-                    stream.Write(BitConverter.GetBytes(0), 0, sizeof(int));
+                    stream.Write(BitConverter.GetBytes(-1), 0, sizeof(int));
                 }
 
-                stream.Write(BitConverter.GetBytes(_equipment.Length), 0, sizeof(int));
                 for (int i = 0; i < _equipment.Length; i++)
                 {
                     stream.Write(BitConverter.GetBytes(_equipment[i]), 0, sizeof(int));
                 }
+
+                stream.Write(BitConverter.GetBytes(_equipedAmmo.Item1), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(_equipedAmmo.Item2), 0, sizeof(int));
 
                 return stream.ToArray();
             }
@@ -340,6 +499,10 @@ namespace Genus2D.GameData
                 stream.Read(tempBytes, 0, sizeof(int));
                 int level = BitConverter.ToInt32(tempBytes, 0);
                 data.Level = level;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                int experience = BitConverter.ToInt32(tempBytes, 0);
+                data.Experience = experience;
 
                 stream.Read(tempBytes, 0, sizeof(int));
                 int hp = BitConverter.ToInt32(tempBytes, 0);
@@ -416,8 +579,12 @@ namespace Genus2D.GameData
                 stream.Read(tempBytes, 0, sizeof(int));
                 int inventorySize = BitConverter.ToInt32(tempBytes, 0);
 
-                if (inventorySize > 0)
+                if (inventorySize != -1)
                 {
+                    stream.Read(tempBytes, 0, sizeof(int));
+                    int gold = BitConverter.ToInt32(tempBytes, 0);
+                    data.Gold = gold;
+
                     List<Tuple<int, int>> inventory = new List<Tuple<int, int>>();
                     for (int i = 0; i < inventorySize; i++)
                     {
@@ -431,16 +598,22 @@ namespace Genus2D.GameData
                     data._inventory = inventory;
                 }
 
-                stream.Read(tempBytes, 0, sizeof(int));
-                int equipmentSize = BitConverter.ToInt32(tempBytes, 0);
-                int[] equipment = new int[equipmentSize];
-                for (int i = 0; i < equipmentSize; i++)
+                int[] equipment = new int[9]; //hardcoded inventory size
+                for (int i = 0; i < 9; i++)
                 {
                     stream.Read(tempBytes, 0, sizeof(int));
                     int equipmentID = BitConverter.ToInt32(tempBytes, 0);
                     equipment[i] = equipmentID;
                 }
                 data._equipment = equipment;
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                int ammoID = BitConverter.ToInt32(tempBytes, 0);
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                int ammoAmount = BitConverter.ToInt32(tempBytes, 0);
+
+                data._equipedAmmo = new Tuple<int, int>(ammoID, ammoAmount);
 
                 return data;
             }

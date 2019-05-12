@@ -26,7 +26,10 @@ namespace Genus2D.GameData
             ChangePlayerDirection,
             ChangePlayerSprite,
             ChangeMapEvent,
-            WaitForMovementCompletion
+            WaitForMovementCompletion,
+            AddGold,
+            RemoveGold,
+            SpawnEnemy
         }
 
         public CommandType Type { get; private set; }
@@ -82,6 +85,7 @@ namespace Genus2D.GameData
                     _parameters.Add("SelectedOption", 0);
                     _parameters.Add("TerrainTag", 0);
                     _parameters.Add("PlayerDirection", FacingDirection.Down);
+                    _parameters.Add("Gold", 0);
                     break;
                 case CommandType.AddInventoryItem:
                     _parameters.Add("ItemID", -1);
@@ -121,6 +125,18 @@ namespace Genus2D.GameData
                     _parameters.Add("RandomMovement", false);
                     _parameters.Add("Enabled", true);
                     break;
+                case CommandType.AddGold:
+                    _parameters.Add("Gold", 0);
+                    break;
+                case CommandType.RemoveGold:
+                    _parameters.Add("Gold", 0);
+                    break;
+                case CommandType.SpawnEnemy:
+                    _parameters.Add("EnemyID", -1);
+                    _parameters.Add("Count", 1);
+                    _parameters.Add("RespawnTime", 0.0f);
+                    _parameters.Add("SpawnRadius", 0);
+                    break;
             }
 
         }
@@ -148,7 +164,6 @@ namespace Genus2D.GameData
         {
             if (_parameters.ContainsKey(name))
                 return _parameters[name];
-            else _parameters.Add(name, FacingDirection.Down);
             return null;
         }
 

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Genus2D.GameData;
 
 namespace RpgEditor.ItemDataPresets
 {
@@ -15,6 +16,11 @@ namespace RpgEditor.ItemDataPresets
         public AmmoPreset()
         {
             InitializeComponent();
+
+            ProjectileSelection.Items.Add("None");
+            List<string> projectiles = ProjectileData.GetProjectileNames();
+            ProjectileSelection.Items.AddRange(projectiles.ToArray());
+            ProjectileSelection.SelectedIndex = 0;
         }
 
         public int GetStrengthBonus()
@@ -25,6 +31,16 @@ namespace RpgEditor.ItemDataPresets
         public void SetStrengthBonus(int value)
         {
             StrengthBonus.Value = value;
+        }
+
+        public int GetProjectileID()
+        {
+            return ProjectileSelection.SelectedIndex - 1;
+        }
+
+        public void SetProjectileID(int id)
+        {
+            ProjectileSelection.SelectedIndex = id + 1;
         }
     }
 }

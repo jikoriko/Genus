@@ -55,6 +55,16 @@ namespace RpgServer
             _gameClients.Remove(client);
         }
 
+        public GameClient FindClientByID(int id)
+        {
+            for (int i = 0; i < _gameClients.Count; i++)
+            {
+                if (_gameClients[i].GetPacket().PlayerID == id)
+                    return _gameClients[i];
+            }
+            return null;
+        }
+
         public void Start()
         {
             if (!_running)

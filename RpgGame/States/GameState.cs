@@ -12,6 +12,7 @@ using Genus2D.Networking;
 
 using RpgGame.GUI;
 using Genus2D.GameData;
+using Genus2D;
 
 namespace RpgGame.States
 {
@@ -28,6 +29,7 @@ namespace RpgGame.States
         private StatsPanel _statsPanel;
 
         public Entity MapEntity;
+        private float _movementTimer;
 
         public GameState()
             : base()
@@ -44,8 +46,47 @@ namespace RpgGame.States
             _equipmentPanel = null;
             _statsPanel = null;
 
+            _movementTimer = 0.0f;
+
             this.AddControl(_messagePanel);
             this.AddControl(_menuPanel);
+
+            ClickBox mapClickBox = new ClickBox(0, 0, Renderer.GetResoultion().X, Renderer.GetResoultion().Y, MouseButton.Right);
+            mapClickBox.OnTrigger += MapClick;
+            this.AddMouseListener(mapClickBox);
+        }
+
+        private void MapClick()
+        {
+            if (!GuiSelectable())
+            {
+                Vector2 mousePos = StateWindow.Instance.GetMousePosition();
+                int tileX = (int)Math.Floor((mousePos.X - MapEntity.GetTransform().Position.X) / 32);
+                int tileY = (int)Math.Floor((mousePos.Y - MapEntity.GetTransform().Position.Y) / 32);
+                List<MapClickOption> options = new List<MapClickOption>();
+
+                for (int i = 0; i < RpgClientConnection.Instance.MapItemEntities.Count; i++)
+                {
+                    MapItem item = RpgClientConnection.Instance.MapItemEntities[i].FindComponent<MapItemComponent>().GetMapItem();
+                    if (item.PlayerID == -1 || item.PlayerID == RpgClientConnection.Instance.GetLocalPlayerPacket().PlayerID)
+                    {
+                        if (item.MapX == tileX && item.MapY == tileY)
+                        {
+                            string label = "Pickup: " + ItemData.GetItemData(item.ItemID).Name + "(" + item.Count + ")";
+                            MapClickOption option = new MapClickOption(i, MapClickOption.OptionType.PickupItem, label);
+                            option.Parameters["MapItem"] = item;
+                            options.Add(option);
+                        }
+                    }
+                }
+
+                if (options.Count > 0)
+                {
+                    MapClickOptionsPanel panel = new MapClickOptionsPanel((int)mousePos.X, (int)mousePos.Y, options, this);
+                    this.AddControl(panel);
+                }
+            }
+            
         }
 
         public void ToggleInventory()
@@ -155,7 +196,7 @@ namespace RpgGame.States
                 else if (e.Key == Key.LShift)
                 {
                     ClientCommand command = new ClientCommand(ClientCommand.CommandType.ToggleRunning);
-                    command.SetParameter("Running", "true");
+                    command.SetParameter("Running", true);
                     RpgClientConnection.Instance.AddClientCommand(command);
                 }
             }
@@ -168,7 +209,7 @@ namespace RpgGame.States
             if (e.Key == Key.LShift)
             {
                 ClientCommand command = new ClientCommand(ClientCommand.CommandType.ToggleRunning);
-                command.SetParameter("Running", "false");
+                command.SetParameter("Running", false);
                 RpgClientConnection.Instance.AddClientCommand(command);
             }
         }
@@ -180,9 +221,13 @@ namespace RpgGame.States
 
             base.OnUpdateFrame(e);
 
+            if (_movementTimer > 0)
+                _movementTimer -= (float)e.Time;
+
             KeyboardState keyState = Keyboard.GetState();
             bool moving = false;
             MovementDirection direction = MovementDirection.Down;
+
             if (keyState.IsKeyDown(Key.W))
             {
                 moving = true;
@@ -226,13 +271,15 @@ namespace RpgGame.States
                 direction = MovementDirection.Right;
             }
 
-            if (moving)
+            if (moving && _movementTimer <= 0)
             {
                 ClientCommand command = new ClientCommand(ClientCommand.CommandType.MovePlayer);
-                command.SetParameter("Direction", ((int)direction).ToString());
+                command.SetParameter("Direction", (int)direction);
                 RpgClientConnection.Instance.AddClientCommand(command);
             }
 
+            if (_movementTimer <= 0)
+                _movementTimer = 0.05f;
         }
 
         public override void Destroy()

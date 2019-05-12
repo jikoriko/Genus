@@ -17,16 +17,14 @@ namespace RpgGame.EntityComponents
         private float _spriteTimer, _spriteTimerMax;
 
         private MapEvent _mapEvent;
-        private SpriteData _spriteData;
 
         public MapEventComponent(Entity entity, MapEvent mapEvent)
             : base(entity)
         {
-            _spriteData = SpriteData.GetSpriteData(mapEvent.SpriteID);
+            SetMapEvent(mapEvent);
             SetAnimating(false);
             SetXFrames(4);
             SetYFrames(4);
-            SetMapEvent(mapEvent);
             _spriteTimer = 0f;
             _spriteTimerMax = 0.3f;
         }

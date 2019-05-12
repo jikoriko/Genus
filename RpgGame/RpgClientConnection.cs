@@ -28,7 +28,10 @@ namespace RpgGame
         private bool _connected = false;
 
         private Dictionary<int, PlayerPacket> _playerPackets;
-        private Dictionary<int, Entity> _playerEntities;
+        public Dictionary<int, Entity> PlayerEntities { get; private set; }
+        public List<Entity> EnemyEntites { get; private set; }
+        public List<Entity> ProjectileEntites { get; private set; }
+        public List<Entity> MapItemEntities { get; private set; }
         private bool _playersUpdated = false;
 
         private Thread _recievePacketsThread;
@@ -86,7 +89,10 @@ namespace RpgGame
                     {
                         _connected = true;
                         _playerPackets = new Dictionary<int, PlayerPacket>();
-                        _playerEntities = new Dictionary<int, Entity>();
+                        PlayerEntities = new Dictionary<int, Entity>();
+                        EnemyEntites = new List<Entity>();
+                        ProjectileEntites = new List<Entity>();
+                        MapItemEntities = new List<Entity>();
 
                         _recievePacketsThread = new Thread(new ThreadStart(RecievePackets));
                         _recievePacketsThread.Start();
@@ -167,13 +173,13 @@ namespace RpgGame
         {
             if (_playersUpdated)
             {
-                for (int i = 0; i < _playerEntities.Count; i++)
+                for (int i = 0; i < PlayerEntities.Count; i++)
                 {
-                    int id = _playerEntities.ElementAt(i).Key;
-                    if (!_playerPackets.ContainsKey(id))
+                    int id = PlayerEntities.ElementAt(i).Key;
+                    if (_playerPackets.ContainsKey(id))
                     {
-                        _playerEntities[id].Destroy();
-                        _playerEntities.Remove(id);
+                        PlayerEntities[id].Destroy();
+                        PlayerEntities.Remove(id);
                     }
 
                 }
@@ -187,9 +193,9 @@ namespace RpgGame
                         _gameState.MapEntity.GetTransform().LocalPosition = mapPos;
                     }
 
-                    if (_playerEntities.ContainsKey(packet.PlayerID))
+                    if (PlayerEntities.ContainsKey(packet.PlayerID))
                     {
-                        Entity clientEntity = _playerEntities[packet.PlayerID];
+                        Entity clientEntity = PlayerEntities[packet.PlayerID];
                         PlayerComponent playerComponent = (PlayerComponent)clientEntity.FindComponent<PlayerComponent>();
                         playerComponent.SetPlayerPacket(packet);
                     }
@@ -198,7 +204,7 @@ namespace RpgGame
                         Entity clientEntity = Entity.CreateInstance(_gameState.EntityManager);
                         clientEntity.GetTransform().Parent = _gameState.MapEntity.GetTransform();
                         new PlayerComponent(clientEntity, packet);
-                        _playerEntities.Add(packet.PlayerID, clientEntity);
+                        PlayerEntities.Add(packet.PlayerID, clientEntity);
                     }
 
                    
@@ -290,6 +296,40 @@ namespace RpgGame
 
             MapPacket packet = MapPacket.FromBytes(bytes);
             MapComponent.Instance.SetMapData(packet.MapID, packet.mapData);
+
+            for (int i = 0; i < EnemyEntites.Count; i++)
+                EnemyEntites[i].Destroy();
+            EnemyEntites.Clear();
+
+            for (int i = 0; i < packet.Enemies.Count; i++)
+            {
+                Entity entity = Entity.CreateInstance(GameState.Instance.EntityManager);
+                entity.GetTransform().Parent = _gameState.MapEntity.GetTransform();
+                entity.AddComponent(new MapEnemyComponent(entity, packet.Enemies[i]));
+                EnemyEntites.Add(entity);
+            }
+
+            for (int i = 0; i < ProjectileEntites.Count; i++)
+                ProjectileEntites[i].Destroy();
+            ProjectileEntites.Clear();
+            for (int i = 0; i < packet.Projectiles.Count; i++)
+            {
+                Entity entity = Entity.CreateInstance(GameState.Instance.EntityManager);
+                entity.GetTransform().Parent = _gameState.MapEntity.GetTransform();
+                entity.AddComponent(new ProjectileComponent(entity, packet.Projectiles[i]));
+                ProjectileEntites.Add(entity);
+            }
+
+            for (int i = 0; i < MapItemEntities.Count; i++)
+                MapItemEntities[i].Destroy();
+            MapItemEntities.Clear();
+            for (int i = 0; i < packet.Items.Count; i++)
+            {
+                Entity entity = Entity.CreateInstance(GameState.Instance.EntityManager);
+                entity.GetTransform().Parent = _gameState.MapEntity.GetTransform();
+                entity.AddComponent(new MapItemComponent(entity, packet.Items[i]));
+                MapItemEntities.Add(entity);
+            }
         }
 
         MessageBox _messageBox = null;
@@ -302,7 +342,7 @@ namespace RpgGame
                 if (_messageBox.GetSelectedOption() != -1)
                 {
                     ClientCommand command = new ClientCommand(ClientCommand.CommandType.SelectOption);
-                    command.SetParameter("Option", _messageBox.GetSelectedOption().ToString());
+                    command.SetParameter("Option", _messageBox.GetSelectedOption());
                     this.AddClientCommand(command);
                 }
                 else
@@ -324,6 +364,8 @@ namespace RpgGame
             ServerCommand command = ServerCommand.FromBytes(bytes);
 
             int eventID;
+            int enemyID;
+            int enemyIndex;
             int mapID;
             int mapX;
             int mapY;
@@ -331,42 +373,90 @@ namespace RpgGame
             float realY;
             FacingDirection direction;
             MapData map;
+            int projectileID;
+            int playerID;
 
             switch (command.GetCommandType())
             {
                 case ServerCommand.CommandType.ShowMessage:
+
                     if (_messageBox == null)
                     {
-                        _messageBox = new MessageBox(command.GetParameter("Message"), _gameState, false);
+                        _messageBox = new MessageBox((string)command.GetParameter("Message"), _gameState, false);
                         _gameState.AddControl(_messageBox);
                     }
+
                     break;
                 case ServerCommand.CommandType.ShowOptions:
+
                     if (_messageBox == null)
                     {
-                        string message = command.GetParameter("Message");
+                        string message = (string)command.GetParameter("Message");
                         _messageBox = new MessageBox(message, _gameState, false);
-                        string[] options = command.GetParameter("Options").Split(',');
+                        string[] options = ((string)command.GetParameter("Options")).Split(',');
                         for (int i = 0; i < options.Length; i++)
                             _messageBox.AddOption(options[i]);
                         _messageBox.SetSelectedOption(0);
                         _gameState.AddControl(_messageBox);
                     }
+
+                    break;
+                case ServerCommand.CommandType.AddMapEnemy:
+
+                    enemyID = (int)command.GetParameter("EnemyID");
+                    mapID = (int)command.GetParameter("MapID");
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    {
+                        mapX = (int)command.GetParameter("MapX");
+                        mapY = (int)command.GetParameter("MapY");
+                        bool onBridge = (bool)command.GetParameter("OnBridge");
+                        MapEnemy mapEnemy = new MapEnemy(enemyID, mapX, mapY, onBridge);
+                        Entity entity = Entity.CreateInstance(GameState.Instance.EntityManager);
+                        entity.GetTransform().Parent = _gameState.MapEntity.GetTransform();
+                        entity.AddComponent(new MapEnemyComponent(entity, mapEnemy));
+                        EnemyEntites.Add(entity);
+                    }
+
+                    break;
+                case ServerCommand.CommandType.UpdateMapEnemy:
+
+                    enemyIndex = (int)command.GetParameter("EnemyIndex");
+                    mapID = (int)command.GetParameter("MapID");
+                    if ((_gameState.MapEntity.FindComponent<MapComponent>()).MapID == mapID)
+                    {
+                        int HP = (int)command.GetParameter("HP");
+                        mapX = (int)command.GetParameter("MapX");
+                        mapY = (int)command.GetParameter("MapY");
+                        realX = (float)command.GetParameter("RealX");
+                        realY = (float)command.GetParameter("RealY");
+                        direction = (FacingDirection)command.GetParameter("Direction");
+                        bool onBridge = (bool)command.GetParameter("OnBridge");
+                        bool dead = (bool)command.GetParameter("Dead");
+                        MapEnemyComponent enemyComponent = EnemyEntites[enemyIndex].FindComponent<MapEnemyComponent>();
+                        enemyComponent.UpdateMapEnemy(HP, mapX, mapY, realX, realY, direction, onBridge, dead);
+
+                        if (dead)
+                        {
+                            EnemyEntites[enemyIndex].Destroy();
+                            EnemyEntites.RemoveAt(enemyIndex);
+                        }
+                    }
+
                     break;
                 case ServerCommand.CommandType.UpdateMapEvent:
 
-                    eventID = int.Parse(command.GetParameter("EventID"));
-                    mapID = int.Parse(command.GetParameter("MapID"));
-                    if (((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).MapID == mapID)
+                    eventID = (int)command.GetParameter("EventID");
+                    mapID = (int)command.GetParameter("MapID");
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
                     {
-                        mapX = int.Parse(command.GetParameter("MapX"));
-                        mapY = int.Parse(command.GetParameter("MapY"));
-                        realX = float.Parse(command.GetParameter("RealX"));
-                        realY = float.Parse(command.GetParameter("RealY"));
-                        direction = (FacingDirection)int.Parse(command.GetParameter("Direction"));
-                        bool onBridge = int.Parse(command.GetParameter("OnBridge")) == 1 ? true : false;
+                        mapX = (int)command.GetParameter("MapX");
+                        mapY = (int)command.GetParameter("MapY");
+                        realX = (float)command.GetParameter("RealX");
+                        realY = (float)command.GetParameter("RealY");
+                        direction = (FacingDirection)command.GetParameter("Direction");
+                        bool onBridge = (bool)command.GetParameter("OnBridge");
 
-                        map = ((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).GetMapData();
+                        map = _gameState.MapEntity.FindComponent<MapComponent>().GetMapData();
                         if (map != null)
                         {
                             map.GetMapEvent(eventID).MapX = mapX;
@@ -381,13 +471,13 @@ namespace RpgGame
                     break;
                 case ServerCommand.CommandType.ChangeMapEventDirection:
 
-                    eventID = int.Parse(command.GetParameter("EventID"));
-                    mapID = int.Parse(command.GetParameter("MapID"));
-                    if (((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).MapID == mapID)
+                    eventID = (int)command.GetParameter("EventID");
+                    mapID = (int)command.GetParameter("MapID");
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
                     {
-                        direction = (FacingDirection)int.Parse(command.GetParameter("Direction"));
+                        direction = (FacingDirection)command.GetParameter("Direction");
 
-                        map = ((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).GetMapData();
+                        map = _gameState.MapEntity.FindComponent<MapComponent>().GetMapData();
                         if (map != null)
                         {
                             map.GetMapEvent(eventID).EventDirection = direction;
@@ -395,39 +485,136 @@ namespace RpgGame
                     }
 
                     break;
-
                 case ServerCommand.CommandType.ChangeMapEventSprite:
 
-                    mapID = int.Parse(command.GetParameter("MapID"));
-                    if (((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).MapID == mapID)
+                    mapID = (int)command.GetParameter("MapID");
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
                     {
-                        eventID = int.Parse(command.GetParameter("EventID"));
-                        int spriteID = int.Parse(command.GetParameter("SpriteID"));
-                        ((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).ChangeMapEventSprite(eventID, spriteID);
+                        eventID = (int)command.GetParameter("EventID");
+                        int spriteID = (int)command.GetParameter("SpriteID");
+                        _gameState.MapEntity.FindComponent<MapComponent>().ChangeMapEventSprite(eventID, spriteID);
                     }
 
                     break;
                 case ServerCommand.CommandType.ChangeMapEventRenderPriority:
 
-                    mapID = int.Parse(command.GetParameter("MapID"));
-                    if (((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).MapID == mapID)
+                    mapID = (int)command.GetParameter("MapID");
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
                     {
-                        eventID = int.Parse(command.GetParameter("EventID"));
-                        RenderPriority priority = (RenderPriority)int.Parse(command.GetParameter("RenderPriority"));
-                        ((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).ChangeMapEventRenderPriority(eventID, priority);
+                        eventID = (int)command.GetParameter("EventID");
+                        RenderPriority priority = (RenderPriority)command.GetParameter("RenderPriority");
+                        _gameState.MapEntity.FindComponent<MapComponent>().ChangeMapEventRenderPriority(eventID, priority);
                     }
 
                     break;
                 case ServerCommand.CommandType.ChangeMapEventEnabled:
-                    mapID = int.Parse(command.GetParameter("MapID"));
-                    if (((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).MapID == mapID)
-                    {
-                        eventID = int.Parse(command.GetParameter("EventID"));
-                        bool enabled = int.Parse(command.GetParameter("Enabled")) == 1 ? true : false;
-                        ((MapComponent)_gameState.MapEntity.FindComponent<MapComponent>()).ChangeMapEventEnabled(eventID, enabled);
-                    }
-                    break;
 
+                    mapID = (int)command.GetParameter("MapID");
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    {
+                        eventID = (int)command.GetParameter("EventID");
+                        bool enabled = (bool)command.GetParameter("Enabled");
+                        _gameState.MapEntity.FindComponent<MapComponent>().ChangeMapEventEnabled(eventID, enabled);
+                    }
+
+                    break;
+                case ServerCommand.CommandType.AddProjectile:
+
+                    mapID = (int)command.GetParameter("MapID");
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    {
+                        {
+                            int dataID = (int)command.GetParameter("DataID");
+                            realX = (float)command.GetParameter("RealX");
+                            realY = (float)command.GetParameter("RealY");
+                            direction = (FacingDirection)command.GetParameter("Direction");
+                            bool onBridge = (bool)command.GetParameter("OnBridge");
+
+                            Projectile projectile = new Projectile(dataID, CharacterType.Player, -1, new Vector2(realX, realY), direction);
+                            projectile.OnBridge = onBridge;
+                            Entity entity = Entity.CreateInstance(GameState.Instance.EntityManager);
+                            entity.GetTransform().Parent = _gameState.MapEntity.GetTransform();
+                            entity.AddComponent(new ProjectileComponent(entity, projectile));
+                            ProjectileEntites.Add(entity);
+                        }
+
+                    }
+
+                    break;
+                case ServerCommand.CommandType.UpdateProjectile:
+
+                    mapID = (int)command.GetParameter("MapID");
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    {
+                        projectileID = (int)command.GetParameter("ProjectileID");
+                        if (projectileID < ProjectileEntites.Count)
+                        {
+                            realX = (float)command.GetParameter("RealX");
+                            realY = (float)command.GetParameter("RealY");
+                            bool onBridge = (bool)command.GetParameter("OnBridge");
+                            bool destroyed = (bool)command.GetParameter("Destroyed");
+                            ProjectileComponent component = ProjectileEntites[projectileID].FindComponent<ProjectileComponent>();
+                            component.SetRealPosition(realX, realY);
+                            component.SetOnBridge(onBridge);
+                            if (destroyed)
+                            {
+                                ProjectileEntites[projectileID].Destroy();
+                                ProjectileEntites.RemoveAt(projectileID);
+                            }
+                        }
+                    }
+
+                    break;
+                case ServerCommand.CommandType.AddMapItem:
+
+                    mapID = (int)command.GetParameter("MapID");
+                    MapComponent mapComponent = _gameState.MapEntity.FindComponent<MapComponent>();
+                    if (mapComponent.MapID == mapID)
+                    {
+                        int itemID = (int)command.GetParameter("ItemID");
+                        int count = (int)command.GetParameter("Count");
+                        mapX = (int)command.GetParameter("MapX");
+                        mapY = (int)command.GetParameter("MapY");
+                        playerID = (int)command.GetParameter("PlayerID");
+                        bool onBridge = (bool)command.GetParameter("OnBridge");
+                        MapItem mapItem = new MapItem(itemID, count, mapX, mapY, playerID, onBridge);
+                        Entity entity = Entity.CreateInstance(GameState.Instance.EntityManager);
+                        entity.GetTransform().Parent = _gameState.MapEntity.GetTransform();
+                        entity.AddComponent(new MapItemComponent(entity, mapItem));
+                        MapItemEntities.Add(entity);
+                    }
+
+                    break;
+                case ServerCommand.CommandType.RemoveMapItem:
+
+                    mapID = (int)command.GetParameter("MapID");
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    {
+                        int itemIndex = (int)command.GetParameter("ItemIndex");
+                        if (itemIndex < MapItemEntities.Count)
+                        {
+                            MapItemEntities[itemIndex].Destroy();
+                            MapItemEntities.RemoveAt(itemIndex);
+                        }
+                    }
+
+                    break;
+                case ServerCommand.CommandType.UpdateMapItem:
+
+                    mapID = (int)command.GetParameter("MapID");
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    {
+                        int itemIndex = (int)command.GetParameter("ItemIndex");
+                        if (itemIndex < MapItemEntities.Count)
+                        {
+                            playerID = (int)command.GetParameter("ItemIndex");
+                            int count = (int)command.GetParameter("Count");
+                            MapItemEntities[itemIndex].FindComponent<MapItemComponent>().GetMapItem().PlayerID = playerID;
+                            MapItemEntities[itemIndex].FindComponent<MapItemComponent>().GetMapItem().Count = count;
+                        }
+                    }
+
+                    break;
             }
         }
 

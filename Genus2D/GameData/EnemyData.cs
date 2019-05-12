@@ -15,15 +15,29 @@ namespace Genus2D.GameData
         public CombatStats BaseStats;
         public int VisionRage;
         public int AttackRange;
+        public int WanderRange;
+        public int Experience;
+        public int AgroLvl;
+        public AttackStyle AtkStyle;
         public int ProjectileID;
+        public int SpriteID;
+        public MovementSpeed Speed;
+        public int DropTable;
 
         public EnemyData(string name)
         {
             Name = name;
             BaseStats = new CombatStats();
+            AtkStyle = AttackStyle.Melee;
             VisionRage = 1;
             AttackRange = 1;
+            WanderRange = 5;
+            Experience = 0;
+            AgroLvl = 1;
             ProjectileID = -1;
+            SpriteID = -1;
+            Speed = MovementSpeed.Normal;
+            DropTable = -1;
         }
 
         private static List<EnemyData> _enemyData = LoadData();

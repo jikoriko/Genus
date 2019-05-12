@@ -39,6 +39,11 @@ namespace RpgServer
             Complete = false;
         }
 
+        public MapEvent GetMapEvent()
+        {
+            return _mapEvent;
+        }
+
         public EventData GetEventData()
         {
             return EventData.GetEventData(_mapEvent.EventID);

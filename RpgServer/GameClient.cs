@@ -127,6 +127,15 @@ namespace RpgServer
         public bool MovementDisabled;
         public int SelectedOption;
 
+        private float _movementTimer;
+        private float _combatTimer;
+        private float _attackTimer;
+        private float _regenTimer;
+
+        public bool Dead { get; private set; }
+        public CharacterType EnemyCharacterType { get; private set; }
+        public int EnemyCharacterID { get; private set; }
+
         private GameClient(TcpClient tcpClient, int playerID)
         {
             Server.Instance.AddGameClient(this);
@@ -147,6 +156,16 @@ namespace RpgServer
             MessageShowing = false;
             MovementDisabled = false;
             SelectedOption = -1;
+
+            _movementTimer = 0f;
+            _combatTimer = 0f;
+            _attackTimer = 0f;
+            _regenTimer = 0f;
+
+            Dead = false;
+
+            EnemyCharacterType = CharacterType.Player;
+            EnemyCharacterID = -1;
 
             Thread updatePacketsThread = new Thread(new ThreadStart(UpdatePackets));
             updatePacketsThread.Start();
@@ -233,14 +252,14 @@ namespace RpgServer
         public float GetMovementSpeed()
         {
             float speed = 64f;
-            if (_running)
+            if (_running && _playerPacket.Data.Stamina > 0)
                 speed *= 2.5f;
             return speed;
         }
 
         public void AddServerCommand(ServerCommand command)
         {
-            if (command != null && _serverCommands.Count < 10)
+            if (command != null)
             {
                 _serverCommands.Add(command);
             }
@@ -251,6 +270,8 @@ namespace RpgServer
             while (_serverCommands.Count > 0)
             {
                 ServerCommand command = _serverCommands[0];
+                if (command == null) break;
+
                 byte[] bytes = BitConverter.GetBytes((int)PacketType.ServerCommand);
                 _stream.Write(bytes, 0, sizeof(int));
                 _stream.Flush();
@@ -328,6 +349,11 @@ namespace RpgServer
 
             bytes = ReadData(sizeof(int), _stream);
             int numCommands = BitConverter.ToInt32(bytes, 0);
+
+            int itemIndex;
+            Tuple<int, int> itemInfo;
+            MapItem mapItem;
+
             for (int i = 0; i < numCommands; i++)
             {
                 bytes = ReadData(sizeof(int), _stream);
@@ -342,25 +368,24 @@ namespace RpgServer
                         MessageShowing = false;
                         break;
                     case ClientCommand.CommandType.SelectOption:
-                        int option = int.Parse(command.GetParameter("Option"));
+                        int option = (int)command.GetParameter("Option");
                         SelectedOption = option;
                         MessageShowing = false;
                         break;
                     case ClientCommand.CommandType.MovePlayer:
-                        int dir = int.Parse(command.GetParameter("Direction"));
-                        MovementDirection direction = (MovementDirection)dir;
+                        MovementDirection direction = (MovementDirection)command.GetParameter("Direction");
                         Move(direction);
                         break;
                     case ClientCommand.CommandType.ToggleRunning:
-                        bool running = command.GetParameter("Running").ToLower() == "true" ? true : false;
+                        bool running = (bool)command.GetParameter("Running");
                         _running = running;
                         break;
                     case ClientCommand.CommandType.ActionTrigger:
                         ActionTrigger();
                         break;
                     case ClientCommand.CommandType.SelectItem:
-                        int index = int.Parse(command.GetParameter("ItemIndex"));
-                        Tuple<int, int> itemInfo = _playerPacket.Data.GetInventoryItem(index);
+                        itemIndex = (int)command.GetParameter("ItemIndex");
+                        itemInfo = _playerPacket.Data.GetInventoryItem(itemIndex);
                         if (itemInfo != null)
                         {
                             ItemData data = ItemData.GetItemData(itemInfo.Item1);
@@ -376,17 +401,61 @@ namespace RpgServer
 
                                     break;
                                 case ItemData.ItemType.Equipment:
-                                    _playerPacket.Data.EquipItem(index);
+                                    _playerPacket.Data.EquipItem(itemIndex);
                                     break;
                                 case ItemData.ItemType.Ammo:
-
+                                    _playerPacket.Data.EquipAmmo(itemIndex);
                                     break;
                             }
                         }
                         break;
+                    case ClientCommand.CommandType.DropItem:
+                        itemIndex = (int)command.GetParameter("ItemIndex");
+                        itemInfo = _playerPacket.Data.GetInventoryItem(itemIndex);
+                        if (itemInfo != null)
+                        {
+                            mapItem = new MapItem(itemInfo.Item1, itemInfo.Item2, _playerPacket.PositionX, _playerPacket.PositionY, -1, _playerPacket.OnBridge);
+                            _playerPacket.Data.RemoveInventoryItem(itemIndex);
+                            _mapInstance.AddMapItem(mapItem);
+                        }
+                        break;
                     case ClientCommand.CommandType.RemoveEquipment:
-                        EquipmentSlot slot = (EquipmentSlot)int.Parse(command.GetParameter("EquipmentIndex"));
+                        EquipmentSlot slot = (EquipmentSlot)command.GetParameter("EquipmentIndex");
                         _playerPacket.Data.UnequipItem(slot);
+                        break;
+                    case ClientCommand.CommandType.RemoveAmmo:
+                        _playerPacket.Data.UnequipAmmo();
+                        break;
+                    case ClientCommand.CommandType.PickupItem:
+                        itemIndex = (int)command.GetParameter("ItemIndex");
+                        int signature = (int)command.GetParameter("Signature");
+                        mapItem = _mapInstance.GetMapItem(itemIndex);
+                        if (mapItem != null)
+                        {
+                            if (!mapItem.PickedUp && (mapItem.PlayerID == -1 || mapItem.PlayerID == _playerPacket.PlayerID))
+                            {
+                                if (mapItem.GetSignature() == signature && mapItem.OnBridge == _playerPacket.OnBridge)
+                                {
+                                    int distance = (int)new Vector2(mapItem.MapX - _playerPacket.PositionX, mapItem.MapY - _playerPacket.PositionY).Length;
+                                    if (distance <= 1)
+                                    {
+                                        int added = _playerPacket.Data.AddInventoryItem(mapItem.ItemID, mapItem.Count);
+                                        if (added != 0)
+                                        {
+                                            if (added < mapItem.Count)
+                                            {
+                                                mapItem.Count = mapItem.Count - added;
+                                                _mapInstance.UpdateMapItem(itemIndex);
+                                            }
+                                            else
+                                            {
+                                                mapItem.PickedUp = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         break;
                 }
                 
@@ -466,6 +535,30 @@ namespace RpgServer
             return (posX != _playerPacket.RealX || posY != _playerPacket.RealY);
         }
 
+        public Hitbox GetHitbox()
+        {
+            Hitbox hitbox = new Hitbox();
+
+            hitbox.X = _playerPacket.RealX; 
+            hitbox.Y = _playerPacket.RealY;
+            SpriteData data = SpriteData.GetSpriteData(_playerPacket.SpriteID);
+            if (data != null)
+            {
+                if (_playerPacket.Direction == FacingDirection.Left || _playerPacket.Direction == FacingDirection.Right)
+                {
+                    hitbox.Width = data.HorizontalBounds.X;
+                    hitbox.Height = data.HorizontalBounds.Y;
+                }
+                else
+                {
+                    hitbox.Width = data.VerticalBounds.X;
+                    hitbox.Height = data.VerticalBounds.Y;
+                }
+            }
+
+            return hitbox;
+        }
+
         public void ActionTrigger()
         {
             if (!Moving() && !MovementDisabled)
@@ -510,7 +603,62 @@ namespace RpgServer
 
         public void Update(float deltaTime)
         {
+            //respawn
+            if (Dead)
+            {
+                SpawnPoint spawn = MapInfo.GetSpawnPoint(0);
+                SetMapID(spawn.MapID);
+                SetMapPosition(spawn.MapX, spawn.MapY);
+                _playerPacket.Data.HP = _playerPacket.Data.GetMaxHP();
+                Dead = false;
+                return;
+            }
 
+            //update timers
+            if (_movementTimer > 0)
+                _movementTimer -= deltaTime;
+
+            if (_combatTimer > 0) _combatTimer -= deltaTime;
+            else EnemyCharacterID = -1;
+
+            if (_attackTimer > 0)
+                _attackTimer -= deltaTime;
+
+            //regen stats
+            if (_regenTimer <= 0)
+            {
+                if (_combatTimer <= 0)
+                {
+                    _playerPacket.Data.HP++;
+                    if (_playerPacket.Data.HP > _playerPacket.Data.GetMaxHP())
+                        _playerPacket.Data.HP = _playerPacket.Data.GetMaxHP();
+
+                    _playerPacket.Data.MP++;
+                    if (_playerPacket.Data.MP > _playerPacket.Data.GetMaxMP())
+                        _playerPacket.Data.MP = _playerPacket.Data.GetMaxMP();
+                }
+
+                if (!_running)
+                {
+                    _playerPacket.Data.Stamina++;
+                    if (_playerPacket.Data.Stamina > _playerPacket.Data.GetMaxStamina())
+                        _playerPacket.Data.Stamina = _playerPacket.Data.GetMaxStamina();
+                }
+                else
+                {
+                    _playerPacket.Data.Stamina--;
+                    if (_playerPacket.Data.Stamina < 0)
+                        _playerPacket.Data.Stamina = 0;
+                }
+
+                _regenTimer = 1;
+            }
+            else
+            {
+                _regenTimer -= deltaTime;
+            }
+
+            //movement
             if (!MovementDisabled)
             {
                 _playerPacket.MovementSpeed = GetMovementSpeed();
@@ -545,7 +693,7 @@ namespace RpgServer
 
         public void Move(MovementDirection direction)
         {
-            if (!Moving() && !MovementDisabled)
+            if (!Moving() && !MovementDisabled && _movementTimer <= 0f)
             {
                 int x = _playerPacket.PositionX;
                 int y = _playerPacket.PositionY;
@@ -601,27 +749,33 @@ namespace RpgServer
                         entryDirection = MovementDirection.UpperLeft;
                         break;
                 }
-                _playerPacket.Direction = facingDirection;
-
-                bool bridgeEntry = _mapInstance.MapTilePassable(x, y) && _playerPacket.OnBridge;
-                if (_mapInstance.MapTilePassable(x, y, direction, -1, _playerPacket.OnBridge, bridgeEntry) && 
-                    _mapInstance.MapTilePassable(targetX, targetY, entryDirection, -1, _playerPacket.OnBridge, bridgeEntry))
+                if (_playerPacket.Direction != facingDirection)
                 {
-                    _playerPacket.PositionX = targetX;
-                    _playerPacket.PositionY = targetY;
-                    if (_mapInstance.GetBridgeFlag(targetX, targetY))
-                    {
-                        if (_mapInstance.MapTilePassable(targetX, targetY))
-                            _playerPacket.OnBridge = true;
-                    }
-                    else
-                    {
-                        _playerPacket.OnBridge = false;
-                    }
+                    _playerPacket.Direction = facingDirection;
+                    _movementTimer = 0.15f;
                 }
                 else
                 {
-                    CheckEventTriggers(targetX, targetY, EventTriggerType.PlayerTouch);
+                    bool bridgeEntry = _mapInstance.MapTilesetPassable(x, y) && _playerPacket.OnBridge;
+                    if (_mapInstance.MapTileCharacterPassable(x, y, true, _playerPacket.OnBridge, bridgeEntry, direction) &&
+                        _mapInstance.MapTileCharacterPassable(targetX, targetY, true, _playerPacket.OnBridge, bridgeEntry, entryDirection))
+                    {
+                        _playerPacket.PositionX = targetX;
+                        _playerPacket.PositionY = targetY;
+                        if (_mapInstance.GetBridgeFlag(targetX, targetY))
+                        {
+                            if (_mapInstance.MapTilesetPassable(targetX, targetY))
+                                _playerPacket.OnBridge = true;
+                        }
+                        else
+                        {
+                            _playerPacket.OnBridge = false;
+                        }
+                    }
+                    else
+                    {
+                        CheckEventTriggers(targetX, targetY, EventTriggerType.PlayerTouch);
+                    }
                 }
             }
         }
@@ -629,6 +783,31 @@ namespace RpgServer
         public void ChangeDirection(FacingDirection direction)
         {
             _playerPacket.Direction = direction;
+        }
+
+        public void GainExperience(int experience)
+        {
+            if (experience <= 0)
+                return;
+
+            if (_playerPacket.Data.Level < SystemData.GetData().MaxLvl)
+            {
+                int xpNeeded = _playerPacket.Data.ExperienceToLevel();
+                int xpCurrent = _playerPacket.Data.Experience;
+                int addedXp = xpCurrent + experience;
+
+                if (addedXp < xpNeeded)
+                {
+                _playerPacket.Data.Experience = addedXp;
+                }
+                else
+                {
+                    int remainder = addedXp - xpNeeded;
+                    _playerPacket.Data.Experience = 0;
+                    _playerPacket.Data.Level++;
+                    GainExperience(remainder);
+                }
+            }
         }
 
         private bool CheckEventTriggers(int x, int y, EventTriggerType triggerType)
@@ -654,34 +833,73 @@ namespace RpgServer
 
         private void CombatCheck(int x, int y)
         {
-            int weaponID = _playerPacket.Data.GetEquipedItemID((int)EquipmentSlot.Weapon);
-            if (weaponID != -1)
+            if (_attackTimer <= 0)
             {
-                ItemData data = ItemData.GetItemData(weaponID);
-                switch ((AttackStyle)data.GetItemStat("AttackStyle"))
+                int weaponID = _playerPacket.Data.GetEquipedItemID((int)EquipmentSlot.Weapon);
+                if (weaponID != -1)
                 {
-                    case AttackStyle.Melee:
-                        Console.WriteLine("melee");
-                        GameClient[] clients = _mapInstance.GetClients();
-                        for (int i = 0; i < clients.Length; i++)
-                        {
-                            if (clients[i]._playerPacket.PositionX == x && clients[i]._playerPacket.PositionY == y)
+                    ItemData data = ItemData.GetItemData(weaponID);
+
+                    switch ((AttackStyle)data.GetItemStat("AttackStyle"))
+                    {
+                        case AttackStyle.Melee:
+
+                            GameClient[] clients = _mapInstance.GetClients();
+                            bool attacked = false;
+                            for (int i = 0; i < clients.Length; i++)
                             {
-                                CombatTrigger(clients[i]);
+                                if (clients[i]._playerPacket.PositionX == x && clients[i]._playerPacket.PositionY == y)
+                                {
+                                    if (clients[i].EnemyCanAttack(CharacterType.Player, _playerPacket.PlayerID) 
+                                        && EnemyCanAttack(CharacterType.Player, clients[i]._playerPacket.PlayerID))
+                                    {
+                                        MeleeTrigger(clients[i]);
+                                        attacked = true;
+                                        break;
+                                    }
+                                }
                             }
-                        }
-                        break;
-                    case AttackStyle.Ranged:
 
-                        break;
-                    case AttackStyle.Magic:
+                            if (!attacked)
+                            {
+                                for (int i = 0; i < _mapInstance.GetMapPacket().Enemies.Count; i++)
+                                {
+                                    MapEnemy other = _mapInstance.GetMapPacket().Enemies[i];
+                                    if (other.MapX == x && other.MapY == y)
+                                    {
+                                        if (other.EnemyCanAttack(CharacterType.Player, _playerPacket.PlayerID)
+                                            && EnemyCanAttack(CharacterType.Enemy, i))
+                                        {
 
-                        break;
+                                            MeleeTrigger(other);
+                                        }
+                                    }
+                                }
+                            }
+
+                            break;
+                        case AttackStyle.Ranged:
+
+                            RangeTrigger();
+
+                            break;
+                        case AttackStyle.Magic:
+
+                            int mpDrain = (int)data.GetItemStat("MP");
+                            if (mpDrain <= _playerPacket.Data.MP)
+                            {
+                                _playerPacket.Data.MP -= mpDrain;
+                                int projectileID = (int)data.GetItemStat("ProjectileID");
+                                MagicTrigger(projectileID);
+                            }
+
+                            break;
+                    }
                 }
             }
         }
 
-        private void CombatTrigger(GameClient other)
+        private void MeleeTrigger(GameClient other)
         {
             Random rand = new Random();
             CombatStats stats1 = _playerPacket.Data.GetCombinedCombatStats();
@@ -689,15 +907,124 @@ namespace RpgServer
             int critModifier = rand.Next(1, 6) > 4 ? (stats1.Strength / 2) : 0;
             double accuracy = Math.Min(stats1.Strength / stats1.Agility, 1.0);
             int meleePower = (int)((stats1.Strength + critModifier) * accuracy) - (stats2.MeleeDefence / 2);
-            meleePower = Math.Max(meleePower, 0);
-            other._playerPacket.Data.HP -= meleePower;
-            Console.WriteLine(accuracy + "," + meleePower);
-            
-            if (other._playerPacket.Data.HP <= 0)
+            meleePower = Math.Max(meleePower, 1);
+            other.TakeDamage(CharacterType.Player, _playerPacket.PlayerID, meleePower);
+            _attackTimer = Math.Max((1 / stats1.Agility) - 1.0f, 0.1f) * 10;
+        }
+
+        private void MeleeTrigger(MapEnemy other)
+        {
+            Random rand = new Random();
+            CombatStats stats1 = _playerPacket.Data.GetCombinedCombatStats();
+            CombatStats stats2 = other.GetEnemyData().BaseStats;
+            int critModifier = rand.Next(1, 6) > 4 ? (stats1.Strength / 2) : 0;
+            double accuracy = Math.Min(stats1.Strength / stats1.Agility, 1.0);
+            int meleePower = (int)((stats1.Strength + critModifier) * accuracy) - (stats2.MeleeDefence / 2);
+            meleePower = Math.Max(meleePower, 1);
+            other.TakeDamage(CharacterType.Player, _playerPacket.PlayerID, meleePower);
+            _attackTimer = Math.Max((1 / stats1.Agility) - 1.0f, 0.1f) * 10;
+
+            if (other.Dead)
             {
-                //death
-                other._playerPacket.Data.HP = _playerPacket.Data.GetMaxHP();
+                GainExperience(other.GetEnemyData().Experience);
+
+                DropTableData dropTable = DropTableData.GetDropTable(other.GetEnemyData().DropTable);
+                if (dropTable != null)
+                {
+                    Random random = new Random();
+                    int chance = 100 - random.Next(0, 99);
+                    for (int k = 0; k < dropTable.TableItems.Count; k++)
+                    {
+                        DropTableData.DropTableItem item = dropTable.TableItems[k];
+                        if (item.ItemID >= 0 && item.ItemID < ItemData.GetItemDataCount())
+                        {
+                            if (item.Chance >= chance)
+                            {
+                                MapItem mapItem = new MapItem(item.ItemID, item.ItemCount, other.MapX, other.MapY, _playerPacket.PlayerID, other.OnBridge);
+                                _mapInstance.AddMapItem(mapItem);
+                            }
+                        }
+                    }
+                }
             }
+        }
+
+        private void RangeTrigger()
+        {
+            int projectileID = _playerPacket.Data.ConsumeAmmo();
+            if (projectileID != -1)
+            {
+                Hitbox hitbox = GetHitbox();
+                Vector2 position = new Vector2(hitbox.X, hitbox.Y);
+                Projectile projectile = new Projectile(projectileID, CharacterType.Player, _playerPacket.PlayerID, position, _playerPacket.Direction);
+                projectile.OnBridge = _playerPacket.OnBridge;
+                projectile.Style = AttackStyle.Ranged;
+
+                Random rand = new Random();
+                CombatStats stats = _playerPacket.Data.GetCombinedCombatStats();
+                int critModifier = rand.Next(1, 6) > 4 ? (stats.Strength / 2) : 0;
+                double accuracy = Math.Min(stats.Strength / stats.Agility, 1.0);
+                int rangePower = (int)((stats.Strength + critModifier) * accuracy);
+                projectile.AttackPower = rangePower;
+                //need to add custom player targeting here later
+
+                _mapInstance.AddProjectile(projectile);
+                _attackTimer = Math.Max((1 / stats.Agility) - 1.0f, 0.1f) * 10;
+            }
+        }
+
+        private void MagicTrigger(int projectileID)
+        {
+            Hitbox hitbox = GetHitbox();
+            Vector2 position = new Vector2(hitbox.X, hitbox.Y);
+            Projectile projectile = new Projectile(projectileID, CharacterType.Player, _playerPacket.PlayerID, position, _playerPacket.Direction);
+            projectile.OnBridge = _playerPacket.OnBridge;
+            projectile.Style = AttackStyle.Magic;
+
+            Random rand = new Random();
+            CombatStats stats = _playerPacket.Data.GetCombinedCombatStats();
+            int critModifier = rand.Next(1, 6) > 4 ? (stats.Strength / 2) : 0;
+            double accuracy = Math.Min(stats.Strength / stats.Agility, 1.0);
+            int magicPower = (int)((stats.Inteligence + critModifier) * accuracy);
+            projectile.AttackPower = magicPower;
+            //need to add custom player targeting here later
+
+            _mapInstance.AddProjectile(projectile);
+            _attackTimer = Math.Max((1 / stats.Agility) - 1.0f, 0.1f) * 10;
+        }
+
+        public void TakeDamage(CharacterType enemyType, int enemyID, int damage)
+        {
+            if (EnemyCanAttack(enemyType, enemyID))
+            {
+                if (enemyID != -1)
+                {
+                    EnemyCharacterType = enemyType;
+                    EnemyCharacterID = enemyID;
+                    _combatTimer = 5f;
+                }
+
+                _playerPacket.Data.HP -= damage;
+
+                if (_playerPacket.Data.HP <= 0)
+                {
+                    Dead = true;
+                    _playerPacket.Data.HP = 0;
+                }
+            }
+        }
+
+        public bool EnemyCanAttack(CharacterType enemyType, int enemyID)
+        {
+            if (Dead)
+                return false;
+            if (EnemyCharacterID == -1)
+                return true;
+            if (enemyID == -1)
+                return true;
+            if (EnemyCharacterType == enemyType && EnemyCharacterID == enemyID)
+                return true;
+            return false;
         }
 
 
