@@ -120,8 +120,8 @@ namespace RpgEditor
             PopulateIconSelections();
             PopulateProjectilesList();
             PopulateClassesList();
-            PopulateEnemyList();
             PopulateDropTablesList();
+            PopulateEnemyList();
             PopulateSystemVariables();
             PopulateSytemData();
         }
@@ -1531,7 +1531,7 @@ namespace RpgEditor
             EnemyDataList.Items.Clear();
             List<string> data = Genus2D.GameData.EnemyData.GetEnemyNames();
             EnemyDataList.Items.AddRange(data.ToArray());
-            if (selection < data.Count - 1)
+            if (selection < data.Count)
                 EnemyDataList.SelectedIndex = selection;
             else
                 ChangeEnemyData();
