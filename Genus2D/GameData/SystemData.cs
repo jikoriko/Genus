@@ -20,6 +20,8 @@ namespace Genus2D.GameData
         public SystemData()
         {
             BaseXpCurve = 1;
+            XpPower = 1.0f;
+            XpDivision = 1.0f;
             MaxLvl = 1;
         }
 
