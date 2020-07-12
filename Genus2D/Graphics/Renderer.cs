@@ -84,6 +84,7 @@ namespace Genus2D.Graphics
             _currentFont = Assets.GetFont("arial.ttf", 20);
             _resolution = Vector2.Zero;
             SetScreenBounds(new Rectangle(0, 0, StateWindow.Instance.Width, StateWindow.Instance.Height));
+            Assets.PreLoadTextures();
         }
 
         public static void DisableDepthWrite()

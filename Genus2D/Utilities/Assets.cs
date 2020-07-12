@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using Genus2D.Graphics;
@@ -18,6 +19,37 @@ namespace Genus2D.Utililities
         private static Dictionary<string, Texture> _textures = new Dictionary<string, Texture>();
         private static Dictionary<string, Shader> _shaders = new Dictionary<string, Shader>();
         private static Dictionary<string, TrueTypeFont> _fonts = new Dictionary<string, TrueTypeFont>();
+
+        public static void PreLoadTextures()
+        {
+            List<string> allDirectories = GetDirectories(ASSETS + TEXTURES);
+            
+            foreach (string path in allDirectories)
+            {
+                DirectoryInfo info = new DirectoryInfo(path);
+                FileInfo[] files = info.GetFiles();
+                foreach (FileInfo file in files)
+                {
+                    string fullPath = path + "/" + file.Name;
+                    fullPath = fullPath.Replace(ASSETS + TEXTURES, "");
+                    LoadTexture(fullPath);
+                }
+            }
+        }
+
+        private static List<string> GetDirectories(string path)
+        {
+            List<string> directories = new List<string>();
+
+            string[] currentDirectories = Directory.GetDirectories(path);
+            directories.AddRange(currentDirectories);
+            foreach (string directory in currentDirectories)
+            {
+                directories.AddRange(GetDirectories(directory));
+            }
+
+            return directories;
+        }
 
         public static bool LoadTexture(string filename)
         {

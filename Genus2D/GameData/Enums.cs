@@ -131,11 +131,11 @@ namespace Genus2D.GameData
     }
 
     [Serializable]
-    public enum QuestStatus
+    public enum QuestStatusCheck
     {
-        NotStarted,
         Started,
-        Complete
+        Complete,
+        Progression
     }
 
     [Serializable]

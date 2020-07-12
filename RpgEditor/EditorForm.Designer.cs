@@ -265,6 +265,43 @@
             this.SaveEnemyChanges = new System.Windows.Forms.Button();
             this.panel9 = new System.Windows.Forms.Panel();
             this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.panel10 = new System.Windows.Forms.Panel();
+            this.RemoveShopItemButton = new System.Windows.Forms.Button();
+            this.label81 = new System.Windows.Forms.Label();
+            this.EditShopItemButton = new System.Windows.Forms.Button();
+            this.ApplyShopsButton = new System.Windows.Forms.Button();
+            this.AddShopItemButton = new System.Windows.Forms.Button();
+            this.ShopItemsList = new System.Windows.Forms.ListBox();
+            this.UndoShopsButton = new System.Windows.Forms.Button();
+            this.label84 = new System.Windows.Forms.Label();
+            this.ShopNameBox = new System.Windows.Forms.TextBox();
+            this.RemoveShopButton = new System.Windows.Forms.Button();
+            this.AddShopButton = new System.Windows.Forms.Button();
+            this.ShopList = new System.Windows.Forms.ListBox();
+            this.label85 = new System.Windows.Forms.Label();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.groupBox14 = new System.Windows.Forms.GroupBox();
+            this.RemoveQuestRewardButton = new System.Windows.Forms.Button();
+            this.EditQuestRewardButton = new System.Windows.Forms.Button();
+            this.AddQuestRewardButton = new System.Windows.Forms.Button();
+            this.label80 = new System.Windows.Forms.Label();
+            this.label77 = new System.Windows.Forms.Label();
+            this.QuestObjectiveDescriptionBox = new System.Windows.Forms.RichTextBox();
+            this.label76 = new System.Windows.Forms.Label();
+            this.RemoveQuestObjectiveButton = new System.Windows.Forms.Button();
+            this.QuestObjectiveNameBox = new System.Windows.Forms.TextBox();
+            this.QuestRewardsList = new System.Windows.Forms.ListBox();
+            this.QuestObjectivesList = new System.Windows.Forms.ListBox();
+            this.AddQuestObjectiveButton = new System.Windows.Forms.Button();
+            this.ApplyQuestsButton = new System.Windows.Forms.Button();
+            this.UndoQuestsButton = new System.Windows.Forms.Button();
+            this.label78 = new System.Windows.Forms.Label();
+            this.QuestNameBox = new System.Windows.Forms.TextBox();
+            this.RemoveQuestButton = new System.Windows.Forms.Button();
+            this.AddQuestButton = new System.Windows.Forms.Button();
+            this.QuestList = new System.Windows.Forms.ListBox();
+            this.label79 = new System.Windows.Forms.Label();
+            this.tabPage8 = new System.Windows.Forms.TabPage();
             this.panel5 = new System.Windows.Forms.Panel();
             this.groupBox12 = new System.Windows.Forms.GroupBox();
             this.BaseXpCurveSelection = new System.Windows.Forms.NumericUpDown();
@@ -364,6 +401,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.EnemyInteligenceControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.EnemyVitalityControl)).BeginInit();
             this.tabPage7.SuspendLayout();
+            this.panel10.SuspendLayout();
+            this.panel6.SuspendLayout();
+            this.groupBox14.SuspendLayout();
+            this.tabPage8.SuspendLayout();
             this.panel5.SuspendLayout();
             this.groupBox12.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BaseXpCurveSelection)).BeginInit();
@@ -386,6 +427,7 @@
             this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Controls.Add(this.tabPage6);
             this.tabControl1.Controls.Add(this.tabPage7);
+            this.tabControl1.Controls.Add(this.tabPage8);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -2284,7 +2326,8 @@
             "Consumble",
             "Material",
             "Equipment",
-            "Ammo"});
+            "Ammo",
+            "Quest"});
             this.ItemTypeSelection.Location = new System.Drawing.Point(274, 137);
             this.ItemTypeSelection.Name = "ItemTypeSelection";
             this.ItemTypeSelection.Size = new System.Drawing.Size(141, 21);
@@ -3221,13 +3264,429 @@
             // tabPage7
             // 
             this.tabPage7.BackColor = System.Drawing.Color.DarkGray;
-            this.tabPage7.Controls.Add(this.panel5);
-            this.tabPage7.Controls.Add(this.panel7);
+            this.tabPage7.Controls.Add(this.panel10);
+            this.tabPage7.Controls.Add(this.panel6);
             this.tabPage7.Location = new System.Drawing.Point(4, 22);
             this.tabPage7.Name = "tabPage7";
             this.tabPage7.Size = new System.Drawing.Size(1152, 711);
-            this.tabPage7.TabIndex = 6;
-            this.tabPage7.Text = "Sytem";
+            this.tabPage7.TabIndex = 8;
+            this.tabPage7.Text = "Quests / Shops";
+            // 
+            // panel10
+            // 
+            this.panel10.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.panel10.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.panel10.Controls.Add(this.RemoveShopItemButton);
+            this.panel10.Controls.Add(this.label81);
+            this.panel10.Controls.Add(this.EditShopItemButton);
+            this.panel10.Controls.Add(this.ApplyShopsButton);
+            this.panel10.Controls.Add(this.AddShopItemButton);
+            this.panel10.Controls.Add(this.ShopItemsList);
+            this.panel10.Controls.Add(this.UndoShopsButton);
+            this.panel10.Controls.Add(this.label84);
+            this.panel10.Controls.Add(this.ShopNameBox);
+            this.panel10.Controls.Add(this.RemoveShopButton);
+            this.panel10.Controls.Add(this.AddShopButton);
+            this.panel10.Controls.Add(this.ShopList);
+            this.panel10.Controls.Add(this.label85);
+            this.panel10.Location = new System.Drawing.Point(673, 3);
+            this.panel10.Name = "panel10";
+            this.panel10.Size = new System.Drawing.Size(476, 705);
+            this.panel10.TabIndex = 34;
+            // 
+            // RemoveShopItemButton
+            // 
+            this.RemoveShopItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveShopItemButton.Location = new System.Drawing.Point(238, 543);
+            this.RemoveShopItemButton.Name = "RemoveShopItemButton";
+            this.RemoveShopItemButton.Size = new System.Drawing.Size(185, 47);
+            this.RemoveShopItemButton.TabIndex = 44;
+            this.RemoveShopItemButton.Text = "Remove Item";
+            this.RemoveShopItemButton.UseVisualStyleBackColor = true;
+            this.RemoveShopItemButton.Click += new System.EventHandler(this.RemoveShopItemButton_Click);
+            // 
+            // label81
+            // 
+            this.label81.AutoSize = true;
+            this.label81.Location = new System.Drawing.Point(235, 51);
+            this.label81.Name = "label81";
+            this.label81.Size = new System.Drawing.Size(35, 13);
+            this.label81.TabIndex = 43;
+            this.label81.Text = "Items:";
+            // 
+            // EditShopItemButton
+            // 
+            this.EditShopItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.EditShopItemButton.Location = new System.Drawing.Point(238, 490);
+            this.EditShopItemButton.Name = "EditShopItemButton";
+            this.EditShopItemButton.Size = new System.Drawing.Size(185, 47);
+            this.EditShopItemButton.TabIndex = 43;
+            this.EditShopItemButton.Text = "Edit Item";
+            this.EditShopItemButton.UseVisualStyleBackColor = true;
+            this.EditShopItemButton.Click += new System.EventHandler(this.EditShopItemButton_Click);
+            // 
+            // ApplyShopsButton
+            // 
+            this.ApplyShopsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ApplyShopsButton.Location = new System.Drawing.Point(288, 655);
+            this.ApplyShopsButton.Name = "ApplyShopsButton";
+            this.ApplyShopsButton.Size = new System.Drawing.Size(185, 47);
+            this.ApplyShopsButton.TabIndex = 30;
+            this.ApplyShopsButton.Text = "Apply Changes";
+            this.ApplyShopsButton.UseVisualStyleBackColor = true;
+            this.ApplyShopsButton.Click += new System.EventHandler(this.ApplyShopsButton_Click);
+            // 
+            // AddShopItemButton
+            // 
+            this.AddShopItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddShopItemButton.Location = new System.Drawing.Point(238, 437);
+            this.AddShopItemButton.Name = "AddShopItemButton";
+            this.AddShopItemButton.Size = new System.Drawing.Size(185, 47);
+            this.AddShopItemButton.TabIndex = 42;
+            this.AddShopItemButton.Text = "Add Item";
+            this.AddShopItemButton.UseVisualStyleBackColor = true;
+            this.AddShopItemButton.Click += new System.EventHandler(this.AddShopItemButton_Click);
+            // 
+            // ShopItemsList
+            // 
+            this.ShopItemsList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.ShopItemsList.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ShopItemsList.FormattingEnabled = true;
+            this.ShopItemsList.ItemHeight = 20;
+            this.ShopItemsList.Location = new System.Drawing.Point(238, 67);
+            this.ShopItemsList.Name = "ShopItemsList";
+            this.ShopItemsList.Size = new System.Drawing.Size(185, 364);
+            this.ShopItemsList.TabIndex = 42;
+            // 
+            // UndoShopsButton
+            // 
+            this.UndoShopsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.UndoShopsButton.Location = new System.Drawing.Point(288, 602);
+            this.UndoShopsButton.Name = "UndoShopsButton";
+            this.UndoShopsButton.Size = new System.Drawing.Size(185, 47);
+            this.UndoShopsButton.TabIndex = 29;
+            this.UndoShopsButton.Text = "Undo Changes";
+            this.UndoShopsButton.UseVisualStyleBackColor = true;
+            this.UndoShopsButton.Click += new System.EventHandler(this.UndoShopsButton_Click);
+            // 
+            // label84
+            // 
+            this.label84.AutoSize = true;
+            this.label84.Location = new System.Drawing.Point(8, 44);
+            this.label84.Name = "label84";
+            this.label84.Size = new System.Drawing.Size(38, 13);
+            this.label84.TabIndex = 28;
+            this.label84.Text = "Name:";
+            // 
+            // ShopNameBox
+            // 
+            this.ShopNameBox.Location = new System.Drawing.Point(51, 41);
+            this.ShopNameBox.Name = "ShopNameBox";
+            this.ShopNameBox.Size = new System.Drawing.Size(141, 20);
+            this.ShopNameBox.TabIndex = 27;
+            // 
+            // RemoveShopButton
+            // 
+            this.RemoveShopButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveShopButton.Location = new System.Drawing.Point(7, 655);
+            this.RemoveShopButton.Name = "RemoveShopButton";
+            this.RemoveShopButton.Size = new System.Drawing.Size(185, 47);
+            this.RemoveShopButton.TabIndex = 12;
+            this.RemoveShopButton.Text = "Remove Quest";
+            this.RemoveShopButton.UseVisualStyleBackColor = true;
+            this.RemoveShopButton.Click += new System.EventHandler(this.RemoveShopButton_Click);
+            // 
+            // AddShopButton
+            // 
+            this.AddShopButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddShopButton.Location = new System.Drawing.Point(7, 602);
+            this.AddShopButton.Name = "AddShopButton";
+            this.AddShopButton.Size = new System.Drawing.Size(185, 47);
+            this.AddShopButton.TabIndex = 11;
+            this.AddShopButton.Text = "Add Shop";
+            this.AddShopButton.UseVisualStyleBackColor = true;
+            this.AddShopButton.Click += new System.EventHandler(this.AddShopButton_Click);
+            // 
+            // ShopList
+            // 
+            this.ShopList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.ShopList.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ShopList.FormattingEnabled = true;
+            this.ShopList.ItemHeight = 20;
+            this.ShopList.Location = new System.Drawing.Point(7, 67);
+            this.ShopList.Name = "ShopList";
+            this.ShopList.Size = new System.Drawing.Size(185, 524);
+            this.ShopList.TabIndex = 8;
+            this.ShopList.SelectedIndexChanged += new System.EventHandler(this.ShopList_SelectedIndexChanged);
+            // 
+            // label85
+            // 
+            this.label85.AutoSize = true;
+            this.label85.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label85.Location = new System.Drawing.Point(3, 0);
+            this.label85.Name = "label85";
+            this.label85.Size = new System.Drawing.Size(69, 24);
+            this.label85.TabIndex = 7;
+            this.label85.Text = "Shops";
+            // 
+            // panel6
+            // 
+            this.panel6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.panel6.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.panel6.Controls.Add(this.groupBox14);
+            this.panel6.Controls.Add(this.ApplyQuestsButton);
+            this.panel6.Controls.Add(this.UndoQuestsButton);
+            this.panel6.Controls.Add(this.label78);
+            this.panel6.Controls.Add(this.QuestNameBox);
+            this.panel6.Controls.Add(this.RemoveQuestButton);
+            this.panel6.Controls.Add(this.AddQuestButton);
+            this.panel6.Controls.Add(this.QuestList);
+            this.panel6.Controls.Add(this.label79);
+            this.panel6.Location = new System.Drawing.Point(3, 3);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(664, 705);
+            this.panel6.TabIndex = 1;
+            // 
+            // groupBox14
+            // 
+            this.groupBox14.Controls.Add(this.RemoveQuestRewardButton);
+            this.groupBox14.Controls.Add(this.EditQuestRewardButton);
+            this.groupBox14.Controls.Add(this.AddQuestRewardButton);
+            this.groupBox14.Controls.Add(this.label80);
+            this.groupBox14.Controls.Add(this.label77);
+            this.groupBox14.Controls.Add(this.QuestObjectiveDescriptionBox);
+            this.groupBox14.Controls.Add(this.label76);
+            this.groupBox14.Controls.Add(this.RemoveQuestObjectiveButton);
+            this.groupBox14.Controls.Add(this.QuestObjectiveNameBox);
+            this.groupBox14.Controls.Add(this.QuestRewardsList);
+            this.groupBox14.Controls.Add(this.QuestObjectivesList);
+            this.groupBox14.Controls.Add(this.AddQuestObjectiveButton);
+            this.groupBox14.Location = new System.Drawing.Point(198, 41);
+            this.groupBox14.Name = "groupBox14";
+            this.groupBox14.Size = new System.Drawing.Size(457, 608);
+            this.groupBox14.TabIndex = 33;
+            this.groupBox14.TabStop = false;
+            this.groupBox14.Text = "Objectives";
+            // 
+            // RemoveQuestRewardButton
+            // 
+            this.RemoveQuestRewardButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveQuestRewardButton.Location = new System.Drawing.Point(266, 555);
+            this.RemoveQuestRewardButton.Name = "RemoveQuestRewardButton";
+            this.RemoveQuestRewardButton.Size = new System.Drawing.Size(185, 47);
+            this.RemoveQuestRewardButton.TabIndex = 41;
+            this.RemoveQuestRewardButton.Text = "Remove Reward";
+            this.RemoveQuestRewardButton.UseVisualStyleBackColor = true;
+            this.RemoveQuestRewardButton.Click += new System.EventHandler(this.RemoveQuestRewardButton_Click);
+            // 
+            // EditQuestRewardButton
+            // 
+            this.EditQuestRewardButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.EditQuestRewardButton.Location = new System.Drawing.Point(266, 502);
+            this.EditQuestRewardButton.Name = "EditQuestRewardButton";
+            this.EditQuestRewardButton.Size = new System.Drawing.Size(185, 47);
+            this.EditQuestRewardButton.TabIndex = 40;
+            this.EditQuestRewardButton.Text = "Edit Reward";
+            this.EditQuestRewardButton.UseVisualStyleBackColor = true;
+            this.EditQuestRewardButton.Click += new System.EventHandler(this.EditQuestRewardButton_Click);
+            // 
+            // AddQuestRewardButton
+            // 
+            this.AddQuestRewardButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddQuestRewardButton.Location = new System.Drawing.Point(266, 449);
+            this.AddQuestRewardButton.Name = "AddQuestRewardButton";
+            this.AddQuestRewardButton.Size = new System.Drawing.Size(185, 47);
+            this.AddQuestRewardButton.TabIndex = 39;
+            this.AddQuestRewardButton.Text = "Add Reward";
+            this.AddQuestRewardButton.UseVisualStyleBackColor = true;
+            this.AddQuestRewardButton.Click += new System.EventHandler(this.AddQuestRewardButton_Click);
+            // 
+            // label80
+            // 
+            this.label80.AutoSize = true;
+            this.label80.Location = new System.Drawing.Point(208, 232);
+            this.label80.Name = "label80";
+            this.label80.Size = new System.Drawing.Size(52, 13);
+            this.label80.TabIndex = 38;
+            this.label80.Text = "Rewards:";
+            // 
+            // label77
+            // 
+            this.label77.AutoSize = true;
+            this.label77.Location = new System.Drawing.Point(197, 53);
+            this.label77.Name = "label77";
+            this.label77.Size = new System.Drawing.Size(63, 13);
+            this.label77.TabIndex = 37;
+            this.label77.Text = "Description:";
+            // 
+            // QuestObjectiveDescriptionBox
+            // 
+            this.QuestObjectiveDescriptionBox.Location = new System.Drawing.Point(266, 50);
+            this.QuestObjectiveDescriptionBox.Name = "QuestObjectiveDescriptionBox";
+            this.QuestObjectiveDescriptionBox.Size = new System.Drawing.Size(185, 176);
+            this.QuestObjectiveDescriptionBox.TabIndex = 36;
+            this.QuestObjectiveDescriptionBox.Text = "";
+            // 
+            // label76
+            // 
+            this.label76.AutoSize = true;
+            this.label76.Location = new System.Drawing.Point(223, 27);
+            this.label76.Name = "label76";
+            this.label76.Size = new System.Drawing.Size(38, 13);
+            this.label76.TabIndex = 35;
+            this.label76.Text = "Name:";
+            // 
+            // RemoveQuestObjectiveButton
+            // 
+            this.RemoveQuestObjectiveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveQuestObjectiveButton.Location = new System.Drawing.Point(6, 555);
+            this.RemoveQuestObjectiveButton.Name = "RemoveQuestObjectiveButton";
+            this.RemoveQuestObjectiveButton.Size = new System.Drawing.Size(185, 47);
+            this.RemoveQuestObjectiveButton.TabIndex = 35;
+            this.RemoveQuestObjectiveButton.Text = "Remove Objective";
+            this.RemoveQuestObjectiveButton.UseVisualStyleBackColor = true;
+            this.RemoveQuestObjectiveButton.Click += new System.EventHandler(this.RemoveQuestObjectiveButton_Click);
+            // 
+            // QuestObjectiveNameBox
+            // 
+            this.QuestObjectiveNameBox.Location = new System.Drawing.Point(266, 24);
+            this.QuestObjectiveNameBox.Name = "QuestObjectiveNameBox";
+            this.QuestObjectiveNameBox.Size = new System.Drawing.Size(185, 20);
+            this.QuestObjectiveNameBox.TabIndex = 34;
+            // 
+            // QuestRewardsList
+            // 
+            this.QuestRewardsList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.QuestRewardsList.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.QuestRewardsList.FormattingEnabled = true;
+            this.QuestRewardsList.ItemHeight = 20;
+            this.QuestRewardsList.Location = new System.Drawing.Point(266, 232);
+            this.QuestRewardsList.Name = "QuestRewardsList";
+            this.QuestRewardsList.Size = new System.Drawing.Size(185, 204);
+            this.QuestRewardsList.TabIndex = 32;
+            // 
+            // QuestObjectivesList
+            // 
+            this.QuestObjectivesList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.QuestObjectivesList.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.QuestObjectivesList.FormattingEnabled = true;
+            this.QuestObjectivesList.ItemHeight = 20;
+            this.QuestObjectivesList.Location = new System.Drawing.Point(6, 19);
+            this.QuestObjectivesList.Name = "QuestObjectivesList";
+            this.QuestObjectivesList.Size = new System.Drawing.Size(185, 464);
+            this.QuestObjectivesList.TabIndex = 31;
+            this.QuestObjectivesList.SelectedIndexChanged += new System.EventHandler(this.QuestObjectivesList_SelectedIndexChanged);
+            // 
+            // AddQuestObjectiveButton
+            // 
+            this.AddQuestObjectiveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddQuestObjectiveButton.Location = new System.Drawing.Point(6, 502);
+            this.AddQuestObjectiveButton.Name = "AddQuestObjectiveButton";
+            this.AddQuestObjectiveButton.Size = new System.Drawing.Size(185, 47);
+            this.AddQuestObjectiveButton.TabIndex = 34;
+            this.AddQuestObjectiveButton.Text = "Add Objective";
+            this.AddQuestObjectiveButton.UseVisualStyleBackColor = true;
+            this.AddQuestObjectiveButton.Click += new System.EventHandler(this.AddQuestObjectiveButton_Click);
+            // 
+            // ApplyQuestsButton
+            // 
+            this.ApplyQuestsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ApplyQuestsButton.Location = new System.Drawing.Point(470, 655);
+            this.ApplyQuestsButton.Name = "ApplyQuestsButton";
+            this.ApplyQuestsButton.Size = new System.Drawing.Size(185, 47);
+            this.ApplyQuestsButton.TabIndex = 30;
+            this.ApplyQuestsButton.Text = "Apply Changes";
+            this.ApplyQuestsButton.UseVisualStyleBackColor = true;
+            this.ApplyQuestsButton.Click += new System.EventHandler(this.ApplyQuestsButton_Click);
+            // 
+            // UndoQuestsButton
+            // 
+            this.UndoQuestsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.UndoQuestsButton.Location = new System.Drawing.Point(279, 655);
+            this.UndoQuestsButton.Name = "UndoQuestsButton";
+            this.UndoQuestsButton.Size = new System.Drawing.Size(185, 47);
+            this.UndoQuestsButton.TabIndex = 29;
+            this.UndoQuestsButton.Text = "Undo Changes";
+            this.UndoQuestsButton.UseVisualStyleBackColor = true;
+            this.UndoQuestsButton.Click += new System.EventHandler(this.UndoQuestsButton_Click);
+            // 
+            // label78
+            // 
+            this.label78.AutoSize = true;
+            this.label78.Location = new System.Drawing.Point(8, 44);
+            this.label78.Name = "label78";
+            this.label78.Size = new System.Drawing.Size(38, 13);
+            this.label78.TabIndex = 28;
+            this.label78.Text = "Name:";
+            // 
+            // QuestNameBox
+            // 
+            this.QuestNameBox.Location = new System.Drawing.Point(51, 41);
+            this.QuestNameBox.Name = "QuestNameBox";
+            this.QuestNameBox.Size = new System.Drawing.Size(141, 20);
+            this.QuestNameBox.TabIndex = 27;
+            // 
+            // RemoveQuestButton
+            // 
+            this.RemoveQuestButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveQuestButton.Location = new System.Drawing.Point(7, 655);
+            this.RemoveQuestButton.Name = "RemoveQuestButton";
+            this.RemoveQuestButton.Size = new System.Drawing.Size(185, 47);
+            this.RemoveQuestButton.TabIndex = 12;
+            this.RemoveQuestButton.Text = "Remove Quest";
+            this.RemoveQuestButton.UseVisualStyleBackColor = true;
+            this.RemoveQuestButton.Click += new System.EventHandler(this.RemoveQuestButton_Click);
+            // 
+            // AddQuestButton
+            // 
+            this.AddQuestButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddQuestButton.Location = new System.Drawing.Point(7, 602);
+            this.AddQuestButton.Name = "AddQuestButton";
+            this.AddQuestButton.Size = new System.Drawing.Size(185, 47);
+            this.AddQuestButton.TabIndex = 11;
+            this.AddQuestButton.Text = "Add Quest";
+            this.AddQuestButton.UseVisualStyleBackColor = true;
+            this.AddQuestButton.Click += new System.EventHandler(this.AddQuestButton_Click);
+            // 
+            // QuestList
+            // 
+            this.QuestList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.QuestList.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.QuestList.FormattingEnabled = true;
+            this.QuestList.ItemHeight = 20;
+            this.QuestList.Location = new System.Drawing.Point(7, 67);
+            this.QuestList.Name = "QuestList";
+            this.QuestList.Size = new System.Drawing.Size(185, 524);
+            this.QuestList.TabIndex = 8;
+            this.QuestList.SelectedIndexChanged += new System.EventHandler(this.QuestList_SelectedIndexChanged);
+            // 
+            // label79
+            // 
+            this.label79.AutoSize = true;
+            this.label79.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label79.Location = new System.Drawing.Point(3, 0);
+            this.label79.Name = "label79";
+            this.label79.Size = new System.Drawing.Size(75, 24);
+            this.label79.TabIndex = 7;
+            this.label79.Text = "Quests";
+            // 
+            // tabPage8
+            // 
+            this.tabPage8.BackColor = System.Drawing.Color.DarkGray;
+            this.tabPage8.Controls.Add(this.panel5);
+            this.tabPage8.Controls.Add(this.panel7);
+            this.tabPage8.Location = new System.Drawing.Point(4, 22);
+            this.tabPage8.Name = "tabPage8";
+            this.tabPage8.Size = new System.Drawing.Size(1152, 711);
+            this.tabPage8.TabIndex = 6;
+            this.tabPage8.Text = "Sytem";
             // 
             // panel5
             // 
@@ -3703,6 +4162,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.EnemyInteligenceControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.EnemyVitalityControl)).EndInit();
             this.tabPage7.ResumeLayout(false);
+            this.panel10.ResumeLayout(false);
+            this.panel10.PerformLayout();
+            this.panel6.ResumeLayout(false);
+            this.panel6.PerformLayout();
+            this.groupBox14.ResumeLayout(false);
+            this.groupBox14.PerformLayout();
+            this.tabPage8.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
             this.groupBox12.ResumeLayout(false);
@@ -3815,7 +4281,7 @@
         private System.Windows.Forms.Button UndoSpriteButton;
         private System.Windows.Forms.Button UndoItemButton;
         private System.Windows.Forms.Button CopyEventCommandButton;
-        private System.Windows.Forms.TabPage tabPage7;
+        private System.Windows.Forms.TabPage tabPage8;
         private System.Windows.Forms.Panel panel7;
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.TextBox VariableValueBox;
@@ -3987,6 +4453,43 @@
         private System.Windows.Forms.Button RemoveDropItemButton;
         private System.Windows.Forms.ListBox DropTableItemsList;
         private System.Windows.Forms.Button EditDropItemButton;
+        private System.Windows.Forms.TabPage tabPage7;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.Button ApplyQuestsButton;
+        private System.Windows.Forms.Button UndoQuestsButton;
+        private System.Windows.Forms.Label label78;
+        private System.Windows.Forms.TextBox QuestNameBox;
+        private System.Windows.Forms.Button RemoveQuestButton;
+        private System.Windows.Forms.Button AddQuestButton;
+        private System.Windows.Forms.ListBox QuestList;
+        private System.Windows.Forms.Label label79;
+        private System.Windows.Forms.ListBox QuestRewardsList;
+        private System.Windows.Forms.ListBox QuestObjectivesList;
+        private System.Windows.Forms.GroupBox groupBox14;
+        private System.Windows.Forms.Button RemoveQuestObjectiveButton;
+        private System.Windows.Forms.Button AddQuestObjectiveButton;
+        private System.Windows.Forms.Button RemoveQuestRewardButton;
+        private System.Windows.Forms.Button EditQuestRewardButton;
+        private System.Windows.Forms.Button AddQuestRewardButton;
+        private System.Windows.Forms.Label label80;
+        private System.Windows.Forms.Label label77;
+        private System.Windows.Forms.RichTextBox QuestObjectiveDescriptionBox;
+        private System.Windows.Forms.Label label76;
+        private System.Windows.Forms.TextBox QuestObjectiveNameBox;
+        private System.Windows.Forms.Panel panel10;
+        private System.Windows.Forms.Button RemoveShopItemButton;
+        private System.Windows.Forms.Label label81;
+        private System.Windows.Forms.Button EditShopItemButton;
+        private System.Windows.Forms.Button ApplyShopsButton;
+        private System.Windows.Forms.Button AddShopItemButton;
+        private System.Windows.Forms.ListBox ShopItemsList;
+        private System.Windows.Forms.Button UndoShopsButton;
+        private System.Windows.Forms.Label label84;
+        private System.Windows.Forms.TextBox ShopNameBox;
+        private System.Windows.Forms.Button RemoveShopButton;
+        private System.Windows.Forms.Button AddShopButton;
+        private System.Windows.Forms.ListBox ShopList;
+        private System.Windows.Forms.Label label85;
     }
 }
 

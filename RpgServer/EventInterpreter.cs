@@ -86,10 +86,13 @@ namespace RpgServer
                 int spriteID;
                 int itemID;
                 int itemAmount;
+                int added;
+                int remainder;
                 int variableID;
                 VariableType variableType;
                 object variableValue;
                 int gold;
+                int questID;
 
                 switch (eventCommand.Type)
                 {
@@ -219,6 +222,7 @@ namespace RpgServer
                         ConditionalBranchType type = (ConditionalBranchType)eventCommand.GetParameter("ConditionalBranchType");
 
                         bool conditionMet = false;
+                        bool result = (bool)eventCommand.GetParameter("Result");
 
                         switch (type)
                         {
@@ -373,7 +377,39 @@ namespace RpgServer
 
                                 if (client == null || !client.Connected()) break;
 
-                                QuestStatus status = (QuestStatus)eventCommand.GetParameter("QuestStatus");
+                                questID = (int)eventCommand.GetParameter("QuestID");
+                                if (questID != -1)
+                                {
+                                    QuestStatusCheck statusCheck = (QuestStatusCheck)eventCommand.GetParameter("QuestStatus");
+                                    switch (statusCheck)
+                                    {
+                                        case QuestStatusCheck.Started:
+                                            if (client.GetPacket().Data.QuestStarted(questID))
+                                                conditionMet = true;
+                                            break;
+                                        case QuestStatusCheck.Complete:
+                                            if (client.GetPacket().Data.QuestComplete(questID))
+                                                conditionMet = true;
+                                            break;
+                                        case QuestStatusCheck.Progression:
+                                            int progression = (int)eventCommand.GetParameter("QuestProgression");
+                                            if (progression != -1)
+                                            {
+                                                int greaterCondition = (int)eventCommand.GetParameter("QuestProgressionCondition");
+                                                if (greaterCondition == 0)
+                                                {
+                                                    if (client.GetPacket().Data.GetQuestProgression(questID) == progression)
+                                                        conditionMet = true;
+                                                }
+                                                else
+                                                {
+                                                    if (client.GetPacket().Data.GetQuestProgression(questID) >= progression)
+                                                        conditionMet = true;
+                                                }
+                                            }
+                                            break;
+                                    }
+                                }
                                 // check quest status here
 
                                 break;
@@ -410,7 +446,7 @@ namespace RpgServer
                                 break;
                         }
 
-                        if (!conditionMet)
+                        if (conditionMet != result)
                         {
                             int conditionDepth = triggeringEvent.ConditionDepth;
                             for (int i = triggeringEvent.CommandID + 1; i < eventData.EventCommands.Count; i++)
@@ -457,9 +493,15 @@ namespace RpgServer
 
                         itemID = (int)eventCommand.GetParameter("ItemID");
                         itemAmount = (int)eventCommand.GetParameter("ItemAmount");
-                        int remainder = itemAmount - client.GetPacket().Data.AddInventoryItem(itemID, itemAmount);
-
-                        //do something with the remainder, the players inventory is full, drop on floor?
+                        added = client.GetPacket().Data.AddInventoryItem(itemID, itemAmount);
+                        remainder = itemAmount - added;
+                        if (remainder > 0)
+                        {
+                            mapX = client.GetPacket().PositionX;
+                            mapY = client.GetPacket().PositionY;
+                            MapItem mapItem = new MapItem(itemID, remainder, mapX, mapY, client.GetPacket().PlayerID, client.GetPacket().OnBridge);
+                            _mapInstance.AddMapItem(mapItem);
+                        }
 
                         break;
                     case EventCommand.CommandType.RemoveInventoryItem:
@@ -537,6 +579,55 @@ namespace RpgServer
                                     break;
                                 }
                             }
+                        }
+
+                        break;
+                    case EventCommand.CommandType.ProgressQuest:
+                        if (client == null || !client.Connected()) break;
+
+                        questID = (int)eventCommand.GetParameter("QuestID");
+                        if (questID != -1)
+                        {
+                            if (client.GetPacket().Data.QuestStarted(questID))
+                            {
+                                int progression = client.GetPacket().Data.GetQuestProgression(questID);
+                                if (client.GetPacket().Data.ProgressQuest(questID))
+                                {
+                                    QuestData data = QuestData.GetData(questID);
+                                    QuestData.QuestObective objective = data.Objectives[progression];
+                                    for (int i = 0; i < objective.ItemRewards.Count; i++)
+                                    {
+                                        itemID = objective.ItemRewards[i].Item1;
+                                        itemAmount = objective.ItemRewards[i].Item2;
+                                        added = client.GetPacket().Data.AddInventoryItem(itemID, itemAmount);
+                                        remainder = itemAmount - added;
+                                        if (remainder > 0)
+                                        {
+                                            mapX = client.GetPacket().PositionX;
+                                            mapY = client.GetPacket().PositionY;
+                                            MapItem mapItem = new MapItem(itemID, remainder, mapX, mapY, client.GetPacket().PlayerID, client.GetPacket().OnBridge);
+                                            _mapInstance.AddMapItem(mapItem);
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                client.GetPacket().Data.StartQuest(questID);
+                            }
+                        }
+
+                        break;
+                    case EventCommand.CommandType.ShowShop:
+                        if (client == null || !client.Connected()) break;
+
+                        int shopID = (int)eventCommand.GetParameter("ShopID");
+                        if (shopID != -1)
+                        {
+                            client.ShopID = shopID;
+                            serverCommand = new ServerCommand(ServerCommand.CommandType.ShowShop);
+                            serverCommand.SetParameter("ShopID", shopID);
+                            client.AddServerCommand(serverCommand);
                         }
 
                         break;

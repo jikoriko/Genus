@@ -31,7 +31,7 @@ namespace Genus2D.GameData
 
             PlayerID = playerID;
             PlayerLockTimer = 60f;
-            DespawnTimer = 180f;
+            DespawnTimer = 120f;
             PickedUp = false;
         }
 

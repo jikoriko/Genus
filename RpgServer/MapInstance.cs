@@ -78,6 +78,23 @@ namespace RpgServer
             return _clients.ToArray();
         }
 
+        public GameClient FindGameClient(int playerID)
+        {
+            for (int i = 0; i < _clients.Count; i++)
+            {
+                if (_clients[i].GetPacket().PlayerID == playerID)
+                    return _clients[i];
+            }
+            return null;
+        }
+
+        public MapEnemy FindMapEnemy(int enemyID)//enemy signature?
+        {
+            if (enemyID >= 0 && enemyID < _mapPacket.Enemies.Count)
+                return _mapPacket.Enemies[enemyID];
+            return null;
+        }
+
         public MapPacket GetMapPacket()
         {
             return _mapPacket;
@@ -1232,10 +1249,11 @@ namespace RpgServer
             Random rand = new Random();
             CombatStats stats1 = enemy.GetEnemyData().BaseStats;
             CombatStats stats2 = player.Data.GetCombinedCombatStats();
-            int critModifier = rand.Next(1, 6) > 4 ? (stats1.Strength / 2) : 0;
-            double accuracy = Math.Min(stats1.Strength / stats1.Agility, 1.0);
+            int critModifier = rand.Next(1, 6) > 4 ? (int)(stats1.Strength * 0.2f) : 0;
+            double maxAccuracy = 1;// Math.Min(stats1.Agility / stats1.Strength, 1.0);
+            double accuracy = rand.NextDouble() * maxAccuracy;
             int meleePower = (int)((stats1.Strength + critModifier) * accuracy) - (stats2.MeleeDefence / 2);
-            meleePower = Math.Max(meleePower, 1);
+            meleePower = Math.Max(meleePower, 0);
             client.TakeDamage(CharacterType.Enemy, _mapPacket.Enemies.IndexOf(enemy), meleePower);
             enemy.AttackTimer = Math.Max((1 / stats1.Agility) - 1.0f, 0.1f) * 10;
         }
@@ -1256,8 +1274,9 @@ namespace RpgServer
 
             Random rand = new Random();
             CombatStats stats = enemy.GetEnemyData().BaseStats;
-            int critModifier = rand.Next(1, 6) > 4 ? (stats.Strength / 2) : 0;
-            double accuracy = Math.Min(stats.Strength / stats.Agility, 1.0);
+            int critModifier = rand.Next(1, 6) > 4 ? (int)(stats.Strength * 0.2f) : 0;
+            double maxAccuracy = 1;// Math.Min(stats.Agility / stats.Strength, 1.0);
+            double accuracy = rand.NextDouble() * maxAccuracy;
             int rangePower = (int)((stats.Strength + critModifier) * accuracy);
             projectile.AttackPower = rangePower;
 
@@ -1281,8 +1300,9 @@ namespace RpgServer
 
             Random rand = new Random();
             CombatStats stats = enemy.GetEnemyData().BaseStats;
-            int critModifier = rand.Next(1, 6) > 4 ? (stats.Strength / 2) : 0;
-            double accuracy = Math.Min(stats.Strength / stats.Agility, 1.0);
+            int critModifier = rand.Next(1, 6) > 4 ? (int)(stats.Inteligence * 0.2f) : 0;
+            double maxAccuracy = 1;// Math.Min(stats.Agility / stats.Inteligence, 1.0);
+            double accuracy = rand.NextDouble() * maxAccuracy;
             int magicPower = (int)((stats.Inteligence + critModifier) * accuracy);
             projectile.AttackPower = magicPower;
 
@@ -1314,8 +1334,8 @@ namespace RpgServer
                             {
                                 CombatStats stats = client.GetPacket().Data.GetCombinedCombatStats();
                                 int defence = projectile.Style == AttackStyle.Ranged ? stats.RangeDefence : stats.MagicDefence;
-                                int attackPower = projectile.AttackPower - defence;
-                                attackPower = Math.Max(attackPower, 1);
+                                int attackPower = projectile.AttackPower - (defence / 2);
+                                attackPower = Math.Max(attackPower, 0);
                                 client.TakeDamage(projectile.ParentType, projectile.CharacterID, attackPower);
                                 projectile.Destroyed = true;
                                 break;
@@ -1340,8 +1360,8 @@ namespace RpgServer
                             {
                                 CombatStats stats = enemy.GetEnemyData().BaseStats;
                                 int defence = projectile.Style == AttackStyle.Ranged ? stats.RangeDefence : stats.MagicDefence;
-                                int attackPower = projectile.AttackPower - defence;
-                                attackPower = Math.Max(attackPower, 1);
+                                int attackPower = projectile.AttackPower - (defence / 2);
+                                attackPower = Math.Max(attackPower, 0);
                                 enemy.TakeDamage(projectile.ParentType, projectile.CharacterID, attackPower);
                                 projectile.Destroyed = true;
 

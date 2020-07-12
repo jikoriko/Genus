@@ -63,6 +63,18 @@
     <Compile Include="AddEventCommandForm.Designer.cs">
       <DependentUpon>AddEventCommandForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="CommandDataPresets\ShowShopPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\ShowShopPreset.Designer.cs">
+      <DependentUpon>ShowShopPreset.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CommandDataPresets\ProgressQuestPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\ProgressQuestPreset.Designer.cs">
+      <DependentUpon>ProgressQuestPreset.cs</DependentUpon>
+    </Compile>
     <Compile Include="CommandDataPresets\ChangeMapEventPreset.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -82,6 +94,12 @@
     <Compile Include="CommandDataPresets\EnemySpawnPreset.Designer.cs">
       <DependentUpon>EnemySpawnPreset.cs</DependentUpon>
     </Compile>
+    <Compile Include="EditShopItemForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditShopItemForm.Designer.cs">
+      <DependentUpon>EditShopItemForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditDropItemForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -93,6 +111,12 @@
     </Compile>
     <Compile Include="EditMapEventForm.Designer.cs">
       <DependentUpon>EditMapEventForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditObjectiveRewardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditObjectiveRewardForm.Designer.cs">
+      <DependentUpon>EditObjectiveRewardForm.cs</DependentUpon>
     </Compile>
     <Compile Include="EditMapForm.cs">
       <SubType>Form</SubType>
@@ -231,6 +255,12 @@
     <EmbeddedResource Include="AddEventCommandForm.resx">
       <DependentUpon>AddEventCommandForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="CommandDataPresets\ShowShopPreset.resx">
+      <DependentUpon>ShowShopPreset.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CommandDataPresets\ProgressQuestPreset.resx">
+      <DependentUpon>ProgressQuestPreset.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CommandDataPresets\ChangeMapEventPreset.resx">
       <DependentUpon>ChangeMapEventPreset.cs</DependentUpon>
     </EmbeddedResource>
@@ -240,11 +270,17 @@
     <EmbeddedResource Include="CommandDataPresets\EnemySpawnPreset.resx">
       <DependentUpon>EnemySpawnPreset.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="EditShopItemForm.resx">
+      <DependentUpon>EditShopItemForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="EditDropItemForm.resx">
       <DependentUpon>EditDropItemForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditMapEventForm.resx">
       <DependentUpon>EditMapEventForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditObjectiveRewardForm.resx">
+      <DependentUpon>EditObjectiveRewardForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditMapForm.resx">
       <DependentUpon>EditMapForm.cs</DependentUpon>

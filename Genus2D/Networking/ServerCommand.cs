@@ -24,7 +24,8 @@ namespace Genus2D.Networking
             UpdateProjectile,
             AddMapItem,
             RemoveMapItem,
-            UpdateMapItem
+            UpdateMapItem,
+            ShowShop
         }
 
         private CommandType _commandType;
@@ -140,6 +141,9 @@ namespace Genus2D.Networking
                     _parameters.Add("ItemIndex", new Parameter(1, -1));
                     _parameters.Add("PlayerID", new Parameter(1, -1));
                     _parameters.Add("Count", new Parameter(1, -1));
+                    break;
+                case CommandType.ShowShop:
+                    _parameters.Add("ShopID", new Parameter(1, -1));
                     break;
 
             }

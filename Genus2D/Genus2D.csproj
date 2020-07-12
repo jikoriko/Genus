@@ -86,11 +86,15 @@
     <Compile Include="GameData\PlayerData.cs" />
     <Compile Include="GameData\Projectile.cs" />
     <Compile Include="GameData\ProjectileData.cs" />
+    <Compile Include="GameData\QuestData.cs" />
+    <Compile Include="GameData\QuestStatus.cs" />
+    <Compile Include="GameData\ShopData.cs" />
     <Compile Include="GameData\SpawnPoint.cs" />
     <Compile Include="GameData\SpriteData.cs" />
     <Compile Include="GameData\SystemData.cs" />
     <Compile Include="GameData\SystemVariable.cs" />
     <Compile Include="GameData\TilesetData.cs" />
+    <Compile Include="GameData\TradeRequest.cs" />
     <Compile Include="GUI\Label.cs" />
     <Compile Include="GUI\MessageBox.cs" />
     <Compile Include="Networking\ClientCommand.cs" />
@@ -128,6 +132,7 @@
     <Compile Include="Core\State.cs" />
     <Compile Include="Core\StateWindow.cs" />
     <Compile Include="Utilities\Counter.cs" />
+    <Compile Include="Utilities\Extensions.cs" />
     <Compile Include="Utilities\GridCounter.cs" />
     <Compile Include="Utilities\ReversedStack.cs" />
   </ItemGroup>

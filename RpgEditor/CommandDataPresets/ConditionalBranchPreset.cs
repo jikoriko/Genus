@@ -55,11 +55,19 @@ namespace RpgEditor.CommandDataPresets
             VariableValueCondition.SelectedIndex = (int)command.GetParameter("ValueCondition");
             VariableTextCondition.SelectedIndex = (int)command.GetParameter("TextCondition");
 
-            QuestStatus.SelectedIndex = (int)command.GetParameter("QuestStatus");
+            QuestSelection.Items.AddRange(Genus2D.GameData.QuestData.GetQuestNames().ToArray());
+            QuestSelection.SelectedIndex = (int)command.GetParameter("QuestID");
+            SetQuestStatus((Genus2D.GameData.QuestStatusCheck)command.GetParameter("QuestStatus"));
+            QuestProgressionCondition.SelectedIndex = (int)command.GetParameter("QuestProgressionCondition");
+            QuestProgressionSelection.SelectedIndex = (int)command.GetParameter("QuestProgression");
+
             SelectedOptionControl.Value = (int)command.GetParameter("SelectedOption");
             TerrainTagControl.Value = (int)command.GetParameter("TerrainTag");
             PlayerDirectionSelection.SelectedIndex = (int)command.GetParameter("PlayerDirection");
             GoldControl.Value = (int)command.GetParameter("Gold");
+
+            bool result = (bool)command.GetParameter("Result");
+            ResultSelection.SelectedIndex = result ? 0 : 1;
 
         }
 
@@ -209,6 +217,41 @@ namespace RpgEditor.CommandDataPresets
             }
         }
 
+        private void QuestSelection_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            QuestProgressionSelection.Items.Clear();
+            if (QuestSelection.SelectedIndex != -1)
+            {
+                Genus2D.GameData.QuestData data = Genus2D.GameData.QuestData.GetData(QuestSelection.SelectedIndex);
+                QuestProgressionSelection.Items.AddRange(data.GetObjectiveNames().ToArray());
+            }
+        }
+
+        private void SetQuestStatus(Genus2D.GameData.QuestStatusCheck status)
+        {
+            switch (status)
+            {
+                case Genus2D.GameData.QuestStatusCheck.Started:
+                    QuestStartedCheck.Checked = true;
+                    break;
+                case Genus2D.GameData.QuestStatusCheck.Complete:
+                    QuestCompleteCheck.Checked = true;
+                    break;
+                case Genus2D.GameData.QuestStatusCheck.Progression:
+                    QuestProgressionCheck.Checked = true;
+                    break;
+            }
+        }
+
+        private Genus2D.GameData.QuestStatusCheck GetQuestStatus()
+        {
+            if (QuestStartedCheck.Checked)
+                return Genus2D.GameData.QuestStatusCheck.Started;
+            else if (QuestCompleteCheck.Checked)
+                return Genus2D.GameData.QuestStatusCheck.Complete;
+            return Genus2D.GameData.QuestStatusCheck.Progression;
+        }
+
         public void ApplyData()
         {
             Genus2D.GameData.ConditionalBranchType condition = GetConditionalType();
@@ -285,7 +328,10 @@ namespace RpgEditor.CommandDataPresets
 
                     break;
                 case Genus2D.GameData.ConditionalBranchType.QuestStatus:
-                    _command.SetParameter("QuestStatus", (Genus2D.GameData.QuestStatus)QuestStatus.SelectedIndex);
+                    _command.SetParameter("QuestID", QuestSelection.SelectedIndex);
+                    _command.SetParameter("QuestStatus", GetQuestStatus());
+                    _command.SetParameter("QuestProgressionCondition", QuestProgressionCondition.SelectedIndex);
+                    _command.SetParameter("QuestProgression", QuestProgressionSelection.SelectedIndex);
                     break;
                 case Genus2D.GameData.ConditionalBranchType.SelectedOption:
                     _command.SetParameter("SelectedOption", (int)SelectedOptionControl.Value);
@@ -301,8 +347,9 @@ namespace RpgEditor.CommandDataPresets
                     break;
             }
 
+            _command.SetParameter("Result", ResultSelection.SelectedIndex == 0 ? true : false);
+
         }
 
-        
     }
 }

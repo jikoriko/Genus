@@ -73,8 +73,12 @@
             this.label8 = new System.Windows.Forms.Label();
             this.VariableSelection = new System.Windows.Forms.ComboBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.QuestStatus = new System.Windows.Forms.ComboBox();
+            this.QuestProgressionSelection = new System.Windows.Forms.ComboBox();
+            this.QuestProgressionCheck = new System.Windows.Forms.RadioButton();
+            this.label18 = new System.Windows.Forms.Label();
+            this.QuestSelection = new System.Windows.Forms.ComboBox();
+            this.QuestCompleteCheck = new System.Windows.Forms.RadioButton();
+            this.QuestStartedCheck = new System.Windows.Forms.RadioButton();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.SelectedOptionControl = new System.Windows.Forms.NumericUpDown();
             this.label14 = new System.Windows.Forms.Label();
@@ -91,6 +95,9 @@
             this.GoldControl = new System.Windows.Forms.NumericUpDown();
             this.label17 = new System.Windows.Forms.Label();
             this.PlayerGoldCheck = new System.Windows.Forms.RadioButton();
+            this.QuestProgressionCondition = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.ResultSelection = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PlayerY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PlayerX)).BeginInit();
@@ -171,7 +178,7 @@
             // QuestStatusCheck
             // 
             this.QuestStatusCheck.AutoSize = true;
-            this.QuestStatusCheck.Location = new System.Drawing.Point(14, 480);
+            this.QuestStatusCheck.Location = new System.Drawing.Point(286, 460);
             this.QuestStatusCheck.Name = "QuestStatusCheck";
             this.QuestStatusCheck.Size = new System.Drawing.Size(89, 17);
             this.QuestStatusCheck.TabIndex = 5;
@@ -513,8 +520,8 @@
             // 
             this.VariableBoolValue.FormattingEnabled = true;
             this.VariableBoolValue.Items.AddRange(new object[] {
-            "true",
-            "false"});
+            "True",
+            "False"});
             this.VariableBoolValue.Location = new System.Drawing.Point(78, 129);
             this.VariableBoolValue.Name = "VariableBoolValue";
             this.VariableBoolValue.Size = new System.Drawing.Size(119, 21);
@@ -586,34 +593,77 @@
             // 
             // groupBox6
             // 
-            this.groupBox6.Controls.Add(this.label10);
-            this.groupBox6.Controls.Add(this.QuestStatus);
-            this.groupBox6.Location = new System.Drawing.Point(32, 503);
+            this.groupBox6.Controls.Add(this.QuestProgressionCondition);
+            this.groupBox6.Controls.Add(this.QuestProgressionSelection);
+            this.groupBox6.Controls.Add(this.QuestProgressionCheck);
+            this.groupBox6.Controls.Add(this.label18);
+            this.groupBox6.Controls.Add(this.QuestSelection);
+            this.groupBox6.Controls.Add(this.QuestCompleteCheck);
+            this.groupBox6.Controls.Add(this.QuestStartedCheck);
+            this.groupBox6.Location = new System.Drawing.Point(304, 483);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(227, 52);
+            this.groupBox6.Size = new System.Drawing.Size(227, 109);
             this.groupBox6.TabIndex = 16;
             this.groupBox6.TabStop = false;
             // 
-            // label10
+            // QuestProgressionSelection
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(25, 22);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(40, 13);
-            this.label10.TabIndex = 8;
-            this.label10.Text = "Status:";
+            this.QuestProgressionSelection.FormattingEnabled = true;
+            this.QuestProgressionSelection.Location = new System.Drawing.Point(79, 84);
+            this.QuestProgressionSelection.Name = "QuestProgressionSelection";
+            this.QuestProgressionSelection.Size = new System.Drawing.Size(142, 21);
+            this.QuestProgressionSelection.TabIndex = 27;
             // 
-            // QuestStatus
+            // QuestProgressionCheck
             // 
-            this.QuestStatus.FormattingEnabled = true;
-            this.QuestStatus.Items.AddRange(new object[] {
-            "Not Started",
-            "Started",
-            "Complete"});
-            this.QuestStatus.Location = new System.Drawing.Point(71, 19);
-            this.QuestStatus.Name = "QuestStatus";
-            this.QuestStatus.Size = new System.Drawing.Size(121, 21);
-            this.QuestStatus.TabIndex = 7;
+            this.QuestProgressionCheck.AutoSize = true;
+            this.QuestProgressionCheck.Location = new System.Drawing.Point(50, 61);
+            this.QuestProgressionCheck.Name = "QuestProgressionCheck";
+            this.QuestProgressionCheck.Size = new System.Drawing.Size(114, 17);
+            this.QuestProgressionCheck.TabIndex = 26;
+            this.QuestProgressionCheck.TabStop = true;
+            this.QuestProgressionCheck.Text = "Quest Progression:";
+            this.QuestProgressionCheck.UseVisualStyleBackColor = true;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(6, 16);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(38, 13);
+            this.label18.TabIndex = 25;
+            this.label18.Text = "Quest:";
+            // 
+            // QuestSelection
+            // 
+            this.QuestSelection.FormattingEnabled = true;
+            this.QuestSelection.Location = new System.Drawing.Point(50, 11);
+            this.QuestSelection.Name = "QuestSelection";
+            this.QuestSelection.Size = new System.Drawing.Size(142, 21);
+            this.QuestSelection.TabIndex = 17;
+            this.QuestSelection.SelectedIndexChanged += new System.EventHandler(this.QuestSelection_SelectedIndexChanged);
+            // 
+            // QuestCompleteCheck
+            // 
+            this.QuestCompleteCheck.AutoSize = true;
+            this.QuestCompleteCheck.Location = new System.Drawing.Point(102, 38);
+            this.QuestCompleteCheck.Name = "QuestCompleteCheck";
+            this.QuestCompleteCheck.Size = new System.Drawing.Size(100, 17);
+            this.QuestCompleteCheck.TabIndex = 24;
+            this.QuestCompleteCheck.TabStop = true;
+            this.QuestCompleteCheck.Text = "Quest Complete";
+            this.QuestCompleteCheck.UseVisualStyleBackColor = true;
+            // 
+            // QuestStartedCheck
+            // 
+            this.QuestStartedCheck.AutoSize = true;
+            this.QuestStartedCheck.Location = new System.Drawing.Point(6, 38);
+            this.QuestStartedCheck.Name = "QuestStartedCheck";
+            this.QuestStartedCheck.Size = new System.Drawing.Size(90, 17);
+            this.QuestStartedCheck.TabIndex = 23;
+            this.QuestStartedCheck.TabStop = true;
+            this.QuestStartedCheck.Text = "Quest Started";
+            this.QuestStartedCheck.UseVisualStyleBackColor = true;
             // 
             // groupBox7
             // 
@@ -741,7 +791,7 @@
             // 
             this.groupBox10.Controls.Add(this.GoldControl);
             this.groupBox10.Controls.Add(this.label17);
-            this.groupBox10.Location = new System.Drawing.Point(304, 483);
+            this.groupBox10.Location = new System.Drawing.Point(32, 503);
             this.groupBox10.Name = "groupBox10";
             this.groupBox10.Size = new System.Drawing.Size(227, 52);
             this.groupBox10.TabIndex = 21;
@@ -771,7 +821,7 @@
             // PlayerGoldCheck
             // 
             this.PlayerGoldCheck.AutoSize = true;
-            this.PlayerGoldCheck.Location = new System.Drawing.Point(286, 460);
+            this.PlayerGoldCheck.Location = new System.Drawing.Point(14, 480);
             this.PlayerGoldCheck.Name = "PlayerGoldCheck";
             this.PlayerGoldCheck.Size = new System.Drawing.Size(82, 17);
             this.PlayerGoldCheck.TabIndex = 22;
@@ -779,11 +829,44 @@
             this.PlayerGoldCheck.Text = "Player Gold:";
             this.PlayerGoldCheck.UseVisualStyleBackColor = true;
             // 
+            // QuestProgressionCondition
+            // 
+            this.QuestProgressionCondition.FormattingEnabled = true;
+            this.QuestProgressionCondition.Items.AddRange(new object[] {
+            "==",
+            ">="});
+            this.QuestProgressionCondition.Location = new System.Drawing.Point(6, 84);
+            this.QuestProgressionCondition.Name = "QuestProgressionCondition";
+            this.QuestProgressionCondition.Size = new System.Drawing.Size(67, 21);
+            this.QuestProgressionCondition.TabIndex = 28;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(568, 572);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(40, 13);
+            this.label10.TabIndex = 30;
+            this.label10.Text = "Result:";
+            // 
+            // ResultSelection
+            // 
+            this.ResultSelection.FormattingEnabled = true;
+            this.ResultSelection.Items.AddRange(new object[] {
+            "True",
+            "False"});
+            this.ResultSelection.Location = new System.Drawing.Point(612, 567);
+            this.ResultSelection.Name = "ResultSelection";
+            this.ResultSelection.Size = new System.Drawing.Size(91, 21);
+            this.ResultSelection.TabIndex = 29;
+            // 
             // ConditionalBranchPreset
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label10);
             this.Controls.Add(this.groupBox10);
+            this.Controls.Add(this.ResultSelection);
             this.Controls.Add(this.PlayerGoldCheck);
             this.Controls.Add(this.groupBox9);
             this.Controls.Add(this.PlayerDirectionCheck);
@@ -804,7 +887,7 @@
             this.Controls.Add(this.MapEventPositionCheck);
             this.Controls.Add(this.PlayerPositionCheck);
             this.Name = "ConditionalBranchPreset";
-            this.Size = new System.Drawing.Size(604, 567);
+            this.Size = new System.Drawing.Size(711, 595);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PlayerY)).EndInit();
@@ -882,8 +965,6 @@
         private System.Windows.Forms.RadioButton VariableIntegerCheck;
         private System.Windows.Forms.ComboBox VariableTextCondition;
         private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.ComboBox QuestStatus;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox MapEventMap;
         private System.Windows.Forms.Label label12;
@@ -905,5 +986,14 @@
         private System.Windows.Forms.NumericUpDown GoldControl;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.RadioButton PlayerGoldCheck;
+        private System.Windows.Forms.ComboBox QuestProgressionSelection;
+        private System.Windows.Forms.RadioButton QuestProgressionCheck;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.ComboBox QuestSelection;
+        private System.Windows.Forms.RadioButton QuestCompleteCheck;
+        private System.Windows.Forms.RadioButton QuestStartedCheck;
+        private System.Windows.Forms.ComboBox QuestProgressionCondition;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ComboBox ResultSelection;
     }
 }

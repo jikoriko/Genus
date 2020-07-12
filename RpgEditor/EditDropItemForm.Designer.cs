@@ -44,7 +44,7 @@
             this.ItemSelection.FormattingEnabled = true;
             this.ItemSelection.Location = new System.Drawing.Point(111, 10);
             this.ItemSelection.Name = "ItemSelection";
-            this.ItemSelection.Size = new System.Drawing.Size(187, 21);
+            this.ItemSelection.Size = new System.Drawing.Size(116, 21);
             this.ItemSelection.TabIndex = 0;
             // 
             // ItemCount
@@ -61,7 +61,7 @@
             0,
             0});
             this.ItemCount.Name = "ItemCount";
-            this.ItemCount.Size = new System.Drawing.Size(187, 20);
+            this.ItemCount.Size = new System.Drawing.Size(116, 20);
             this.ItemCount.TabIndex = 1;
             this.ItemCount.Value = new decimal(new int[] {
             1,
@@ -78,7 +78,7 @@
             0,
             0});
             this.ItemChance.Name = "ItemChance";
-            this.ItemChance.Size = new System.Drawing.Size(187, 20);
+            this.ItemChance.Size = new System.Drawing.Size(116, 20);
             this.ItemChance.TabIndex = 2;
             this.ItemChance.Value = new decimal(new int[] {
             1,
@@ -117,7 +117,7 @@
             // 
             this.ApplyChangesButton.Location = new System.Drawing.Point(12, 89);
             this.ApplyChangesButton.Name = "ApplyChangesButton";
-            this.ApplyChangesButton.Size = new System.Drawing.Size(286, 47);
+            this.ApplyChangesButton.Size = new System.Drawing.Size(215, 47);
             this.ApplyChangesButton.TabIndex = 6;
             this.ApplyChangesButton.Text = "Apply Changes";
             this.ApplyChangesButton.UseVisualStyleBackColor = true;
@@ -127,7 +127,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(310, 147);
+            this.ClientSize = new System.Drawing.Size(236, 147);
             this.Controls.Add(this.ApplyChangesButton);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);

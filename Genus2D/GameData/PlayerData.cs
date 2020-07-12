@@ -20,6 +20,7 @@ namespace Genus2D.GameData
         public CombatStats BaseStats { get; private set; }
         public CombatStats InvestedStats { get; private set; }
 
+        private Dictionary<int, QuestStatus> _quests;
         private static int InventorySize = 30; // hardcoded inventory size
         private List<Tuple<int, int>> _inventory; //item id, item count
         private int[] _equipment;
@@ -36,6 +37,8 @@ namespace Genus2D.GameData
             Gold = 0;
             SetClassID(-1);
             InvestedStats = new CombatStats();
+            _quests = new Dictionary<int, QuestStatus>();
+
             _inventory = new List<Tuple<int, int>>();
             _equipment = new int[(int)EquipmentSlot.Ring + 1];
             _equipedAmmo = new Tuple<int, int>(-1, 0);
@@ -379,6 +382,51 @@ namespace Genus2D.GameData
             return -1;
         }
 
+        public void StartQuest(int questID)
+        {
+            if (!QuestStarted(questID))
+            {
+                _quests.Add(questID, new QuestStatus(questID));
+            }
+        }
+
+        public bool QuestStarted(int questID)
+        {
+            return _quests.ContainsKey(questID);
+        }
+
+        public bool QuestComplete(int questID)
+        {
+            if (!QuestStarted(questID))
+                return false;
+
+            return _quests[questID].Complete();
+        }
+
+        public bool ProgressQuest(int questID)
+        {
+            if (QuestStarted(questID))
+            {
+                return _quests[questID].ProgressQuest();
+            }
+
+            return false;
+        }
+
+        public int GetQuestProgression(int questID)
+        {
+            if (QuestStarted(questID))
+                return _quests[questID].Progression;
+            return -1;
+        }
+
+        public QuestStatus GetQuestStatus(int questID)
+        {
+            if (_quests.ContainsKey(questID))
+                return _quests[questID];
+            return null;
+        }
+
         public string GetInventoryString()
         {
             string text = "";
@@ -435,6 +483,34 @@ namespace Genus2D.GameData
             }
         }
 
+        public string GetQuestsString()
+        {
+            string text = "";
+
+            for (int i = 0; i < _quests.Count; i++)
+            {
+                QuestStatus questStatus = _quests.ElementAt(i).Value;
+                text += questStatus.QuestID + "," + questStatus.Progression;
+                if (i < _quests.Count - 1)
+                    text += ",";
+            }
+
+            return text;
+        }
+
+        public void ParseQuestsString(string text)
+        {
+            _quests.Clear();
+            string[] parts = text.Split(',');
+            int numQuests = parts.Length / 2;
+            for (int i = 0; i < numQuests; i++)
+            {
+                int id = int.Parse(parts[i * 2]);
+                int progression = int.Parse(parts[(i * 2) + 1]);
+                _quests.Add(id, new QuestStatus(id, progression));
+            }
+        }
+
         public byte[] GetBytes(bool isLocalPlayer)
         {
             using (MemoryStream stream = new MemoryStream())
@@ -470,6 +546,13 @@ namespace Genus2D.GameData
                     {
                         stream.Write(BitConverter.GetBytes(_inventory[i].Item1), 0, sizeof(int));
                         stream.Write(BitConverter.GetBytes(_inventory[i].Item2), 0, sizeof(int));
+                    }
+
+                    stream.Write(BitConverter.GetBytes(_quests.Count), 0, sizeof(int));
+                    for (int i = 0; i < _quests.Count; i++)
+                    {
+                        int id = _quests.ElementAt(i).Key;
+                        stream.Write(_quests[id].GetBytes(), 0, sizeof(int) * 2);
                     }
                 }
                 else
@@ -596,8 +679,20 @@ namespace Genus2D.GameData
                         inventory.Add(new Tuple<int, int>(itemId, stack));
                     }
                     data._inventory = inventory;
+
+                    stream.Read(tempBytes, 0, sizeof(int));
+                    int questCount = BitConverter.ToInt32(tempBytes, 0);
+                    tempBytes = new byte[sizeof(int) * 2];
+                    for (int i = 0; i < questCount; i++)
+                    {
+                        stream.Read(tempBytes, 0, sizeof(int) * 2);
+                        QuestStatus questStatus = QuestStatus.FromBytes(tempBytes);
+                        data._quests.Add(questStatus.QuestID, questStatus);
+                    }
+
                 }
 
+                tempBytes = new byte[sizeof(int)];
                 int[] equipment = new int[9]; //hardcoded inventory size
                 for (int i = 0; i < 9; i++)
                 {

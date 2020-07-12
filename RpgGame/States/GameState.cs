@@ -14,6 +14,8 @@ using RpgGame.GUI;
 using Genus2D.GameData;
 using Genus2D;
 
+using System.Linq;
+
 namespace RpgGame.States
 {
     public class GameState : State
@@ -73,10 +75,41 @@ namespace RpgGame.States
                         if (item.MapX == tileX && item.MapY == tileY)
                         {
                             string label = "Pickup: " + ItemData.GetItemData(item.ItemID).Name + "(" + item.Count + ")";
-                            MapClickOption option = new MapClickOption(i, MapClickOption.OptionType.PickupItem, label);
+                            MapClickOption option = new MapClickOption(MapClickOption.OptionType.PickupItem, label);
                             option.Parameters["MapItem"] = item;
+                            option.Parameters["ItemIndex"] = i;
                             options.Add(option);
                         }
+                    }
+                }
+
+                for (int i = 0; i < RpgClientConnection.Instance.PlayerEntities.Count; i++)
+                {
+                    int playerID = RpgClientConnection.Instance.PlayerEntities.ElementAt(i).Key;
+                    if (playerID != RpgClientConnection.Instance.GetLocalPlayerPacket().PlayerID)
+                    {
+
+                        PlayerPacket packet = RpgClientConnection.Instance.PlayerEntities[playerID].FindComponent<PlayerComponent>().GetPlayerPacket();
+                        if (packet.PositionX == tileX && packet.PositionY == tileY)
+                        {
+                            string label = "Attack Player: " + packet.Username;
+                            MapClickOption option = new MapClickOption(MapClickOption.OptionType.AttackPlayer, label);
+                            option.Parameters["PlayerID"] = packet.PlayerID;
+                            options.Add(option);
+                        }
+                    }
+                }
+
+                for (int i = 0; i < RpgClientConnection.Instance.EnemyEntites.Count; i++)
+                {
+                    MapEnemy mapEnemy = RpgClientConnection.Instance.EnemyEntites[i].FindComponent<MapEnemyComponent>().GetMapEnemy();
+                    if (mapEnemy.MapX == tileX && mapEnemy.MapY == tileY)
+                    {
+                        string label = "Attack Enemy: " + mapEnemy.GetEnemyData().Name;
+                        MapClickOption option = new MapClickOption(MapClickOption.OptionType.AttackEnemy, label);
+                        option.Parameters["EnemyID"] = i;
+                        //perhaps we need to add some sort of signature to the map enemies, if the targeted enemy dies during target attack this index might target a differnt enemy
+                        options.Add(option);
                     }
                 }
 

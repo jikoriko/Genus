@@ -23,14 +23,12 @@ namespace RpgGame.GUI
             AttackEnemy
         }
 
-        public int ItemIndex;
         public OptionType Option;
         public string Label;
         public Dictionary<string, object> Parameters;
 
-        public MapClickOption(int itemIndex, OptionType option, string label)
+        public MapClickOption(OptionType option, string label)
         {
-            ItemIndex = itemIndex;
             Option = option;
             Parameters = new Dictionary<string, object>();
             Label = label;
@@ -39,6 +37,7 @@ namespace RpgGame.GUI
             {
                 case OptionType.PickupItem:
                     Parameters.Add("MapItem", null);
+                    Parameters.Add("ItemIndex", -1);
                     break;
                 case OptionType.AttackPlayer:
                     Parameters.Add("PlayerID", -1);
@@ -73,11 +72,27 @@ namespace RpgGame.GUI
             if (option >= 0 && option < _options.Count)
             {
                 MapClickOption clickOption = _options[option];
-                MapItem item = (MapItem)clickOption.Parameters["MapItem"];
-                ClientCommand command = new ClientCommand(ClientCommand.CommandType.PickupItem);
-                command.SetParameter("ItemIndex", clickOption.ItemIndex);
-                command.SetParameter("Signature", item.GetSignature());
-                RpgClientConnection.Instance.AddClientCommand(command);
+                ClientCommand command;
+                switch (clickOption.Option)
+                {
+                    case MapClickOption.OptionType.PickupItem:
+                        MapItem item = (MapItem)clickOption.Parameters["MapItem"];
+                        command = new ClientCommand(ClientCommand.CommandType.PickupItem);
+                        command.SetParameter("ItemIndex", clickOption.Parameters["ItemIndex"]);
+                        command.SetParameter("Signature", item.GetSignature());
+                        RpgClientConnection.Instance.AddClientCommand(command);
+                        break;
+                    case MapClickOption.OptionType.AttackPlayer:
+                        command = new ClientCommand(ClientCommand.CommandType.AttackPlayer);
+                        command.SetParameter("PlayerID", clickOption.Parameters["PlayerID"]);
+                        RpgClientConnection.Instance.AddClientCommand(command);
+                        break;
+                    case MapClickOption.OptionType.AttackEnemy:
+                        command = new ClientCommand(ClientCommand.CommandType.AttackEnemy);
+                        command.SetParameter("EnemyID", clickOption.Parameters["EnemyID"]);
+                        RpgClientConnection.Instance.AddClientCommand(command);
+                        break;
+                }
             }
 
             this.Close();

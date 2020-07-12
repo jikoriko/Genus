@@ -122,6 +122,8 @@ namespace RpgEditor
             PopulateClassesList();
             PopulateDropTablesList();
             PopulateEnemyList();
+            PopulateQuestList();
+            PopulateShopList();
             PopulateSystemVariables();
             PopulateSytemData();
         }
@@ -629,6 +631,12 @@ namespace RpgEditor
                         break;
                     case Genus2D.GameData.EventCommand.CommandType.SpawnEnemy:
                         control = new CommandDataPresets.EnemySpawnPreset(command);
+                        break;
+                    case Genus2D.GameData.EventCommand.CommandType.ProgressQuest:
+                        control = new CommandDataPresets.ProgressQuestPreset(command);
+                        break;
+                    case Genus2D.GameData.EventCommand.CommandType.ShowShop:
+                        control = new CommandDataPresets.ShowShopPreset(command);
                         break;
                 }
 
@@ -1767,6 +1775,297 @@ namespace RpgEditor
 
         #endregion
 
+        #region Quest Data
+
+        private void PopulateQuestList()
+        {
+            int selection = QuestList.SelectedIndex;
+            QuestList.Items.Clear();
+            List<string> names = Genus2D.GameData.QuestData.GetQuestNames();
+            QuestList.Items.AddRange(names.ToArray());
+            if (selection >= 0 && selection < names.Count)
+                QuestList.SelectedIndex = selection;
+            else
+            {
+                QuestList.SelectedIndex = -1;
+                SelectQuest(-1);
+            }
+        }
+
+        private void QuestList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SelectQuest(QuestList.SelectedIndex);
+        }
+
+        private void SelectQuest(int index)
+        {
+            int selectedObjective = QuestObjectivesList.SelectedIndex;
+            QuestObjectivesList.Items.Clear();
+            if (index != -1)
+            {
+                Genus2D.GameData.QuestData quest = Genus2D.GameData.QuestData.GetData(index);
+                QuestNameBox.Text = quest.Name;
+                List<string> objectiveNames = quest.GetObjectiveNames();
+                QuestObjectivesList.Items.AddRange(objectiveNames.ToArray());
+                if (selectedObjective >= 0 && selectedObjective < objectiveNames.Count)
+                    QuestObjectivesList.SelectedIndex = selectedObjective;
+                else
+                    SelectQuestObjective(-1);
+            }
+            else
+            {
+                QuestNameBox.Text = "";
+                SelectQuestObjective(-1);
+            }
+        }
+
+        private void AddQuestButton_Click(object sender, EventArgs e)
+        {
+            string name = "Quest " + (Genus2D.GameData.QuestData.DataCount() + 1).ToString("000");
+            Genus2D.GameData.QuestData.AddQuest(name);
+            PopulateQuestList();
+        }
+
+        private void RemoveQuestButton_Click(object sender, EventArgs e)
+        {
+            int selection = QuestList.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.QuestData.RemoveQuest(selection);
+                PopulateQuestList();
+            }
+        }
+
+        private void QuestObjectivesList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SelectQuestObjective(QuestObjectivesList.SelectedIndex);
+        }
+
+        private void SelectQuestObjective(int index)
+        {
+            QuestRewardsList.Items.Clear();
+            if (index != -1)
+            {
+                int selectedQuest = QuestList.SelectedIndex;
+                Genus2D.GameData.QuestData quest = Genus2D.GameData.QuestData.GetData(selectedQuest);
+                Genus2D.GameData.QuestData.QuestObective objective = quest.Objectives[index];
+                QuestObjectiveNameBox.Text = objective.Name;
+                QuestObjectiveDescriptionBox.Text = objective.Description;
+                List<string> rewardNames = objective.GetItemRewardNames();
+                QuestRewardsList.Items.AddRange(rewardNames.ToArray());
+            }
+            else
+            {
+                QuestObjectiveNameBox.Text = "";
+                QuestObjectiveDescriptionBox.Text = "";
+            }
+        }
+
+        private void AddQuestObjectiveButton_Click(object sender, EventArgs e)
+        {
+            int selectedQuest = QuestList.SelectedIndex;
+            if (selectedQuest != -1)
+            {
+                Genus2D.GameData.QuestData quest = Genus2D.GameData.QuestData.GetData(selectedQuest);
+                string name = "Objective " + (quest.Objectives.Count + 1).ToString("000");
+                quest.AddObjective(name);
+                SelectQuest(selectedQuest);
+            }
+        }
+
+        private void RemoveQuestObjectiveButton_Click(object sender, EventArgs e)
+        {
+            int selectedQuest = QuestList.SelectedIndex;
+            if (selectedQuest != -1)
+            {
+                Genus2D.GameData.QuestData quest = Genus2D.GameData.QuestData.GetData(selectedQuest);
+                quest.RemoveObjective(selectedQuest);
+                SelectQuest(selectedQuest);
+            }
+        }
+
+        private void AddQuestRewardButton_Click(object sender, EventArgs e)
+        {
+            int selectedQuest = QuestList.SelectedIndex;
+            int selectedObjective = QuestObjectivesList.SelectedIndex;
+            if (selectedObjective != -1)
+            {
+                Genus2D.GameData.QuestData quest = Genus2D.GameData.QuestData.GetData(selectedQuest);
+                Genus2D.GameData.QuestData.QuestObective objective = quest.Objectives[selectedObjective];
+                objective.ItemRewards.Add(new Tuple<int, int>(-1, 1));
+                SelectQuestObjective(selectedObjective);
+            }
+        }
+
+        private void EditQuestRewardButton_Click(object sender, EventArgs e)
+        {
+            int selectedQuest = QuestList.SelectedIndex;
+            int selectedObjective = QuestObjectivesList.SelectedIndex;
+            int selectedReward = QuestRewardsList.SelectedIndex;
+            if (selectedReward != -1)
+            {
+                Genus2D.GameData.QuestData quest = Genus2D.GameData.QuestData.GetData(selectedQuest);
+                Genus2D.GameData.QuestData.QuestObective objective = quest.Objectives[selectedObjective];
+                EditObjectiveRewardForm dialog = new EditObjectiveRewardForm(objective, selectedReward);
+                dialog.ShowDialog(this);
+                SelectQuestObjective(selectedObjective);
+            }
+        }
+
+        private void RemoveQuestRewardButton_Click(object sender, EventArgs e)
+        {
+            int selectedQuest = QuestList.SelectedIndex;
+            int selectedObjective = QuestObjectivesList.SelectedIndex;
+            int selectedReward = QuestRewardsList.SelectedIndex;
+            if (selectedReward != -1)
+            {
+                Genus2D.GameData.QuestData quest = Genus2D.GameData.QuestData.GetData(selectedQuest);
+                Genus2D.GameData.QuestData.QuestObective objective = quest.Objectives[selectedObjective];
+                objective.ItemRewards.RemoveAt(selectedReward);
+                SelectQuestObjective(selectedObjective);
+            }
+        }
+
+        private void UndoQuestsButton_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.QuestData.ReloadData();
+            PopulateQuestList();
+        }
+
+        private void ApplyQuestsButton_Click(object sender, EventArgs e)
+        {
+            int selectedQuest = QuestList.SelectedIndex;
+            if (selectedQuest != -1)
+            {
+                Genus2D.GameData.QuestData quest = Genus2D.GameData.QuestData.GetData(selectedQuest);
+                quest.Name = QuestNameBox.Text;
+                int selectedObjective = QuestObjectivesList.SelectedIndex;
+                if (selectedObjective != -1)
+                {
+                    Genus2D.GameData.QuestData.QuestObective objective = quest.Objectives[selectedObjective];
+                    objective.Name = QuestObjectiveNameBox.Text;
+                    objective.Description = QuestObjectiveDescriptionBox.Text;
+                }
+            }
+            Genus2D.GameData.QuestData.SaveData();
+            PopulateQuestList();
+        }
+
+        #endregion
+
+        #region Shop Data
+
+        private void PopulateShopList()
+        {
+            int selection = ShopList.SelectedIndex;
+            ShopList.Items.Clear();
+            List<string> names = Genus2D.GameData.ShopData.GetShopNames();
+            ShopList.Items.AddRange(names.ToArray());
+            if (selection >= 0 && selection < names.Count)
+                ShopList.SelectedIndex = selection;
+            else
+            {
+                ShopList.SelectedIndex = -1;
+                SelectShop(-1);
+            }
+        }
+
+        private void ShopList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SelectShop(ShopList.SelectedIndex);
+        }
+
+        private void SelectShop(int index)
+        {
+            int selectedShopItem = ShopItemsList.SelectedIndex;
+            ShopItemsList.Items.Clear();
+            if (index != -1)
+            {
+                Genus2D.GameData.ShopData shop = Genus2D.GameData.ShopData.GetData(index);
+                ShopNameBox.Text = shop.Name;
+                List<string> itemNames = shop.GetItemNames();
+                ShopItemsList.Items.AddRange(itemNames.ToArray());
+                if (selectedShopItem >= 0 && selectedShopItem < itemNames.Count)
+                    ShopItemsList.SelectedIndex = selectedShopItem;
+            }
+            else
+            {
+                ShopNameBox.Text = "";
+            }
+        }
+
+        private void AddShopButton_Click(object sender, EventArgs e)
+        {
+            string name = "Shop " + (Genus2D.GameData.ShopData.DataCount() + 1).ToString("000");
+            Genus2D.GameData.ShopData.AddShop(name);
+            PopulateShopList();
+
+        }
+
+        private void RemoveShopButton_Click(object sender, EventArgs e)
+        {
+            int selection = ShopList.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.ShopData.RemoveShop(selection);
+                PopulateShopList();
+            }
+        }
+
+        private void AddShopItemButton_Click(object sender, EventArgs e)
+        {
+            int selection = ShopList.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.ShopData.GetData(selection).AddItem();
+                PopulateShopList();
+            }
+        }
+
+        private void EditShopItemButton_Click(object sender, EventArgs e)
+        {
+            int shop = ShopList.SelectedIndex;
+            int item = ShopItemsList.SelectedIndex;
+            if (shop != -1 && item != -1)
+            {
+                Genus2D.GameData.ShopData.ShopItem shopItem;
+                shopItem = Genus2D.GameData.ShopData.GetData(shop).ShopItems[item];
+                EditShopItemForm form = new EditShopItemForm(shopItem);
+                form.ShowDialog(this);
+                PopulateShopList();
+            }
+        }
+
+        private void RemoveShopItemButton_Click(object sender, EventArgs e)
+        {
+            int shop = ShopList.SelectedIndex;
+            int item = ShopItemsList.SelectedIndex;
+            if (shop != -1 && item != -1)
+            {
+                Genus2D.GameData.ShopData.GetData(shop).RemoveItem(item);
+                PopulateShopList();
+            }
+        }
+
+        private void UndoShopsButton_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.ShopData.ReloadData();
+            PopulateShopList();
+        }
+
+        private void ApplyShopsButton_Click(object sender, EventArgs e)
+        {
+            int selection = ShopList.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.ShopData.GetData(selection).Name = ShopNameBox.Text;
+            }
+            Genus2D.GameData.ShopData.SaveData();
+            PopulateShopList();
+        }
+
+        #endregion
+
         #region System Variables
 
         private void PopulateSystemVariables()
@@ -1913,6 +2212,7 @@ namespace RpgEditor
             Genus2D.GameData.SystemData.GetData().MaxLvl = (int)MaxLvlSelection.Value;
             Genus2D.GameData.SystemData.SaveData();
         }
+
 
         #endregion
 

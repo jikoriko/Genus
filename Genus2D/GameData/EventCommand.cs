@@ -29,7 +29,9 @@ namespace Genus2D.GameData
             WaitForMovementCompletion,
             AddGold,
             RemoveGold,
-            SpawnEnemy
+            SpawnEnemy,
+            ProgressQuest,
+            ShowShop
         }
 
         public CommandType Type { get; private set; }
@@ -81,11 +83,15 @@ namespace Genus2D.GameData
                     _parameters.Add("VariableTextValue", "");
                     _parameters.Add("ValueCondition", ConditionValueCheck.Equal);
                     _parameters.Add("TextCondition", ConditionalTextCheck.Equal);
-                    _parameters.Add("QuestStatus", QuestStatus.NotStarted);
+                    _parameters.Add("QuestID", -1);
+                    _parameters.Add("QuestStatus", QuestStatusCheck.Started);
+                    _parameters.Add("QuestProgressionCondition", 0);
+                    _parameters.Add("QuestProgression", -1);
                     _parameters.Add("SelectedOption", 0);
                     _parameters.Add("TerrainTag", 0);
                     _parameters.Add("PlayerDirection", FacingDirection.Down);
                     _parameters.Add("Gold", 0);
+                    _parameters.Add("Result", true);
                     break;
                 case CommandType.AddInventoryItem:
                     _parameters.Add("ItemID", -1);
@@ -136,6 +142,12 @@ namespace Genus2D.GameData
                     _parameters.Add("Count", 1);
                     _parameters.Add("RespawnTime", 0.0f);
                     _parameters.Add("SpawnRadius", 0);
+                    break;
+                case CommandType.ProgressQuest:
+                    _parameters.Add("QuestID", -1);
+                    break;
+                case CommandType.ShowShop:
+                    _parameters.Add("ShopID", -1);
                     break;
             }
 

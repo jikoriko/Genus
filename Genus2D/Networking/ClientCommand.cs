@@ -20,7 +20,11 @@ namespace Genus2D.Networking
             RemoveEquipment,
             RemoveAmmo,
             PickupItem,
-            DropItem
+            DropItem,
+            AttackPlayer,
+            AttackEnemy,
+            CloseShop,
+            BuyShopItem
 
         }
 
@@ -72,6 +76,19 @@ namespace Genus2D.Networking
                     break;
                 case CommandType.DropItem:
                     _parameters.Add("ItemIndex", new Parameter(1, -1));
+                    break;
+                case CommandType.AttackPlayer:
+                    _parameters.Add("PlayerID", new Parameter(1, -1));
+                    break;
+                case CommandType.AttackEnemy:
+                    _parameters.Add("EnemyID", new Parameter(1, -1));
+                    break;
+                case CommandType.CloseShop:
+
+                    break;
+                case CommandType.BuyShopItem:
+                    _parameters.Add("ItemIndex", new Parameter(1, -1));
+                    _parameters.Add("Amount", new Parameter(1, -1));
                     break;
 
             }

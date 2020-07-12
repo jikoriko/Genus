@@ -19,7 +19,8 @@ namespace Genus2D.GameData
             Consumable,
             Material,
             Equipment,
-            Ammo
+            Ammo,
+            Quest
         }
 
         public string Name;

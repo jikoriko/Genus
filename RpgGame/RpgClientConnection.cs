@@ -615,6 +615,20 @@ namespace RpgGame
                     }
 
                     break;
+                case ServerCommand.CommandType.ShowShop:
+
+                    int shopID = (int)command.GetParameter("ShopID");
+                    ShopData data = ShopData.GetData(shopID);
+                    if (data != null)
+                    {
+                        _gameState.AddControl(new GUI.ShopPanel(_gameState, data));
+                    }
+                    else
+                    {
+                        AddClientCommand(new ClientCommand(ClientCommand.CommandType.CloseShop));
+                    }
+
+                    break;
             }
         }
 

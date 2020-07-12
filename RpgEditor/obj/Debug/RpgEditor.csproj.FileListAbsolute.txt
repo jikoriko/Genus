@@ -41,4 +41,8 @@ C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.ItemDataPres
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.ChangeGoldPreset.resources
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.EnemySpawnPreset.resources
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.EditDropItemForm.resources
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.EditObjectiveRewardForm.resources
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.csprojAssemblyReference.cache
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.ProgressQuestPreset.resources
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.EditShopItemForm.resources
+C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.ShowShopPreset.resources

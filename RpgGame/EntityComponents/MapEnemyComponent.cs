@@ -51,6 +51,11 @@ namespace RpgGame.EntityComponents
             _mapEnemy.Dead = dead;
         }
 
+        public MapEnemy GetMapEnemy()
+        {
+            return _mapEnemy;
+        }
+
         public void SetRealPosition()
         {
             Vector3 pos = new Vector3(_mapEnemy.RealX + 16, _mapEnemy.RealY + 16, 0);
