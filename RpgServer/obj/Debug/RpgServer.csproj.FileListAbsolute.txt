@@ -17,7 +17,6 @@ D:\GameDev\programming\C#\Genus\GenusBuild\RpgServer.exe
 D:\GameDev\programming\C#\Genus\GenusBuild\RpgServer.pdb
 D:\GameDev\programming\C#\Genus\RpgServer\obj\Debug\RpgServer.exe
 D:\GameDev\programming\C#\Genus\RpgServer\obj\Debug\RpgServer.pdb
-C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Data\MapInfo.xml
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\Data\ServerSettings.xml
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\RpgServer.exe.config
 C:\Users\perry\Documents\GitHub\Genus\GenusBuild\RpgServer.exe
