@@ -2,3 +2,4 @@ GenusBuild
 bin
 obj
 *.suo
+.vs
