@@ -1,1 +1,4 @@
 GenusBuild
+bin
+obj
+*.suo
