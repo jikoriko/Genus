@@ -1,4 +1,5 @@
-﻿using Genus2D.GameData;
+﻿using Genus2D.Core;
+using Genus2D.GameData;
 using Genus2D.Graphics;
 using Genus2D.GUI;
 using Genus2D.Networking;
@@ -18,12 +19,13 @@ namespace RpgGame.GUI
 {
     public class InventoryPanel : Panel
     {
-        public static MessagePanel Instance { get; private set; }
+        public static InventoryPanel Instance { get; private set; }
         private GameState _gameState;
 
         public InventoryPanel(GameState state)
             : base((int)Renderer.GetResoultion().X - 400, 0, 400, 0, BarMode.Empty, state)
         {
+            Instance = this;
             _gameState = state;
 
             SetContentSize(GetContentWidth(), 30 + ((GetContentWidth() / 5) * 6));
@@ -42,14 +44,52 @@ namespace RpgGame.GUI
                     Vector2 mouse = GetLocalMousePosition();
                     int slotSize = GetContentWidth() / 5;
                     mouse.X /= slotSize;
-                    mouse.Y /= slotSize;
-                    int itemIndex = (int)mouse.X + ((int)mouse.Y * 5);
-                    if (e.Button == MouseButton.Left)
-                        command = new ClientCommand(ClientCommand.CommandType.SelectItem);
-                    else
-                        command = new ClientCommand(ClientCommand.CommandType.DropItem);
-                    command.SetParameter("ItemIndex", itemIndex);
-                    RpgClientConnection.Instance.AddClientCommand(command);
+                    if (mouse.Y >= 30)
+                    {
+                        mouse.Y -= 30;
+                        mouse.Y /= slotSize;
+                        int itemIndex = (int)mouse.X + ((int)mouse.Y * 5);
+                        if (RpgClientConnection.Instance.GetLocalPlayerPacket().Data.GetInventoryItem(itemIndex) != null)
+                        {
+                            if (e.Button == MouseButton.Left)
+                            {
+                                if (TradePanel.Instance != null)
+                                {
+                                    command = new ClientCommand(ClientCommand.CommandType.AddTradeItem);
+                                    command.SetParameter("Count", 1);
+                                    Tuple<int, int> itemInfo = RpgClientConnection.Instance.GetLocalPlayerPacket().Data.GetInventoryItem(itemIndex);
+                                    if (itemInfo != null)
+                                    {
+                                        TradePanel.Instance.TradeRequest.TradeOffer1.AddItem(itemInfo.Item1, 1);
+                                    }
+                                }
+                                else
+                                {
+                                    command = new ClientCommand(ClientCommand.CommandType.SelectItem);
+                                }
+                            }
+                            else
+                            {
+                                Vector2 mousePos = StateWindow.Instance.GetMousePosition();
+                                if (TradePanel.Instance != null)
+                                {
+                                    ItemClickOptionsPanel optionPanel = new ItemClickOptionsPanel((int)mousePos.X, (int)mousePos.Y, ItemClickOptionsPanel.OptionType.Trade, itemIndex, _gameState);
+                                    GameState.Instance.AddControl(optionPanel);
+                                }
+                                else
+                                {
+                                    ItemClickOptionsPanel optionPanel = new ItemClickOptionsPanel((int)mousePos.X, (int)mousePos.Y, ItemClickOptionsPanel.OptionType.Drop, itemIndex, _gameState);
+                                    GameState.Instance.AddControl(optionPanel);
+                                }
+                            }
+                        }
+
+                        if (command != null)
+                        {
+                            command.SetParameter("ItemIndex", itemIndex);
+                            RpgClientConnection.Instance.AddClientCommand(command);
+                        }
+                    }
                 }
             }
         }
@@ -95,6 +135,12 @@ namespace RpgGame.GUI
                     }
                 }
             }
+        }
+
+        public override void Close()
+        {
+            Instance = null;
+            base.Close();
         }
     }
 }

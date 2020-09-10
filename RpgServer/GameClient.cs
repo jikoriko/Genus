@@ -127,6 +127,9 @@ namespace RpgServer
         public bool MovementDisabled;
         public int SelectedOption;
         public int ShopID;
+        public int TradePlayerID;
+        private TradeRequest _tradeRequest;
+        private bool _trading = false;
 
         private float _movementTimer;
         private float _combatTimer;
@@ -171,6 +174,10 @@ namespace RpgServer
 
             Thread updatePacketsThread = new Thread(new ThreadStart(UpdatePackets));
             updatePacketsThread.Start();
+
+            TradePlayerID = -1;
+            _tradeRequest = null;
+            _trading = false;
         }
 
         private static byte[] ReadData(int size, Stream stream)
@@ -355,6 +362,8 @@ namespace RpgServer
             int itemIndex;
             Tuple<int, int> itemInfo;
             MapItem mapItem;
+            int playerID;
+            GameClient other;
 
             for (int i = 0; i < numCommands; i++)
             {
@@ -413,11 +422,15 @@ namespace RpgServer
                         break;
                     case ClientCommand.CommandType.DropItem:
                         itemIndex = (int)command.GetParameter("ItemIndex");
+                        int count = (int)command.GetParameter("Count");
                         itemInfo = _playerPacket.Data.GetInventoryItem(itemIndex);
+
                         if (itemInfo != null)
                         {
-                            mapItem = new MapItem(itemInfo.Item1, itemInfo.Item2, _playerPacket.PositionX, _playerPacket.PositionY, _playerPacket.PlayerID, _playerPacket.OnBridge);
-                            _playerPacket.Data.RemoveInventoryItem(itemIndex);
+                            if (count > itemInfo.Item2)
+                                count = itemInfo.Item2;
+                            mapItem = new MapItem(itemInfo.Item1, count, _playerPacket.PositionX, _playerPacket.PositionY, _playerPacket.PlayerID, _playerPacket.OnBridge);
+                            _playerPacket.Data.RemoveInventoryItemAt(itemIndex, count);
                             _mapInstance.AddMapItem(mapItem);
                         }
                         break;
@@ -460,10 +473,10 @@ namespace RpgServer
                         }
                         break;
                     case ClientCommand.CommandType.AttackPlayer:
-                        int playerID = (int)command.GetParameter("PlayerID");
+                        playerID = (int)command.GetParameter("PlayerID");
                         if (EnemyCanAttack(CharacterType.Player, playerID))
                         {
-                            GameClient other = _mapInstance.FindGameClient(playerID);
+                            other = _mapInstance.FindGameClient(playerID);
                             if (other != null && other.EnemyCanAttack(CharacterType.Player, _playerPacket.PlayerID))
                             {
                                 int pX = _playerPacket.PositionX;
@@ -498,29 +511,29 @@ namespace RpgServer
                         int enemyID = (int)command.GetParameter("EnemyID");
                         if (EnemyCanAttack(CharacterType.Enemy, enemyID))
                         {
-                            MapEnemy other = _mapInstance.FindMapEnemy(enemyID);
-                            if (other != null && other.EnemyCanAttack(CharacterType.Player, _playerPacket.PlayerID))
+                            MapEnemy otherEnemy = _mapInstance.FindMapEnemy(enemyID);
+                            if (otherEnemy != null && otherEnemy.EnemyCanAttack(CharacterType.Player, _playerPacket.PlayerID))
                             {
                                 int pX = _playerPacket.PositionX;
                                 int pY = _playerPacket.PositionY;
                                 EnemyCharacterType = CharacterType.Enemy;
                                 EnemyCharacterID = enemyID;
-                                if (other.MapX < pX && other.MapY == pY)
+                                if (otherEnemy.MapX < pX && otherEnemy.MapY == pY)
                                 {
                                     ChangeDirection(FacingDirection.Left);
                                     CombatCheck(pX - 1, pY);
                                 }
-                                else if (other.MapX > pX && other.MapY == pY)
+                                else if (otherEnemy.MapX > pX && otherEnemy.MapY == pY)
                                 {
                                     ChangeDirection(FacingDirection.Right);
                                     CombatCheck(pX + 1, pY);
                                 }
-                                else if (other.MapX == pX && other.MapY < pY)
+                                else if (otherEnemy.MapX == pX && otherEnemy.MapY < pY)
                                 {
                                     ChangeDirection(FacingDirection.Up);
                                     CombatCheck(pX, pY - 1);
                                 }
-                                else if (other.MapX == pX && other.MapY > pY)
+                                else if (otherEnemy.MapX == pX && otherEnemy.MapY > pY)
                                 {
                                     ChangeDirection(FacingDirection.Down);
                                     CombatCheck(pX, pY + 1);
@@ -561,6 +574,60 @@ namespace RpgServer
                             }
                         }
                         break;
+                    case ClientCommand.CommandType.TradeRequest:
+                        playerID = (int)command.GetParameter("PlayerID");
+                        other = _mapInstance.FindGameClient(playerID);
+                        if (other != null)
+                        {
+                            Vector2 pos1 = GetMapPosition();
+                            Vector2 pos2 = other.GetMapPosition();
+                            if ((pos1 - pos2).Length <= 1)
+                            {
+                                TradePlayerID = playerID;
+                                if (other.TradePlayerID != _playerPacket.PlayerID)
+                                    RequestTrade(other);
+                                else
+                                    StartTrade(other);
+                            }
+                        }
+
+                        break;
+                    case ClientCommand.CommandType.AcceptTrade:
+                        if (_tradeRequest.TradeOffer1.PlayerID == _playerPacket.PlayerID)
+                        {
+                            playerID = _tradeRequest.TradeOffer2.PlayerID;
+                            _tradeRequest.TradeOffer1.Accepted = true;
+                        }
+                        else
+                        {
+                            playerID = _tradeRequest.TradeOffer1.PlayerID;
+                            _tradeRequest.TradeOffer2.Accepted = true;
+                        }
+                        _mapInstance.FindGameClient(playerID).AddServerCommand(new ServerCommand(ServerCommand.CommandType.AcceptTrade));
+
+                        break;
+                    case ClientCommand.CommandType.CancelTrade:
+                        StopTrading();
+
+                        break;
+                    case ClientCommand.CommandType.AddTradeItem:
+                        if (_trading)
+                        {
+                            itemIndex = (int)command.GetParameter("ItemIndex");
+                            count = (int)command.GetParameter("Count");
+                            AddTradeItem(itemIndex, count);
+                        }
+
+                        break;
+                    case ClientCommand.CommandType.RemoveTradeItem:
+                        if (_trading)
+                        {
+                            itemIndex = (int)command.GetParameter("ItemIndex");
+                            RemoveTradeItem(itemIndex);
+                        }
+
+                        break;
+
                 }
                 
             }
@@ -705,12 +772,179 @@ namespace RpgServer
             }
         }
 
+        private void RequestTrade(GameClient other)
+        {
+            ServerCommand command = new ServerCommand(ServerCommand.CommandType.TradeRequest);
+            command.SetParameter("PlayerID", _playerPacket.PlayerID);
+            command.SetParameter("PlayerName", _playerPacket.Username);
+            other.AddServerCommand(command);
+        }
+
+        private void StartTrade(GameClient other)
+        {
+            TradeRequest tradeRequest = new TradeRequest(other._playerPacket.PlayerID, _playerPacket.PlayerID);
+            _tradeRequest = tradeRequest;
+            other._tradeRequest = tradeRequest;
+            _trading = true;
+            other._trading = true;
+            this.MovementDisabled = true;
+            other.MovementDisabled = true;
+
+            ServerCommand sCommand = new ServerCommand(ServerCommand.CommandType.StartTrade);
+            sCommand.SetParameter("PlayerID", other._playerPacket.PlayerID);
+            sCommand.SetParameter("PlayerName", other._playerPacket.Username);
+            AddServerCommand(sCommand);
+
+            sCommand = new ServerCommand(ServerCommand.CommandType.StartTrade);
+            sCommand.SetParameter("PlayerID", _playerPacket.PlayerID);
+            sCommand.SetParameter("PlayerName", _playerPacket.Username);
+            other.AddServerCommand(sCommand);
+        }
+
+        public void StopTrading()
+        {
+            if (_trading)
+            {
+                TradeRequest.TradeOffer myOffer, othersOffer;
+                if (_tradeRequest.TradeOffer1.PlayerID == _playerPacket.PlayerID)
+                {
+                    myOffer = _tradeRequest.TradeOffer1;
+                    othersOffer = _tradeRequest.TradeOffer2;
+                }
+                else
+                {
+                    myOffer = _tradeRequest.TradeOffer2;
+                    othersOffer = _tradeRequest.TradeOffer1;
+                }
+
+                bool accepted = _tradeRequest.Accepted();
+                EndTrade(myOffer, othersOffer, accepted);
+            }
+        }
+
+        private void EndTrade(TradeRequest.TradeOffer myOffer, TradeRequest.TradeOffer othersOffer, bool accepted)
+        {
+            if (accepted)
+            {
+                foreach (Tuple<int, int> itemInfo in othersOffer.Items)
+                {
+                    _playerPacket.Data.AddInventoryItem(itemInfo.Item1, itemInfo.Item2);
+                }
+            }
+            else
+            {
+                foreach (Tuple<int, int> itemInfo in myOffer.Items)
+                {
+                    _playerPacket.Data.AddInventoryItem(itemInfo.Item1, itemInfo.Item2);
+                }
+            }
+
+            AddServerCommand(new ServerCommand(ServerCommand.CommandType.EndTrade));
+            this.TradePlayerID = -1;
+            _tradeRequest = null;
+            _trading = false; ;
+            MovementDisabled = false;
+        }
+
+        private void AddTradeItem(int itemIndex, int count)
+        {
+            Tuple<int, int> itemInfo = _playerPacket.Data.GetInventoryItem(itemIndex);
+            if (itemInfo != null)
+            {
+                if (count > itemInfo.Item2)
+                    count = itemInfo.Item2;
+
+                GameClient other;
+                int added;
+
+                if (_tradeRequest.TradeOffer1.PlayerID == _playerPacket.PlayerID)
+                {
+                    added = _tradeRequest.TradeOffer1.AddItem(itemInfo.Item1, count);
+                    _playerPacket.Data.RemoveInventoryItemAt(itemIndex, added);
+
+                    other = _mapInstance.FindGameClient(_tradeRequest.TradeOffer2.PlayerID);
+                }
+                else
+                {
+                    added = _tradeRequest.TradeOffer2.AddItem(itemInfo.Item1, count);
+                    _playerPacket.Data.RemoveInventoryItemAt(itemIndex, added);
+
+                    other = _mapInstance.FindGameClient(_tradeRequest.TradeOffer1.PlayerID);
+                }
+
+                if (added > 0)
+                {
+                    ServerCommand command = new ServerCommand(ServerCommand.CommandType.AddTradeItem);
+                    command.SetParameter("ItemID", itemInfo.Item1);
+                    command.SetParameter("Count", added);
+                    other.AddServerCommand(command);
+                }
+            }
+        }
+
+        private void RemoveTradeItem(int itemIndex)
+        {
+            Tuple<int, int> itemInfo = null;
+            GameClient other = null;
+
+            if (_tradeRequest.TradeOffer1.PlayerID == _playerPacket.PlayerID)
+            {
+                itemInfo = _tradeRequest.TradeOffer1.Items[itemIndex];
+                if (itemInfo != null)
+                {
+                    _tradeRequest.TradeOffer1.RemoveItem(itemIndex);
+                    other = _mapInstance.FindGameClient(_tradeRequest.TradeOffer2.PlayerID);
+                }
+
+            }
+            else
+            {
+                itemInfo = _tradeRequest.TradeOffer2.Items[itemIndex];
+                if (itemInfo != null)
+                {
+                    _tradeRequest.TradeOffer2.RemoveItem(itemIndex);
+                    other = _mapInstance.FindGameClient(_tradeRequest.TradeOffer1.PlayerID);
+                }
+            }
+
+            if (other != null)
+            {
+                ServerCommand command = new ServerCommand(ServerCommand.CommandType.RemoveTradeItem);
+                command.SetParameter("ItemIndex", itemIndex);
+                other.AddServerCommand(command);
+            }
+        }
+
         public void Update(float deltaTime)
         {
+            //trading
+            if (_trading)
+            {
+                if (_tradeRequest.Accepted())
+                {
+                    StopTrading();
+                }
+                else
+                {
+                    //check for disconnects
+                    int playerID;
+                    if (_tradeRequest.TradeOffer1.PlayerID == _playerPacket.PlayerID)
+                        playerID = _tradeRequest.TradeOffer2.PlayerID;
+                    else
+                        playerID = _tradeRequest.TradeOffer1.PlayerID;
+                    GameClient other = _mapInstance.FindGameClient(playerID);
+                    if (other == null || !other._trading)
+                    {
+                        this.StopTrading();
+                    }
+                }
+            }
+            
             //respawn
             if (Dead)
             {
                 SpawnPoint spawn = MapInfo.GetSpawnPoint(0);
+                MapInstance prevInstance = _mapInstance;
                 SetMapID(spawn.MapID);
                 SetMapPosition(spawn.MapX, spawn.MapY);
                 _playerPacket.Data.HP = _playerPacket.Data.GetMaxHP();
@@ -785,6 +1019,12 @@ namespace RpgServer
                     _playerPacket.RealY = realPos.Y;
                 }
             }
+        }
+
+        public Vector2 GetMapPosition()
+        {
+            Vector2 pos = new Vector2(_playerPacket.PositionX, _playerPacket.PositionY);
+            return pos;
         }
 
         public void SetMapPosition(int x, int y)

@@ -132,3 +132,4 @@ C:\Users\perry\Documents\GitHub\Genus\Genus2D\obj\Debug\Genus2D.csproj.CoreCompi
 C:\Users\perry\Documents\GitHub\Genus\Genus2D\obj\Debug\Genus2D.csproj.CopyComplete
 C:\Users\perry\Documents\GitHub\Genus\Genus2D\obj\Debug\Genus2D.dll
 C:\Users\perry\Documents\GitHub\Genus\Genus2D\obj\Debug\Genus2D.pdb
+C:\Users\Perry\Documents\GitHub\Genus\Genus2D\obj\Debug\Genus2D.csprojAssemblyReference.cache

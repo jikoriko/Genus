@@ -18,7 +18,7 @@ namespace RpgGame.GUI
 {
     public class EquipmentPanel : Panel
     {
-        public static MessagePanel Instance { get; private set; }
+        public static EquipmentPanel Instance { get; private set; }
         private GameState _gameState;
         private List<Button> _buttons;
         private Button _removeAmmoButton;
@@ -26,6 +26,7 @@ namespace RpgGame.GUI
         public EquipmentPanel(GameState state)
             : base((int)Renderer.GetResoultion().X - 400, 0, 400, 0, BarMode.Empty, state)
         {
+            Instance = this;
             _gameState = state;
 
             SetContentSize(GetContentWidth(), (GetContentWidth() / 5) * 6);
@@ -124,6 +125,12 @@ namespace RpgGame.GUI
                     }
                 }
             }
+        }
+
+        public override void Close()
+        {
+            Instance = null;
+            base.Close();
         }
     }
 }

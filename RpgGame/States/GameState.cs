@@ -26,9 +26,6 @@ namespace RpgGame.States
 
         private MessagePanel _messagePanel;
         private MenuPanel _menuPanel;
-        private InventoryPanel _inventoryPanel;
-        private EquipmentPanel _equipmentPanel;
-        private StatsPanel _statsPanel;
 
         public Entity MapEntity;
         private float _movementTimer;
@@ -44,9 +41,6 @@ namespace RpgGame.States
 
             _messagePanel = new MessagePanel(this);
             _menuPanel = new MenuPanel(this);
-            _inventoryPanel = null;
-            _equipmentPanel = null;
-            _statsPanel = null;
 
             _movementTimer = 0.0f;
 
@@ -96,6 +90,11 @@ namespace RpgGame.States
                             MapClickOption option = new MapClickOption(MapClickOption.OptionType.AttackPlayer, label);
                             option.Parameters["PlayerID"] = packet.PlayerID;
                             options.Add(option);
+
+                            label = "Trade Player: " + packet.Username;
+                            option = new MapClickOption(MapClickOption.OptionType.Trade, label);
+                            option.Parameters["PlayerID"] = packet.PlayerID;
+                            options.Add(option);
                         }
                     }
                 }
@@ -124,77 +123,49 @@ namespace RpgGame.States
 
         public void ToggleInventory()
         {
-            if (_equipmentPanel != null)
-            {
-                _equipmentPanel.Close();
-                _equipmentPanel = null;
-            }
-            if (_statsPanel != null)
-            {
-                _statsPanel.Close();
-                _statsPanel = null;
-            }
+            if (TradePanel.Instance != null)
+                return;
 
-            if (_inventoryPanel != null)
-            {
-                _inventoryPanel.Close();
-                _inventoryPanel = null;
-            }
+            if (EquipmentPanel.Instance != null)
+                EquipmentPanel.Instance.Close();
+            if (StatsPanel.Instance != null)
+                StatsPanel.Instance.Close();
+
+            if (InventoryPanel.Instance != null)
+                InventoryPanel.Instance.Close();
             else
-            {
-                _inventoryPanel = new InventoryPanel(this);
-                this.AddControl(_inventoryPanel);
-            }
+                this.AddControl(new InventoryPanel(this));
         }
 
         public void ToggleEquipmentPanel()
         {
-            if (_inventoryPanel != null)
-            {
-                _inventoryPanel.Close();
-                _inventoryPanel = null;
-            }
-            if (_statsPanel != null)
-            {
-                _statsPanel.Close();
-                _statsPanel = null;
-            }
+            if (TradePanel.Instance != null)
+                return;
 
-            if (_equipmentPanel != null)
-            {
-                _equipmentPanel.Close();
-                _equipmentPanel = null;
-            }
+            if (InventoryPanel.Instance != null)
+                InventoryPanel.Instance.Close();
+            if (StatsPanel.Instance != null)
+                StatsPanel.Instance.Close();
+
+            if (EquipmentPanel.Instance != null)
+                EquipmentPanel.Instance.Close();
             else
-            {
-                _equipmentPanel = new EquipmentPanel(this);
-                this.AddControl(_equipmentPanel);
-            }
+                this.AddControl(new EquipmentPanel(this));
         }
 
         public void ToggleStatsPanel()
         {
-            if (_inventoryPanel != null)
-            {
-                _inventoryPanel.Close();
-                _inventoryPanel = null;
-            }
-            if (_equipmentPanel != null)
-            {
-                _equipmentPanel.Close();
-                _equipmentPanel = null;
-            }
+            if (TradePanel.Instance != null)
+                return;
 
-            if (_statsPanel != null)
-            {
-                _statsPanel.Close();
-                _statsPanel = null;
-            }
-            else
-            {
-                _statsPanel = new StatsPanel(this);
-                this.AddControl(_statsPanel);
-            }
+            if (InventoryPanel.Instance != null)
+                InventoryPanel.Instance.Close();
+            if (EquipmentPanel.Instance != null)
+                EquipmentPanel.Instance.Close();
+
+            if (StatsPanel.Instance != null)
+                StatsPanel.Instance.Close();
+                this.AddControl(new StatsPanel(this));
         }
 
         public void SetRpgClientConnection(RpgClientConnection connection)

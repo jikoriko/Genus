@@ -25,7 +25,13 @@ namespace Genus2D.Networking
             AddMapItem,
             RemoveMapItem,
             UpdateMapItem,
-            ShowShop
+            ShowShop,
+            TradeRequest,
+            StartTrade,
+            AcceptTrade,
+            EndTrade,
+            AddTradeItem,
+            RemoveTradeItem
         }
 
         private CommandType _commandType;
@@ -144,6 +150,27 @@ namespace Genus2D.Networking
                     break;
                 case CommandType.ShowShop:
                     _parameters.Add("ShopID", new Parameter(1, -1));
+                    break;
+                case CommandType.TradeRequest:
+                    _parameters.Add("PlayerID", new Parameter(1, -1));
+                    _parameters.Add("PlayerName", new Parameter(0, ""));
+                    break;
+                case CommandType.StartTrade:
+                    _parameters.Add("PlayerID", new Parameter(1, -1));
+                    _parameters.Add("PlayerName", new Parameter(0, ""));
+                    break;
+                case CommandType.AcceptTrade:
+
+                    break;
+                case CommandType.EndTrade:
+
+                    break;
+                case CommandType.AddTradeItem:
+                    _parameters.Add("ItemID", new Parameter(1, -1));
+                    _parameters.Add("Count", new Parameter(1, -1));
+                    break;
+                case CommandType.RemoveTradeItem:
+                    _parameters.Add("ItemIndex", new Parameter(1, -1));
                     break;
 
             }

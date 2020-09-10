@@ -20,7 +20,8 @@ namespace RpgGame.GUI
         {
             PickupItem,
             AttackPlayer,
-            AttackEnemy
+            AttackEnemy,
+            Trade
         }
 
         public OptionType Option;
@@ -45,6 +46,9 @@ namespace RpgGame.GUI
                 case OptionType.AttackEnemy:
                     Parameters.Add("EnemyID", -1);
                     break;
+                case OptionType.Trade:
+                    Parameters.Add("PlayerID", -1);
+                    break;
             }
         }
     }
@@ -55,7 +59,7 @@ namespace RpgGame.GUI
         private List<MapClickOption> _options;
 
         public MapClickOptionsPanel(int x, int y, List<MapClickOption> options, GameState state)
-            : base(x - 100, y, 200, 0, BarMode.Empty, state)
+            : base(x - 150, y, 300, 0, BarMode.Empty, state)
         {
             _options = options;
             SetMargin(2);
@@ -90,6 +94,11 @@ namespace RpgGame.GUI
                     case MapClickOption.OptionType.AttackEnemy:
                         command = new ClientCommand(ClientCommand.CommandType.AttackEnemy);
                         command.SetParameter("EnemyID", clickOption.Parameters["EnemyID"]);
+                        RpgClientConnection.Instance.AddClientCommand(command);
+                        break;
+                    case MapClickOption.OptionType.Trade:
+                        command = new ClientCommand(ClientCommand.CommandType.TradeRequest);
+                        command.SetParameter("PlayerID", clickOption.Parameters["PlayerID"]);
                         RpgClientConnection.Instance.AddClientCommand(command);
                         break;
                 }

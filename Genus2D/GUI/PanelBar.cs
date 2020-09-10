@@ -111,7 +111,8 @@ namespace Genus2D.GUI
         public override void Destroy()
         {
             base.Destroy();
-            _closeButton.OnTrigger -= ClosePanel;
+            if (_closeButton != null)
+                _closeButton.OnTrigger -= ClosePanel;
         }
 
     }

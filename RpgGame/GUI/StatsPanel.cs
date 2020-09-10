@@ -18,13 +18,14 @@ namespace RpgGame.GUI
 {
     public class StatsPanel : Panel
     {
-        public static MessagePanel Instance { get; private set; }
+        public static StatsPanel Instance { get; private set; }
         private GameState _gameState;
         private List<Button> _buttons;
 
         public StatsPanel(GameState state)
             : base((int)Renderer.GetResoultion().X - 400, 0, 400, 0, BarMode.Empty, state)
         {
+            Instance = this;
             _gameState = state;
 
             SetContentSize(GetContentWidth(), (GetContentWidth() / 5) * 6);
@@ -86,6 +87,12 @@ namespace RpgGame.GUI
                     y += 10 + Renderer.GetFont().GetTextHeight(text);
                 }
             }
+        }
+
+        public override void Close()
+        {
+            Instance = null;
+            base.Close();
         }
     }
 }

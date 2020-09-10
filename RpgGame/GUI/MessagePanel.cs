@@ -52,6 +52,14 @@ namespace RpgGame.GUI
             _textPanel.SetScrollableHeight(textHeight);
         }
 
+        public void AddMessage(string message)
+        {
+            _textLabel.SetText(_textLabel.GetText() + message + '\n');
+            int textHeight = Renderer.GetFont().GetTextHeight(_textLabel.GetText());
+            _textLabel.SetSize((int)_textLabel.GetBodySize().X, textHeight);
+            _textPanel.SetScrollableHeight(textHeight);
+        }
+
         private void SendMessage()
         {
             if (_messageField.GetText() != "")

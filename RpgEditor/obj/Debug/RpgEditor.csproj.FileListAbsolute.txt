@@ -45,3 +45,4 @@ C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.EditObjectiv
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.ProgressQuestPreset.resources
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.EditShopItemForm.resources
 C:\Users\perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.CommandDataPresets.ShowShopPreset.resources
+C:\Users\Perry\Documents\GitHub\Genus\RpgEditor\obj\Debug\RpgEditor.csprojAssemblyReference.cache

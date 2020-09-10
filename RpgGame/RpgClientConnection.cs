@@ -5,6 +5,7 @@ using Genus2D.GUI;
 using Genus2D.Networking;
 using OpenTK;
 using RpgGame.EntityComponents;
+using RpgGame.GUI;
 using RpgGame.States;
 using System;
 using System.Collections.Generic;
@@ -176,7 +177,7 @@ namespace RpgGame
                 for (int i = 0; i < PlayerEntities.Count; i++)
                 {
                     int id = PlayerEntities.ElementAt(i).Key;
-                    if (_playerPackets.ContainsKey(id))
+                    if (_playerPackets.ContainsKey(id) == false)
                     {
                         PlayerEntities[id].Destroy();
                         PlayerEntities.Remove(id);
@@ -235,7 +236,7 @@ namespace RpgGame
                             RecieveMapPackets();
                             break;
                         case PacketType.ServerCommand:
-                            ReciveServerCommand();
+                            RecieveServerCommand();
                             break;
                         case PacketType.ClientCommand:
                             SendClientCommands();
@@ -355,7 +356,7 @@ namespace RpgGame
             }
         }
 
-        private void ReciveServerCommand()
+        private void RecieveServerCommand()
         {
             byte[] bytes = ReadData(sizeof(int), _stream);
             int packetSize = BitConverter.ToInt32(bytes, 0);
@@ -375,6 +376,10 @@ namespace RpgGame
             MapData map;
             int projectileID;
             int playerID;
+            string playerName;
+            int itemIndex;
+            int itemID;
+            int count;
 
             switch (command.GetCommandType())
             {
@@ -571,8 +576,8 @@ namespace RpgGame
                     MapComponent mapComponent = _gameState.MapEntity.FindComponent<MapComponent>();
                     if (mapComponent.MapID == mapID)
                     {
-                        int itemID = (int)command.GetParameter("ItemID");
-                        int count = (int)command.GetParameter("Count");
+                        itemID = (int)command.GetParameter("ItemID");
+                        count = (int)command.GetParameter("Count");
                         mapX = (int)command.GetParameter("MapX");
                         mapY = (int)command.GetParameter("MapY");
                         playerID = (int)command.GetParameter("PlayerID");
@@ -590,7 +595,7 @@ namespace RpgGame
                     mapID = (int)command.GetParameter("MapID");
                     if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
                     {
-                        int itemIndex = (int)command.GetParameter("ItemIndex");
+                        itemIndex = (int)command.GetParameter("ItemIndex");
                         if (itemIndex < MapItemEntities.Count)
                         {
                             MapItemEntities[itemIndex].Destroy();
@@ -604,11 +609,11 @@ namespace RpgGame
                     mapID = (int)command.GetParameter("MapID");
                     if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
                     {
-                        int itemIndex = (int)command.GetParameter("ItemIndex");
+                        itemIndex = (int)command.GetParameter("ItemIndex");
                         if (itemIndex < MapItemEntities.Count)
                         {
-                            playerID = (int)command.GetParameter("ItemIndex");
-                            int count = (int)command.GetParameter("Count");
+                            playerID = (int)command.GetParameter("PlayerID");
+                            count = (int)command.GetParameter("Count");
                             MapItemEntities[itemIndex].FindComponent<MapItemComponent>().GetMapItem().PlayerID = playerID;
                             MapItemEntities[itemIndex].FindComponent<MapItemComponent>().GetMapItem().Count = count;
                         }
@@ -626,6 +631,52 @@ namespace RpgGame
                     else
                     {
                         AddClientCommand(new ClientCommand(ClientCommand.CommandType.CloseShop));
+                    }
+
+                    break;
+                case ServerCommand.CommandType.TradeRequest:
+                    playerID = (int)command.GetParameter("PlayerID");
+                    playerName = (string)command.GetParameter("PlayerName");
+                    MessagePanel.Instance.AddMessage(playerName + " would like to trade.");
+
+                    break;
+                case ServerCommand.CommandType.StartTrade:
+                    playerID = (int)command.GetParameter("PlayerID");
+                    playerName = (string)command.GetParameter("PlayerName");
+
+                    if (InventoryPanel.Instance == null)
+                        GameState.Instance.ToggleInventory();
+
+                    _gameState.AddControl(new GUI.TradePanel(_gameState, playerID, playerName));
+                    break;
+                case ServerCommand.CommandType.AcceptTrade:
+                    if (TradePanel.Instance != null)
+                    {
+                        TradePanel.Instance.TradeRequest.TradeOffer2.Accepted = true;
+                    }
+                    break;
+                case ServerCommand.CommandType.EndTrade:
+                    if (TradePanel.Instance != null)
+                    {
+                        TradePanel.Instance.Close();
+                    }
+                    break;
+                case ServerCommand.CommandType.AddTradeItem:
+                    itemID = (int)command.GetParameter("ItemID");
+                    count = (int)command.GetParameter("Count");
+
+                    if (TradePanel.Instance != null)
+                    {
+                        TradePanel.Instance.TradeRequest.TradeOffer2.AddItem(itemID, count);
+                    }
+
+                    break;
+                case ServerCommand.CommandType.RemoveTradeItem:
+                    itemIndex = (int)command.GetParameter("ItemIndex");
+
+                    if (TradePanel.Instance != null)
+                    {
+                        TradePanel.Instance.TradeRequest.TradeOffer2.RemoveItem(itemIndex);
                     }
 
                     break;

@@ -202,6 +202,20 @@ namespace Genus2D.GameData
             }
         }
 
+        public void RemoveInventoryItemAt(int index, int count)
+        {
+            if (count < 1 || index < 0 || index >= _inventory.Count) return;
+            int remainder = _inventory[index].Item2 - count;
+            if (remainder > 0)
+            {
+                _inventory[index] = new Tuple<int, int>(_inventory[index].Item1, remainder);
+            }
+            else
+            {
+                _inventory.RemoveAt(index);
+            }
+        }
+
         public void RemoveInventoryItem(int itemID, int count)
         {
             if (count < 1 || itemID < 0) return;
