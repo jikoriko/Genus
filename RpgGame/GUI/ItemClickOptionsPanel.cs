@@ -55,7 +55,7 @@ namespace RpgGame.GUI
             int option = (int)Math.Floor(GetLocalMousePosition().Y / 32);
             if (option >= 0 && option < _options.Count)
             {
-                ClientCommand command;
+                ClientCommand command = null;
                 int count;
                 if (option == _options.Count - 1)
                     count = RpgClientConnection.Instance.GetLocalPlayerPacket().Data.GetInventoryItem(_itemIndex).Item2;
@@ -66,19 +66,28 @@ namespace RpgGame.GUI
                     command = new ClientCommand(ClientCommand.CommandType.DropItem);
                 else
                 {
-                    command = new ClientCommand(ClientCommand.CommandType.AddTradeItem);
                     Tuple<int, int> itemInfo = RpgClientConnection.Instance.GetLocalPlayerPacket().Data.GetInventoryItem(_itemIndex);
                     if (itemInfo != null)
                     {
                         if (count > itemInfo.Item2)
                             count = itemInfo.Item2;
-                        TradePanel.Instance.TradeRequest.TradeOffer1.AddItem(itemInfo.Item1, count);
+
+                        int added = TradePanel.Instance.TradeRequest.TradeOffer1.AddItem(itemInfo.Item1, count);
+                        if (added > 0)
+                        {
+                            command = new ClientCommand(ClientCommand.CommandType.AddTradeItem);
+                            TradePanel.Instance.TradeRequest.TradeOffer1.Accepted = false;
+                            TradePanel.Instance.TradeRequest.TradeOffer2.Accepted = false;
+                        }
                     }
                 }
 
-                command.SetParameter("ItemIndex", _itemIndex);
-                command.SetParameter("Count", count);
-                RpgClientConnection.Instance.AddClientCommand(command);
+                if (command != null)
+                {
+                    command.SetParameter("ItemIndex", _itemIndex);
+                    command.SetParameter("Count", count);
+                    RpgClientConnection.Instance.AddClientCommand(command);
+                }
             }
 
             this.Close();

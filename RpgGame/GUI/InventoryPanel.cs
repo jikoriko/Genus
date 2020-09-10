@@ -55,12 +55,17 @@ namespace RpgGame.GUI
                             {
                                 if (TradePanel.Instance != null)
                                 {
-                                    command = new ClientCommand(ClientCommand.CommandType.AddTradeItem);
-                                    command.SetParameter("Count", 1);
                                     Tuple<int, int> itemInfo = RpgClientConnection.Instance.GetLocalPlayerPacket().Data.GetInventoryItem(itemIndex);
                                     if (itemInfo != null)
                                     {
-                                        TradePanel.Instance.TradeRequest.TradeOffer1.AddItem(itemInfo.Item1, 1);
+                                        int added = TradePanel.Instance.TradeRequest.TradeOffer1.AddItem(itemInfo.Item1, 1);
+                                        if (added > 0)
+                                        {
+                                            command = new ClientCommand(ClientCommand.CommandType.AddTradeItem);
+                                            command.SetParameter("Count", 1);
+                                            TradePanel.Instance.TradeRequest.TradeOffer1.Accepted = false;
+                                            TradePanel.Instance.TradeRequest.TradeOffer2.Accepted = false;
+                                        }
                                     }
                                 }
                                 else

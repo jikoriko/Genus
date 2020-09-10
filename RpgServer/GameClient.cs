@@ -783,6 +783,9 @@ namespace RpgServer
         private void StartTrade(GameClient other)
         {
             TradeRequest tradeRequest = new TradeRequest(other._playerPacket.PlayerID, _playerPacket.PlayerID);
+            tradeRequest.TradeOffer1.FreeSlots = other._playerPacket.Data.GetFreeInventorySlots();
+            tradeRequest.TradeOffer2.FreeSlots = _playerPacket.Data.GetFreeInventorySlots();
+
             _tradeRequest = tradeRequest;
             other._tradeRequest = tradeRequest;
             _trading = true;
@@ -826,15 +829,38 @@ namespace RpgServer
         {
             if (accepted)
             {
-                foreach (Tuple<int, int> itemInfo in othersOffer.Items)
+                if (myOffer.FreeSlots >= othersOffer.NumItems() && othersOffer.FreeSlots >= myOffer.NumItems())
                 {
-                    _playerPacket.Data.AddInventoryItem(itemInfo.Item1, itemInfo.Item2);
+                    for (int i = 0; i < othersOffer.NumItems(); i++)
+                    {
+                        Tuple<int, int> itemInfo = othersOffer.GetItem(i);
+                        _playerPacket.Data.AddInventoryItem(itemInfo.Item1, itemInfo.Item2);
+                    }
+                }
+                else
+                {
+                    if (myOffer.FreeSlots < othersOffer.NumItems())
+                    {
+                        myOffer.Accepted = false;
+                        othersOffer.Accepted = false;
+                        ServerCommand command = new ServerCommand(ServerCommand.CommandType.CantTrade);
+                        this.AddServerCommand(command);
+                        GameClient other = _mapInstance.FindGameClient(othersOffer.PlayerID);
+                        other.AddServerCommand(command);
+
+                        MessagePacket message = new MessagePacket("You only have " + myOffer.FreeSlots + " inventory slots.");
+                        this.RecieveMessage(message);
+                        message = new MessagePacket(_playerPacket.Username + " only has " + myOffer.FreeSlots + " inventory slots.");
+                        other.RecieveMessage(message);
+                    }
+                    return;
                 }
             }
             else
             {
-                foreach (Tuple<int, int> itemInfo in myOffer.Items)
+                for (int i = 0; i < myOffer.NumItems(); i++)
                 {
+                    Tuple<int, int> itemInfo = myOffer.GetItem(i);
                     _playerPacket.Data.AddInventoryItem(itemInfo.Item1, itemInfo.Item2);
                 }
             }
@@ -861,6 +887,7 @@ namespace RpgServer
                 {
                     added = _tradeRequest.TradeOffer1.AddItem(itemInfo.Item1, count);
                     _playerPacket.Data.RemoveInventoryItemAt(itemIndex, added);
+                    _tradeRequest.TradeOffer1.FreeSlots = _playerPacket.Data.GetFreeInventorySlots();
 
                     other = _mapInstance.FindGameClient(_tradeRequest.TradeOffer2.PlayerID);
                 }
@@ -868,6 +895,7 @@ namespace RpgServer
                 {
                     added = _tradeRequest.TradeOffer2.AddItem(itemInfo.Item1, count);
                     _playerPacket.Data.RemoveInventoryItemAt(itemIndex, added);
+                    _tradeRequest.TradeOffer2.FreeSlots = _playerPacket.Data.GetFreeInventorySlots();
 
                     other = _mapInstance.FindGameClient(_tradeRequest.TradeOffer1.PlayerID);
                 }
@@ -878,6 +906,9 @@ namespace RpgServer
                     command.SetParameter("ItemID", itemInfo.Item1);
                     command.SetParameter("Count", added);
                     other.AddServerCommand(command);
+
+                    _tradeRequest.TradeOffer1.Accepted = false;
+                    _tradeRequest.TradeOffer2.Accepted = false;
                 }
             }
         }
@@ -889,21 +920,29 @@ namespace RpgServer
 
             if (_tradeRequest.TradeOffer1.PlayerID == _playerPacket.PlayerID)
             {
-                itemInfo = _tradeRequest.TradeOffer1.Items[itemIndex];
+                itemInfo = _tradeRequest.TradeOffer1.GetItem(itemIndex);
                 if (itemInfo != null)
                 {
                     _tradeRequest.TradeOffer1.RemoveItem(itemIndex);
+                    _playerPacket.Data.AddInventoryItem(itemInfo.Item1, itemInfo.Item2);
+                    _tradeRequest.TradeOffer1.FreeSlots = _playerPacket.Data.GetFreeInventorySlots();
                     other = _mapInstance.FindGameClient(_tradeRequest.TradeOffer2.PlayerID);
+                    _tradeRequest.TradeOffer1.Accepted = false;
+                    _tradeRequest.TradeOffer2.Accepted = false;
                 }
 
             }
             else
             {
-                itemInfo = _tradeRequest.TradeOffer2.Items[itemIndex];
+                itemInfo = _tradeRequest.TradeOffer2.GetItem(itemIndex);
                 if (itemInfo != null)
                 {
                     _tradeRequest.TradeOffer2.RemoveItem(itemIndex);
+                    _playerPacket.Data.AddInventoryItem(itemInfo.Item1, itemInfo.Item2);
+                    _tradeRequest.TradeOffer2.FreeSlots = _playerPacket.Data.GetFreeInventorySlots();
                     other = _mapInstance.FindGameClient(_tradeRequest.TradeOffer1.PlayerID);
+                    _tradeRequest.TradeOffer1.Accepted = false;
+                    _tradeRequest.TradeOffer2.Accepted = false;
                 }
             }
 
@@ -976,7 +1015,7 @@ namespace RpgServer
                         _playerPacket.Data.MP = _playerPacket.Data.GetMaxMP();
                 }
 
-                if (!_running)
+                if (!_running || !Moving())
                 {
                     _playerPacket.Data.Stamina++;
                     if (_playerPacket.Data.Stamina > _playerPacket.Data.GetMaxStamina())
@@ -984,9 +1023,12 @@ namespace RpgServer
                 }
                 else
                 {
-                    _playerPacket.Data.Stamina--;
-                    if (_playerPacket.Data.Stamina < 0)
-                        _playerPacket.Data.Stamina = 0;
+                    if (Moving())
+                    {
+                        _playerPacket.Data.Stamina--;
+                        if (_playerPacket.Data.Stamina < 0)
+                            _playerPacket.Data.Stamina = 0;
+                    }
                 }
 
                 _regenTimer = 1;
@@ -1004,21 +1046,39 @@ namespace RpgServer
                 if (Moving())
                 {
                     Vector2 realPos = new Vector2(_playerPacket.RealX, _playerPacket.RealY);
-                    Vector2 dir = new Vector2(_playerPacket.PositionX * 32, _playerPacket.PositionY * 32) - realPos;
-                    dir.Normalize();
-                    realPos += (dir * _playerPacket.MovementSpeed * deltaTime);
+                    Vector2 targetPos = new Vector2(_playerPacket.PositionX * 32, _playerPacket.PositionY * 32);
+                    Vector2 dir = targetPos - realPos;
+                    Vector2 endPos = realPos + (dir.Normalized() * _playerPacket.MovementSpeed * deltaTime);
 
-                    dir = new Vector2(_playerPacket.PositionX * 32, _playerPacket.PositionY * 32) - realPos;
-                    if (dir.Length <= 0.1f)
+                    Vector2 dir2 = targetPos - endPos;
+
+                    if (dir.Length < dir2.Length || dir.Length < 0.5f)
                     {
-                        realPos = new OpenTK.Vector2(_playerPacket.PositionX * 32, _playerPacket.PositionY * 32);
+                        realPos = targetPos;
                         CheckEventTriggers(_playerPacket.PositionX, _playerPacket.PositionY, EventTriggerType.PlayerTouch);
+                    }
+                    else
+                    {
+                        realPos = endPos;
                     }
 
                     _playerPacket.RealX = realPos.X;
                     _playerPacket.RealY = realPos.Y;
                 }
             }
+        }
+
+        bool PointOnLine(Vector2 r, Vector2 p, Vector2 v)
+        {
+            if (v.X == 0)
+            {
+                return r.X == p.X;
+            }
+            if (v.Y == 0)
+            {
+                return r.Y == p.Y;
+            }
+            return (p.X - r.X) / v.X == (p.Y - r.Y) / v.Y;
         }
 
         public Vector2 GetMapPosition()

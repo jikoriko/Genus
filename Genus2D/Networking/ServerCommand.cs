@@ -31,7 +31,8 @@ namespace Genus2D.Networking
             AcceptTrade,
             EndTrade,
             AddTradeItem,
-            RemoveTradeItem
+            RemoveTradeItem,
+            CantTrade
         }
 
         private CommandType _commandType;
@@ -171,6 +172,9 @@ namespace Genus2D.Networking
                     break;
                 case CommandType.RemoveTradeItem:
                     _parameters.Add("ItemIndex", new Parameter(1, -1));
+                    break;
+                case CommandType.CantTrade:
+
                     break;
 
             }

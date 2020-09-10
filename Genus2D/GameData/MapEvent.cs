@@ -207,7 +207,7 @@ namespace Genus2D.GameData
                     realPos += (dir * GetMovementSpeed() * deltaTime);
 
                     dir = new Vector2(MapX * 32, MapY * 32) - realPos;
-                    if (dir.Length <= 0.1f)
+                    if (dir.Length <= 2f)
                     {
                         realPos = new OpenTK.Vector2(MapX * 32, MapY * 32);
                         switch (Frequency)

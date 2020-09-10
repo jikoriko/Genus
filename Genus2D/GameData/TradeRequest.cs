@@ -11,19 +11,35 @@ namespace Genus2D.GameData
 
         public class TradeOffer
         {
-            public static int MaxItems = 25;
+            public static int MaxItems = 18;
 
             public int PlayerID;
             public int Gold;
-            public List<Tuple<int, int>> Items;
+            private List<Tuple<int, int>> _items;
             public bool Accepted;
+            public int FreeSlots;
 
             public TradeOffer(int playerID)
             {
                 PlayerID = playerID;
                 Gold = 0;
-                Items = new List<Tuple<int, int>>();
+                _items = new List<Tuple<int, int>>();
                 Accepted = false;
+                FreeSlots = 0;
+            }
+
+            public int NumItems()
+            {
+                return _items.Count;
+            }
+
+            public Tuple<int, int> GetItem(int index)
+            {
+                if (index >= 0 && index < _items.Count)
+                {
+                    return _items[index];
+                }
+                return null;
             }
 
             public int AddItem(int itemID, int count)
@@ -36,22 +52,22 @@ namespace Genus2D.GameData
                 int added = 0;
                 int amountToAdd = count;
 
-                for (int i = 0; i < Items.Count; i++)
+                for (int i = 0; i < _items.Count; i++)
                 {
-                    if (Items[i].Item1 == itemID)
+                    if (_items[i].Item1 == itemID)
                     {
-                        if (Items[i].Item2 < max)
+                        if (_items[i].Item2 < max)
                         {
-                            int amountCanAdd = max - Items[i].Item2;
+                            int amountCanAdd = max - _items[i].Item2;
                             if (amountToAdd <= amountCanAdd)
                             {
-                                Items[i] = new Tuple<int, int>(itemID, Items[i].Item2 + amountToAdd);
+                                _items[i] = new Tuple<int, int>(itemID, _items[i].Item2 + amountToAdd);
                                 added += amountToAdd;
                                 amountToAdd = 0;
                             }
                             else
                             {
-                                Items[i] = new Tuple<int, int>(itemID, Items[i].Item2 + amountCanAdd);
+                                _items[i] = new Tuple<int, int>(itemID, _items[i].Item2 + amountCanAdd);
                                 added += amountCanAdd;
                                 amountToAdd -= amountCanAdd;
                             }
@@ -64,17 +80,17 @@ namespace Genus2D.GameData
 
                 while (amountToAdd > 0)
                 {
-                    if (Items.Count < MaxItems)
+                    if (_items.Count < MaxItems)
                     {
                         if (amountToAdd <= max)
                         {
-                            Items.Add(new Tuple<int, int>(itemID, amountToAdd));
+                            _items.Add(new Tuple<int, int>(itemID, amountToAdd));
                             added += amountToAdd;
                             break;
                         }
                         else
                         {
-                            Items.Add(new Tuple<int, int>(itemID, max));
+                            _items.Add(new Tuple<int, int>(itemID, max));
                             added += max;
                             amountToAdd -= max;
                         }
@@ -90,9 +106,9 @@ namespace Genus2D.GameData
 
             public bool RemoveItem(int index)
             {
-                if (index >= 0 && index < Items.Count)
+                if (index >= 0 && index < _items.Count)
                 {
-                    Items.RemoveAt(index);
+                    _items.RemoveAt(index);
                     return true;
                 }
 

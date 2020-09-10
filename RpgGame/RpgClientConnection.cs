@@ -668,6 +668,8 @@ namespace RpgGame
                     if (TradePanel.Instance != null)
                     {
                         TradePanel.Instance.TradeRequest.TradeOffer2.AddItem(itemID, count);
+                        TradePanel.Instance.TradeRequest.TradeOffer1.Accepted = false;
+                        TradePanel.Instance.TradeRequest.TradeOffer2.Accepted = false;
                     }
 
                     break;
@@ -677,8 +679,17 @@ namespace RpgGame
                     if (TradePanel.Instance != null)
                     {
                         TradePanel.Instance.TradeRequest.TradeOffer2.RemoveItem(itemIndex);
+                        TradePanel.Instance.TradeRequest.TradeOffer1.Accepted = false;
+                        TradePanel.Instance.TradeRequest.TradeOffer2.Accepted = false;
                     }
 
+                    break;
+                case ServerCommand.CommandType.CantTrade:
+                    if (TradePanel.Instance != null)
+                    {
+                        TradePanel.Instance.TradeRequest.TradeOffer1.Accepted = false;
+                        TradePanel.Instance.TradeRequest.TradeOffer2.Accepted = false;
+                    }
                     break;
             }
         }

@@ -132,6 +132,11 @@ namespace Genus2D.GameData
             return combined.Agility * 10;
         }
 
+        public int GetFreeInventorySlots()
+        {
+            return InventorySize - _inventory.Count;
+        }
+
         public int AddInventoryItem(int itemID, int count)
         {
             if (count < 1 || itemID < 0) return 0;

@@ -6,6 +6,7 @@ using Genus2D.Networking;
 using Genus2D.Utililities;
 using OpenTK;
 using OpenTK.Graphics;
+using OpenTK.Input;
 using RpgGame.States;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,8 @@ namespace RpgGame.GUI
 {
     public class TradePanel : Panel
     {
+
+        public static int ItemsPerRow = 3;
 
         public static TradePanel Instance { get; private set; }
         private GameState _gameState;
@@ -68,6 +71,37 @@ namespace RpgGame.GUI
             base.Close();
         }
 
+        public override void OnMouseDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseDown(e);
+            if (ContentSelectable())
+            {
+                if (e.Button == MouseButton.Left)
+                {
+                    Vector2 mouse = GetLocalMousePosition();
+                    int width = (GetContentWidth() / 2) - 8;
+                    int slotSize = width / ItemsPerRow;
+
+                    Rectangle selectionRect = new Rectangle(4, 4, width, GetContentHeight() - 58);
+                    if (selectionRect.Contains((int)mouse.X, (int)mouse.Y))
+                    {
+                        mouse.X -= 4;
+                        mouse.Y -= 4;
+                        mouse.X /= slotSize;
+                        mouse.Y /= slotSize;
+                        int itemIndex = (int)mouse.X + ((int)mouse.Y * ItemsPerRow);
+                        if (this.TradeRequest.TradeOffer1.GetItem(itemIndex) != null)
+                        {
+                            this.TradeRequest.TradeOffer1.RemoveItem(itemIndex);
+                            ClientCommand command = new ClientCommand(ClientCommand.CommandType.RemoveTradeItem);
+                            command.SetParameter("ItemIndex", itemIndex);
+                            RpgClientConnection.Instance.AddClientCommand(command);
+                        }
+                    }
+                }
+            }
+        }
+
         protected override void RenderContent()
         {
             base.RenderContent();
@@ -78,13 +112,13 @@ namespace RpgGame.GUI
             Vector3 size;
             Color4 colour;
 
-            int iconSize = width / 5;
+            int iconSize = width / ItemsPerRow;
             size = new Vector3(iconSize, iconSize, 1);
-            for (int i = 0; i < this.TradeRequest.TradeOffer1.Items.Count; i++)
+            for (int i = 0; i < this.TradeRequest.TradeOffer1.NumItems(); i++)
             {
-                Tuple<int, int> itemInfo = this.TradeRequest.TradeOffer1.Items[i];
-                int x = 4 + ((i % 5) * iconSize);
-                int y = 4 + ((i / 5) * iconSize);
+                Tuple<int, int> itemInfo = this.TradeRequest.TradeOffer1.GetItem(i);
+                int x = 4 + ((i % ItemsPerRow) * iconSize);
+                int y = 4 + ((i / ItemsPerRow) * iconSize);
                 ItemData data = ItemData.GetItemData(itemInfo.Item1);
 
                 if (data != null)
@@ -108,11 +142,11 @@ namespace RpgGame.GUI
                 }
             }
 
-            for (int i = 0; i < this.TradeRequest.TradeOffer2.Items.Count; i++)
+            for (int i = 0; i < this.TradeRequest.TradeOffer2.NumItems(); i++)
             {
-                Tuple<int, int> itemInfo = this.TradeRequest.TradeOffer2.Items[i];
-                int x = 4 + ((i % 5) * iconSize);
-                int y = 4 + ((i / 5) * iconSize);
+                Tuple<int, int> itemInfo = this.TradeRequest.TradeOffer2.GetItem(i);
+                int x = 4 + ((i % ItemsPerRow) * iconSize);
+                int y = 4 + ((i / ItemsPerRow) * iconSize);
                 x += GetContentWidth() / 2;
                 ItemData data = ItemData.GetItemData(itemInfo.Item1);
 

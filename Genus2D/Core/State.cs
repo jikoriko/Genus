@@ -130,6 +130,7 @@ namespace Genus2D.Core
                     if (panel.IsClosed())
                     {
                         panel.Destroy();
+                        _controls.RemoveAt(i);
                         i--;
                     }
                 }
