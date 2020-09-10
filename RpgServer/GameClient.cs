@@ -1068,19 +1068,6 @@ namespace RpgServer
             }
         }
 
-        bool PointOnLine(Vector2 r, Vector2 p, Vector2 v)
-        {
-            if (v.X == 0)
-            {
-                return r.X == p.X;
-            }
-            if (v.Y == 0)
-            {
-                return r.Y == p.Y;
-            }
-            return (p.X - r.X) / v.X == (p.Y - r.Y) / v.Y;
-        }
-
         public Vector2 GetMapPosition()
         {
             Vector2 pos = new Vector2(_playerPacket.PositionX, _playerPacket.PositionY);
