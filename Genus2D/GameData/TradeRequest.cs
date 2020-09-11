@@ -48,6 +48,8 @@ namespace Genus2D.GameData
 
                 ItemData data = ItemData.GetItemData(itemID);
                 if (data == null) return 0;
+                if (data.GetItemType() == ItemData.ItemType.Quest) return 0;
+
                 int max = data.GetMaxStack();
                 int added = 0;
                 int amountToAdd = count;
