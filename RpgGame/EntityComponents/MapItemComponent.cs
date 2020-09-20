@@ -39,7 +39,7 @@ namespace RpgGame.EntityComponents
         public void SetRealPosition()
         {
             Vector3 pos = new Vector3(_mapItem.MapX * 32, _mapItem.MapY * 32, 0);
-            pos.Z = -((_mapItem.MapY + (_mapItem.OnBridge ? 3 : 0)) * (32 * (_mapItem.OnBridge ? 3 : 1)));
+            pos.Z = -((_mapItem.MapY + (_mapItem.OnBridge ? 3 : 0)) * 2);
             Transform.LocalPosition = pos;
 
         }

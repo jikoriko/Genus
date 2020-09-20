@@ -40,12 +40,16 @@ namespace RpgGame.EntityComponents
         public void SetRealPosition()
         {
             Vector3 pos = new Vector3(_mapEvent.RealX + 16, _mapEvent.RealY + 16, 0);
+
+
             if (_mapEvent.Priority == RenderPriority.BelowPlayer)
-                pos.Z = -((_mapEvent.MapY + (_mapEvent.OnBridge ? 3 : 0)) * (32 * (_mapEvent.OnBridge ? 3 : 1)));
+                pos.Z = -(((int)Math.Ceiling(_mapEvent.RealY / 32) + (_mapEvent.OnBridge ? 3 : 0)) * 2);
+            //pos.Z = -((_mapEvent.MapY + (_mapEvent.OnBridge ? 3 : 0)) * (32 * (_mapEvent.OnBridge ? 3 : 1)));
             else if (_mapEvent.Priority == RenderPriority.AbovePlayer)
-                pos.Z = -((_mapEvent.MapY + (_mapEvent.OnBridge ? 3 : 0)) * (32 * (_mapEvent.OnBridge ? 3 : 1))) - 1;
+                pos.Z = -(((int)Math.Ceiling(_mapEvent.RealY / 32) + (_mapEvent.OnBridge ? 3 : 0)) * 2) - 1;
+            //pos.Z = -((_mapEvent.MapY + (_mapEvent.OnBridge ? 3 : 0)) * (32 * (_mapEvent.OnBridge ? 3 : 1))) - 1;
             else
-                pos.Z = -((_mapEvent.MapY + 3) * (32 * 5));
+                pos.Z = -(((int)Math.Ceiling(_mapEvent.RealY / 32) + 5) * 2);
             Transform.LocalPosition = pos;
         }
 
@@ -113,7 +117,7 @@ namespace RpgGame.EntityComponents
             if (!_mapEvent.Enabled) return;
 
             PlayerPacket localPacket = RpgClientConnection.Instance.GetLocalPlayerPacket();
-            if (localPacket == null || !(localPacket.PositionX == _mapEvent.MapX && localPacket.PositionY == _mapEvent.MapY))
+            if (localPacket == null || !(localPacket.PositionX == _mapEvent.MapX && localPacket.PositionY == _mapEvent.MapY) || _mapEvent.Priority == RenderPriority.OnTop)
             {
                 base.Render(e);
 

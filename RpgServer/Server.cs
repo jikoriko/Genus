@@ -106,10 +106,10 @@ namespace RpgServer
             runThread.Start();
 
             Console.WriteLine("Server Started...");
-            for (int i = 0; i < MapInfo.NumberMaps(); i++)
-            {
-                CheckMapStart(i);
-            }
+            //for (int i = 0; i < MapInfo.NumberMaps(); i++)
+            //{
+                //CheckMapStart(i);
+            //}
             RecieveClients();
         }
 

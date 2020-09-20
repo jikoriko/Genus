@@ -148,7 +148,7 @@ namespace RpgGame.EntityComponents
                             pos.X = x * 32;
                             pos.Y = y * 32;
                             int tilePriority = tileset.GetTilePriority(tileID);
-                            pos.Z = -((y + layer) * (tilePriority * 32));
+                            pos.Z = -((y + tilePriority) * 2);
 
                             if (tileset.GetReflectionFlag(tileID))
                             {
@@ -175,10 +175,11 @@ namespace RpgGame.EntityComponents
                                     Texture autoTile = Assets.GetTexture("AutoTiles/" + autoTileName);
                                     Rectangle[] miniTiles = TilesetData.Tileset.GetAutoTileSources(hashCode);
                                     int tileFrames = autoTile.GetWidth() / 96;
-                                    _autoTileAnimationTimer += (float)e.Time * (tileset.GetAutoTileTimer(tileID - 1) / 200f);
-                                    while (_autoTileAnimationTimer > 1f)
-                                        _autoTileAnimationTimer -= 1f;
-                                    int frame = (int)(_autoTileAnimationTimer * (tileFrames - 1));
+                                    _autoTileAnimationTimer += (float)e.Time;
+
+
+                                    int frame = (int)(_autoTileAnimationTimer * (tileset.GetAutoTileTimer(tileID - 1) / 20)) % tileFrames;
+                                    //int frame = (int)(time) * tileFrames;
                                     for (int i = 0; i < miniTiles.Length; i++)
                                     {
                                         miniTiles[i].X += 96 * frame;

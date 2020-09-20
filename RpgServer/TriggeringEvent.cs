@@ -12,6 +12,7 @@ namespace RpgServer
 
         private GameClient _gameClient;
         private MapEvent _mapEvent;
+        private TriggeringEvent _parent;
         public int CommandID;
 
         public int ConditionDepth;
@@ -23,10 +24,11 @@ namespace RpgServer
 
         public bool Complete { get; private set; }
 
-        public TriggeringEvent(GameClient client, MapEvent mapEvent)
+        public TriggeringEvent(GameClient client, MapEvent mapEvent, TriggeringEvent parentEvent = null)
         {
             _gameClient = client;
             _mapEvent = mapEvent;
+            _parent = parentEvent;
             CommandID = -1;
 
             ConditionDepth = 0;
@@ -37,6 +39,11 @@ namespace RpgServer
             SelectedOption = -1;
 
             Complete = false;
+        }
+
+        public TriggeringEvent GetParent()
+        {
+            return _parent;
         }
 
         public MapEvent GetMapEvent()

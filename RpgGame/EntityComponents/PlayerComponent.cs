@@ -47,7 +47,7 @@ namespace RpgGame.EntityComponents
         public void SetRealPosition()
         {
             Vector3 pos = new Vector3(_playerPacket.RealX + 16, _playerPacket.RealY + 16, 0);
-            pos.Z = -((_playerPacket.PositionY + (_playerPacket.OnBridge ? 3 : 0)) * (32 * (_playerPacket.OnBridge ? 3 : 1))) - 1;
+            pos.Z = -(((int)Math.Ceiling(_playerPacket.RealY / 32) + (_playerPacket.OnBridge ? 3 : 0)) * 2) - 1;
             Transform.LocalPosition = pos;
         }
 
@@ -136,8 +136,9 @@ namespace RpgGame.EntityComponents
                         return;
 
                     Vector3 pos = Transform.Position;
-                    pos.Y -= GetFrameHeight() + Renderer.GetFont().GetTextHeight(_playerPacket.Username);
+                    pos.Y -= GetFrameHeight() + Renderer.GetFont().GetTextHeight(_playerPacket.Username) + 21;
                     pos.X -= Renderer.GetFont().GetTextWidth(_playerPacket.Username) / 2;
+                    pos.Z -= 100;
                     OpenTK.Graphics.Color4 colour = OpenTK.Graphics.Color4.Red;
 
                     //Renderer.DisableDepthTest();

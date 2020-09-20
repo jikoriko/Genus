@@ -538,7 +538,11 @@ namespace Genus2D.GameData
                 if (x >= 0 && x < Priorities.GetLength(0) && y >= 0 && y < Priorities.GetLength(1))
                 {
                     if (GetBridgeFlag(x, y))
+                    {
+                        if (GetPassable(x, y))
+                            return 0;
                         return 3;
+                    }
                     return Priorities[x, y];
                 }
 

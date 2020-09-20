@@ -176,6 +176,8 @@ namespace RpgServer
                     {
                         if (bridgeEntry && TilesetData.GetTileset(tileInfo.Item2).GetPassable(tileInfo.Item1))
                             return true;
+                        else if (GetBridgeFlag(x, y))
+                            return true;
                         else
                             return false;
                     }
@@ -223,27 +225,27 @@ namespace RpgServer
 
         public bool MapTileEventPassable(int x, int y, int eventID, bool checkDirections, bool onBridge, bool bridgeEntry, MovementDirection dir)
         {
+            MapEvent mapEvent = _mapData.GetMapEvent(eventID);
+            if (mapEvent.Passable && TileInsideMap(x, y))
+                return true;
+
             if (!MapTilePassable(x, y, checkDirections, onBridge, bridgeEntry, dir))
                 return false;
 
-            MapEvent mapEvent = _mapData.GetMapEvent(eventID);
-            if (mapEvent.Passable)
-                return true;
-            else
-            {
-                if (TileHasPlayers(x, y, onBridge))
-                    return false;
 
-                int tileEvent = TileHasNonePassableEvent(x, y, eventID);
-                if (tileEvent != -1)
+            if (TileHasPlayers(x, y, onBridge))
+                return false;
+
+            int tileEvent = TileHasNonePassableEvent(x, y, eventID);
+            if (tileEvent != -1)
+            {
+                mapEvent = _mapData.GetMapEvent(tileEvent);
+                if (onBridge == mapEvent.OnBridge)
                 {
-                    mapEvent = _mapData.GetMapEvent(tileEvent);
-                    if (onBridge == mapEvent.OnBridge)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
+
 
             return true;
         }
@@ -446,7 +448,7 @@ namespace RpgServer
                     break;
             }
 
-            bool bridgeEntry = MapTilesetPassable(x, y) && mapEvent.OnBridge;
+            bool bridgeEntry = MapTilesetPassable(x, y) && mapEvent.OnBridge && !mapEvent.Passable;
             if (MapTileEventPassable(x, y, eventID, true, mapEvent.OnBridge, bridgeEntry, direction) &&
                 MapTileEventPassable(targetX, targetY, eventID, true, mapEvent.OnBridge, bridgeEntry, entryDirection))
             {

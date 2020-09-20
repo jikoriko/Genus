@@ -3394,7 +3394,7 @@
             this.RemoveShopButton.Name = "RemoveShopButton";
             this.RemoveShopButton.Size = new System.Drawing.Size(185, 47);
             this.RemoveShopButton.TabIndex = 12;
-            this.RemoveShopButton.Text = "Remove Quest";
+            this.RemoveShopButton.Text = "Remove Shop";
             this.RemoveShopButton.UseVisualStyleBackColor = true;
             this.RemoveShopButton.Click += new System.EventHandler(this.RemoveShopButton_Click);
             // 

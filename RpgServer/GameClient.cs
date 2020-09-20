@@ -30,6 +30,7 @@ namespace RpgServer
                 GameClient gameClient;
                 if (LoginClient(tcpClient, out gameClient))
                 {
+                    //Console.WriteLine(gameClient.GetPacket().PositionX);
                     Server.Instance.ChangeClientsMap(gameClient);
                 }
                 else
@@ -130,6 +131,7 @@ namespace RpgServer
         public int TradePlayerID;
         private TradeRequest _tradeRequest;
         private bool _trading = false;
+        private bool _ignoreEvents;
 
         private float _movementTimer;
         private float _combatTimer;
@@ -178,6 +180,7 @@ namespace RpgServer
             TradePlayerID = -1;
             _tradeRequest = null;
             _trading = false;
+            _ignoreEvents = false;
         }
 
         private static byte[] ReadData(int size, Stream stream)
@@ -1056,6 +1059,12 @@ namespace RpgServer
                     {
                         realPos = targetPos;
                         CheckEventTriggers(_playerPacket.PositionX, _playerPacket.PositionY, EventTriggerType.PlayerTouch);
+
+                        if (!_mapInstance.GetBridgeFlag(_playerPacket.PositionX, _playerPacket.PositionY))
+                        {
+                            _playerPacket.OnBridge = false;
+                        }
+                        _ignoreEvents = false;
                     }
                     else
                     {
@@ -1091,10 +1100,11 @@ namespace RpgServer
             return true;
         }
 
-        public void Move(MovementDirection direction)
+        public void Move(MovementDirection direction, bool ignoreEvents = false)
         {
             if (CanMove())
             {
+                _ignoreEvents = ignoreEvents;
                 int x = _playerPacket.PositionX;
                 int y = _playerPacket.PositionY;
                 int targetX = _playerPacket.PositionX;
@@ -1167,10 +1177,6 @@ namespace RpgServer
                             if (_mapInstance.MapTilesetPassable(targetX, targetY))
                                 _playerPacket.OnBridge = true;
                         }
-                        else
-                        {
-                            _playerPacket.OnBridge = false;
-                        }
                     }
                     else
                     {
@@ -1212,6 +1218,9 @@ namespace RpgServer
 
         private bool CheckEventTriggers(int x, int y, EventTriggerType triggerType)
         {
+            if (_ignoreEvents)
+                return false;
+
             MapData mapData = _mapInstance.GetMapData();
             for (int i = 0; i < mapData.MapEventsCount(); i++)
             {

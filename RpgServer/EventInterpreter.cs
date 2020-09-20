@@ -69,6 +69,12 @@ namespace RpgServer
                 return;
             }
 
+            if (triggeringEvent.GetParent() != null)
+            {
+                if (triggeringEvent.GetParent().CommandID <= triggeringEvent.CommandID)
+                    return;
+            }
+
             if (triggeringEvent.CommandID < eventData.EventCommands.Count - 1)
             {
                 triggeringEvent.CommandID++;
@@ -119,7 +125,7 @@ namespace RpgServer
                         if (client == null || !client.Connected()) break;
 
                         movementDirection = (MovementDirection)eventCommand.GetParameter("Direction");
-                        client.Move(movementDirection);
+                        client.Move(movementDirection, true);
 
                         break;
                     case EventCommand.CommandType.ChangePlayerDirection:
@@ -641,24 +647,27 @@ namespace RpgServer
 
         public void TriggerEventData(GameClient client, MapEvent mapEvent)
         {
+            if (mapEvent == null || mapEvent.GetEventData() == null)
+                return;
+
             if (mapEvent.Locked) // add player lock id so others can interact
             {
                 return;
             }
 
+            TriggeringEvent parent = new TriggeringEvent(null, mapEvent);
+            _triggeringEvents.Add(parent);
             if (client == null)
             {
-                _triggeringEvents.Add(new TriggeringEvent(client, mapEvent));
                 GameClient[] clients = _mapInstance.GetClients();
                 for (int i = 0; i < clients.Length; i++)
                 {
-                    _triggeringEvents.Add(new TriggeringEvent(clients[i], mapEvent));
+                    _triggeringEvents.Add(new TriggeringEvent(clients[i], mapEvent, parent));
                 }
             }
             else
             {
-                _triggeringEvents.Add(new TriggeringEvent(null, mapEvent));
-                _triggeringEvents.Add(new TriggeringEvent(client, mapEvent));
+                _triggeringEvents.Add(new TriggeringEvent(client, mapEvent, parent));
             }
 
             mapEvent.Locked = true;

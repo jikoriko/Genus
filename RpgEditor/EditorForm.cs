@@ -317,8 +317,8 @@ namespace RpgEditor
                 for (int i = 0; i < _autoTileSelections.Count; i++)
                 {
                     _autoTileSelections[i].SelectedIndex = 0;
-                    _autoTimers[i].Value = (decimal)tileset.GetAutoTileTimer(i);
-                    for (int j = 0; j < _autoTileSelections[j].Items.Count; j++)
+                    _autoTimers[i].Value = (decimal)Math.Max(tileset.GetAutoTileTimer(i), 0.1);
+                    for (int j = 0; j < _autoTileSelections[i].Items.Count; j++)
                     {
                         if (_autoTileSelections[i].Items[j].ToString() == tileset.GetAutoTile(i))
                         {

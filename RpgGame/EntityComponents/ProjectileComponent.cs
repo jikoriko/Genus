@@ -34,8 +34,7 @@ namespace RpgGame.EntityComponents
         public void SetRealPosition(float x, float y)
         {
             Vector3 pos = new Vector3(x + 16, y + 16, 0);
-            int tileY = (int)(y / 32);
-            pos.Z = -((tileY + (_projectile.OnBridge ? 3 : 0)) * (32 * (_projectile.OnBridge ? 3 : 1))) - 2;
+            pos.Z = -((int)(Math.Ceiling(pos.Y / 32) + (_projectile.OnBridge ? 3 : 0)) * 2) - 1;
             Transform.LocalPosition = pos;
 
         }
