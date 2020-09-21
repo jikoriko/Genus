@@ -21,6 +21,8 @@ namespace RpgServer
         static bool ConsoleEventCallback(int eventType)
         {
             _server.Stop();
+            while (_server.GetRunThread().IsAlive)
+            { }
             return false;
         }
         static ConsoleEventDelegate handler;   // Keeps it from getting garbage collected

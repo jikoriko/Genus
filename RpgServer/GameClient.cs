@@ -15,7 +15,7 @@ namespace RpgServer
 
         public static void RecieveClient(TcpClient tcpClient)
         {
-            Console.WriteLine("recieved a client");
+            Console.WriteLine("Recieved a client...");
 
             Stream stream = tcpClient.GetStream();
             byte[] bytes = ReadData(sizeof(int), stream);
@@ -30,12 +30,10 @@ namespace RpgServer
                 GameClient gameClient;
                 if (LoginClient(tcpClient, out gameClient))
                 {
-                    //Console.WriteLine(gameClient.GetPacket().PositionX);
                     Server.Instance.ChangeClientsMap(gameClient);
                 }
                 else
                 {
-                    //failed to login character
                     tcpClient.Close();
                 }
             }
@@ -48,7 +46,16 @@ namespace RpgServer
             result.Registered = Server.Instance.GetDatabaseConnection().InsertPlayerQuery(loginRequest.Username, loginRequest.Password, out result.Reason);
             SendRegisterResult(stream, result);
 
-            return false;
+            if (result.Registered)
+            {
+                Console.WriteLine("(" + loginRequest.Username + ") Successful register.");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("(" + loginRequest.Username + ") Failed register.");
+                return false;
+            }
         }
 
         private static bool LoginClient(TcpClient tcpClient, out GameClient oClient)
@@ -60,8 +67,10 @@ namespace RpgServer
             bool loginValid = Server.Instance.GetDatabaseConnection().LoginQuery(loginRequest.Username, loginRequest.Password, out playerID);
 
             LoginResult result = new LoginResult();
-            if (loginValid)
+            if (loginValid  && Server.Instance.FindClientByID(playerID) == null)
             {
+                Console.WriteLine("(" + playerID + ", " + loginRequest.Username + ") Successful login.");
+
                 result.LoggedIn = true;
                 result.PlayerID = playerID;
 
@@ -70,6 +79,8 @@ namespace RpgServer
             }
             else
             {
+                Console.WriteLine("(" + playerID + ", " + loginRequest.Username + ") Failed login.");
+
                 result.LoggedIn = false;
                 result.PlayerID = -1;
                 oClient = null;
@@ -114,6 +125,8 @@ namespace RpgServer
         private TcpClient _tcpClient;
         private NetworkStream _stream;
         private bool _connected;
+        private bool _disconnecting;
+        private float _disconnectTimer;
 
         private bool _mapChanged;
         private bool _running;
@@ -149,6 +162,8 @@ namespace RpgServer
             _tcpClient = tcpClient;
             _stream = _tcpClient.GetStream();
             _connected = true;
+            _disconnecting = false;
+            _disconnectTimer = 5f;
 
             _mapChanged = false;
             _running = false;
@@ -208,7 +223,7 @@ namespace RpgServer
 
             while (true)
             {
-                if (Connected())
+                if (Connected() && !_disconnecting)
                 {
 
                     prevTicks = ticks;
@@ -217,7 +232,7 @@ namespace RpgServer
 
                     if (updateTimer <= 0.0)
                     {
-                        updateTimer = 0.05;
+                        updateTimer = 0.1;
                         if (_mapInstance != null)
                         {
                             try
@@ -231,9 +246,8 @@ namespace RpgServer
                             }
                             catch (Exception e)
                             {
-                                Console.WriteLine(e.Message);
-                                Console.WriteLine(e.StackTrace);
-                                Disconnect();
+                                Console.WriteLine("Client Disconnected");
+                                _disconnecting = true;
                             }
                         }
                     }
@@ -959,6 +973,18 @@ namespace RpgServer
 
         public void Update(float deltaTime)
         {
+            if (_disconnecting)
+            {
+                if (_disconnectTimer > 0)
+                    _disconnectTimer -= deltaTime;
+                else
+                {
+                    Disconnect();
+                    _disconnecting = false;
+                    return;
+                }
+            }
+
             //trading
             if (_trading)
             {
@@ -975,7 +1001,7 @@ namespace RpgServer
                     else
                         playerID = _tradeRequest.TradeOffer1.PlayerID;
                     GameClient other = _mapInstance.FindGameClient(playerID);
-                    if (other == null || !other._trading)
+                    if (other == null || !other._trading || other._disconnecting || _disconnecting)
                     {
                         this.StopTrading();
                     }
@@ -1448,9 +1474,16 @@ namespace RpgServer
 
         public void Disconnect()
         {
-            Server.Instance.GetDatabaseConnection().UpdatePlayerQuery(_playerPacket);
             if (_connected)
             {
+                StopTrading();
+                _serverCommands.Clear();
+                try
+                {
+                    this.AddServerCommand(new ServerCommand(ServerCommand.CommandType.Disconnect));
+                    this.SendServerCommands();
+                } catch { }
+                Server.Instance.GetDatabaseConnection().UpdatePlayerQuery(_playerPacket);
                 Server.Instance.RemoveGameClient(this);
                 _stream.Close();
                 _connected = false;

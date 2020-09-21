@@ -383,6 +383,10 @@ namespace RpgGame
 
             switch (command.GetCommandType())
             {
+                case ServerCommand.CommandType.Disconnect:
+                    this.Disconnect();
+                    Console.WriteLine("Server Disconnected");
+                    break;
                 case ServerCommand.CommandType.ShowMessage:
 
                     if (_messageBox == null)
@@ -768,12 +772,12 @@ namespace RpgGame
 
         public bool Connected()
         {
-            return _connected;
+            return _connected && _client.Connected;
         }
 
         public void Disconnect()
         {
-            if (Connected())
+            if (_connected)
             {
                 _stream.Close();
                 _client.Close();

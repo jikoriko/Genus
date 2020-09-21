@@ -31,6 +31,8 @@ namespace RpgServer
 
         private XmlDocument _settingsXml;
 
+        private static Thread _runThread;
+
         public Server()
         {
             Instance = this;
@@ -102,8 +104,8 @@ namespace RpgServer
             _tcpListener = new TcpListener(IPAddress.Any, _port);
             _tcpListener.Start();
 
-            Thread runThread = new Thread(new ThreadStart(Run));
-            runThread.Start();
+            _runThread = new Thread(new ThreadStart(Run));
+            _runThread.Start();
 
             Console.WriteLine("Server Started...");
             //for (int i = 0; i < MapInfo.NumberMaps(); i++)
@@ -118,7 +120,6 @@ namespace RpgServer
             if (_running)
             {
                 _running = false;
-                _databaseConnection.Close();
             }
         }
 
@@ -170,17 +171,36 @@ namespace RpgServer
         {
             while (_running)
             {
-                //calculate a time delta here for map updates
-                prevTicks = ticks;
-                ticks = DateTime.Now.Ticks;
-                _deltaTime = (ticks - prevTicks) / 10000000.0;
-
-                for (int i = 0; i < _mapInstances.Count; i++)
+                try
                 {
-                    MapInstance map = _mapInstances.ElementAt(i).Value;
-                    map.Update((float)_deltaTime);
+                    //calculate a time delta here for map updates
+                    prevTicks = ticks;
+                    ticks = DateTime.Now.Ticks;
+                    _deltaTime = (ticks - prevTicks) / 10000000.0;
+
+                    for (int i = 0; i < _mapInstances.Count; i++)
+                    {
+                        MapInstance map = _mapInstances.ElementAt(i).Value;
+                        map.Update((float)_deltaTime);
+                    }
+                }
+                catch
+                {
+                    Stop();
                 }
             }
+
+            while (_gameClients.Count > 0)
+            {
+                _gameClients[0].Disconnect();
+
+            }
+            _databaseConnection.Close();
+        }
+
+        public Thread GetRunThread()
+        {
+            return _runThread;
         }
 
 

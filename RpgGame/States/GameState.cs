@@ -181,6 +181,7 @@ namespace RpgGame.States
             {
                 StateWindow.Instance.PopState();
                 this.Destroy();
+                return;
             }
             else if (e.Key == OpenTK.Input.Key.Enter && e.Alt)
             {
@@ -221,7 +222,18 @@ namespace RpgGame.States
         public override void OnUpdateFrame(FrameEventArgs e)
         {
             if (_connection != null)
-                _connection.Update();
+            {
+                if (_connection.Connected())
+                {
+                    _connection.Update();
+                }
+                else
+                {
+                    StateWindow.Instance.PopState();
+                    this.Destroy();
+                    return;
+                }
+            }
 
             base.OnUpdateFrame(e);
 
@@ -291,6 +303,15 @@ namespace RpgGame.States
             base.Destroy();
             if (_connection != null)
                 _connection.Disconnect();
+
+            if (TradePanel.Instance != null)
+                TradePanel.Instance.Close();
+            if (InventoryPanel.Instance != null)
+                InventoryPanel.Instance.Close();
+            if (EquipmentPanel.Instance != null)
+                EquipmentPanel.Instance.Close();
+            if (StatsPanel.Instance != null)
+                StatsPanel.Instance.Close();
         }
     }
 }

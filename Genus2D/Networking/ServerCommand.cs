@@ -11,6 +11,7 @@ namespace Genus2D.Networking
     {
         public enum CommandType
         {
+            Disconnect,
             ShowMessage,
             ShowOptions,
             AddMapEnemy,
@@ -57,6 +58,9 @@ namespace Genus2D.Networking
 
             switch (type)
             {
+                case CommandType.Disconnect:
+
+                    break;
                 case CommandType.ShowMessage:
                     _parameters.Add("Message", new Parameter(0, ""));
                     break;
