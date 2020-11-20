@@ -5,6 +5,9 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace Genus2D.GameData
 {
@@ -12,11 +15,18 @@ namespace Genus2D.GameData
     public class QuestData
     {
         [Serializable]
-        public class QuestObective
+        public class QuestObective : IXmlSerializable
         {
             public string Name;
             public string Description;
             public List<Tuple<int, int>> ItemRewards;
+
+            public QuestObective()
+            {
+                Name = "";
+                Description = "";
+                ItemRewards = new List<Tuple<int, int>>();
+            }
 
             public QuestObective(string name)
             {
@@ -39,10 +49,84 @@ namespace Genus2D.GameData
                 }
                 return names;
             }
+
+            public XmlSchema GetSchema()
+            {
+                return (null);
+            }
+
+            public void ReadXml(XmlReader reader)
+            {
+                string xml = reader.ReadOuterXml();
+                reader = XmlReader.Create(new StringReader(xml));
+
+                while (reader.Read())
+                {
+                    if (reader.NodeType == XmlNodeType.Element)
+                    {
+                        if (reader.LocalName == "Name")
+                        {
+                            reader.Read();
+                            Name = reader.ReadContentAsString();
+                        }
+                        else if (reader.LocalName == "Description")
+                        {
+                            reader.Read();
+                            Description = reader.ReadContentAsString();
+                        }
+                        else if (reader.LocalName == "Item")
+                        {
+                            reader.Read();
+                            reader.Read();
+                            int id = reader.ReadContentAsInt();
+                            reader.Read();
+                            reader.Read();
+                            int count = reader.ReadContentAsInt();
+                            ItemRewards.Add(new Tuple<int, int>(id, count));
+                        }
+                    }
+                }
+            }
+
+            public void WriteXml(XmlWriter writer)
+            {
+                writer.WriteStartElement("Name");
+                writer.WriteString(Name);
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("Description");
+                writer.WriteString(Description);
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("ItemRewards");
+                
+                for (int i = 0; i < ItemRewards.Count; i++)
+                {
+                    writer.WriteStartElement("Item");
+
+                    writer.WriteStartElement("ID");
+                    writer.WriteString(ItemRewards[i].Item1.ToString());
+                    writer.WriteEndElement();
+
+                    writer.WriteStartElement("Count");
+                    writer.WriteString(ItemRewards[i].Item2.ToString());
+                    writer.WriteEndElement();
+
+                    writer.WriteEndElement();
+                }
+
+                writer.WriteEndElement();
+            }
         }
 
         public string Name;
         public List<QuestObective> Objectives;
+
+        public QuestData()
+        {
+            Name = "";
+            Objectives = new List<QuestObective>();
+        }
 
         public QuestData(string name)
         {
@@ -75,19 +159,26 @@ namespace Genus2D.GameData
         private static List<QuestData> _quests = LoadData();
         private static List<QuestData> LoadData()
         {
-            List<QuestData> quests;
-            if (File.Exists("Data/QuestData.data"))
+            List<QuestData> data;
+            //if (File.Exists("Data/QuestData.data"))
+            //{
+            //    FileStream stream = File.Open("Data/QuestData.data", FileMode.Open, FileAccess.Read);
+            //    BinaryFormatter formatter = new BinaryFormatter();
+            //    quests = (List<QuestData>)formatter.Deserialize(stream);
+            //    stream.Close();
+            //}
+            if (File.Exists("Data/ItemData.xml"))
             {
-                FileStream stream = File.Open("Data/QuestData.data", FileMode.Open, FileAccess.Read);
-                BinaryFormatter formatter = new BinaryFormatter();
-                quests = (List<QuestData>)formatter.Deserialize(stream);
+                FileStream stream = File.Open("Data/QuestData.xml", FileMode.Open, FileAccess.Read);
+                XmlSerializer serializer = new XmlSerializer(typeof(List<QuestData>));
+                data = (List<QuestData>)serializer.Deserialize(stream);
                 stream.Close();
             }
             else
             {
-                quests = new List<QuestData>();
+                data = new List<QuestData>();
             }
-            return quests;
+            return data;
         }
 
         public static void ReloadData()
@@ -99,9 +190,15 @@ namespace Genus2D.GameData
         {
             if (!Directory.Exists("Data"))
                 Directory.CreateDirectory("Data");
-            FileStream stream = File.Create("Data/QuestData.data");
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, _quests);
+
+            //FileStream stream = File.Create("Data/QuestData.data");
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //formatter.Serialize(stream, _quests);
+            //stream.Close();
+
+            FileStream stream = File.Create("Data/QuestData.xml");
+            XmlSerializer serializer = new XmlSerializer(typeof(List<QuestData>));
+            serializer.Serialize(stream, _quests);
             stream.Close();
         }
 

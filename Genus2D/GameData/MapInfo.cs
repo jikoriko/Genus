@@ -1,37 +1,56 @@
-﻿using System;
+﻿using SharpFont;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace Genus2D.GameData
 {
     [Serializable]
-    public class MapInfo
+    public class MapInfo : IXmlSerializable
     {
-
-        private static List<SpawnPoint> _spawnPoints;
-        private static List<MapInfo> _mapInfos = LoadMapInfos();
-        private static List<MapInfo> LoadMapInfos()
+        [Serializable]
+        public class MapInfoData
         {
-            List<MapInfo> mapInfo;
+            public List<MapInfo> MapInfos;
+            public List<SpawnPoint> SpawnPoints;
+        }
 
-            if (File.Exists("Data/MapInfo.data"))
+        private static MapInfoData _mapInfoData = LoadMapInfoData();
+
+        private static MapInfoData LoadMapInfoData()
+        {
+            MapInfoData data;
+
+            //if (File.Exists("Data/MapInfo.data"))
+            //{
+            //    Stream stream = File.OpenRead("Data/MapInfo.data");
+            //    BinaryFormatter formatter = new BinaryFormatter();
+            //    data.MapInfos = (List<MapInfo>)formatter.Deserialize(stream);
+            //    data.SpawnPoints = (List<SpawnPoint>)formatter.Deserialize(stream);
+            //    stream.Close();
+            //}
+            if (File.Exists("Data/MapInfo.xml"))
             {
-                Stream stream = File.OpenRead("Data/MapInfo.data");
-                BinaryFormatter formatter = new BinaryFormatter();
-                mapInfo = (List<MapInfo>)formatter.Deserialize(stream);
-                _spawnPoints = (List<SpawnPoint>)formatter.Deserialize(stream);
+                FileStream stream = File.Open("Data/MapInfo.xml", FileMode.Open, FileAccess.Read);
+                XmlSerializer serializer = new XmlSerializer(typeof(MapInfoData));
+                data = (MapInfoData)serializer.Deserialize(stream);
                 stream.Close();
             }
             else
             {
-                mapInfo = new List<MapInfo>();
-                _spawnPoints = new List<SpawnPoint>();
+                data = new MapInfoData();
+                data.MapInfos = new List<MapInfo>();
+                data.SpawnPoints = new List<SpawnPoint>();
             }
 
-            return mapInfo;
+            return data;
         }
 
         private static void SaveMapInfos()
@@ -39,40 +58,45 @@ namespace Genus2D.GameData
             if (!Directory.Exists("Data"))
                 Directory.CreateDirectory("Data");
 
-            Stream stream = File.Create("Data/MapInfo.data");
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, _mapInfos);
-            formatter.Serialize(stream, _spawnPoints);
+            //Stream stream = File.Create("Data/MapInfo.data");
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //formatter.Serialize(stream, _mapInfos);
+            //formatter.Serialize(stream, _spawnPoints);
+            //stream.Close();
+
+            FileStream stream = File.Create("Data/MapInfo.xml");
+            XmlSerializer serializer = new XmlSerializer(typeof(MapInfoData));
+            serializer.Serialize(stream, _mapInfoData);
             stream.Close();
         }
 
         public static bool AddMapInfo(string mapName, int width, int height)
         {
-            for (int i = 0; i < _mapInfos.Count; i++)
+            for (int i = 0; i < _mapInfoData.MapInfos.Count; i++)
             {
-                if (_mapInfos[i].MapName == mapName)
+                if (_mapInfoData.MapInfos[i].MapName == mapName)
                     return false;
             }
 
-            _mapInfos.Add(new MapInfo(mapName, width, height));
+            _mapInfoData.MapInfos.Add(new MapInfo(mapName, width, height));
             SaveMapInfos();
             return true;
         }
 
         public static MapInfo GetMapInfo(int index)
         {
-            if (index >= 0 && index < _mapInfos.Count)
+            if (index >= 0 && index < _mapInfoData.MapInfos.Count)
             {
-                return _mapInfos[index];
+                return _mapInfoData.MapInfos[index];
             }
             return null;
         }
 
         public static int GetMapID(string name)
         {
-            for (int i = 0; i < _mapInfos.Count; i++)
+            for (int i = 0; i < _mapInfoData.MapInfos.Count; i++)
             {
-                if (_mapInfos[i].MapName == name)
+                if (_mapInfoData.MapInfos[i].MapName == name)
                 {
                     return i;
                 }
@@ -82,19 +106,19 @@ namespace Genus2D.GameData
 
         public static bool RenameMap(int index, string name)
         {
-            if (index >= 0 && index < _mapInfos.Count)
+            if (index >= 0 && index < _mapInfoData.MapInfos.Count)
             {
-                for (int i = 0; i < _mapInfos.Count; i++)
+                for (int i = 0; i < _mapInfoData.MapInfos.Count; i++)
                 {
                     if (i == index)
                         continue;
-                    if (_mapInfos[i].MapName == name)
+                    if (_mapInfoData.MapInfos[i].MapName == name)
                     {
                         return false;
                     }
                 }
-                File.Delete("Data/Maps/" + _mapInfos[index].MapName + ".mapData");
-                _mapInfos[index].MapName = name;
+                File.Delete("Data/Maps/" + _mapInfoData.MapInfos[index].MapName + ".mapData");
+                _mapInfoData.MapInfos[index].MapName = name;
                 SaveMapInfos();
                 return true;
             }
@@ -103,20 +127,20 @@ namespace Genus2D.GameData
 
         public static void DeleteMap(int index)
         {
-            if (index >= 0 && index < _mapInfos.Count)
+            if (index >= 0 && index < _mapInfoData.MapInfos.Count)
             {
-                File.Delete("Data/Maps/" + _mapInfos[index].MapName + ".mapData");
-                _mapInfos.RemoveAt(index);
+                File.Delete("Data/Maps/" + _mapInfoData.MapInfos[index].MapName + ".mapData");
+                _mapInfoData.MapInfos.RemoveAt(index);
                 SaveMapInfos();
             }
         }
 
         public static void ResizeMap(int index, int width, int height)
         {
-            if (index >= 0 && index < _mapInfos.Count)
+            if (index >= 0 && index < _mapInfoData.MapInfos.Count)
             {
-                _mapInfos[index].Width = width;
-                _mapInfos[index].Height = height;
+                _mapInfoData.MapInfos[index].Width = width;
+                _mapInfoData.MapInfos[index].Height = height;
                 SaveMapInfos();
             }
         }
@@ -125,9 +149,9 @@ namespace Genus2D.GameData
         {
             List<string> strings = new List<string>();
 
-            for (int i = 0; i < _mapInfos.Count; i++)
+            for (int i = 0; i < _mapInfoData.MapInfos.Count; i++)
             {
-                strings.Add(_mapInfos[i].MapName);
+                strings.Add(_mapInfoData.MapInfos[i].MapName);
             }
 
             return strings;
@@ -135,78 +159,91 @@ namespace Genus2D.GameData
 
         public static int NumberMaps()
         {
-            return _mapInfos.Count;
+            return _mapInfoData.MapInfos.Count;
         }
 
         public static void AddSpawnPoint(SpawnPoint spawn)
         {
-            for (int i = 0; i < _spawnPoints.Count; i++)
+            for (int i = 0; i < _mapInfoData.SpawnPoints.Count; i++)
             {
-                SpawnPoint point = _spawnPoints[i];
+                SpawnPoint point = _mapInfoData.SpawnPoints[i];
                 if (point.MapID == spawn.MapID && point.MapX == spawn.MapX && point.MapY == spawn.MapY)
                     return;
             }
-            _spawnPoints.Add(spawn);
+            _mapInfoData.SpawnPoints.Add(spawn);
             SaveMapInfos();
         }
 
         public static void RemoveSpawnPoint(int index)
         {
-            if (index >= 0 && index < _spawnPoints.Count)
+            if (index >= 0 && index < _mapInfoData.SpawnPoints.Count)
             {
-                _spawnPoints.RemoveAt(index);
+                _mapInfoData.SpawnPoints.RemoveAt(index);
                 SaveMapInfos();
             }
         }
 
         public static SpawnPoint GetSpawnPoint(int index)
         {
-            if (index >= 0 && index < _spawnPoints.Count)
-                return _spawnPoints[index];
+            if (index >= 0 && index < _mapInfoData.SpawnPoints.Count)
+                return _mapInfoData.SpawnPoints[index];
             return null;
         }
 
         public static SpawnPoint GetSpawnPoint(string name)
         {
-            for (int i = 0; i < _spawnPoints.Count; i++)
+            for (int i = 0; i < _mapInfoData.SpawnPoints.Count; i++)
             {
-                if (_spawnPoints[i].Label == name)
-                    return _spawnPoints[i];
+                if (_mapInfoData.SpawnPoints[i].Label == name)
+                    return _mapInfoData.SpawnPoints[i];
             }
             return null;
         }
 
         public static int NumberSpawnPoints()
         {
-            return _spawnPoints.Count;
+            return _mapInfoData.SpawnPoints.Count;
         }
 
         public static void SetMapEventsCount(int mapID, int count)
         {
-            if (mapID >= 0 && mapID < _mapInfos.Count)
+            if (mapID >= 0 && mapID < _mapInfoData.MapInfos.Count)
             {
-                _mapInfos[mapID].NumberMapEvents = count;
+                _mapInfoData.MapInfos[mapID].NumberMapEvents = count;
                 SaveMapInfos();
             }
         }
 
         public static MapData LoadMap(int index)
         {
-            if (index >= 0 && index < _mapInfos.Count)
+            if (index >= 0 && index < _mapInfoData.MapInfos.Count)
             {
-                string filename = "Data/Maps/" + _mapInfos[index].MapName + ".mapData";
+                //string filename = "Data/Maps/" + _mapInfoData.MapInfos[index].MapName + ".mapData";
+                string filename = "Data/Maps/" + _mapInfoData.MapInfos[index].MapName + ".xml";
 
-                MapData mapData = null;
+                MapData data = null;
 
+                /*
                 if (File.Exists(filename))
                 {
                     FileStream stream = File.Open(filename, FileMode.Open, FileAccess.Read);
                     BinaryFormatter formatter = new BinaryFormatter();
-                    mapData = (MapData)formatter.Deserialize(stream);
+                    data = (MapData)formatter.Deserialize(stream);
                     stream.Close();
                 }
+                //*/
 
-                return mapData;
+                //*
+                if (File.Exists(filename))
+                {
+                    FileStream stream = File.Open(filename, FileMode.Open, FileAccess.Read);
+                    XmlSerializer serializer = new XmlSerializer(typeof(MapData));
+                    data = (MapData)serializer.Deserialize(stream);
+                    stream.Close();
+                }
+                //*/
+
+                return data;
             }
 
             return null;
@@ -220,16 +257,22 @@ namespace Genus2D.GameData
             if (!Directory.Exists("Data/Maps"))
                 Directory.CreateDirectory("Data/Maps");
 
-            string filename = "Data/Maps/" + mapData.GetMapName() + ".mapData";
+            //string filename = "Data/Maps/" + mapData.GetMapName() + ".mapData";
+            string filename = "Data/Maps/" + mapData.GetMapName() + ".xml";
 
             AddMapInfo(mapData.GetMapName(), mapData.GetWidth(), mapData.GetHeight());
 
+            //FileStream stream = File.Create(filename);
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //formatter.Serialize(stream, mapData);
+            //stream.Close();
+
             FileStream stream = File.Create(filename);
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, mapData);
+            XmlSerializer serializer = new XmlSerializer(typeof(MapData));
+            serializer.Serialize(stream, mapData);
             stream.Close();
         }
-        
+
 
         public string MapName { get; private set; }
         public int Width { get; private set; }
@@ -237,12 +280,78 @@ namespace Genus2D.GameData
 
         public int NumberMapEvents { get; private set; }
         
+        public MapInfo()
+        {
+            MapName = "";
+            Width = -1;
+            Height = -1;
+            NumberMapEvents = 0;
+        }
+        
         public MapInfo(string name, int width, int height)
         {
             MapName = name;
             Width = width;
             Height = height;
             NumberMapEvents = 0;
+        }
+
+        public XmlSchema GetSchema()
+        {
+            return (null);
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            string xml = reader.ReadOuterXml();
+            reader = XmlReader.Create(new StringReader(xml));
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.LocalName == "MapName")
+                    {
+                        reader.Read();
+                        MapName = reader.ReadContentAsString();
+                    }
+                    else if (reader.LocalName == "Width")
+                    {
+                        reader.Read();
+                        Width = reader.ReadContentAsInt();
+                    }
+
+                    else if (reader.LocalName == "Height")
+                    {
+                        reader.Read();
+                        Height = reader.ReadContentAsInt();
+                    }
+                    else if (reader.LocalName == "NumberMapEvents")
+                    {
+                        reader.Read();
+                        NumberMapEvents = reader.ReadContentAsInt();
+                    }
+                }
+            }
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            writer.WriteStartElement("MapName");
+            writer.WriteString(MapName);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("Width");
+            writer.WriteString(Width.ToString());
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("Height");
+            writer.WriteString(Height.ToString());
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("NumberMapEvents");
+            writer.WriteString(NumberMapEvents.ToString());
+            writer.WriteEndElement();
         }
 
     }

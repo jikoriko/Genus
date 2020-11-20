@@ -481,32 +481,7 @@ namespace RpgEditor
             PopulateTilesetsList();
         }
 
-        private void PassabilitiesButton_CheckedChanged(object sender, EventArgs e)
-        {
-            tilesetDataPanel.Refresh();
-        }
-
-        private void PassabilitesButton2_CheckedChanged(object sender, EventArgs e)
-        {
-            tilesetDataPanel.Refresh();
-        }
-
-        private void PrioritiesButton_CheckedChanged(object sender, EventArgs e)
-        {
-            tilesetDataPanel.Refresh();
-        }
-
-        private void TerrainTagButton_CheckedChanged(object sender, EventArgs e)
-        {
-            tilesetDataPanel.Refresh();
-        }
-
-        private void BushFlagsButton_CheckedChanged(object sender, EventArgs e)
-        {
-            tilesetDataPanel.Refresh();
-        }
-
-        private void CounterFlagsButton_CheckedChanged(object sender, EventArgs e)
+        private void Properties_CheckedChanged(object sender, EventArgs e)
         {
             tilesetDataPanel.Refresh();
         }
@@ -849,6 +824,7 @@ namespace RpgEditor
                 sprite.HorizontalAnchorPoint.Y = (int)HorizontalSpriteAnchorY.Value;
                 sprite.HorizontalBounds.X = (int)HorizontalSpriteBoundsWidth.Value;
                 sprite.HorizontalBounds.Y = (int)HorizontalSpriteBoundsHeight.Value;
+                PopulateSpritesList();
             }
             else
             {

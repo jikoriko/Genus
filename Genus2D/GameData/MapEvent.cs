@@ -32,9 +32,19 @@ namespace Genus2D.GameData
         public bool Locked = false;
         public bool OnBridge = false;
 
-        private float _frequencyTimer;
+        private float _frequencyTimer = 0;
+
+        public MapEvent()
+        {
+            Initialize("", -1, -1, -1);
+        }
 
         public MapEvent(string name, int id, int x, int y)
+        {
+            Initialize(name, id, x, y);
+        }
+
+        private void Initialize(string name, int id, int x, int y)
         {
             Name = name;
             EventID = id;

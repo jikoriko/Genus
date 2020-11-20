@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Genus2D.GameData
 {
@@ -14,6 +15,12 @@ namespace Genus2D.GameData
 
         public string Name;
         public CombatStats BaseStats;
+
+        public ClassData()
+        {
+            Name = "";
+            BaseStats = new CombatStats();
+        }
 
         public ClassData(string name)
         {
@@ -25,11 +32,18 @@ namespace Genus2D.GameData
         private static List<ClassData> LoadData()
         {
             List<ClassData> data;
-            if (File.Exists("Data/ClassData.data"))
+            //if (File.Exists("Data/ClassData.data"))
+            //{
+            //    FileStream stream = File.Open("Data/ClassData.data", FileMode.Open, FileAccess.Read);
+            //    BinaryFormatter formatter = new BinaryFormatter();
+            //    data = (List<ClassData>)formatter.Deserialize(stream);
+            //    stream.Close();
+            //}
+            if (File.Exists("Data/ClassData.xml"))
             {
-                FileStream stream = File.Open("Data/ClassData.data", FileMode.Open, FileAccess.Read);
-                BinaryFormatter formatter = new BinaryFormatter();
-                data = (List<ClassData>)formatter.Deserialize(stream);
+                FileStream stream = File.Open("Data/ClassData.xml", FileMode.Open, FileAccess.Read);
+                XmlSerializer serializer = new XmlSerializer(typeof(List<ClassData>));
+                data = (List<ClassData>)serializer.Deserialize(stream);
                 stream.Close();
             }
             else
@@ -48,10 +62,17 @@ namespace Genus2D.GameData
         {
             if (!Directory.Exists("Data"))
                 Directory.CreateDirectory("Data");
-            FileStream stream = File.Create("Data/ClassData.data");
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, _classData);
+
+            //FileStream stream = File.Create("Data/ClassData.data");
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //formatter.Serialize(stream, _classData);
+            //stream.Close();
+
+            FileStream stream = File.Create("Data/ClassData.xml");
+            XmlSerializer serializer = new XmlSerializer(typeof(List<ClassData>));
+            serializer.Serialize(stream, _classData);
             stream.Close();
+
         }
 
         public static ClassData GetClass(int index)

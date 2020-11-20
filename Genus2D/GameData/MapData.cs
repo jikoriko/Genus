@@ -1,14 +1,18 @@
-﻿using System;
+﻿using Genus2D.GUI;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace Genus2D.GameData
 {
 
     [Serializable]
-    public class MapData
+    public class MapData : IXmlSerializable
     {
 
         public static readonly int NUM_LAYERS = 3;
@@ -18,6 +22,113 @@ namespace Genus2D.GameData
         private int _height;
         private Tuple<int, int>[] _mapData;
         private List<MapEvent> _mapEvents;
+
+        public XmlSchema GetSchema()
+        {
+            return (null);
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            string xml = reader.ReadOuterXml();
+            reader = XmlReader.Create(new StringReader(xml));
+
+            XmlSerializer serializer = new XmlSerializer(typeof(List<MapEvent>));
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.LocalName == "MapName")
+                    {
+                        reader.Read();
+                        _mapName = reader.ReadContentAsString();
+                    }
+                    else if (reader.LocalName == "MapWidth")
+                    {
+                        reader.Read();
+                        _width = reader.ReadContentAsInt();
+                    }
+                    else if (reader.LocalName == "MapHeight")
+                    {
+                        reader.Read();
+                        _height = reader.ReadContentAsInt();
+                    }
+                    else if (reader.LocalName == "MapData")
+                    {
+                        _mapData = new Tuple<int, int>[_height * _width * NUM_LAYERS];
+                    }
+                    else if (reader.LocalName.StartsWith("MapTile"))
+                    {
+                        int index = int.Parse(reader.LocalName.Substring(7));
+
+                        reader.Read();
+                        reader.Read();
+                        int value1 = reader.ReadContentAsInt();
+                        reader.Read();
+                        reader.Read();
+                        int value2 = reader.ReadContentAsInt();
+
+                        _mapData[index] = new Tuple<int, int>(value1, value2);
+                    }
+                    else if (reader.LocalName == "ArrayOfMapEvent")
+                    {
+                        xml = reader.ReadOuterXml();
+                        Console.WriteLine(xml);
+                        XmlReader reader2 = XmlReader.Create(new StringReader(xml));
+                        _mapEvents = (List<MapEvent>)serializer.Deserialize(reader2);
+                    }
+                }
+            }
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(List<MapEvent>));
+
+            writer.WriteStartElement("MapName");
+            writer.WriteString(_mapName);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("MapWidth");
+            writer.WriteString(_width.ToString());
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("MapHeight");
+            writer.WriteString(_height.ToString());
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("MapData");
+
+            for (int i = 0; i < _mapData.Length; i++)
+            {
+
+                writer.WriteStartElement("MapTile" + i);
+
+                writer.WriteStartElement("Value1");
+                writer.WriteString(_mapData[i].Item1.ToString());
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("Value2");
+                writer.WriteString(_mapData[i].Item2.ToString());
+                writer.WriteEndElement();
+
+                writer.WriteEndElement();
+
+            }
+
+            writer.WriteEndElement();
+
+            serializer.Serialize(writer, _mapEvents);
+
+        }
+
+        public MapData()
+        {
+            _mapName = "";
+            _width = 0;
+            _height = 0;
+        }
 
         public MapData(string mapName, int width, int height)
         {

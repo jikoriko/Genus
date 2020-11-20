@@ -6,6 +6,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Genus2D.Graphics;
 using Genus2D.Utililities;
 using System.Drawing;
+using System.Xml.Serialization;
+using System.Xml.Schema;
+using System.Xml;
+using Genus2D.Utilities;
 
 namespace Genus2D.GameData
 {
@@ -13,7 +17,7 @@ namespace Genus2D.GameData
     {
 
         [Serializable]
-        public class Tileset
+        public class Tileset : IXmlSerializable
         {
             public string Name;
 
@@ -28,6 +32,190 @@ namespace Genus2D.GameData
 
             private string[] AutoTiles;
             private float[] AutoTileTimers;
+
+            public XmlSchema GetSchema()
+            {
+                return (null);
+            }
+
+            public void ReadXml(XmlReader reader)
+            {
+                string xml = reader.ReadOuterXml();
+                reader = XmlReader.Create(new StringReader(xml));
+
+                XmlReader reader2;
+
+                while (!reader.EOF)
+                {
+                    if (reader.NodeType == XmlNodeType.Element)
+                    {
+                        if (reader.LocalName == "Name")
+                        {
+                            reader.Read();
+                            Name = reader.ReadContentAsString();
+                        }
+                        else if (reader.LocalName == "ImagePath")
+                        {
+                            reader.Read();
+                            ImagePath = reader.ReadContentAsString();
+                        }
+                        else if (reader.LocalName == "Pasabilities")
+                        {
+                            xml = reader.ReadInnerXml();
+                            reader2 = XmlReader.Create(new StringReader(xml));
+
+                            XmlSerializer serializer = new XmlSerializer(typeof(bool[]));
+                            bool[] data = (bool[])serializer.Deserialize(reader2);
+                            Pasabilities = DataConversion.ExpandArray3D<bool>(data, 8, 8);
+                        }
+                        else if (reader.LocalName == "Priorities")
+                        {
+                            xml = reader.ReadInnerXml();
+                            reader2 = XmlReader.Create(new StringReader(xml));
+
+                            XmlSerializer serializer = new XmlSerializer(typeof(int[]));
+                            int[] data = (int[])serializer.Deserialize(reader2);
+                            Priorities = DataConversion.ExpandArray2D<int>(data, 8);
+                            
+                        }
+                        else if (reader.LocalName == "TerrainTags")
+                        {
+                            xml = reader.ReadInnerXml();
+                            reader2 = XmlReader.Create(new StringReader(xml));
+
+                            XmlSerializer serializer = new XmlSerializer(typeof(int[]));
+                            int[] data = (int[])serializer.Deserialize(reader2);
+                            TerrainTags = DataConversion.ExpandArray2D<int>(data, 8);
+                        }
+                        else if (reader.LocalName == "BushFlags")
+                        {
+                            xml = reader.ReadInnerXml();
+                            reader2 = XmlReader.Create(new StringReader(xml));
+
+                            XmlSerializer serializer = new XmlSerializer(typeof(bool[]));
+                            bool[] data = (bool[])serializer.Deserialize(reader2);
+                            BushFlags = DataConversion.ExpandArray2D<bool>(data, 8);
+                        }
+                        else if (reader.LocalName == "CounterFlags")
+                        {
+                            xml = reader.ReadInnerXml();
+                            reader2 = XmlReader.Create(new StringReader(xml));
+
+                            XmlSerializer serializer = new XmlSerializer(typeof(bool[]));
+                            bool[] data = (bool[])serializer.Deserialize(reader2);
+                            CounterFlags = DataConversion.ExpandArray2D<bool>(data, 8);
+                        }
+                        else if (reader.LocalName == "ReflectionFlags")
+                        {
+                            xml = reader.ReadInnerXml();
+                            reader2 = XmlReader.Create(new StringReader(xml));
+
+                            XmlSerializer serializer = new XmlSerializer(typeof(bool[]));
+                            bool[] data = (bool[])serializer.Deserialize(reader2);
+                            ReflectionFlags = DataConversion.ExpandArray2D<bool>(data, 8);
+                        }
+                        else if (reader.LocalName == "BridgeFlags")
+                        {
+                            xml = reader.ReadInnerXml();
+                            reader2 = XmlReader.Create(new StringReader(xml));
+
+                            XmlSerializer serializer = new XmlSerializer(typeof(bool[]));
+                            bool[] data = (bool[])serializer.Deserialize(reader2);
+                            BridgeFlags = DataConversion.ExpandArray2D<bool>(data, 8);
+                        }
+                        else if (reader.LocalName == "AutoTiles")
+                        {
+                            xml = reader.ReadInnerXml();
+                            reader2 = XmlReader.Create(new StringReader(xml));
+
+                            XmlSerializer serializer = new XmlSerializer(typeof(string[]));
+                            string[] data = (string[])serializer.Deserialize(reader2);
+                            AutoTiles = data;
+                        }
+                        else if (reader.LocalName == "AutoTileTimers")
+                        {
+                            xml = reader.ReadInnerXml();
+                            reader2 = XmlReader.Create(new StringReader(xml));
+
+                            XmlSerializer serializer = new XmlSerializer(typeof(float[]));
+                            float[] data = (float[])serializer.Deserialize(reader2);
+                            AutoTileTimers = data;
+                        }
+                        else
+                        {
+                            reader.Read();
+                        }
+                    }
+                    else
+                    {
+                        reader.Read();
+                    }
+                }
+
+            }
+
+            public void WriteXml(XmlWriter writer)
+            {
+                writer.WriteStartElement("Name");
+                writer.WriteString(Name);
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("ImagePath");
+                writer.WriteString(ImagePath);
+                writer.WriteEndElement();
+
+                XmlSerializer serializer = new XmlSerializer(typeof(bool[]));
+
+                writer.WriteStartElement("Pasabilities");
+                bool[] pasabilities = DataConversion.FlattenArray3D<bool>(Pasabilities);
+                serializer.Serialize(writer, pasabilities);
+                writer.WriteEndElement();
+
+                serializer = new XmlSerializer(typeof(int[]));
+
+                writer.WriteStartElement("Priorities");
+                int[] priorities = DataConversion.FlattenArray2D<int>(Priorities);
+                serializer.Serialize(writer, priorities);
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("TerrainTags");
+                int[] terrainTags = DataConversion.FlattenArray2D<int>(TerrainTags);
+                serializer.Serialize(writer, terrainTags);
+                writer.WriteEndElement();
+
+                serializer = new XmlSerializer(typeof(bool[]));
+
+                writer.WriteStartElement("BushFlags");
+                bool[] bushFlags = DataConversion.FlattenArray2D<bool>(BushFlags);
+                serializer.Serialize(writer, bushFlags);
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("CounterFlags");
+                bool[] counterFlags = DataConversion.FlattenArray2D<bool>(CounterFlags);
+                serializer.Serialize(writer, counterFlags);
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("ReflectionFlags");
+                bool[] reflectionFlags = DataConversion.FlattenArray2D<bool>(ReflectionFlags);
+                serializer.Serialize(writer, reflectionFlags);
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("BridgeFlags");
+                bool[] bridgeFlags = DataConversion.FlattenArray2D<bool>(BridgeFlags);
+                serializer.Serialize(writer, bridgeFlags);
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("AutoTiles");
+                serializer = new XmlSerializer(typeof(string[]));
+                serializer.Serialize(writer, AutoTiles);
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("AutoTileTimers");
+                serializer = new XmlSerializer(typeof(float[]));
+                serializer.Serialize(writer, AutoTileTimers);
+                writer.WriteEndElement();
+
+            }
 
             public static int[,] AutoTileIndex = {
                 { 27, 28, 33, 34 }, { 5, 28, 33, 34 }, { 27, 6, 33, 34 }, { 5, 6, 33, 34 },
@@ -396,7 +584,17 @@ namespace Genus2D.GameData
 
 
 
+            public Tileset()
+            {
+                Initialize("");
+            }
+
             public Tileset(string name)
+            {
+                Initialize(name);
+            }
+
+            private void Initialize(string name)
             {
                 Name = name;
                 ImagePath = "";
@@ -406,7 +604,7 @@ namespace Genus2D.GameData
                 TerrainTags = new int[8, 1];
                 BushFlags = new bool[8, 1];
                 CounterFlags = new bool[8, 1];
-                ReflectionFlags = new bool [8, 1];
+                ReflectionFlags = new bool[8, 1];
                 BridgeFlags = new bool[8, 1];
 
                 AutoTiles = new string[7];
@@ -415,7 +613,6 @@ namespace Genus2D.GameData
                 for (int i = 0; i < 7; i++)
                     AutoTiles[i] = "";
             }
-
 
 
             public void SetImagePath(string filepath)
@@ -757,29 +954,47 @@ namespace Genus2D.GameData
 
         private static List<Tileset> LoadData()
         {
-            List<Tileset> tilesets;
+            List<Tileset> data;
+            /*
             if (File.Exists("Data/TilesetData.data"))
             {
                 FileStream stream = File.Open("Data/TilesetData.data", FileMode.Open, FileAccess.Read);
                 BinaryFormatter formatter = new BinaryFormatter();
-                tilesets = (List<Tileset>)formatter.Deserialize(stream);
+                data = (List<Tileset>)formatter.Deserialize(stream);
                 stream.Close();
             }
+            //*/
+            //*
+            if (File.Exists("Data/TilesetData.xml"))
+            {
+                FileStream stream = File.Open("Data/TilesetData.xml", FileMode.Open, FileAccess.Read);
+                XmlSerializer serializer = new XmlSerializer(typeof(List<Tileset>));
+                data = (List<Tileset>)serializer.Deserialize(stream);
+                stream.Close();
+            }
+            //*/
             else
             {
-                tilesets = new List<Tileset>();
+                data = new List<Tileset>();
             }
-            return tilesets;
+            return data;
         }
 
         public static void SaveData()
         {
             if (!Directory.Exists("Data"))
                 Directory.CreateDirectory("Data");
-            FileStream stream = File.Create("Data/TilesetData.data");
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, _tilesets);
+
+            //FileStream stream = File.Create("Data/TilesetData.data");
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //formatter.Serialize(stream, _tilesets);
+            //stream.Close();
+
+            FileStream stream = File.Create("Data/TilesetData.xml");
+            XmlSerializer serializer = new XmlSerializer(typeof(List<Tileset>));
+            serializer.Serialize(stream, _tilesets);
             stream.Close();
         }
+
     }
 }

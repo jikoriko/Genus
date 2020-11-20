@@ -16,6 +16,7 @@ namespace RpgEditor
 
         private List<Image> _tilesetImages;
         public Dictionary<string, Image> AutoTileImages;
+        private Label _coordsLabel;
 
         private bool _leftGrabbed;
         private bool _rightGrabbed;
@@ -37,6 +38,10 @@ namespace RpgEditor
             this.BackColor = Color.LightGray;
             _tilesetImages = new List<Image>();
             AutoTileImages = new Dictionary<string, Image>();
+            _coordsLabel = new Label();
+            _coordsLabel.BackColor = Color.Transparent;
+            _coordsLabel.Font = new Font("Arial", 12, FontStyle.Bold);
+            this.Controls.Add(_coordsLabel);
         }
 
         public Genus2D.GameData.MapData GetMapData()
@@ -381,6 +386,7 @@ namespace RpgEditor
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            _coordsLabel.Location = new Point(0, 0);
             base.OnPaint(e);
 
             if (MapData != null)
@@ -447,6 +453,7 @@ namespace RpgEditor
                     #region selection rendering
                     EditorForm.MapTool mapTool = EditorForm.Instance.GetMapTool();
                     Rectangle selection = GetSelectionRectangle();
+                    _coordsLabel.Text = "X: " + selection.X + " Y:" + selection.Y;
                     if (layer == 2)
                     {
                         if (mapTool == EditorForm.MapTool.Rectangle || mapTool == EditorForm.MapTool.Pencil || mapTool == EditorForm.MapTool.FloodFill)

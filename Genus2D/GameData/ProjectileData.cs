@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Genus2D.GameData
 {
@@ -21,6 +22,19 @@ namespace Genus2D.GameData
         public int AnchorY;
         public int BoundsWidth;
         public int BoundsHeight;
+
+        public ProjectileData()
+        {
+            Name = "";
+            IconSheetImage = "";
+            IconID = 0;
+            Speed = 0.1f;
+            Lifespan = 0.1f;
+            AnchorX = 0;
+            AnchorY = 0;
+            BoundsWidth = 2;
+            BoundsHeight = 2;
+        }
 
         public ProjectileData(string name)
         {
@@ -41,11 +55,18 @@ namespace Genus2D.GameData
         {
             List<ProjectileData> data = null;
 
-            if (File.Exists("Data/ProjectileData.data"))
+            //if (File.Exists("Data/ProjectileData.data"))
+            //{
+            //    FileStream stream = File.Open("Data/ProjectileData.data", FileMode.Open, FileAccess.Read);
+            //    BinaryFormatter formatter = new BinaryFormatter();
+            //    data = (List<ProjectileData>)formatter.Deserialize(stream);
+            //    stream.Close();
+            //}
+            if (File.Exists("Data/ProjectileData.xml"))
             {
-                FileStream stream = File.Open("Data/ProjectileData.data", FileMode.Open, FileAccess.Read);
-                BinaryFormatter formatter = new BinaryFormatter();
-                data = (List<ProjectileData>)formatter.Deserialize(stream);
+                FileStream stream = File.Open("Data/ProjectileData.xml", FileMode.Open, FileAccess.Read);
+                XmlSerializer serializer = new XmlSerializer(typeof(List<ProjectileData>));
+                data = (List<ProjectileData>)serializer.Deserialize(stream);
                 stream.Close();
             }
             else
@@ -65,9 +86,15 @@ namespace Genus2D.GameData
         {
             if (!Directory.Exists("Data"))
                 Directory.CreateDirectory("Data");
-            FileStream stream = File.Create("Data/ProjectileData.data");
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, _projectileData);
+
+            //FileStream stream = File.Create("Data/ProjectileData.data");
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //formatter.Serialize(stream, _projectileData);
+            //stream.Close();
+
+            FileStream stream = File.Create("Data/ProjectileData.xml");
+            XmlSerializer serializer = new XmlSerializer(typeof(List<ProjectileData>));
+            serializer.Serialize(stream, _projectileData);
             stream.Close();
         }
 

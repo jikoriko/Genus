@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Genus2D.GameData
 {
@@ -29,11 +30,18 @@ namespace Genus2D.GameData
         private static SystemData LoadData()
         {
             SystemData data;
-            if (File.Exists("Data/SystemData.data"))
+            //if (File.Exists("Data/SystemData.data"))
+            //{
+            //    FileStream stream = File.Open("Data/SystemData.data", FileMode.Open, FileAccess.Read);
+            //    BinaryFormatter formatter = new BinaryFormatter();
+            //    data = (SystemData)formatter.Deserialize(stream);
+            //    stream.Close();
+            //}
+            if (File.Exists("Data/SystemData.xml"))
             {
-                FileStream stream = File.Open("Data/SystemData.data", FileMode.Open, FileAccess.Read);
-                BinaryFormatter formatter = new BinaryFormatter();
-                data = (SystemData)formatter.Deserialize(stream);
+                FileStream stream = File.Open("Data/SystemData.xml", FileMode.Open, FileAccess.Read);
+                XmlSerializer serializer = new XmlSerializer(typeof(SystemData));
+                data = (SystemData)serializer.Deserialize(stream);
                 stream.Close();
             }
             else
@@ -52,10 +60,17 @@ namespace Genus2D.GameData
         {
             if (!Directory.Exists("Data"))
                 Directory.CreateDirectory("Data");
-            FileStream stream = File.Create("Data/SystemData.data");
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, _data);
+
+            //FileStream stream = File.Create("Data/SystemData.data");
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //formatter.Serialize(stream, _data);
+            //stream.Close();
+
+            FileStream stream = File.Create("Data/SystemData.xml");
+            XmlSerializer serializer = new XmlSerializer(typeof(SystemData));
+            serializer.Serialize(stream, _data);
             stream.Close();
+
         }
 
         public static SystemData GetData()

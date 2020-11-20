@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Genus2D.GameData
 {
@@ -21,6 +22,16 @@ namespace Genus2D.GameData
         public Vector2 HorizontalAnchorPoint;
         public Vector2 HorizontalBounds;
 
+        public SpriteData()
+        {
+            Name = "";
+            ImagePath = "";
+            VerticalAnchorPoint = new Vector2();
+            VerticalBounds = new Vector2(2, 2);
+            HorizontalAnchorPoint = new Vector2();
+            HorizontalBounds = new Vector2(2, 2);
+        }
+        
         public SpriteData(string name)
         {
             Name = name;
@@ -36,19 +47,26 @@ namespace Genus2D.GameData
 
         private static List<SpriteData> LoadData()
         {
-            List<SpriteData> sprites;
-            if (File.Exists("Data/SpriteData.data"))
+            List<SpriteData> data;
+            //if (File.Exists("Data/SpriteData.data"))
+            //{
+            //    FileStream stream = File.Open("Data/SpriteData.data", FileMode.Open, FileAccess.Read);
+            //    BinaryFormatter formatter = new BinaryFormatter();
+            //    sprites = (List<SpriteData>)formatter.Deserialize(stream);
+            //    stream.Close();
+            //}
+            if (File.Exists("Data/SpriteData.xml"))
             {
-                FileStream stream = File.Open("Data/SpriteData.data", FileMode.Open, FileAccess.Read);
-                BinaryFormatter formatter = new BinaryFormatter();
-                sprites = (List<SpriteData>)formatter.Deserialize(stream);
+                FileStream stream = File.Open("Data/SpriteData.xml", FileMode.Open, FileAccess.Read);
+                XmlSerializer serializer = new XmlSerializer(typeof(List<SpriteData>));
+                data = (List<SpriteData>)serializer.Deserialize(stream);
                 stream.Close();
             }
             else
             {
-                sprites = new List<SpriteData>();
+                data = new List<SpriteData>();
             }
-            return sprites;
+            return data;
         }
 
         public static void ReloadData()
@@ -60,9 +78,15 @@ namespace Genus2D.GameData
         {
             if (!Directory.Exists("Data"))
                 Directory.CreateDirectory("Data");
-            FileStream stream = File.Create("Data/SpriteData.data");
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, _spriteData);
+
+            // stream = File.Create("Data/SpriteData.data");
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //formatter.Serialize(stream, _spriteData);
+            //stream.Close();
+
+            FileStream stream = File.Create("Data/SpriteData.xml");
+            XmlSerializer serializer = new XmlSerializer(typeof(List<SpriteData>));
+            serializer.Serialize(stream, _spriteData);
             stream.Close();
         }
 

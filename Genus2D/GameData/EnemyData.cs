@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Genus2D.GameData
 {
@@ -24,7 +25,17 @@ namespace Genus2D.GameData
         public MovementSpeed Speed;
         public int DropTable;
 
+        public EnemyData()
+        {
+            Initialize("");
+        }
+
         public EnemyData(string name)
+        {
+            Initialize(name);
+        }
+
+        private void Initialize(string name)
         {
             Name = name;
             BaseStats = new CombatStats();
@@ -44,11 +55,18 @@ namespace Genus2D.GameData
         private static List<EnemyData> LoadData()
         {
             List<EnemyData> data;
-            if (File.Exists("Data/EnemyData.data"))
+            //if (File.Exists("Data/EnemyData.data"))
+            //{
+            //    FileStream stream = File.Open("Data/EnemyData.data", FileMode.Open, FileAccess.Read);
+            //    BinaryFormatter formatter = new BinaryFormatter();
+            //    data = (List<EnemyData>)formatter.Deserialize(stream);
+            //    stream.Close();
+            //}
+            if (File.Exists("Data/EnemyData.xml"))
             {
-                FileStream stream = File.Open("Data/EnemyData.data", FileMode.Open, FileAccess.Read);
-                BinaryFormatter formatter = new BinaryFormatter();
-                data = (List<EnemyData>)formatter.Deserialize(stream);
+                FileStream stream = File.Open("Data/EnemyData.xml", FileMode.Open, FileAccess.Read);
+                XmlSerializer serializer = new XmlSerializer(typeof(List<EnemyData>));
+                data = (List<EnemyData>)serializer.Deserialize(stream);
                 stream.Close();
             }
             else
@@ -67,10 +85,17 @@ namespace Genus2D.GameData
         {
             if (!Directory.Exists("Data"))
                 Directory.CreateDirectory("Data");
-            FileStream stream = File.Create("Data/EnemyData.data");
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, _enemyData);
+
+            //FileStream stream = File.Create("Data/EnemyData.data");
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //formatter.Serialize(stream, _enemyData);
+            //stream.Close();
+
+            FileStream stream = File.Create("Data/EnemyData.xml");
+            XmlSerializer serializer = new XmlSerializer(typeof(List<EnemyData>));
+            serializer.Serialize(stream, _enemyData);
             stream.Close();
+
         }
 
         public static EnemyData GetEnemy(int index)

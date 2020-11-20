@@ -5,11 +5,14 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace Genus2D.GameData
 {
     [Serializable]
-    public class ItemData
+    public class ItemData : IXmlSerializable
     {
 
         [Serializable]
@@ -30,7 +33,17 @@ namespace Genus2D.GameData
         private int _maxStack;
         private Dictionary<string, object> _itemStats;
 
+        public ItemData()
+        {
+            Initialize("");
+        }
+
         public ItemData(string name)
+        {
+            Initialize(name);
+        }
+
+        private void Initialize(string name)
         {
             Name = name;
             IconSheetImage = "";
@@ -133,6 +146,7 @@ namespace Genus2D.GameData
         {
             List<ItemData> data = null;
 
+            /*
             if (File.Exists("Data/ItemData.data"))
             {
                 FileStream stream = File.Open("Data/ItemData.data", FileMode.Open, FileAccess.Read);
@@ -140,6 +154,16 @@ namespace Genus2D.GameData
                 data = (List<ItemData>)formatter.Deserialize(stream);
                 stream.Close();
             }
+            //*/
+            //*
+            if (File.Exists("Data/ItemData.xml"))
+            {
+                FileStream stream = File.Open("Data/ItemData.xml", FileMode.Open, FileAccess.Read);
+                XmlSerializer serializer = new XmlSerializer(typeof(List<ItemData>));
+                data = (List<ItemData>)serializer.Deserialize(stream);
+                stream.Close();
+            }
+            //*/
             else
             {
                 data = new List<ItemData>();
@@ -157,10 +181,17 @@ namespace Genus2D.GameData
         {
             if (!Directory.Exists("Data"))
                 Directory.CreateDirectory("Data");
-            FileStream stream = File.Create("Data/ItemData.data");
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, _itemData);
+
+            //FileStream stream = File.Create("Data/ItemData.data");
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //formatter.Serialize(stream, _itemData);
+            //stream.Close();
+
+            FileStream stream = File.Create("Data/ItemData.xml");
+            XmlSerializer serializer = new XmlSerializer(typeof(List<ItemData>));
+            serializer.Serialize(stream, _itemData);
             stream.Close();
+
         }
 
         public static void AddItemData(ItemData data)
@@ -202,5 +233,123 @@ namespace Genus2D.GameData
             return names;
         }
 
+        public XmlSchema GetSchema()
+        {
+            return (null);
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            string xml = reader.ReadOuterXml();
+            reader = XmlReader.Create(new StringReader(xml));
+
+            _itemStats.Clear();
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.LocalName == "Name")
+                    {
+                        reader.Read();
+                        Name = reader.ReadContentAsString();
+                    }
+                    else if (reader.LocalName == "IconSheetImage")
+                    {
+                        reader.Read();
+                        IconSheetImage = reader.ReadContentAsString();
+                    }
+                    else if (reader.LocalName == "IconID")
+                    {
+                        reader.Read();
+                        IconID = reader.ReadContentAsInt();
+                    }
+                    else if (reader.LocalName == "ItemType")
+                    {
+                        reader.Read();
+                        _itemType = (ItemType)Enum.Parse(typeof(ItemType), reader.ReadContentAsString());
+                    }
+                    else if (reader.LocalName == "MaxStack")
+                    {
+                        reader.Read();
+                        _maxStack = reader.ReadContentAsInt();
+                    }
+                    else if (reader.LocalName == "Stat")
+                    {
+                        reader.Read();
+                        reader.Read();
+                        string type = reader.ReadContentAsString();
+                        reader.Read();
+                        reader.Read();
+                        string key = reader.ReadContentAsString();
+                        reader.Read();
+                        reader.Read();
+                        string value = reader.ReadContentAsString();
+                        System.Type sType = System.Type.GetType(type);
+                        object converted;
+                        if (sType.IsEnum)
+                        {
+                            converted = Enum.Parse(sType, value);
+                        }
+                        else
+                        {
+                            converted = Convert.ChangeType(value, sType);
+                        }
+
+                        _itemStats.Add(key, converted);
+
+
+                    }
+                }
+            }
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            writer.WriteStartElement("Name");
+            writer.WriteString(Name);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("IconSheetImage");
+            writer.WriteString(IconSheetImage);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("IconID");
+            writer.WriteString(IconID.ToString());
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("ItemType");
+            writer.WriteString(_itemType.ToString());
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("MaxStack");
+            writer.WriteString(_maxStack.ToString());
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("ItemStats");
+
+            for (int i = 0; i < _itemStats.Count; i++)
+            {
+
+                writer.WriteStartElement("Stat");
+
+                writer.WriteStartElement("ValueType");
+                writer.WriteString(_itemStats.ElementAt(i).Value.GetType().ToString());
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("Key");
+                writer.WriteString(_itemStats.ElementAt(i).Key.ToString());
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("Value");
+                writer.WriteString(_itemStats.ElementAt(i).Value.ToString());
+                writer.WriteEndElement();
+
+                writer.WriteEndElement();
+
+            }
+
+            writer.WriteEndElement();
+        }
     }
 }

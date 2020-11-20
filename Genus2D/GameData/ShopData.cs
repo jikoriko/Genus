@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Genus2D.GameData
 {
@@ -39,6 +40,12 @@ namespace Genus2D.GameData
 
         public string Name;
         public List<ShopItem> ShopItems;
+
+        public ShopData()
+        {
+            Name = "";
+            ShopItems = new List<ShopItem>();
+        }
 
         public ShopData(string name)
         {
@@ -122,28 +129,41 @@ namespace Genus2D.GameData
 
         private static List<ShopData> LoadData()
         {
-            List<ShopData> shops;
-            if (File.Exists("Data/ShopData.data"))
+            List<ShopData> data;
+            //if (File.Exists("Data/ShopData.data"))
+            //{
+            //    FileStream stream = File.Open("Data/ShopData.data", FileMode.Open, FileAccess.Read);
+            //    BinaryFormatter formatter = new BinaryFormatter();
+            //    shops = (List<ShopData>)formatter.Deserialize(stream);
+            //    stream.Close();
+            //}
+            if (File.Exists("Data/ShopData.xml"))
             {
-                FileStream stream = File.Open("Data/ShopData.data", FileMode.Open, FileAccess.Read);
-                BinaryFormatter formatter = new BinaryFormatter();
-                shops = (List<ShopData>)formatter.Deserialize(stream);
+                FileStream stream = File.Open("Data/ShopData.xml", FileMode.Open, FileAccess.Read);
+                XmlSerializer serializer = new XmlSerializer(typeof(List<ShopData>));
+                data = (List<ShopData>)serializer.Deserialize(stream);
                 stream.Close();
             }
             else
             {
-                shops = new List<ShopData>();
+                data = new List<ShopData>();
             }
-            return shops;
+            return data;
         }
 
         public static void SaveData()
         {
             if (!Directory.Exists("Data"))
                 Directory.CreateDirectory("Data");
-            FileStream stream = File.Create("Data/ShopData.data");
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, _shops);
+
+            //FileStream stream = File.Create("Data/ShopData.data");
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //formatter.Serialize(stream, _shops);
+            //stream.Close();
+
+            FileStream stream = File.Create("Data/ShopData.xml");
+            XmlSerializer serializer = new XmlSerializer(typeof(List<ShopData>));
+            serializer.Serialize(stream, _shops);
             stream.Close();
         }
     }

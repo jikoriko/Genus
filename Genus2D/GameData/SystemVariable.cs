@@ -5,17 +5,27 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace Genus2D.GameData
 {
     [Serializable]
-    public class SystemVariable
+    public class SystemVariable : IXmlSerializable
     {
 
         public string Name;
         public VariableType Type { get; private set; }
         public object Value { get; private set; }
 
+        public SystemVariable()
+        {
+            Name = "";
+            Type = VariableType.Integer;
+            Value = 0;
+        }
+        
         public SystemVariable(string name)
         {
             Name = name;
@@ -99,24 +109,82 @@ namespace Genus2D.GameData
             return valueSet;
         }
 
+        public XmlSchema GetSchema()
+        {
+            return (null);
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            string xml = reader.ReadOuterXml();
+            reader = XmlReader.Create(new StringReader(xml));
+
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.LocalName == "Name")
+                    {
+                        reader.Read();
+                        Name = reader.ReadContentAsString();
+                    }
+                    else if (reader.LocalName == "VariableType")
+                    {
+                        reader.Read();
+                        Type = (VariableType)Enum.Parse(typeof(VariableType), reader.ReadContentAsString());
+                    }
+                    else if (reader.LocalName == "Value")
+                    {
+                        reader.Read();
+                        SetValue(reader.ReadContentAsString());
+                    }
+                }
+            }
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            writer.WriteStartElement("Name");
+            writer.WriteString(Name);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("VariableType");
+            writer.WriteString(Type.ToString());
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("Value");
+            writer.WriteString(Value.ToString());
+            writer.WriteEndElement();
+        }
+
+
+
+
 
         private static List<SystemVariable> _systemVariables = LoadData();
 
         private static List<SystemVariable> LoadData()
         {
-            List<SystemVariable> variables;
-            if (File.Exists("Data/SystemVariables.data"))
+            List<SystemVariable> data;
+            //if (File.Exists("Data/SystemVariables.data"))
+            //{
+            //    FileStream stream = File.Open("Data/SystemVariables.data", FileMode.Open, FileAccess.Read);
+            //    BinaryFormatter formatter = new BinaryFormatter();
+            //    variables = (List<SystemVariable>)formatter.Deserialize(stream);
+            //    stream.Close();
+            //}
+            if (File.Exists("Data/SystemVariables.xml"))
             {
-                FileStream stream = File.Open("Data/SystemVariables.data", FileMode.Open, FileAccess.Read);
-                BinaryFormatter formatter = new BinaryFormatter();
-                variables = (List<SystemVariable>)formatter.Deserialize(stream);
+                FileStream stream = File.Open("Data/SystemVariables.xml", FileMode.Open, FileAccess.Read);
+                XmlSerializer serializer = new XmlSerializer(typeof(List<SystemVariable>));
+                data = (List<SystemVariable>)serializer.Deserialize(stream);
                 stream.Close();
             }
             else
             {
-                variables = new List<SystemVariable>();
+                data = new List<SystemVariable>();
             }
-            return variables;
+            return data;
         }
 
         public static void ReloadData()
@@ -128,9 +196,15 @@ namespace Genus2D.GameData
         {
             if (!Directory.Exists("Data"))
                 Directory.CreateDirectory("Data");
-            FileStream stream = File.Create("Data/SystemVariables.data");
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, _systemVariables);
+
+            //FileStream stream = File.Create("Data/SystemVariables.data");
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //formatter.Serialize(stream, _systemVariables);
+            //stream.Close();
+
+            FileStream stream = File.Create("Data/SystemVariables.xml");
+            XmlSerializer serializer = new XmlSerializer(typeof(List<SystemVariable>));
+            serializer.Serialize(stream, _systemVariables);
             stream.Close();
         }
 
@@ -169,7 +243,6 @@ namespace Genus2D.GameData
 
             return names;
         }
-
 
     }
 }

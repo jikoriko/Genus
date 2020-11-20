@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Genus2D.GameData
 {
@@ -15,21 +16,28 @@ namespace Genus2D.GameData
         private static List<EventData> _eventsData = LoadEventsData();
         private static List<EventData> LoadEventsData()
         {
-            List<EventData> eventsData;
+            List<EventData> data;
 
-            if (File.Exists("Data/EventsData.data"))
+            //if (File.Exists("Data/EventsData.data"))
+            //{
+            //    FileStream stream = File.Open("Data/EventsData.data", FileMode.Open, FileAccess.Read);
+            //    BinaryFormatter formatter = new BinaryFormatter();
+            //    eventsData = (List<EventData>)formatter.Deserialize(stream);
+            //    stream.Close();
+            //}
+            if (File.Exists("Data/EventsData.xml"))
             {
-                FileStream stream = File.Open("Data/EventsData.data", FileMode.Open, FileAccess.Read);
-                BinaryFormatter formatter = new BinaryFormatter();
-                eventsData = (List<EventData>)formatter.Deserialize(stream);
+                FileStream stream = File.Open("Data/EventsData.xml", FileMode.Open, FileAccess.Read);
+                XmlSerializer serializer = new XmlSerializer(typeof(List<EventData>));
+                data = (List<EventData>)serializer.Deserialize(stream);
                 stream.Close();
             }
             else
             {
-                eventsData = new List<EventData>();
+                data = new List<EventData>();
             }
 
-            return eventsData;
+            return data;
         }
 
         public static void ReloadData()
@@ -41,9 +49,15 @@ namespace Genus2D.GameData
         {
             if (!Directory.Exists("Data"))
                 Directory.CreateDirectory("Data");
-            FileStream stream = File.Create("Data/EventsData.data");
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(stream, _eventsData);
+
+            //FileStream stream = File.Create("Data/EventsData.data");
+            //BinaryFormatter formatter = new BinaryFormatter();
+            //formatter.Serialize(stream, _eventsData);
+            //stream.Close();
+
+            FileStream stream = File.Create("Data/EventsData.xml");
+            XmlSerializer serializer = new XmlSerializer(typeof(List<EventData>));
+            serializer.Serialize(stream, _eventsData);
             stream.Close();
         }
 
@@ -100,6 +114,12 @@ namespace Genus2D.GameData
         public string Name;
         public List<EventCommand> EventCommands { get; private set; }
 
+        public EventData()
+        {
+            Name = "";
+            EventCommands = new List<EventCommand>();
+        }
+        
         public EventData(string name)
         {
             Name = name;

@@ -1138,6 +1138,7 @@
             this.BridgeFlagsButton.TabStop = true;
             this.BridgeFlagsButton.Text = "Bridge Flags";
             this.BridgeFlagsButton.UseVisualStyleBackColor = true;
+            this.BridgeFlagsButton.CheckedChanged += new System.EventHandler(this.Properties_CheckedChanged);
             // 
             // ReflectionFlagsButton
             // 
@@ -1149,6 +1150,7 @@
             this.ReflectionFlagsButton.TabStop = true;
             this.ReflectionFlagsButton.Text = "Reflection Flags";
             this.ReflectionFlagsButton.UseVisualStyleBackColor = true;
+            this.ReflectionFlagsButton.CheckedChanged += new System.EventHandler(this.Properties_CheckedChanged);
             // 
             // CounterFlagsButton
             // 
@@ -1160,7 +1162,7 @@
             this.CounterFlagsButton.TabStop = true;
             this.CounterFlagsButton.Text = "Counter Flags";
             this.CounterFlagsButton.UseVisualStyleBackColor = true;
-            this.CounterFlagsButton.CheckedChanged += new System.EventHandler(this.CounterFlagsButton_CheckedChanged);
+            this.CounterFlagsButton.CheckedChanged += new System.EventHandler(this.Properties_CheckedChanged);
             // 
             // BushFlagsButton
             // 
@@ -1172,7 +1174,7 @@
             this.BushFlagsButton.TabStop = true;
             this.BushFlagsButton.Text = "Bush Flags";
             this.BushFlagsButton.UseVisualStyleBackColor = true;
-            this.BushFlagsButton.CheckedChanged += new System.EventHandler(this.BushFlagsButton_CheckedChanged);
+            this.BushFlagsButton.CheckedChanged += new System.EventHandler(this.Properties_CheckedChanged);
             // 
             // TerrainTagButton
             // 
@@ -1184,7 +1186,7 @@
             this.TerrainTagButton.TabStop = true;
             this.TerrainTagButton.Text = "Terrain Tags";
             this.TerrainTagButton.UseVisualStyleBackColor = true;
-            this.TerrainTagButton.CheckedChanged += new System.EventHandler(this.TerrainTagButton_CheckedChanged);
+            this.TerrainTagButton.CheckedChanged += new System.EventHandler(this.Properties_CheckedChanged);
             // 
             // PassabilitesButton2
             // 
@@ -1196,7 +1198,7 @@
             this.PassabilitesButton2.TabStop = true;
             this.PassabilitesButton2.Text = "Passabilities 8 Dir";
             this.PassabilitesButton2.UseVisualStyleBackColor = true;
-            this.PassabilitesButton2.CheckedChanged += new System.EventHandler(this.PassabilitesButton2_CheckedChanged);
+            this.PassabilitesButton2.CheckedChanged += new System.EventHandler(this.Properties_CheckedChanged);
             // 
             // PrioritiesButton
             // 
@@ -1208,7 +1210,7 @@
             this.PrioritiesButton.TabStop = true;
             this.PrioritiesButton.Text = "Priorities";
             this.PrioritiesButton.UseVisualStyleBackColor = true;
-            this.PrioritiesButton.CheckedChanged += new System.EventHandler(this.PrioritiesButton_CheckedChanged);
+            this.PrioritiesButton.CheckedChanged += new System.EventHandler(this.Properties_CheckedChanged);
             // 
             // PassabilitiesButton
             // 
@@ -1220,7 +1222,7 @@
             this.PassabilitiesButton.TabStop = true;
             this.PassabilitiesButton.Text = "Passabilities";
             this.PassabilitiesButton.UseVisualStyleBackColor = true;
-            this.PassabilitiesButton.CheckedChanged += new System.EventHandler(this.PassabilitiesButton_CheckedChanged);
+            this.PassabilitiesButton.CheckedChanged += new System.EventHandler(this.Properties_CheckedChanged);
             // 
             // panel2
             // 
