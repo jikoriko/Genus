@@ -902,7 +902,7 @@ namespace Genus2D.GameData
 
 
 
-        private static List<Tileset> _tilesets = LoadData();
+        private static List<Tileset> _tilesets;
 
         public static int TilesetCount()
         {

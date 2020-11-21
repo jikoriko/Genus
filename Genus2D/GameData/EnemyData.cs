@@ -51,7 +51,7 @@ namespace Genus2D.GameData
             DropTable = -1;
         }
 
-        private static List<EnemyData> _enemyData = LoadData();
+        private static List<EnemyData> _enemyData;
         private static List<EnemyData> LoadData()
         {
             List<EnemyData> data;

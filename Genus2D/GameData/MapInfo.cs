@@ -22,7 +22,12 @@ namespace Genus2D.GameData
             public List<SpawnPoint> SpawnPoints;
         }
 
-        private static MapInfoData _mapInfoData = LoadMapInfoData();
+        private static MapInfoData _mapInfoData;
+
+        public static void ReloadData()
+        {
+            _mapInfoData = LoadMapInfoData();
+        }
 
         private static MapInfoData LoadMapInfoData()
         {

@@ -50,7 +50,7 @@ namespace Genus2D.GameData
         }
 
 
-        private static List<ProjectileData> _projectileData = LoadData();
+        private static List<ProjectileData> _projectileData;
         private static List<ProjectileData> LoadData()
         {
             List<ProjectileData> data = null;

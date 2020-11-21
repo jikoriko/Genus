@@ -161,7 +161,7 @@ namespace Genus2D.GameData
 
 
 
-        private static List<SystemVariable> _systemVariables = LoadData();
+        private static List<SystemVariable> _systemVariables;
 
         private static List<SystemVariable> LoadData()
         {

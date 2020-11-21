@@ -52,19 +52,9 @@
             0,
             0,
             0});
-            this.ItemCost.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             this.ItemCost.Name = "ItemCost";
             this.ItemCost.Size = new System.Drawing.Size(116, 20);
             this.ItemCost.TabIndex = 1;
-            this.ItemCost.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             // 
             // label1
             // 

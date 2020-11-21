@@ -141,7 +141,7 @@ namespace Genus2D.GameData
 
         //static
 
-        private static List<ItemData> _itemData = LoadItemData();
+        private static List<ItemData> _itemData;
         private static List<ItemData> LoadItemData()
         {
             List<ItemData> data = null;

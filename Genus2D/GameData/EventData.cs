@@ -13,7 +13,7 @@ namespace Genus2D.GameData
     public class EventData
     {
         // Static MapEventData
-        private static List<EventData> _eventsData = LoadEventsData();
+        private static List<EventData> _eventsData;
         private static List<EventData> LoadEventsData()
         {
             List<EventData> data;

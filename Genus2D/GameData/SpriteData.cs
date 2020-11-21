@@ -43,7 +43,7 @@ namespace Genus2D.GameData
         }
 
 
-        private static List<SpriteData> _spriteData = LoadData();
+        private static List<SpriteData> _spriteData;
 
         private static List<SpriteData> LoadData()
         {

@@ -490,6 +490,9 @@ namespace RpgServer
                         }
                         break;
                     case ClientCommand.CommandType.AttackPlayer:
+                        if (_mapInstance.GetMapData().PvpEnabled == false)
+                            break;
+
                         playerID = (int)command.GetParameter("PlayerID");
                         if (EnemyCanAttack(CharacterType.Player, playerID))
                         {
@@ -1279,18 +1282,22 @@ namespace RpgServer
                     {
                         case AttackStyle.Melee:
 
-                            GameClient[] clients = _mapInstance.GetClients();
                             bool attacked = false;
-                            for (int i = 0; i < clients.Length; i++)
+
+                            if (_mapInstance.GetMapData().PvpEnabled)
                             {
-                                if (clients[i]._playerPacket.PositionX == x && clients[i]._playerPacket.PositionY == y)
+                                GameClient[] clients = _mapInstance.GetClients();
+                                for (int i = 0; i < clients.Length; i++)
                                 {
-                                    if (clients[i].EnemyCanAttack(CharacterType.Player, _playerPacket.PlayerID) 
-                                        && EnemyCanAttack(CharacterType.Player, clients[i]._playerPacket.PlayerID))
+                                    if (clients[i]._playerPacket.PositionX == x && clients[i]._playerPacket.PositionY == y)
                                     {
-                                        MeleeTrigger(clients[i]);
-                                        attacked = true;
-                                        break;
+                                        if (clients[i].EnemyCanAttack(CharacterType.Player, _playerPacket.PlayerID)
+                                            && EnemyCanAttack(CharacterType.Player, clients[i]._playerPacket.PlayerID))
+                                        {
+                                            MeleeTrigger(clients[i]);
+                                            attacked = true;
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -1364,25 +1371,7 @@ namespace RpgServer
             if (other.Dead)
             {
                 GainExperience(other.GetEnemyData().Experience);
-
-                DropTableData dropTable = DropTableData.GetDropTable(other.GetEnemyData().DropTable);
-                if (dropTable != null)
-                {
-                    Random random = new Random();
-                    int chance = 100 - random.Next(0, 99);
-                    for (int k = 0; k < dropTable.TableItems.Count; k++)
-                    {
-                        DropTableData.DropTableItem item = dropTable.TableItems[k];
-                        if (item.ItemID >= 0 && item.ItemID < ItemData.GetItemDataCount())
-                        {
-                            if (item.Chance >= chance)
-                            {
-                                MapItem mapItem = new MapItem(item.ItemID, item.ItemCount, other.MapX, other.MapY, _playerPacket.PlayerID, other.OnBridge);
-                                _mapInstance.AddMapItem(mapItem);
-                            }
-                        }
-                    }
-                }
+                _mapInstance.DropItem(other, this);
             }
         }
 

@@ -26,7 +26,7 @@ namespace Genus2D.GameData
             MaxLvl = 1;
         }
 
-        private static SystemData _data = LoadData();
+        private static SystemData _data;
         private static SystemData LoadData()
         {
             SystemData data;

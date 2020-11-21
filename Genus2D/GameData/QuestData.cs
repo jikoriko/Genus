@@ -156,7 +156,7 @@ namespace Genus2D.GameData
         }
 
 
-        private static List<QuestData> _quests = LoadData();
+        private static List<QuestData> _quests;
         private static List<QuestData> LoadData()
         {
             List<QuestData> data;

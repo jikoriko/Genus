@@ -1016,10 +1016,10 @@ namespace RpgServer
                                     EnemyMeleeAttack(mapEnemy, client);
                                     break;
                                 case AttackStyle.Ranged:
-                                    EnemyRangeAttack(mapEnemy, player);
+                                    EnemyRangeAttack(mapEnemy, client);
                                     break;
                                 case AttackStyle.Magic:
-                                    EnemyMagicAttack(mapEnemy, player);
+                                    EnemyMagicAttack(mapEnemy, client);
                                     break;
                             }
 
@@ -1260,7 +1260,7 @@ namespace RpgServer
             enemy.AttackTimer = Math.Max((1 / stats1.Agility) - 1.0f, 0.1f) * 10;
         }
 
-        private void EnemyRangeAttack(MapEnemy enemy, PlayerPacket player)
+        private void EnemyRangeAttack(MapEnemy enemy, GameClient client)
         {
             if (enemy.AttackTimer > 0) return;
 
@@ -1269,9 +1269,10 @@ namespace RpgServer
             int projectileID = enemy.GetEnemyData().ProjectileID;
             int enemyID = _mapPacket.Enemies.IndexOf(enemy);
             Projectile projectile = new Projectile(projectileID, CharacterType.Enemy, enemyID, position, enemy.Direction);
+            //client.TakeDamage(CharacterType.Enemy, enemyID, 0);
             projectile.OnBridge = enemy.OnBridge;
             projectile.TargetType = CharacterType.Player;
-            projectile.TargetID = player.PlayerID;
+            projectile.TargetID = client.GetPacket().PlayerID;
             projectile.Style = AttackStyle.Ranged;
 
             Random rand = new Random();
@@ -1286,7 +1287,7 @@ namespace RpgServer
             enemy.AttackTimer = Math.Max((1 / stats.Agility) - 1.0f, 0.1f) * 10;
         }
 
-        private void EnemyMagicAttack(MapEnemy enemy, PlayerPacket player)
+        private void EnemyMagicAttack(MapEnemy enemy, GameClient client)
         {
             if (enemy.AttackTimer > 0) return;
 
@@ -1295,9 +1296,10 @@ namespace RpgServer
             int projectileID = enemy.GetEnemyData().ProjectileID;
             int enemyID = _mapPacket.Enemies.IndexOf(enemy);
             Projectile projectile = new Projectile(projectileID, CharacterType.Enemy, enemyID, position, enemy.Direction);
+            //client.TakeDamage(CharacterType.Enemy, enemyID, 0);
             projectile.OnBridge = enemy.OnBridge;
             projectile.TargetType = CharacterType.Player;
-            projectile.TargetID = player.PlayerID;
+            projectile.TargetID = client.GetPacket().PlayerID;
             projectile.Style = AttackStyle.Magic;
 
             Random rand = new Random();
@@ -1314,7 +1316,6 @@ namespace RpgServer
 
         private void CheckProjectileHit(Projectile projectile)
         {
-            GameClient[] clients = GetClients();
             Hitbox hitBox = projectile.GetHitBox();
             if (projectile.Direction == FacingDirection.Left || projectile.Direction == FacingDirection.Right)
             {
@@ -1323,59 +1324,100 @@ namespace RpgServer
                 hitBox.Height = width;
             }
 
-            if (projectile.TargetID == -1 || projectile.TargetType == CharacterType.Player)
+
+            if ((GetMapData().PvpEnabled && projectile.ParentType == CharacterType.Player) || projectile.ParentType == CharacterType.Enemy)
             {
-                foreach (GameClient client in clients)
+                if (projectile.TargetID == -1 || projectile.TargetType == CharacterType.Player)
                 {
-                    if (!(projectile.ParentType == CharacterType.Player && projectile.CharacterID == client.GetPacket().PlayerID))
+                    GameClient[] clients = GetClients();
+                    foreach (GameClient client in clients)
                     {
-                        if (projectile.TargetID == -1 || projectile.TargetID == client.GetPacket().PlayerID)
+                        if (!(projectile.ParentType == CharacterType.Player && projectile.CharacterID == client.GetPacket().PlayerID))
                         {
-                            Hitbox playerHitbox = client.GetHitbox();
-                            if (hitBox.Intersects(playerHitbox))
+                            if ((projectile.TargetID == -1 || projectile.TargetID == client.GetPacket().PlayerID) &&
+                                client.EnemyCanAttack(projectile.ParentType, projectile.CharacterID))
                             {
-                                CombatStats stats = client.GetPacket().Data.GetCombinedCombatStats();
-                                int defence = projectile.Style == AttackStyle.Ranged ? stats.RangeDefence : stats.MagicDefence;
-                                int attackPower = projectile.AttackPower - (defence / 2);
-                                attackPower = Math.Max(attackPower, 0);
-                                client.TakeDamage(projectile.ParentType, projectile.CharacterID, attackPower);
-                                projectile.Destroyed = true;
-                                break;
+                                Hitbox playerHitbox = client.GetHitbox();
+                                if (hitBox.Intersects(playerHitbox))
+                                {
+                                    CombatStats stats = client.GetPacket().Data.GetCombinedCombatStats();
+                                    int defence = projectile.Style == AttackStyle.Ranged ? stats.RangeDefence : stats.MagicDefence;
+                                    int attackPower = projectile.AttackPower - (defence / 2);
+                                    attackPower = Math.Max(attackPower, 0);
+                                    client.TakeDamage(projectile.ParentType, projectile.CharacterID, attackPower);
+                                    projectile.Destroyed = true;
+                                    break;
+                                }
                             }
                         }
                     }
                 }
             }
 
-            //it is actually possible for enemy projectiles to target other enemies with this code - if ever needed?
-            if (projectile.TargetID == -1 || projectile.TargetType == CharacterType.Enemy)
+            if (!projectile.Destroyed)
             {
-                for(int i = 0; i < _mapPacket.Enemies.Count; i++)
+                //it is actually possible for enemy projectiles to target other enemies with this code - if ever needed? just need to add logic to enemy targeting
+                if ((projectile.TargetID == -1 || projectile.TargetType == CharacterType.Enemy))
                 {
-                    MapEnemy enemy = _mapPacket.Enemies[i];
-                    if (!(projectile.ParentType == CharacterType.Enemy && projectile.CharacterID == i))
+                    for (int i = 0; i < _mapPacket.Enemies.Count; i++)
                     {
-                        if (projectile.TargetID == -1 || projectile.TargetID == i)
+                        MapEnemy enemy = _mapPacket.Enemies[i];
+                        if (!(projectile.ParentType == CharacterType.Enemy && projectile.CharacterID == i))
                         {
-                            Hitbox enemyHitBox = enemy.GetHitbox();
-                            if (hitBox.Intersects(enemyHitBox))
+                            GameClient client = null;
+                            if (projectile.ParentType == CharacterType.Player)
                             {
-                                CombatStats stats = enemy.GetEnemyData().BaseStats;
-                                int defence = projectile.Style == AttackStyle.Ranged ? stats.RangeDefence : stats.MagicDefence;
-                                int attackPower = projectile.AttackPower - (defence / 2);
-                                attackPower = Math.Max(attackPower, 0);
-                                enemy.TakeDamage(projectile.ParentType, projectile.CharacterID, attackPower);
-                                projectile.Destroyed = true;
-
-                                if (enemy.Dead && projectile.ParentType == CharacterType.Player)
-                                {
-                                    GameClient client = Server.Instance.FindClientByID(projectile.CharacterID);
-                                    if (client != null)
-                                        client.GainExperience(enemy.GetEnemyData().Experience);
-                                }
-
-                                break;
+                                client = Server.Instance.FindClientByID(projectile.CharacterID);
+                                if (client == null || !client.EnemyCanAttack(CharacterType.Enemy, i))
+                                    continue;
                             }
+
+                            if ((projectile.TargetID == -1 || projectile.TargetID == i) &&
+                                enemy.EnemyCanAttack(projectile.ParentType, projectile.CharacterID))
+                            {
+                                Hitbox enemyHitBox = enemy.GetHitbox();
+                                if (hitBox.Intersects(enemyHitBox))
+                                {
+                                    CombatStats stats = enemy.GetEnemyData().BaseStats;
+                                    int defence = projectile.Style == AttackStyle.Ranged ? stats.RangeDefence : stats.MagicDefence;
+                                    int attackPower = projectile.AttackPower - (defence / 2);
+                                    attackPower = Math.Max(attackPower, 0);
+                                    enemy.TakeDamage(projectile.ParentType, projectile.CharacterID, attackPower);
+                                    projectile.Destroyed = true;
+
+                                    if (enemy.Dead)
+                                    {
+                                        if (client != null)
+                                            client.GainExperience(enemy.GetEnemyData().Experience);
+                                        DropItem(enemy, client);
+                                    }
+
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public void DropItem(MapEnemy enemy, GameClient client)
+        {
+            DropTableData dropTable = DropTableData.GetDropTable(enemy.GetEnemyData().DropTable);
+            if (dropTable != null)
+            {
+                Random random = new Random();
+                int chance = 100 - random.Next(0, 99);
+                for (int k = 0; k < dropTable.TableItems.Count; k++)
+                {
+                    DropTableData.DropTableItem item = dropTable.TableItems[k];
+                    if (item.ItemID >= 0 && item.ItemID < ItemData.GetItemDataCount())
+                    {
+                        if (item.Chance >= chance)
+                        {
+                            int playerID = client == null ? -1 : client.GetPacket().PlayerID;
+                            MapItem mapItem = new MapItem(item.ItemID, item.ItemCount, enemy.MapX, enemy.MapY, playerID, enemy.OnBridge);
+                            AddMapItem(mapItem);
                         }
                     }
                 }

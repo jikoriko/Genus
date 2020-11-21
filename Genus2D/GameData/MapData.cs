@@ -23,6 +23,8 @@ namespace Genus2D.GameData
         private Tuple<int, int>[] _mapData;
         private List<MapEvent> _mapEvents;
 
+        public bool PvpEnabled;
+
         public XmlSchema GetSchema()
         {
             return (null);
@@ -35,7 +37,7 @@ namespace Genus2D.GameData
 
             XmlSerializer serializer = new XmlSerializer(typeof(List<MapEvent>));
 
-            while (reader.Read())
+            while (!reader.EOF)
             {
                 if (reader.NodeType == XmlNodeType.Element)
                 {
@@ -57,6 +59,7 @@ namespace Genus2D.GameData
                     else if (reader.LocalName == "MapData")
                     {
                         _mapData = new Tuple<int, int>[_height * _width * NUM_LAYERS];
+                        reader.Read();
                     }
                     else if (reader.LocalName.StartsWith("MapTile"))
                     {
@@ -71,13 +74,25 @@ namespace Genus2D.GameData
 
                         _mapData[index] = new Tuple<int, int>(value1, value2);
                     }
-                    else if (reader.LocalName == "ArrayOfMapEvent")
+                    else if (reader.LocalName == "MapEvents")
                     {
-                        xml = reader.ReadOuterXml();
-                        Console.WriteLine(xml);
+                        xml = reader.ReadInnerXml();
                         XmlReader reader2 = XmlReader.Create(new StringReader(xml));
                         _mapEvents = (List<MapEvent>)serializer.Deserialize(reader2);
                     }
+                    else if (reader.LocalName == "PvpEnabled")
+                    {
+                        reader.Read();
+                        PvpEnabled = reader.ReadContentAsString() == "False" ? false : true;
+                    }
+                    else
+                    {
+                        reader.Read();
+                    }
+                }
+                else
+                {
+                    reader.Read();
                 }
             }
         }
@@ -119,7 +134,13 @@ namespace Genus2D.GameData
 
             writer.WriteEndElement();
 
+            writer.WriteStartElement("MapEvents");
             serializer.Serialize(writer, _mapEvents);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("PvpEnabled");
+            writer.WriteString(PvpEnabled.ToString());
+            writer.WriteEndElement();
 
         }
 
@@ -128,6 +149,10 @@ namespace Genus2D.GameData
             _mapName = "";
             _width = 0;
             _height = 0;
+            _mapData = null;
+            _mapEvents = new List<MapEvent>();
+
+            PvpEnabled = false;
         }
 
         public MapData(string mapName, int width, int height)
@@ -141,6 +166,8 @@ namespace Genus2D.GameData
                 _mapData[i] = new Tuple<int, int>(0, -1);
             }
             _mapEvents = new List<MapEvent>();
+
+            PvpEnabled = false;
         }
 
         public void Resize(int width, int height)
@@ -213,6 +240,8 @@ namespace Genus2D.GameData
                     stream.Write(bytes, 0, bytes.Length);
                 }
 
+                stream.Write(BitConverter.GetBytes(PvpEnabled), 0, sizeof(bool));
+
                 return stream.ToArray();
             }
         }
@@ -268,6 +297,9 @@ namespace Genus2D.GameData
                     MapEvent mapEvent = MapEvent.FromBytes(tempBytes);
                     data.AddMapEvent(mapEvent);
                 }
+
+                stream.Read(tempBytes, 0, sizeof(bool));
+                data.PvpEnabled = BitConverter.ToBoolean(tempBytes, 0);
 
                 return data;
             }

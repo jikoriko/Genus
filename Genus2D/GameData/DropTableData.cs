@@ -60,7 +60,7 @@ namespace Genus2D.GameData
 
 
 
-        private static List<DropTableData> _dropTables = LoadData();
+        private static List<DropTableData> _dropTables;
 
         public static int DropTableCount()
         {

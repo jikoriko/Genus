@@ -28,7 +28,7 @@ namespace Genus2D.GameData
             BaseStats = new CombatStats();
         }
 
-        private static List<ClassData> _classData = LoadData();
+        private static List<ClassData> _classData;
         private static List<ClassData> LoadData()
         {
             List<ClassData> data;

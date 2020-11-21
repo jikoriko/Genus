@@ -25,6 +25,7 @@ namespace RpgEditor
             NameField.Text = mapData.GetMapName();
             WidthField.Value = mapData.GetWidth();
             HeightField.Value = mapData.GetHeight();
+            PvpCheck.Checked = mapData.PvpEnabled;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -49,6 +50,7 @@ namespace RpgEditor
 
             Genus2D.GameData.MapInfo.ResizeMap(mapID, width, height);
             _mapData.Resize(width, height);
+            _mapData.PvpEnabled = PvpCheck.Checked;
             Genus2D.GameData.MapInfo.SaveMap(_mapData);
 
             _editor.SetMapData(_mapData, mapID);

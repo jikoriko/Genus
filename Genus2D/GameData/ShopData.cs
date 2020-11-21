@@ -22,7 +22,7 @@ namespace Genus2D.GameData
             public ShopItem()
             {
                 ItemID = -1;
-                Cost = 1;
+                Cost = 0;
             }
 
             public override string ToString()
@@ -77,7 +77,7 @@ namespace Genus2D.GameData
         }
 
 
-        private static List<ShopData> _shops = LoadData();
+        private static List<ShopData> _shops;
 
         public static int DataCount()
         {

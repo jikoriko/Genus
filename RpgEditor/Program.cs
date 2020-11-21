@@ -14,6 +14,8 @@ namespace RpgEditor
         [STAThread]
         static void Main()
         {
+            Genus2D.GameData.Preloader.PreLoadData();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new EditorForm());

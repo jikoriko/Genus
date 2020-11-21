@@ -11,6 +11,8 @@ namespace RpgServer
         static Server _server;
         static void Main(string[] args)
         {
+            Genus2D.GameData.Preloader.PreLoadData();
+
             handler = new ConsoleEventDelegate(ConsoleEventCallback);
             SetConsoleCtrlHandler(handler, true);
 
