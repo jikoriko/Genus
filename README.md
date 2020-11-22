@@ -1,7 +1,8 @@
 # Genus
 2d MMO Engine WIP
 
- Programed using C# and Visual Studio, OpenGL rendering using OpenTK and the game editor uses WinForms
+ Programed using C# and Visual Studio, OpenGL rendering using OpenTK and the game editor uses WinForms.
+ Project configured against .net 4.7, when built all build files go to a root folder called 'GenusBuild'.
 
  1: build all 4 projects:
  
