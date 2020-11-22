@@ -1,7 +1,7 @@
 # Genus
 2d MMO Engine WIP
 
- Programed using C# and Visual Studio, OpenGL rendering using OpenTK
+ Programed using C# and Visual Studio, OpenGL rendering using OpenTK and the game editor uses WinForms
 
  1: build all 4 projects:
  
