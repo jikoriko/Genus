@@ -6,7 +6,7 @@
 
  1: build all 4 projects:
  
-       Genus2D - Engine code
+       Genus2D - Engine shared code
        RpgEditor - Game editor
        RpgGame - Game client
        RpgServer - Server executable
