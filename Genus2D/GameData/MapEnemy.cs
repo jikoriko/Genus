@@ -256,9 +256,9 @@ namespace Genus2D.GameData
             }
         }
 
-        public void TakeDamage(CharacterType enemyType, int enemyID, int damage)
+        public void TakeDamage(CharacterType enemyType, int enemyID, int damage, bool multiCombat)
         {
-            if (EnemyCanAttack(enemyType, enemyID))
+            if (EnemyCanAttack(enemyType, enemyID, multiCombat))
             {
                 if (enemyID != -1)
                 {
@@ -279,13 +279,15 @@ namespace Genus2D.GameData
             }
         }
 
-        public bool EnemyCanAttack(CharacterType enemyType, int enemyID)
+        public bool EnemyCanAttack(CharacterType enemyType, int enemyID, bool multiCombat)
         {
             if (Dead)
                 return false;
             if (EnemyCharacterID == -1)
                 return true;
             if (enemyID == -1)
+                return true;
+            if (multiCombat)
                 return true;
             if (EnemyCharacterType == enemyType && EnemyCharacterID == enemyID)
                 return true;

@@ -24,6 +24,7 @@ namespace Genus2D.GameData
         private List<MapEvent> _mapEvents;
 
         public bool PvpEnabled;
+        public bool MultiCombat;
 
         public XmlSchema GetSchema()
         {
@@ -85,6 +86,11 @@ namespace Genus2D.GameData
                         reader.Read();
                         PvpEnabled = reader.ReadContentAsString() == "False" ? false : true;
                     }
+                    else if (reader.LocalName == "MultiCombat")
+                    {
+                        reader.Read();
+                        MultiCombat = reader.ReadContentAsString() == "False" ? false : true;
+                    }
                     else
                     {
                         reader.Read();
@@ -140,6 +146,10 @@ namespace Genus2D.GameData
 
             writer.WriteStartElement("PvpEnabled");
             writer.WriteString(PvpEnabled.ToString());
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("MultiCombat");
+            writer.WriteString(MultiCombat.ToString());
             writer.WriteEndElement();
 
         }
@@ -241,6 +251,7 @@ namespace Genus2D.GameData
                 }
 
                 stream.Write(BitConverter.GetBytes(PvpEnabled), 0, sizeof(bool));
+                stream.Write(BitConverter.GetBytes(MultiCombat), 0, sizeof(bool));
 
                 return stream.ToArray();
             }
@@ -298,8 +309,13 @@ namespace Genus2D.GameData
                     data.AddMapEvent(mapEvent);
                 }
 
+                tempBytes = new byte[sizeof(bool)];
+
                 stream.Read(tempBytes, 0, sizeof(bool));
                 data.PvpEnabled = BitConverter.ToBoolean(tempBytes, 0);
+
+                stream.Read(tempBytes, 0, sizeof(bool));
+                data.MultiCombat = BitConverter.ToBoolean(tempBytes, 0);
 
                 return data;
             }

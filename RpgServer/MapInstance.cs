@@ -945,7 +945,7 @@ namespace RpgServer
                 //find player
                 for (int i = 0; i < _clients.Count; i++)
                 {
-                    if (_clients[i].EnemyCanAttack(CharacterType.Enemy, _mapPacket.Enemies.IndexOf(mapEnemy)))
+                    if (_clients[i].EnemyCanAttack(CharacterType.Enemy, _mapPacket.Enemies.IndexOf(mapEnemy), _mapData.MultiCombat))
                     {
                         PlayerPacket player = _clients[i].GetPacket();
 
@@ -976,7 +976,7 @@ namespace RpgServer
                 PlayerPacket player = null;
                 for (int i = 0; i < _clients.Count; i++)
                 {
-                    if (_clients[i].EnemyCanAttack(CharacterType.Enemy, _mapPacket.Enemies.IndexOf(mapEnemy)))
+                    if (_clients[i].EnemyCanAttack(CharacterType.Enemy, _mapPacket.Enemies.IndexOf(mapEnemy), _mapData.MultiCombat))
                     {
                         client = _clients[i];
                         player = client.GetPacket();
@@ -1256,7 +1256,7 @@ namespace RpgServer
             double accuracy = rand.NextDouble() * maxAccuracy;
             int meleePower = (int)((stats1.Strength + critModifier) * accuracy) - (stats2.MeleeDefence / 2);
             meleePower = Math.Max(meleePower, 0);
-            client.TakeDamage(CharacterType.Enemy, _mapPacket.Enemies.IndexOf(enemy), meleePower);
+            client.TakeDamage(CharacterType.Enemy, _mapPacket.Enemies.IndexOf(enemy), meleePower, _mapData.MultiCombat);
             enemy.AttackTimer = Math.Max((1 / stats1.Agility) - 1.0f, 0.1f) * 10;
         }
 
@@ -1332,10 +1332,11 @@ namespace RpgServer
                     GameClient[] clients = GetClients();
                     foreach (GameClient client in clients)
                     {
+                        //if not this players projectile
                         if (!(projectile.ParentType == CharacterType.Player && projectile.CharacterID == client.GetPacket().PlayerID))
                         {
                             if ((projectile.TargetID == -1 || projectile.TargetID == client.GetPacket().PlayerID) &&
-                                client.EnemyCanAttack(projectile.ParentType, projectile.CharacterID))
+                                client.EnemyCanAttack(projectile.ParentType, projectile.CharacterID, _mapData.MultiCombat))
                             {
                                 Hitbox playerHitbox = client.GetHitbox();
                                 if (hitBox.Intersects(playerHitbox))
@@ -1344,7 +1345,7 @@ namespace RpgServer
                                     int defence = projectile.Style == AttackStyle.Ranged ? stats.RangeDefence : stats.MagicDefence;
                                     int attackPower = projectile.AttackPower - (defence / 2);
                                     attackPower = Math.Max(attackPower, 0);
-                                    client.TakeDamage(projectile.ParentType, projectile.CharacterID, attackPower);
+                                    client.TakeDamage(projectile.ParentType, projectile.CharacterID, attackPower, _mapData.MultiCombat);
                                     projectile.Destroyed = true;
                                     break;
                                 }
@@ -1362,18 +1363,19 @@ namespace RpgServer
                     for (int i = 0; i < _mapPacket.Enemies.Count; i++)
                     {
                         MapEnemy enemy = _mapPacket.Enemies[i];
+                        //if not this enemies projectile
                         if (!(projectile.ParentType == CharacterType.Enemy && projectile.CharacterID == i))
                         {
                             GameClient client = null;
                             if (projectile.ParentType == CharacterType.Player)
                             {
                                 client = Server.Instance.FindClientByID(projectile.CharacterID);
-                                if (client == null || !client.EnemyCanAttack(CharacterType.Enemy, i))
+                                if (client == null || !client.EnemyCanAttack(CharacterType.Enemy, i, _mapData.MultiCombat))
                                     continue;
                             }
 
                             if ((projectile.TargetID == -1 || projectile.TargetID == i) &&
-                                enemy.EnemyCanAttack(projectile.ParentType, projectile.CharacterID))
+                                enemy.EnemyCanAttack(projectile.ParentType, projectile.CharacterID, _mapData.MultiCombat))
                             {
                                 Hitbox enemyHitBox = enemy.GetHitbox();
                                 if (hitBox.Intersects(enemyHitBox))
@@ -1382,7 +1384,7 @@ namespace RpgServer
                                     int defence = projectile.Style == AttackStyle.Ranged ? stats.RangeDefence : stats.MagicDefence;
                                     int attackPower = projectile.AttackPower - (defence / 2);
                                     attackPower = Math.Max(attackPower, 0);
-                                    enemy.TakeDamage(projectile.ParentType, projectile.CharacterID, attackPower);
+                                    enemy.TakeDamage(projectile.ParentType, projectile.CharacterID, attackPower, _mapData.MultiCombat);
                                     projectile.Destroyed = true;
 
                                     if (enemy.Dead)

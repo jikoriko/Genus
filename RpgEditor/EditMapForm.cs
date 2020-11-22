@@ -26,6 +26,7 @@ namespace RpgEditor
             WidthField.Value = mapData.GetWidth();
             HeightField.Value = mapData.GetHeight();
             PvpCheck.Checked = mapData.PvpEnabled;
+            MultiCombatCheck.Checked = mapData.MultiCombat;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -46,13 +47,18 @@ namespace RpgEditor
                 MessageBox.Show("A map with that name already exists.");
                 return;
             }
-            _mapData.SetMapName(name);
+            else
+            {
+                _mapData.SetMapName(name);
+            }
 
             Genus2D.GameData.MapInfo.ResizeMap(mapID, width, height);
             _mapData.Resize(width, height);
-            _mapData.PvpEnabled = PvpCheck.Checked;
-            Genus2D.GameData.MapInfo.SaveMap(_mapData);
 
+            _mapData.PvpEnabled = PvpCheck.Checked;
+            _mapData.MultiCombat = MultiCombatCheck.Checked;
+
+            Genus2D.GameData.MapInfo.SaveMap(_mapData);
             _editor.SetMapData(_mapData, mapID);
 
             this.Close();

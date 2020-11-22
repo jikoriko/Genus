@@ -37,6 +37,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.PvpCheck = new System.Windows.Forms.CheckBox();
+            this.MultiCombatCheck = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.WidthField)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.HeightField)).BeginInit();
             this.SuspendLayout();
@@ -94,7 +95,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(11, 114);
+            this.button1.Location = new System.Drawing.Point(11, 145);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(167, 30);
             this.button1.TabIndex = 4;
@@ -131,7 +132,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(11, 150);
+            this.button2.Location = new System.Drawing.Point(11, 181);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(167, 30);
             this.button2.TabIndex = 8;
@@ -149,11 +150,22 @@
             this.PvpCheck.Text = "PVP Enabled";
             this.PvpCheck.UseVisualStyleBackColor = true;
             // 
+            // MultiCombatCheck
+            // 
+            this.MultiCombatCheck.AutoSize = true;
+            this.MultiCombatCheck.Location = new System.Drawing.Point(56, 114);
+            this.MultiCombatCheck.Name = "MultiCombatCheck";
+            this.MultiCombatCheck.Size = new System.Drawing.Size(87, 17);
+            this.MultiCombatCheck.TabIndex = 10;
+            this.MultiCombatCheck.Text = "Multi Combat";
+            this.MultiCombatCheck.UseVisualStyleBackColor = true;
+            // 
             // EditMapForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(184, 192);
+            this.ClientSize = new System.Drawing.Size(184, 223);
+            this.Controls.Add(this.MultiCombatCheck);
             this.Controls.Add(this.PvpCheck);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.label3);
@@ -184,5 +196,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.CheckBox PvpCheck;
+        private System.Windows.Forms.CheckBox MultiCombatCheck;
     }
 }

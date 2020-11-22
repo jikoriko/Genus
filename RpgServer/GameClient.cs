@@ -494,10 +494,10 @@ namespace RpgServer
                             break;
 
                         playerID = (int)command.GetParameter("PlayerID");
-                        if (EnemyCanAttack(CharacterType.Player, playerID))
+                        if (EnemyCanAttack(CharacterType.Player, playerID, _mapInstance.GetMapData().MultiCombat))
                         {
                             other = _mapInstance.FindGameClient(playerID);
-                            if (other != null && other.EnemyCanAttack(CharacterType.Player, _playerPacket.PlayerID))
+                            if (other != null && other.EnemyCanAttack(CharacterType.Player, _playerPacket.PlayerID, _mapInstance.GetMapData().MultiCombat))
                             {
                                 int pX = _playerPacket.PositionX;
                                 int pY = _playerPacket.PositionY;
@@ -529,15 +529,17 @@ namespace RpgServer
                         break;
                     case ClientCommand.CommandType.AttackEnemy:
                         int enemyID = (int)command.GetParameter("EnemyID");
-                        if (EnemyCanAttack(CharacterType.Enemy, enemyID))
+                        if (EnemyCanAttack(CharacterType.Enemy, enemyID, _mapInstance.GetMapData().MultiCombat))
                         {
                             MapEnemy otherEnemy = _mapInstance.FindMapEnemy(enemyID);
-                            if (otherEnemy != null && otherEnemy.EnemyCanAttack(CharacterType.Player, _playerPacket.PlayerID))
+                            bool multiCombat = _mapInstance.GetMapData().MultiCombat;
+                            if (otherEnemy != null && otherEnemy.EnemyCanAttack(CharacterType.Player, _playerPacket.PlayerID, multiCombat))
                             {
-                                int pX = _playerPacket.PositionX;
-                                int pY = _playerPacket.PositionY;
                                 EnemyCharacterType = CharacterType.Enemy;
                                 EnemyCharacterID = enemyID;
+
+                                int pX = _playerPacket.PositionX;
+                                int pY = _playerPacket.PositionY;
                                 if (otherEnemy.MapX < pX && otherEnemy.MapY == pY)
                                 {
                                     ChangeDirection(FacingDirection.Left);
@@ -787,6 +789,8 @@ namespace RpgServer
 
                 if (!CheckEventTriggers(targetX, targetY, EventTriggerType.Action))
                 {
+                    if (_mapInstance.GetMapData().MultiCombat)
+                        EnemyCharacterID = -1;
                     CombatCheck(targetX, targetY);
                 }
             }
@@ -1277,6 +1281,7 @@ namespace RpgServer
                 if (weaponID != -1)
                 {
                     ItemData data = ItemData.GetItemData(weaponID);
+                    bool multiCombat = _mapInstance.GetMapData().MultiCombat;
 
                     switch ((AttackStyle)data.GetItemStat("AttackStyle"))
                     {
@@ -1284,19 +1289,26 @@ namespace RpgServer
 
                             bool attacked = false;
 
-                            if (_mapInstance.GetMapData().PvpEnabled)
+                            if (EnemyCharacterID == -1 || EnemyCharacterType == CharacterType.Player)
                             {
-                                GameClient[] clients = _mapInstance.GetClients();
-                                for (int i = 0; i < clients.Length; i++)
+                                if (_mapInstance.GetMapData().PvpEnabled)
                                 {
-                                    if (clients[i]._playerPacket.PositionX == x && clients[i]._playerPacket.PositionY == y)
+                                    GameClient[] clients = _mapInstance.GetClients();
+                                    for (int i = 0; i < clients.Length; i++)
                                     {
-                                        if (clients[i].EnemyCanAttack(CharacterType.Player, _playerPacket.PlayerID)
-                                            && EnemyCanAttack(CharacterType.Player, clients[i]._playerPacket.PlayerID))
+                                        GameClient client = clients[i];
+                                        if (EnemyCharacterID == -1 || EnemyCharacterID == client.GetPacket().PlayerID)
                                         {
-                                            MeleeTrigger(clients[i]);
-                                            attacked = true;
-                                            break;
+                                            if (client._playerPacket.PositionX == x && client._playerPacket.PositionY == y)
+                                            {
+                                                if (client.EnemyCanAttack(CharacterType.Player, _playerPacket.PlayerID, multiCombat)
+                                                    && EnemyCanAttack(CharacterType.Player, client._playerPacket.PlayerID, multiCombat))
+                                                {
+                                                    MeleeTrigger(client);
+                                                    attacked = true;
+                                                    break;
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -1304,16 +1316,21 @@ namespace RpgServer
 
                             if (!attacked)
                             {
-                                for (int i = 0; i < _mapInstance.GetMapPacket().Enemies.Count; i++)
+                                if (EnemyCharacterID == -1 || EnemyCharacterType == CharacterType.Enemy)
                                 {
-                                    MapEnemy other = _mapInstance.GetMapPacket().Enemies[i];
-                                    if (other.MapX == x && other.MapY == y)
+                                    for (int i = 0; i < _mapInstance.GetMapPacket().Enemies.Count; i++)
                                     {
-                                        if (other.EnemyCanAttack(CharacterType.Player, _playerPacket.PlayerID)
-                                            && EnemyCanAttack(CharacterType.Enemy, i))
+                                        if (EnemyCharacterID == -1 || EnemyCharacterID == i)
                                         {
-
-                                            MeleeTrigger(other);
+                                            MapEnemy other = _mapInstance.GetMapPacket().Enemies[i];
+                                            if (other.MapX == x && other.MapY == y)
+                                            {
+                                                if (other.EnemyCanAttack(CharacterType.Player, _playerPacket.PlayerID, multiCombat)
+                                                    && EnemyCanAttack(CharacterType.Enemy, i, multiCombat))
+                                                {
+                                                    MeleeTrigger(other);
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -1351,7 +1368,7 @@ namespace RpgServer
             double accuracy = rand.NextDouble() * maxAccuracy;
             int meleePower = (int)((stats1.Strength + critModifier) * accuracy) - (stats2.MeleeDefence / 2);
             meleePower = Math.Max(meleePower, 0);
-            other.TakeDamage(CharacterType.Player, _playerPacket.PlayerID, meleePower);
+            other.TakeDamage(CharacterType.Player, _playerPacket.PlayerID, meleePower, _mapInstance.GetMapData().MultiCombat);
             _attackTimer = Math.Max((1 / stats1.Agility) - 1.0f, 0.1f) * 10;
         }
 
@@ -1365,7 +1382,7 @@ namespace RpgServer
             double accuracy = rand.NextDouble() * maxAccuracy;
             int meleePower = (int)((stats1.Strength + critModifier) * accuracy) - (stats2.MeleeDefence / 2);
             meleePower = Math.Max(meleePower, 0);
-            other.TakeDamage(CharacterType.Player, _playerPacket.PlayerID, meleePower);
+            other.TakeDamage(CharacterType.Player, _playerPacket.PlayerID, meleePower, _mapInstance.GetMapData().MultiCombat);
             _attackTimer = Math.Max((1 / stats1.Agility) - 1.0f, 0.1f) * 10;
 
             if (other.Dead)
@@ -1385,6 +1402,8 @@ namespace RpgServer
                 Projectile projectile = new Projectile(projectileID, CharacterType.Player, _playerPacket.PlayerID, position, _playerPacket.Direction);
                 projectile.OnBridge = _playerPacket.OnBridge;
                 projectile.Style = AttackStyle.Ranged;
+                projectile.TargetType = EnemyCharacterType;
+                projectile.TargetID = EnemyCharacterID;
 
                 Random rand = new Random();
                 CombatStats stats = _playerPacket.Data.GetCombinedCombatStats();
@@ -1407,6 +1426,8 @@ namespace RpgServer
             Projectile projectile = new Projectile(projectileID, CharacterType.Player, _playerPacket.PlayerID, position, _playerPacket.Direction);
             projectile.OnBridge = _playerPacket.OnBridge;
             projectile.Style = AttackStyle.Magic;
+            projectile.TargetType = EnemyCharacterType;
+            projectile.TargetID = EnemyCharacterID;
 
             Random rand = new Random();
             CombatStats stats = _playerPacket.Data.GetCombinedCombatStats();
@@ -1421,11 +1442,11 @@ namespace RpgServer
             _attackTimer = Math.Max((1 / stats.Agility) - 1.0f, 0.1f) * 10;
         }
 
-        public void TakeDamage(CharacterType enemyType, int enemyID, int damage)
+        public void TakeDamage(CharacterType enemyType, int enemyID, int damage, bool multiCombat)
         {
-            if (EnemyCanAttack(enemyType, enemyID))
+            if (EnemyCanAttack(enemyType, enemyID, multiCombat))
             {
-                if (enemyID != -1)
+                if (enemyID != -1 && !_mapInstance.GetMapData().MultiCombat)
                 {
                     EnemyCharacterType = enemyType;
                     EnemyCharacterID = enemyID;
@@ -1442,13 +1463,15 @@ namespace RpgServer
             }
         }
 
-        public bool EnemyCanAttack(CharacterType enemyType, int enemyID)
+        public bool EnemyCanAttack(CharacterType enemyType, int enemyID, bool multiCombat)
         {
             if (Dead)
                 return false;
             if (EnemyCharacterID == -1)
                 return true;
             if (enemyID == -1)
+                return true;
+            if (multiCombat)
                 return true;
             if (EnemyCharacterType == enemyType && EnemyCharacterID == enemyID)
                 return true;
