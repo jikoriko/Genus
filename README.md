@@ -1,6 +1,8 @@
 # Genus
 2d MMO Engine WIP
 
+ Programed using C# and Visual Studio, OpenGL rendering using OpenTK
+
  1: build all 4 projects:
  
        Genus2D - Engine code
