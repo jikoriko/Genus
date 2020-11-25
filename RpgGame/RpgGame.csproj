@@ -84,6 +84,7 @@
     <Compile Include="EntityComponents\MapItemComponent.cs" />
     <Compile Include="EntityComponents\ProjectileComponent.cs" />
     <Compile Include="GUI\ItemClickOptionsPanel.cs" />
+    <Compile Include="GUI\BankPanel.cs" />
     <Compile Include="GUI\TradePanel.cs" />
     <Compile Include="GUI\ShopPanel.cs" />
     <Compile Include="GUI\MapClickOptionsPanel.cs" />

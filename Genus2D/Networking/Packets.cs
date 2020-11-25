@@ -17,7 +17,8 @@ namespace Genus2D.Networking
         ServerCommand,
         ClientCommand,
         SendMessagePackets,
-        RecieveMessagePackets
+        RecieveMessagePackets,
+        BankPacket
         
     }
 

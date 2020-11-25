@@ -637,6 +637,12 @@ namespace RpgServer
                         }
 
                         break;
+                    case EventCommand.CommandType.StartBanking:
+                        if (client == null || !client.Connected()) break;
+
+                        client.StartBanking();
+
+                        break;
                 }
             }
             else
@@ -650,7 +656,8 @@ namespace RpgServer
             if (mapEvent == null || mapEvent.GetEventData() == null)
                 return;
 
-            if (mapEvent.Locked) // add player lock id so others can interact
+            if (mapEvent.Locked) // add player lock id list so others can interact
+                //we did this because sometimes a player could double trigger an event as it started / finished (event touch for example spamming the trigger)
             {
                 return;
             }

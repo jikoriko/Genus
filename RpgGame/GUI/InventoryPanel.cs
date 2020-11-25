@@ -49,43 +49,63 @@ namespace RpgGame.GUI
                         mouse.Y -= 30;
                         mouse.Y /= slotSize;
                         int itemIndex = (int)mouse.X + ((int)mouse.Y * 5);
-                        if (RpgClientConnection.Instance.GetLocalPlayerPacket().Data.GetInventoryItem(itemIndex) != null)
+
+                        Tuple<int, int> itemInfo = RpgClientConnection.Instance.GetLocalPlayerPacket().Data.GetInventoryItem(itemIndex);
+                        if (itemInfo != null)
                         {
                             if (e.Button == MouseButton.Left)
                             {
-                                if (TradePanel.Instance != null)
+                                if (ShopPanel.Instance != null)
                                 {
-                                    Tuple<int, int> itemInfo = RpgClientConnection.Instance.GetLocalPlayerPacket().Data.GetInventoryItem(itemIndex);
-                                    if (itemInfo != null)
+                                    command = new ClientCommand(ClientCommand.CommandType.SellShopItem);
+                                    command.SetParameter("Count", 1);
+                                }
+                                else if (TradePanel.Instance != null)
+                                {
+
+                                    int added = TradePanel.Instance.TradeRequest.TradeOffer1.AddItem(itemInfo.Item1, 1);
+                                    if (added > 0)
                                     {
-                                        int added = TradePanel.Instance.TradeRequest.TradeOffer1.AddItem(itemInfo.Item1, 1);
-                                        if (added > 0)
-                                        {
-                                            command = new ClientCommand(ClientCommand.CommandType.AddTradeItem);
-                                            command.SetParameter("Count", 1);
-                                            TradePanel.Instance.TradeRequest.TradeOffer1.Accepted = false;
-                                            TradePanel.Instance.TradeRequest.TradeOffer2.Accepted = false;
-                                        }
+                                        command = new ClientCommand(ClientCommand.CommandType.AddTradeItem);
+                                        command.SetParameter("Count", 1);
+                                        TradePanel.Instance.TradeRequest.TradeOffer1.Accepted = false;
+                                        TradePanel.Instance.TradeRequest.TradeOffer2.Accepted = false;
                                     }
+                                }
+                                else if (BankPanel.Instance != null)
+                                {
+                                    command = new ClientCommand(ClientCommand.CommandType.AddBankItem);
+                                    command.SetParameter("Count", 1);
                                 }
                                 else
                                 {
                                     command = new ClientCommand(ClientCommand.CommandType.SelectItem);
                                 }
                             }
-                            else
+                            else if (e.Button == MouseButton.Right)
                             {
-                                Vector2 mousePos = StateWindow.Instance.GetMousePosition();
-                                if (TradePanel.Instance != null)
+                                ItemClickOptionsPanel.OptionType optionType = ItemClickOptionsPanel.OptionType.Drop;
+
+                                if (ShopPanel.Instance != null)
                                 {
-                                    ItemClickOptionsPanel optionPanel = new ItemClickOptionsPanel((int)mousePos.X, (int)mousePos.Y, ItemClickOptionsPanel.OptionType.Trade, itemIndex, _gameState);
-                                    GameState.Instance.AddControl(optionPanel);
+                                    optionType = ItemClickOptionsPanel.OptionType.Sell;
+                                }
+                                else if (TradePanel.Instance != null)
+                                {
+                                    optionType = ItemClickOptionsPanel.OptionType.AddTrade;
+                                }
+                                else if (BankPanel.Instance != null)
+                                {
+                                    optionType = ItemClickOptionsPanel.OptionType.AddBank;
                                 }
                                 else
                                 {
-                                    ItemClickOptionsPanel optionPanel = new ItemClickOptionsPanel((int)mousePos.X, (int)mousePos.Y, ItemClickOptionsPanel.OptionType.Drop, itemIndex, _gameState);
-                                    GameState.Instance.AddControl(optionPanel);
+                                    optionType = ItemClickOptionsPanel.OptionType.Drop;
                                 }
+
+                                Vector2 mousePos = StateWindow.Instance.GetMousePosition();
+                                ItemClickOptionsPanel optionPanel = new ItemClickOptionsPanel((int)mousePos.X, (int)mousePos.Y, optionType, itemIndex, itemInfo.Item1, itemInfo.Item2, _gameState);
+                                GameState.Instance.AddControl(optionPanel);
                             }
                         }
 

@@ -76,7 +76,7 @@ namespace RpgGame.GUI
             base.OnMouseDown(e);
             if (ContentSelectable())
             {
-                if (e.Button == MouseButton.Left)
+                if (e.Button == MouseButton.Left || e.Button == MouseButton.Right)
                 {
                     Vector2 mouse = GetLocalMousePosition();
                     int width = (GetContentWidth() / 2) - 8;
@@ -90,12 +90,32 @@ namespace RpgGame.GUI
                         mouse.X /= slotSize;
                         mouse.Y /= slotSize;
                         int itemIndex = (int)mouse.X + ((int)mouse.Y * ItemsPerRow);
-                        if (this.TradeRequest.TradeOffer1.GetItem(itemIndex) != null)
+
+                        if (itemIndex >= 0 && itemIndex < this.TradeRequest.TradeOffer1.NumItems())
                         {
-                            this.TradeRequest.TradeOffer1.RemoveItem(itemIndex);
-                            ClientCommand command = new ClientCommand(ClientCommand.CommandType.RemoveTradeItem);
-                            command.SetParameter("ItemIndex", itemIndex);
-                            RpgClientConnection.Instance.AddClientCommand(command);
+                            if (e.Button == MouseButton.Left)
+                            {
+                                if (this.TradeRequest.TradeOffer1.GetItem(itemIndex) != null)
+                                {
+                                    int removed = this.TradeRequest.TradeOffer1.RemoveItem(itemIndex, 1);
+                                    if (removed > 0)
+                                    {
+                                        ClientCommand command = new ClientCommand(ClientCommand.CommandType.RemoveTradeItem);
+                                        command.SetParameter("ItemIndex", itemIndex);
+                                        command.SetParameter("Count", 1);
+                                        RpgClientConnection.Instance.AddClientCommand(command);
+                                    }
+                                }
+                            }
+                            else if (e.Button == MouseButton.Right)
+                            {
+                                Vector2 mousePos = StateWindow.Instance.GetMousePosition();
+                                ItemClickOptionsPanel.OptionType optionType = ItemClickOptionsPanel.OptionType.RemoveTrade;
+                                int itemID = this.TradeRequest.TradeOffer1.GetItem(itemIndex).Item1;
+                                int max = this.TradeRequest.TradeOffer1.GetItem(itemIndex).Item2;
+                                ItemClickOptionsPanel optionPanel = new ItemClickOptionsPanel((int)mousePos.X, (int)mousePos.Y, optionType, itemIndex, itemID, max, _gameState);
+                                GameState.Instance.AddControl(optionPanel);
+                            }
                         }
                     }
                 }
@@ -125,7 +145,6 @@ namespace RpgGame.GUI
                 {
                     pos = new Vector3(x, y, 0);
                     Rectangle source = new Rectangle((data.IconID % 8) * 32, (data.IconID / 8) * 32, 32, 32);
-                    Rectangle dest = new Rectangle(x, y, iconSize, iconSize);
                     Texture texture = Assets.GetTexture("Icons/" + data.IconSheetImage);
                     colour = Color4.White;
                     Renderer.FillTexture(texture, ShapeFactory.Rectangle, ref pos, ref size, ref source, ref colour);
@@ -134,8 +153,8 @@ namespace RpgGame.GUI
                     if (amount > 1)
                     {
                         string text = amount.ToString();
-                        pos.X += 32 - Renderer.GetFont().GetTextWidth(text);
-                        pos.Y += 32 - Renderer.GetFont().GetTextHeight(text);
+                        pos.X += iconSize - Renderer.GetFont().GetTextWidth(text);
+                        pos.Y += iconSize - Renderer.GetFont().GetTextHeight(text);
                         colour = Color4.Red;
                         Renderer.PrintText(text, ref pos, ref colour);
                     }
@@ -154,7 +173,6 @@ namespace RpgGame.GUI
                 {
                     pos = new Vector3(x, y, 0);
                     Rectangle source = new Rectangle((data.IconID % 8) * 32, (data.IconID / 8) * 32, 32, 32);
-                    Rectangle dest = new Rectangle(x, y, iconSize, iconSize);
                     Texture texture = Assets.GetTexture("Icons/" + data.IconSheetImage);
                     colour = Color4.White;
                     Renderer.FillTexture(texture, ShapeFactory.Rectangle, ref pos, ref size, ref source, ref colour);

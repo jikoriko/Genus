@@ -9,6 +9,7 @@ using RpgGame.States;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,30 +22,53 @@ namespace RpgGame.GUI
         public enum OptionType
         {
             Drop,
-            Trade
+            AddTrade,
+            RemoveTrade,
+            Sell,
+            Buy,
+            AddBank,
+            RemoveBank
         }
+
+        private static string[] _labels =
+        {
+            "Drop",
+            "Trade",
+            "Remove",
+            "Sell",
+            "Buy",
+            "Bank",
+            "Remove"
+        };
+        
+        private static int[] _counts = { 1, 5, 10, 50, 100, 500, 1000 };
 
         private OptionType _optionType;
         private List<string> _options;
-        private int[] _counts = { 1, 5, 10, 50, 100, 500, 1000 };
         private int _itemIndex;
+        private int _itemID;
+        private int _max;
 
-        public ItemClickOptionsPanel(int x, int y, OptionType optionType, int itemIndex, GameState state)
+        public ItemClickOptionsPanel(int x, int y, OptionType optionType, int itemIndex, int itemID, int max, GameState state)
             : base(x - 150, y, 300, 0, BarMode.Empty, state)
         {
             _optionType = optionType;
             _options = new List<string>();
             _itemIndex = itemIndex;
+            _itemID = itemID;
+            _max = max;
 
             for (int i = 0; i < _counts.Length; i++)
             {
-                _options.Add(optionType.ToString() + " " + _counts[i]);
+                _options.Add(_labels[(int)optionType] + " " + _counts[i]);
             }
-            _options.Add(optionType.ToString() + " All");
+
+            if (max > 0)
+                _options.Add(_labels[(int)optionType] + " All");
 
             SetMargin(2);
             SetBackgroundGradientMode(Renderer.GradientMode.None);
-            SetContentSize(GetContentWidth(), 8 * 32);
+            SetContentSize(GetContentWidth(), _options.Count * 32);
             _cornerRadius = 0;
 
             OnTrigger += Trigger;
@@ -56,30 +80,55 @@ namespace RpgGame.GUI
             if (option >= 0 && option < _options.Count)
             {
                 ClientCommand command = null;
+
                 int count;
-                if (option == _options.Count - 1)
-                    count = RpgClientConnection.Instance.GetLocalPlayerPacket().Data.GetInventoryItem(_itemIndex).Item2;
+                if (option == _options.Count - 1 && _max > 0)
+                    count = _max;
                 else
                     count = _counts[option];
 
-                if (_optionType == OptionType.Drop)
-                    command = new ClientCommand(ClientCommand.CommandType.DropItem);
-                else
-                {
-                    Tuple<int, int> itemInfo = RpgClientConnection.Instance.GetLocalPlayerPacket().Data.GetInventoryItem(_itemIndex);
-                    if (itemInfo != null)
-                    {
-                        if (count > itemInfo.Item2)
-                            count = itemInfo.Item2;
+                if (count > _max && _max > 0)
+                    count = _max;
 
-                        int added = TradePanel.Instance.TradeRequest.TradeOffer1.AddItem(itemInfo.Item1, count);
-                        if (added > 0)
-                        {
-                            command = new ClientCommand(ClientCommand.CommandType.AddTradeItem);
-                            TradePanel.Instance.TradeRequest.TradeOffer1.Accepted = false;
-                            TradePanel.Instance.TradeRequest.TradeOffer2.Accepted = false;
-                        }
+                if (_optionType == OptionType.Drop)
+                {
+                    command = new ClientCommand(ClientCommand.CommandType.DropItem);
+                }
+                else if (_optionType == OptionType.AddTrade)
+                {
+                    int added = TradePanel.Instance.TradeRequest.TradeOffer1.AddItem(_itemID, count);
+                    if (added > 0)
+                    {
+                        command = new ClientCommand(ClientCommand.CommandType.AddTradeItem);
+                        TradePanel.Instance.TradeRequest.TradeOffer1.Accepted = false;
+                        TradePanel.Instance.TradeRequest.TradeOffer2.Accepted = false;
                     }
+
+                }
+                else if (_optionType == OptionType.RemoveTrade)
+                {
+                    //need to refine this so its like adding
+                    int removed = TradePanel.Instance.TradeRequest.TradeOffer1.RemoveItem(_itemIndex, count);
+                    if (removed > 0)
+                    {
+                        command = new ClientCommand(ClientCommand.CommandType.RemoveTradeItem);
+                    }
+                }
+                else if (_optionType == OptionType.Sell)
+                {
+                    command = new ClientCommand(ClientCommand.CommandType.SellShopItem);
+                }
+                else if (_optionType == OptionType.Buy)
+                {
+                    command = new ClientCommand(ClientCommand.CommandType.BuyShopItem);
+                }
+                else if (_optionType == OptionType.AddBank)
+                {
+                    command = new ClientCommand(ClientCommand.CommandType.AddBankItem);
+                }
+                else if (_optionType == OptionType.RemoveBank)
+                {
+                    command = new ClientCommand(ClientCommand.CommandType.RemoveBankItem);
                 }
 
                 if (command != null)

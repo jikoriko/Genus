@@ -39,6 +39,8 @@ namespace RpgGame
         private List<MessagePacket> _messages;
         private List<ClientCommand> _clientCommands;
 
+        private MessageBox _messageBox = null;
+
         States.GameState _gameState;
 
         public RpgClientConnection(States.GameState state, string username, string password, bool register)
@@ -247,6 +249,9 @@ namespace RpgGame
                         case PacketType.RecieveMessagePackets:
                             RecieveMessagePackets();
                             break;
+                        case PacketType.BankPacket:
+                            RecieveBankPacket();
+                            break;
 
                     }
                 }
@@ -333,8 +338,18 @@ namespace RpgGame
             }
         }
 
-        MessageBox _messageBox = null;
+        private void RecieveBankPacket()
+        {
+            byte[] bytes = ReadData(sizeof(int), _stream);
+            int packetSize = BitConverter.ToInt32(bytes, 0);
+            bytes = ReadData(packetSize, _stream);
 
+            if (BankPanel.Instance != null)
+            {
+                BankData data = BankData.FromBytes(bytes);
+                BankPanel.Instance.SetBankData(data);
+            }
+        }
 
         public void CloseMessageBox()
         {
@@ -679,10 +694,11 @@ namespace RpgGame
                     break;
                 case ServerCommand.CommandType.RemoveTradeItem:
                     itemIndex = (int)command.GetParameter("ItemIndex");
+                    count = (int)command.GetParameter("Count");
 
                     if (TradePanel.Instance != null)
                     {
-                        TradePanel.Instance.TradeRequest.TradeOffer2.RemoveItem(itemIndex);
+                        TradePanel.Instance.TradeRequest.TradeOffer2.RemoveItem(itemIndex, count);
                         TradePanel.Instance.TradeRequest.TradeOffer1.Accepted = false;
                         TradePanel.Instance.TradeRequest.TradeOffer2.Accepted = false;
                     }
@@ -694,6 +710,13 @@ namespace RpgGame
                         TradePanel.Instance.TradeRequest.TradeOffer1.Accepted = false;
                         TradePanel.Instance.TradeRequest.TradeOffer2.Accepted = false;
                     }
+                    break;
+                case ServerCommand.CommandType.OpenBank:
+                    if (InventoryPanel.Instance == null)
+                        GameState.Instance.ToggleInventory();
+
+                    _gameState.AddControl(new BankPanel(_gameState));
+
                     break;
             }
         }

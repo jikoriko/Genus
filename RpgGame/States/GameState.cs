@@ -123,7 +123,7 @@ namespace RpgGame.States
 
         public void ToggleInventory()
         {
-            if (TradePanel.Instance != null)
+            if (TradePanel.Instance != null || BankPanel.Instance != null)
                 return;
 
             if (EquipmentPanel.Instance != null)
@@ -139,7 +139,7 @@ namespace RpgGame.States
 
         public void ToggleEquipmentPanel()
         {
-            if (TradePanel.Instance != null)
+            if (TradePanel.Instance != null || BankPanel.Instance != null)
                 return;
 
             if (InventoryPanel.Instance != null)
@@ -155,7 +155,7 @@ namespace RpgGame.States
 
         public void ToggleStatsPanel()
         {
-            if (TradePanel.Instance != null)
+            if (TradePanel.Instance != null || BankPanel.Instance != null)
                 return;
 
             if (InventoryPanel.Instance != null)

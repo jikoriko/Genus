@@ -132,18 +132,21 @@ namespace RpgServer
         private bool _running;
 
         private PlayerPacket _playerPacket;
+        private BankData _bankData;
+        private bool _bankUpdated;
         private MapInstance _mapInstance;
 
         private List<ServerCommand> _serverCommands;
         private List<MessagePacket> _messagePackets;
 
         public bool MessageShowing;
+        public bool Banking;
         public bool MovementDisabled;
         public int SelectedOption;
         public int ShopID;
         public int TradePlayerID;
         private TradeRequest _tradeRequest;
-        private bool _trading = false;
+        private bool _trading;
         private bool _ignoreEvents;
 
         private float _movementTimer;
@@ -168,13 +171,15 @@ namespace RpgServer
             _mapChanged = false;
             _running = false;
 
-            _playerPacket = Server.Instance.GetDatabaseConnection().RetrievePlayerQuery(playerID);
+            _playerPacket = Server.Instance.GetDatabaseConnection().RetrievePlayerQuery(playerID, out _bankData);
+            _bankUpdated = false;
             _mapInstance = null;
 
             _serverCommands = new List<ServerCommand>();
             _messagePackets = new List<MessagePacket>();
 
             MessageShowing = false;
+            Banking = false;
             MovementDisabled = false;
             SelectedOption = -1;
             ShopID = -1;
@@ -243,6 +248,7 @@ namespace RpgServer
                                 RecieveClientCommands();
                                 RecieveMessagePackets();
                                 SendMessagePackets();
+                                SendBankPacket();
                             }
                             catch (Exception e)
                             {
@@ -574,18 +580,18 @@ namespace RpgServer
                             if (data != null)
                             {
                                 itemIndex = (int)command.GetParameter("ItemIndex");
-                                int amount = (int)command.GetParameter("Amount");
-                                if (itemIndex >= 0 && itemIndex < data.ShopItems.Count && amount > 0)
+                                count = (int)command.GetParameter("Count");
+                                if (itemIndex >= 0 && itemIndex < data.ShopItems.Count && count > 0)
                                 {
                                     ShopData.ShopItem shopItem = data.ShopItems[itemIndex];
                                     if (shopItem.ItemID != -1)
                                     {
-                                        int totalCost = shopItem.Cost * amount;
+                                        int totalCost = shopItem.Cost * count;
                                         if (_playerPacket.Data.Gold >= totalCost)
                                         {
                                             _playerPacket.Data.Gold -= totalCost;
-                                            int added = _playerPacket.Data.AddInventoryItem(shopItem.ItemID, amount);
-                                            int remainder =  amount - added;
+                                            int added = _playerPacket.Data.AddInventoryItem(shopItem.ItemID, count);
+                                            int remainder = count - added;
                                             for (int j = 0; j < remainder; j++)
                                             {
                                                 _playerPacket.Data.Gold += shopItem.Cost;
@@ -595,6 +601,14 @@ namespace RpgServer
                                 }
                             }
                         }
+
+                        break;
+                    case ClientCommand.CommandType.SellShopItem:
+                        itemIndex = (int)command.GetParameter("ItemIndex");
+                        count = (int)command.GetParameter("Count");
+
+                        //add selling logic
+
                         break;
                     case ClientCommand.CommandType.TradeRequest:
                         playerID = (int)command.GetParameter("PlayerID");
@@ -645,8 +659,26 @@ namespace RpgServer
                         if (_trading)
                         {
                             itemIndex = (int)command.GetParameter("ItemIndex");
-                            RemoveTradeItem(itemIndex);
+                            count = (int)command.GetParameter("Count");
+                            RemoveTradeItem(itemIndex, count);
                         }
+
+                        break;
+                    case ClientCommand.CommandType.CloseBank:
+
+                        StopBanking();
+
+                        break;
+                    case ClientCommand.CommandType.AddBankItem:
+                        itemIndex = (int)command.GetParameter("ItemIndex");
+                        count = (int)command.GetParameter("Count");
+                        AddBankItem(itemIndex, count);
+
+                        break;
+                    case ClientCommand.CommandType.RemoveBankItem:
+                        itemIndex = (int)command.GetParameter("ItemIndex");
+                        count = (int)command.GetParameter("Count");
+                        RemoveBankItem(itemIndex, count);
 
                         break;
 
@@ -703,6 +735,23 @@ namespace RpgServer
                 _stream.Write(mapBytes, 0, mapBytes.Length);
                 _stream.Flush();
                 _mapChanged = false;
+            }
+        }
+
+        private void SendBankPacket()
+        {
+            if (_bankUpdated)
+            {
+                _bankUpdated = false;
+
+                PacketType type = PacketType.BankPacket;
+                byte[] bytes = BitConverter.GetBytes((int)type);
+                _stream.Write(bytes, 0, sizeof(int));
+                _stream.Flush();
+                bytes = _bankData.GetBytes();
+                _stream.Write(BitConverter.GetBytes(bytes.Length), 0, sizeof(int));
+                _stream.Write(bytes, 0, bytes.Length);
+                _stream.Flush();
             }
         }
 
@@ -905,7 +954,7 @@ namespace RpgServer
                     count = itemInfo.Item2;
 
                 GameClient other;
-                int added;
+                int added = 0;
 
                 if (_tradeRequest.TradeOffer1.PlayerID == _playerPacket.PlayerID)
                 {
@@ -924,7 +973,7 @@ namespace RpgServer
                     other = _mapInstance.FindGameClient(_tradeRequest.TradeOffer1.PlayerID);
                 }
 
-                if (added > 0)
+                if (other != null && added > 0)
                 {
                     ServerCommand command = new ServerCommand(ServerCommand.CommandType.AddTradeItem);
                     command.SetParameter("ItemID", itemInfo.Item1);
@@ -937,22 +986,26 @@ namespace RpgServer
             }
         }
 
-        private void RemoveTradeItem(int itemIndex)
+        private void RemoveTradeItem(int itemIndex, int count)
         {
             Tuple<int, int> itemInfo = null;
             GameClient other = null;
+            int removed = 0;
 
             if (_tradeRequest.TradeOffer1.PlayerID == _playerPacket.PlayerID)
             {
                 itemInfo = _tradeRequest.TradeOffer1.GetItem(itemIndex);
                 if (itemInfo != null)
                 {
-                    _tradeRequest.TradeOffer1.RemoveItem(itemIndex);
-                    _playerPacket.Data.AddInventoryItem(itemInfo.Item1, itemInfo.Item2);
-                    _tradeRequest.TradeOffer1.FreeSlots = _playerPacket.Data.GetFreeInventorySlots();
-                    other = _mapInstance.FindGameClient(_tradeRequest.TradeOffer2.PlayerID);
-                    _tradeRequest.TradeOffer1.Accepted = false;
-                    _tradeRequest.TradeOffer2.Accepted = false;
+                    removed = _tradeRequest.TradeOffer1.RemoveItem(itemIndex, count);
+                    if (removed > 0)
+                    {
+                        _playerPacket.Data.AddInventoryItem(itemInfo.Item1, removed);
+                        _tradeRequest.TradeOffer1.FreeSlots = _playerPacket.Data.GetFreeInventorySlots();
+                        other = _mapInstance.FindGameClient(_tradeRequest.TradeOffer2.PlayerID);
+                        _tradeRequest.TradeOffer1.Accepted = false;
+                        _tradeRequest.TradeOffer2.Accepted = false;
+                    }
                 }
 
             }
@@ -961,21 +1014,72 @@ namespace RpgServer
                 itemInfo = _tradeRequest.TradeOffer2.GetItem(itemIndex);
                 if (itemInfo != null)
                 {
-                    _tradeRequest.TradeOffer2.RemoveItem(itemIndex);
-                    _playerPacket.Data.AddInventoryItem(itemInfo.Item1, itemInfo.Item2);
-                    _tradeRequest.TradeOffer2.FreeSlots = _playerPacket.Data.GetFreeInventorySlots();
-                    other = _mapInstance.FindGameClient(_tradeRequest.TradeOffer1.PlayerID);
-                    _tradeRequest.TradeOffer1.Accepted = false;
-                    _tradeRequest.TradeOffer2.Accepted = false;
+                    removed = _tradeRequest.TradeOffer2.RemoveItem(itemIndex, count);
+                    if (removed > 0)
+                    {
+                        _playerPacket.Data.AddInventoryItem(itemInfo.Item1, removed);
+                        _tradeRequest.TradeOffer2.FreeSlots = _playerPacket.Data.GetFreeInventorySlots();
+                        other = _mapInstance.FindGameClient(_tradeRequest.TradeOffer1.PlayerID);
+                        _tradeRequest.TradeOffer1.Accepted = false;
+                        _tradeRequest.TradeOffer2.Accepted = false;
+                    }
                 }
             }
 
-            if (other != null)
+            if (other != null && removed > 0)
             {
                 ServerCommand command = new ServerCommand(ServerCommand.CommandType.RemoveTradeItem);
                 command.SetParameter("ItemIndex", itemIndex);
+                command.SetParameter("Count", removed);
                 other.AddServerCommand(command);
             }
+        }
+
+        public void StartBanking()
+        {
+            if (!Banking)
+            {
+                Banking = true;
+                MovementDisabled = true;
+                _bankUpdated = true;
+
+                ServerCommand command = new ServerCommand(ServerCommand.CommandType.OpenBank);
+                this.AddServerCommand(command);
+            }
+        }
+
+        public void StopBanking()
+        {
+            if (Banking)
+            {
+                Banking = false;
+                MovementDisabled = false;
+            }
+        }
+
+        public void AddBankItem(int index, int count)
+        {
+            Tuple<int, int> itemInfo = _playerPacket.Data.GetInventoryItem(index);
+            if (itemInfo != null)
+            {
+                if (count >= itemInfo.Item2)
+                {
+                    count = itemInfo.Item2;
+                    _playerPacket.Data.RemoveInventoryItem(index);
+                }
+                else
+                {
+                    _playerPacket.Data.RemoveInventoryItemAt(index, count);
+                }
+                _bankData.AddBankItem(itemInfo.Item1, count);
+                _bankUpdated = true;
+            }
+        }
+
+        public void RemoveBankItem(int index, int count)
+        {
+            _bankData.RemoveBankItem(index, count, _playerPacket.Data);
+            _bankUpdated = true;
         }
 
         public void Update(float deltaTime)
@@ -1495,7 +1599,7 @@ namespace RpgServer
                     this.AddServerCommand(new ServerCommand(ServerCommand.CommandType.Disconnect));
                     this.SendServerCommands();
                 } catch { }
-                Server.Instance.GetDatabaseConnection().UpdatePlayerQuery(_playerPacket);
+                Server.Instance.GetDatabaseConnection().UpdatePlayerQuery(_playerPacket, _bankData);
                 Server.Instance.RemoveGameClient(this);
                 _stream.Close();
                 _connected = false;

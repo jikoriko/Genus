@@ -36,7 +36,8 @@ namespace Genus2D.GameData
             RemoveGold,
             SpawnEnemy,
             ProgressQuest,
-            ShowShop
+            ShowShop,
+            StartBanking
         }
 
         public CommandType Type { get; private set; }

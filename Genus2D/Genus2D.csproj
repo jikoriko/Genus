@@ -69,6 +69,7 @@
     <Compile Include="Entities\EntityManager.cs" />
     <Compile Include="Entities\SpriteComponent.cs" />
     <Compile Include="Entities\Transform.cs" />
+    <Compile Include="GameData\BankData.cs" />
     <Compile Include="GameData\Preloader.cs" />
     <Compile Include="GameData\ClassData.cs" />
     <Compile Include="GameData\CombatStats.cs" />

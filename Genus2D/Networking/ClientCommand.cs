@@ -25,11 +25,15 @@ namespace Genus2D.Networking
             AttackEnemy,
             CloseShop,
             BuyShopItem,
+            SellShopItem,
             TradeRequest,
             CancelTrade,
             AcceptTrade,
             AddTradeItem,
-            RemoveTradeItem
+            RemoveTradeItem,
+            CloseBank,
+            AddBankItem,
+            RemoveBankItem
 
         }
 
@@ -94,11 +98,14 @@ namespace Genus2D.Networking
                     break;
                 case CommandType.BuyShopItem:
                     _parameters.Add("ItemIndex", new Parameter(1, -1));
-                    _parameters.Add("Amount", new Parameter(1, -1));
+                    _parameters.Add("Count", new Parameter(1, -1));
+                    break;
+                case CommandType.SellShopItem:
+                    _parameters.Add("ItemIndex", new Parameter(1, -1));
+                    _parameters.Add("Count", new Parameter(1, -1));
                     break;
                 case CommandType.TradeRequest:
                     _parameters.Add("PlayerID", new Parameter(1, -1));
-                    break;
                     break;
                 case CommandType.CancelTrade:
 
@@ -112,6 +119,18 @@ namespace Genus2D.Networking
                     break;
                 case CommandType.RemoveTradeItem:
                     _parameters.Add("ItemIndex", new Parameter(1, -1));
+                    _parameters.Add("Count", new Parameter(1, -1));
+                    break;
+                case CommandType.CloseBank:
+
+                    break;
+                case CommandType.AddBankItem:
+                    _parameters.Add("ItemIndex", new Parameter(1, -1));
+                    _parameters.Add("Count", new Parameter(1, -1));
+                    break;
+                case CommandType.RemoveBankItem:
+                    _parameters.Add("ItemIndex", new Parameter(1, -1));
+                    _parameters.Add("Count", new Parameter(1, -1));
                     break;
 
             }

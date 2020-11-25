@@ -106,15 +106,28 @@ namespace Genus2D.GameData
                 return added;
             }
 
-            public bool RemoveItem(int index)
+            public int RemoveItem(int index, int count)
             {
+                int removed = 0;
+
                 if (index >= 0 && index < _items.Count)
                 {
-                    _items.RemoveAt(index);
-                    return true;
+                    if (count > 0)
+                    {
+                        if (count < _items[index].Item2)
+                        {
+                            removed = count;
+                            _items[index] = new Tuple<int, int>(_items[index].Item1, _items[index].Item2 - count);
+                        }
+                        else
+                        {
+                            removed = _items[index].Item2;
+                            _items.RemoveAt(index);
+                        }
+                    }
                 }
 
-                return false;
+                return removed;
             }
 
         }

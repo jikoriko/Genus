@@ -1,4 +1,5 @@
-﻿using Genus2D.GameData;
+﻿using Genus2D.Core;
+using Genus2D.GameData;
 using Genus2D.Graphics;
 using Genus2D.GUI;
 using Genus2D.Networking;
@@ -25,6 +26,8 @@ namespace RpgGame.GUI
         public ShopPanel(GameState state, ShopData shopData)
             : base((int)(Renderer.GetResoultion().X / 2) - 200, (int)(Renderer.GetResoultion().Y / 2) - 200, 400, 400, BarMode.Close, state)
         {
+            if (Instance != null)
+                Instance.Close();
             Instance = this;
 
             _gameState = state;
@@ -44,10 +47,8 @@ namespace RpgGame.GUI
             base.OnMouseDown(e);
             if (ContentSelectable())
             {
-                if (e.Button == MouseButton.Left)
+                if (e.Button == MouseButton.Left || e.Button == MouseButton.Right)
                 {
-                    ClientCommand command = null;
-
                     Vector2 mouse = GetLocalMousePosition();
                     int slotSize = GetContentWidth() / 5;
                     mouse.X /= slotSize;
@@ -55,10 +56,22 @@ namespace RpgGame.GUI
                     int itemIndex = (int)mouse.X + ((int)mouse.Y * 5);
                     if (itemIndex >= 0 && itemIndex < _shopData.ShopItems.Count)
                     {
-                        command = new ClientCommand(ClientCommand.CommandType.BuyShopItem);
-                        command.SetParameter("ItemIndex", itemIndex);
-                        command.SetParameter("Amount", 1);
-                        RpgClientConnection.Instance.AddClientCommand(command);
+
+                        if (e.Button == MouseButton.Left)
+                        {
+                            ClientCommand command = new ClientCommand(ClientCommand.CommandType.BuyShopItem);
+                            command.SetParameter("ItemIndex", itemIndex);
+                            command.SetParameter("Count", 1);
+                            RpgClientConnection.Instance.AddClientCommand(command);
+                        }
+                        else if (e.Button == MouseButton.Right)
+                        {
+                            Vector2 mousePos = StateWindow.Instance.GetMousePosition();
+                            ItemClickOptionsPanel.OptionType optionType = ItemClickOptionsPanel.OptionType.Buy;
+                            int itemID = _shopData.ShopItems[itemIndex].ItemID;
+                            ItemClickOptionsPanel optionPanel = new ItemClickOptionsPanel((int)mousePos.X, (int)mousePos.Y, optionType, itemIndex, itemID, -1, _gameState);
+                            GameState.Instance.AddControl(optionPanel);
+                        }
                     }
                 }
             }
@@ -66,9 +79,10 @@ namespace RpgGame.GUI
 
         public override void Close()
         {
-            base.Close();
+            Instance = null;
             ClientCommand clientCommand = new ClientCommand(ClientCommand.CommandType.CloseShop);
             RpgClientConnection.Instance.AddClientCommand(clientCommand);
+            base.Close();
         }
 
         protected override void RenderContent()
