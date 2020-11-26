@@ -1101,6 +1101,8 @@ namespace RpgEditor
                 Genus2D.GameData.ItemData data = Genus2D.GameData.ItemData.GetItemData(index);
                 ItemNameBox.Text = data.Name;
                 ItemIconSelection.Text = data.IconSheetImage;
+                ItemSellableSelection.SelectedIndex = data.Sellable ? 1 : 0;
+                ItemSellPriceSelection.Value = data.SellPrice;
                 ItemTypeSelection.SelectedIndex = (int)data.GetItemType();
                 ItemMaxStack.Value = data.GetMaxStack();
                 itemIconSheetPanel.SetItemData(data);
@@ -1109,6 +1111,8 @@ namespace RpgEditor
             {
                 ItemNameBox.Text = "";
                 ItemIconSelection.SelectedIndex = -1;
+                ItemSellableSelection.SelectedIndex = 0;
+                ItemSellPriceSelection.Value = 0;
                 ItemTypeSelection.SelectedIndex = 0;
                 ItemMaxStack.Value = 1;
                 itemIconSheetPanel.SetItemData(null);
@@ -1211,7 +1215,20 @@ namespace RpgEditor
                 if (ItemIconSelection.SelectedIndex != -1)
                     data.IconSheetImage = (string)ItemIconSelection.Items[ItemIconSelection.SelectedIndex];
                 int prevItemType = (int)data.GetItemType();
-                data.SetItemType((Genus2D.GameData.ItemData.ItemType)ItemTypeSelection.SelectedIndex);
+
+                Genus2D.GameData.ItemData.ItemType itemType = (Genus2D.GameData.ItemData.ItemType)ItemTypeSelection.SelectedIndex;
+                if (itemType != Genus2D.GameData.ItemData.ItemType.Quest)
+                {
+                    data.Sellable = ItemSellableSelection.SelectedIndex == 0 ? false : true;
+                    data.SellPrice = (int)ItemSellPriceSelection.Value;
+                }
+                else
+                {
+                    data.Sellable = false;
+                    data.SellPrice = 0;
+                }
+
+                data.SetItemType(itemType);
                 data.SetMaxStack((int)ItemMaxStack.Value);
 
                 if (prevItemType == ItemTypeSelection.SelectedIndex)
@@ -2191,6 +2208,5 @@ namespace RpgEditor
 
 
         #endregion
-
     }
 }

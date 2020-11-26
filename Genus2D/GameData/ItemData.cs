@@ -29,6 +29,8 @@ namespace Genus2D.GameData
         public string Name;
         public string IconSheetImage;
         public int IconID;
+        public bool Sellable;
+        public int SellPrice;
         private ItemType _itemType;
         private int _maxStack;
         private Dictionary<string, object> _itemStats;
@@ -48,6 +50,8 @@ namespace Genus2D.GameData
             Name = name;
             IconSheetImage = "";
             IconID = 0;
+            Sellable = false;
+            SellPrice = 0;
             _itemType = ItemType.Tool;
             _maxStack = 1;
             _itemStats = new Dictionary<string, object>();
@@ -264,6 +268,16 @@ namespace Genus2D.GameData
                         reader.Read();
                         IconID = reader.ReadContentAsInt();
                     }
+                    else if (reader.LocalName == "Sellable")
+                    {
+                        reader.Read();
+                        Sellable = reader.ReadContentAsString() == "False" ? false : true;
+                    }
+                    else if (reader.LocalName == "SellPrice")
+                    {
+                        reader.Read();
+                        SellPrice = reader.ReadContentAsInt();
+                    }
                     else if (reader.LocalName == "ItemType")
                     {
                         reader.Read();
@@ -316,6 +330,14 @@ namespace Genus2D.GameData
 
             writer.WriteStartElement("IconID");
             writer.WriteString(IconID.ToString());
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("Sellable");
+            writer.WriteString(Sellable.ToString());
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("SellPrice");
+            writer.WriteString(SellPrice.ToString());
             writer.WriteEndElement();
 
             writer.WriteStartElement("ItemType");

@@ -607,7 +607,25 @@ namespace RpgServer
                         itemIndex = (int)command.GetParameter("ItemIndex");
                         count = (int)command.GetParameter("Count");
 
-                        //add selling logic
+                        itemInfo = _playerPacket.Data.GetInventoryItem(itemIndex);
+                        if (itemInfo != null && count > 0)
+                        {
+                            ItemData itemData = ItemData.GetItemData(itemInfo.Item1);
+                            if (itemData.Sellable)
+                            {
+                                if (count > itemInfo.Item2)
+                                {
+                                    count = itemInfo.Item2;
+                                }
+                                _playerPacket.Data.RemoveInventoryItemAt(itemIndex, count);
+                                int sellPrice = count * itemData.SellPrice;
+                                _playerPacket.Data.Gold += sellPrice;
+                            }
+                            else
+                            {
+                                _messagePackets.Add(new MessagePacket("Item cannot be sold."));
+                            }
+                        }
 
                         break;
                     case ClientCommand.CommandType.TradeRequest:

@@ -332,6 +332,10 @@
             this.AddVariableButton = new System.Windows.Forms.Button();
             this.SystemVariablesList = new System.Windows.Forms.ListBox();
             this.label19 = new System.Windows.Forms.Label();
+            this.label82 = new System.Windows.Forms.Label();
+            this.ItemSellableSelection = new System.Windows.Forms.ComboBox();
+            this.label83 = new System.Windows.Forms.Label();
+            this.ItemSellPriceSelection = new System.Windows.Forms.NumericUpDown();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -413,6 +417,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.TestLvlSelection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.XpPowSelection)).BeginInit();
             this.panel7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ItemSellPriceSelection)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -2198,6 +2203,10 @@
             this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox8.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.groupBox8.Controls.Add(this.label83);
+            this.groupBox8.Controls.Add(this.ItemSellPriceSelection);
+            this.groupBox8.Controls.Add(this.label82);
+            this.groupBox8.Controls.Add(this.ItemSellableSelection);
             this.groupBox8.Controls.Add(this.panel1);
             this.groupBox8.Controls.Add(this.UndoItemButton);
             this.groupBox8.Controls.Add(this.AddItemButton);
@@ -2354,9 +2363,9 @@
             // ItemStatsPanel
             // 
             this.ItemStatsPanel.BackColor = System.Drawing.Color.Transparent;
-            this.ItemStatsPanel.Location = new System.Drawing.Point(197, 190);
+            this.ItemStatsPanel.Location = new System.Drawing.Point(197, 243);
             this.ItemStatsPanel.Name = "ItemStatsPanel";
-            this.ItemStatsPanel.Size = new System.Drawing.Size(218, 393);
+            this.ItemStatsPanel.Size = new System.Drawing.Size(218, 340);
             this.ItemStatsPanel.TabIndex = 9;
             // 
             // ApplyItemButton
@@ -4079,6 +4088,42 @@
             this.label19.TabIndex = 7;
             this.label19.Text = "System Variables";
             // 
+            // label82
+            // 
+            this.label82.AutoSize = true;
+            this.label82.Location = new System.Drawing.Point(222, 193);
+            this.label82.Name = "label82";
+            this.label82.Size = new System.Drawing.Size(47, 13);
+            this.label82.TabIndex = 34;
+            this.label82.Text = "Sellable:";
+            // 
+            // ItemSellableSelection
+            // 
+            this.ItemSellableSelection.FormattingEnabled = true;
+            this.ItemSellableSelection.Items.AddRange(new object[] {
+            "False",
+            "True"});
+            this.ItemSellableSelection.Location = new System.Drawing.Point(274, 190);
+            this.ItemSellableSelection.Name = "ItemSellableSelection";
+            this.ItemSellableSelection.Size = new System.Drawing.Size(141, 21);
+            this.ItemSellableSelection.TabIndex = 33;
+            // 
+            // label83
+            // 
+            this.label83.AutoSize = true;
+            this.label83.Location = new System.Drawing.Point(211, 219);
+            this.label83.Name = "label83";
+            this.label83.Size = new System.Drawing.Size(58, 13);
+            this.label83.TabIndex = 36;
+            this.label83.Text = "Sale Price:";
+            // 
+            // ItemSellPriceSelection
+            // 
+            this.ItemSellPriceSelection.Location = new System.Drawing.Point(274, 217);
+            this.ItemSellPriceSelection.Name = "ItemSellPriceSelection";
+            this.ItemSellPriceSelection.Size = new System.Drawing.Size(141, 20);
+            this.ItemSellPriceSelection.TabIndex = 35;
+            // 
             // EditorForm
             // 
             this.ClientSize = new System.Drawing.Size(1184, 761);
@@ -4182,6 +4227,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.XpPowSelection)).EndInit();
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ItemSellPriceSelection)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -4492,6 +4538,10 @@
         private System.Windows.Forms.Button AddShopButton;
         private System.Windows.Forms.ListBox ShopList;
         private System.Windows.Forms.Label label85;
+        private System.Windows.Forms.Label label82;
+        private System.Windows.Forms.ComboBox ItemSellableSelection;
+        private System.Windows.Forms.Label label83;
+        private System.Windows.Forms.NumericUpDown ItemSellPriceSelection;
     }
 }
 
