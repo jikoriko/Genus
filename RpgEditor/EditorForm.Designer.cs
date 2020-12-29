@@ -168,6 +168,10 @@
             this.label54 = new System.Windows.Forms.Label();
             this.ProjectileIconSelection = new System.Windows.Forms.ComboBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.label83 = new System.Windows.Forms.Label();
+            this.ItemSellPriceSelection = new System.Windows.Forms.NumericUpDown();
+            this.label82 = new System.Windows.Forms.Label();
+            this.ItemSellableSelection = new System.Windows.Forms.ComboBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.UndoItemButton = new System.Windows.Forms.Button();
             this.AddItemButton = new System.Windows.Forms.Button();
@@ -184,6 +188,27 @@
             this.ApplyItemButton = new System.Windows.Forms.Button();
             this.label33 = new System.Windows.Forms.Label();
             this.ItemIconSelection = new System.Windows.Forms.ComboBox();
+            this.tabPage9 = new System.Windows.Forms.TabPage();
+            this.groupBox15 = new System.Windows.Forms.GroupBox();
+            this.RemoveWorkbenchButton = new System.Windows.Forms.Button();
+            this.AddWorkbenchButton = new System.Windows.Forms.Button();
+            this.CraftableWorkbenchSelection = new System.Windows.Forms.ComboBox();
+            this.label88 = new System.Windows.Forms.Label();
+            this.AddCraftingMaterialButton = new System.Windows.Forms.Button();
+            this.RemoveCraftingMaterialButton = new System.Windows.Forms.Button();
+            this.label87 = new System.Windows.Forms.Label();
+            this.CraftingMaterialListBox = new System.Windows.Forms.ListBox();
+            this.label86 = new System.Windows.Forms.Label();
+            this.CraftableAmountSelection = new System.Windows.Forms.NumericUpDown();
+            this.UndoCraftablesButton = new System.Windows.Forms.Button();
+            this.AddCraftableButton = new System.Windows.Forms.Button();
+            this.RemoveCraftableButton = new System.Windows.Forms.Button();
+            this.CraftablesListBox = new System.Windows.Forms.ListBox();
+            this.label90 = new System.Windows.Forms.Label();
+            this.CraftableNameBox = new System.Windows.Forms.TextBox();
+            this.ApplyCraftablesButton = new System.Windows.Forms.Button();
+            this.label91 = new System.Windows.Forms.Label();
+            this.CraftableItemSelection = new System.Windows.Forms.ComboBox();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.panel8 = new System.Windows.Forms.Panel();
             this.groupBox13 = new System.Windows.Forms.GroupBox();
@@ -332,10 +357,10 @@
             this.AddVariableButton = new System.Windows.Forms.Button();
             this.SystemVariablesList = new System.Windows.Forms.ListBox();
             this.label19 = new System.Windows.Forms.Label();
-            this.label82 = new System.Windows.Forms.Label();
-            this.ItemSellableSelection = new System.Windows.Forms.ComboBox();
-            this.label83 = new System.Windows.Forms.Label();
-            this.ItemSellPriceSelection = new System.Windows.Forms.NumericUpDown();
+            this.WorkBenchesListBox = new System.Windows.Forms.ListBox();
+            this.label89 = new System.Windows.Forms.Label();
+            this.WorkbenchNameBox = new System.Windows.Forms.TextBox();
+            this.EditCraftingMaterialButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -379,7 +404,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.ProjectileLifespan)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ProjectileSpeed)).BeginInit();
             this.groupBox8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ItemSellPriceSelection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ItemMaxStack)).BeginInit();
+            this.tabPage9.SuspendLayout();
+            this.groupBox15.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CraftableAmountSelection)).BeginInit();
             this.tabPage6.SuspendLayout();
             this.panel8.SuspendLayout();
             this.groupBox13.SuspendLayout();
@@ -417,7 +446,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.TestLvlSelection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.XpPowSelection)).BeginInit();
             this.panel7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ItemSellPriceSelection)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -430,6 +458,7 @@
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Controls.Add(this.tabPage5);
+            this.tabControl1.Controls.Add(this.tabPage9);
             this.tabControl1.Controls.Add(this.tabPage6);
             this.tabControl1.Controls.Add(this.tabPage7);
             this.tabControl1.Controls.Add(this.tabPage8);
@@ -2230,6 +2259,42 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Item Data";
             // 
+            // label83
+            // 
+            this.label83.AutoSize = true;
+            this.label83.Location = new System.Drawing.Point(211, 219);
+            this.label83.Name = "label83";
+            this.label83.Size = new System.Drawing.Size(58, 13);
+            this.label83.TabIndex = 36;
+            this.label83.Text = "Sale Price:";
+            // 
+            // ItemSellPriceSelection
+            // 
+            this.ItemSellPriceSelection.Location = new System.Drawing.Point(274, 217);
+            this.ItemSellPriceSelection.Name = "ItemSellPriceSelection";
+            this.ItemSellPriceSelection.Size = new System.Drawing.Size(141, 20);
+            this.ItemSellPriceSelection.TabIndex = 35;
+            // 
+            // label82
+            // 
+            this.label82.AutoSize = true;
+            this.label82.Location = new System.Drawing.Point(222, 193);
+            this.label82.Name = "label82";
+            this.label82.Size = new System.Drawing.Size(47, 13);
+            this.label82.TabIndex = 34;
+            this.label82.Text = "Sellable:";
+            // 
+            // ItemSellableSelection
+            // 
+            this.ItemSellableSelection.FormattingEnabled = true;
+            this.ItemSellableSelection.Items.AddRange(new object[] {
+            "False",
+            "True"});
+            this.ItemSellableSelection.Location = new System.Drawing.Point(274, 190);
+            this.ItemSellableSelection.Name = "ItemSellableSelection";
+            this.ItemSellableSelection.Size = new System.Drawing.Size(141, 21);
+            this.ItemSellableSelection.TabIndex = 33;
+            // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.White;
@@ -2382,7 +2447,7 @@
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(212, 60);
+            this.label33.Location = new System.Drawing.Point(206, 60);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(62, 13);
             this.label33.TabIndex = 2;
@@ -2395,6 +2460,254 @@
             this.ItemIconSelection.Name = "ItemIconSelection";
             this.ItemIconSelection.Size = new System.Drawing.Size(141, 21);
             this.ItemIconSelection.TabIndex = 1;
+            // 
+            // tabPage9
+            // 
+            this.tabPage9.BackColor = System.Drawing.Color.DarkGray;
+            this.tabPage9.Controls.Add(this.groupBox15);
+            this.tabPage9.Location = new System.Drawing.Point(4, 22);
+            this.tabPage9.Name = "tabPage9";
+            this.tabPage9.Size = new System.Drawing.Size(1152, 711);
+            this.tabPage9.TabIndex = 9;
+            this.tabPage9.Text = "Crafting";
+            // 
+            // groupBox15
+            // 
+            this.groupBox15.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox15.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.groupBox15.Controls.Add(this.EditCraftingMaterialButton);
+            this.groupBox15.Controls.Add(this.WorkbenchNameBox);
+            this.groupBox15.Controls.Add(this.label89);
+            this.groupBox15.Controls.Add(this.WorkBenchesListBox);
+            this.groupBox15.Controls.Add(this.RemoveWorkbenchButton);
+            this.groupBox15.Controls.Add(this.AddWorkbenchButton);
+            this.groupBox15.Controls.Add(this.CraftableWorkbenchSelection);
+            this.groupBox15.Controls.Add(this.label88);
+            this.groupBox15.Controls.Add(this.AddCraftingMaterialButton);
+            this.groupBox15.Controls.Add(this.RemoveCraftingMaterialButton);
+            this.groupBox15.Controls.Add(this.label87);
+            this.groupBox15.Controls.Add(this.CraftingMaterialListBox);
+            this.groupBox15.Controls.Add(this.label86);
+            this.groupBox15.Controls.Add(this.CraftableAmountSelection);
+            this.groupBox15.Controls.Add(this.UndoCraftablesButton);
+            this.groupBox15.Controls.Add(this.AddCraftableButton);
+            this.groupBox15.Controls.Add(this.RemoveCraftableButton);
+            this.groupBox15.Controls.Add(this.CraftablesListBox);
+            this.groupBox15.Controls.Add(this.label90);
+            this.groupBox15.Controls.Add(this.CraftableNameBox);
+            this.groupBox15.Controls.Add(this.ApplyCraftablesButton);
+            this.groupBox15.Controls.Add(this.label91);
+            this.groupBox15.Controls.Add(this.CraftableItemSelection);
+            this.groupBox15.Location = new System.Drawing.Point(3, 3);
+            this.groupBox15.Name = "groupBox15";
+            this.groupBox15.Size = new System.Drawing.Size(693, 705);
+            this.groupBox15.TabIndex = 3;
+            this.groupBox15.TabStop = false;
+            this.groupBox15.Text = "Craftables Data";
+            // 
+            // RemoveWorkbenchButton
+            // 
+            this.RemoveWorkbenchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveWorkbenchButton.Location = new System.Drawing.Point(442, 537);
+            this.RemoveWorkbenchButton.Name = "RemoveWorkbenchButton";
+            this.RemoveWorkbenchButton.Size = new System.Drawing.Size(239, 47);
+            this.RemoveWorkbenchButton.TabIndex = 45;
+            this.RemoveWorkbenchButton.Text = "Remove Workbench";
+            this.RemoveWorkbenchButton.UseVisualStyleBackColor = true;
+            this.RemoveWorkbenchButton.Click += new System.EventHandler(this.RemoveWorkbenchButton_Click);
+            // 
+            // AddWorkbenchButton
+            // 
+            this.AddWorkbenchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddWorkbenchButton.Location = new System.Drawing.Point(442, 484);
+            this.AddWorkbenchButton.Name = "AddWorkbenchButton";
+            this.AddWorkbenchButton.Size = new System.Drawing.Size(239, 47);
+            this.AddWorkbenchButton.TabIndex = 44;
+            this.AddWorkbenchButton.Text = "Add Workbench";
+            this.AddWorkbenchButton.UseVisualStyleBackColor = true;
+            this.AddWorkbenchButton.Click += new System.EventHandler(this.AddWorkbenchButton_Click);
+            // 
+            // CraftableWorkbenchSelection
+            // 
+            this.CraftableWorkbenchSelection.FormattingEnabled = true;
+            this.CraftableWorkbenchSelection.Location = new System.Drawing.Point(295, 98);
+            this.CraftableWorkbenchSelection.Name = "CraftableWorkbenchSelection";
+            this.CraftableWorkbenchSelection.Size = new System.Drawing.Size(141, 21);
+            this.CraftableWorkbenchSelection.TabIndex = 43;
+            // 
+            // label88
+            // 
+            this.label88.AutoSize = true;
+            this.label88.Location = new System.Drawing.Point(224, 101);
+            this.label88.Name = "label88";
+            this.label88.Size = new System.Drawing.Size(66, 13);
+            this.label88.TabIndex = 42;
+            this.label88.Text = "Workbench:";
+            // 
+            // AddCraftingMaterialButton
+            // 
+            this.AddCraftingMaterialButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddCraftingMaterialButton.Location = new System.Drawing.Point(197, 484);
+            this.AddCraftingMaterialButton.Name = "AddCraftingMaterialButton";
+            this.AddCraftingMaterialButton.Size = new System.Drawing.Size(239, 47);
+            this.AddCraftingMaterialButton.TabIndex = 39;
+            this.AddCraftingMaterialButton.Text = "Add Crafting Material";
+            this.AddCraftingMaterialButton.UseVisualStyleBackColor = true;
+            this.AddCraftingMaterialButton.Click += new System.EventHandler(this.AddCraftingMaterialButton_Click);
+            // 
+            // RemoveCraftingMaterialButton
+            // 
+            this.RemoveCraftingMaterialButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveCraftingMaterialButton.Location = new System.Drawing.Point(197, 589);
+            this.RemoveCraftingMaterialButton.Name = "RemoveCraftingMaterialButton";
+            this.RemoveCraftingMaterialButton.Size = new System.Drawing.Size(239, 47);
+            this.RemoveCraftingMaterialButton.TabIndex = 40;
+            this.RemoveCraftingMaterialButton.Text = "Remove Crafting Material";
+            this.RemoveCraftingMaterialButton.UseVisualStyleBackColor = true;
+            this.RemoveCraftingMaterialButton.Click += new System.EventHandler(this.RemoveCraftingMaterialButton_Click);
+            // 
+            // label87
+            // 
+            this.label87.AutoSize = true;
+            this.label87.Location = new System.Drawing.Point(197, 138);
+            this.label87.Name = "label87";
+            this.label87.Size = new System.Drawing.Size(52, 13);
+            this.label87.TabIndex = 38;
+            this.label87.Text = "Materials:";
+            // 
+            // CraftingMaterialListBox
+            // 
+            this.CraftingMaterialListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.CraftingMaterialListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CraftingMaterialListBox.FormattingEnabled = true;
+            this.CraftingMaterialListBox.ItemHeight = 20;
+            this.CraftingMaterialListBox.Location = new System.Drawing.Point(197, 154);
+            this.CraftingMaterialListBox.Name = "CraftingMaterialListBox";
+            this.CraftingMaterialListBox.Size = new System.Drawing.Size(239, 324);
+            this.CraftingMaterialListBox.TabIndex = 37;
+            // 
+            // label86
+            // 
+            this.label86.AutoSize = true;
+            this.label86.Location = new System.Drawing.Point(243, 74);
+            this.label86.Name = "label86";
+            this.label86.Size = new System.Drawing.Size(46, 13);
+            this.label86.TabIndex = 36;
+            this.label86.Text = "Amount:";
+            // 
+            // CraftableAmountSelection
+            // 
+            this.CraftableAmountSelection.Location = new System.Drawing.Point(295, 72);
+            this.CraftableAmountSelection.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.CraftableAmountSelection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.CraftableAmountSelection.Name = "CraftableAmountSelection";
+            this.CraftableAmountSelection.Size = new System.Drawing.Size(141, 20);
+            this.CraftableAmountSelection.TabIndex = 35;
+            this.CraftableAmountSelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // UndoCraftablesButton
+            // 
+            this.UndoCraftablesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.UndoCraftablesButton.Location = new System.Drawing.Point(436, 652);
+            this.UndoCraftablesButton.Name = "UndoCraftablesButton";
+            this.UndoCraftablesButton.Size = new System.Drawing.Size(122, 47);
+            this.UndoCraftablesButton.TabIndex = 32;
+            this.UndoCraftablesButton.Text = "Undo Changes";
+            this.UndoCraftablesButton.UseVisualStyleBackColor = true;
+            this.UndoCraftablesButton.Click += new System.EventHandler(this.UndoCraftablesButton_Click);
+            // 
+            // AddCraftableButton
+            // 
+            this.AddCraftableButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddCraftableButton.Location = new System.Drawing.Point(6, 599);
+            this.AddCraftableButton.Name = "AddCraftableButton";
+            this.AddCraftableButton.Size = new System.Drawing.Size(185, 47);
+            this.AddCraftableButton.TabIndex = 10;
+            this.AddCraftableButton.Text = "Add Craftable";
+            this.AddCraftableButton.UseVisualStyleBackColor = true;
+            this.AddCraftableButton.Click += new System.EventHandler(this.AddCraftableButton_Click);
+            // 
+            // RemoveCraftableButton
+            // 
+            this.RemoveCraftableButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveCraftableButton.Location = new System.Drawing.Point(6, 652);
+            this.RemoveCraftableButton.Name = "RemoveCraftableButton";
+            this.RemoveCraftableButton.Size = new System.Drawing.Size(185, 47);
+            this.RemoveCraftableButton.TabIndex = 11;
+            this.RemoveCraftableButton.Text = "Remove Craftable";
+            this.RemoveCraftableButton.UseVisualStyleBackColor = true;
+            this.RemoveCraftableButton.Click += new System.EventHandler(this.RemoveCraftableButton_Click);
+            // 
+            // CraftablesListBox
+            // 
+            this.CraftablesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.CraftablesListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.CraftablesListBox.FormattingEnabled = true;
+            this.CraftablesListBox.ItemHeight = 20;
+            this.CraftablesListBox.Location = new System.Drawing.Point(6, 19);
+            this.CraftablesListBox.Name = "CraftablesListBox";
+            this.CraftablesListBox.Size = new System.Drawing.Size(185, 564);
+            this.CraftablesListBox.TabIndex = 5;
+            this.CraftablesListBox.SelectedIndexChanged += new System.EventHandler(this.CraftablesListBox_SelectedIndexChanged);
+            // 
+            // label90
+            // 
+            this.label90.AutoSize = true;
+            this.label90.Location = new System.Drawing.Point(252, 22);
+            this.label90.Name = "label90";
+            this.label90.Size = new System.Drawing.Size(38, 13);
+            this.label90.TabIndex = 26;
+            this.label90.Text = "Name:";
+            // 
+            // CraftableNameBox
+            // 
+            this.CraftableNameBox.Location = new System.Drawing.Point(295, 19);
+            this.CraftableNameBox.Name = "CraftableNameBox";
+            this.CraftableNameBox.Size = new System.Drawing.Size(141, 20);
+            this.CraftableNameBox.TabIndex = 25;
+            // 
+            // ApplyCraftablesButton
+            // 
+            this.ApplyCraftablesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ApplyCraftablesButton.Location = new System.Drawing.Point(564, 652);
+            this.ApplyCraftablesButton.Name = "ApplyCraftablesButton";
+            this.ApplyCraftablesButton.Size = new System.Drawing.Size(122, 47);
+            this.ApplyCraftablesButton.TabIndex = 4;
+            this.ApplyCraftablesButton.Text = "Save Changes";
+            this.ApplyCraftablesButton.UseVisualStyleBackColor = true;
+            this.ApplyCraftablesButton.Click += new System.EventHandler(this.ApplyCraftablesButton_Click);
+            // 
+            // label91
+            // 
+            this.label91.AutoSize = true;
+            this.label91.Location = new System.Drawing.Point(223, 48);
+            this.label91.Name = "label91";
+            this.label91.Size = new System.Drawing.Size(67, 13);
+            this.label91.TabIndex = 2;
+            this.label91.Text = "Crafted Item:";
+            // 
+            // CraftableItemSelection
+            // 
+            this.CraftableItemSelection.FormattingEnabled = true;
+            this.CraftableItemSelection.Location = new System.Drawing.Point(295, 45);
+            this.CraftableItemSelection.Name = "CraftableItemSelection";
+            this.CraftableItemSelection.Size = new System.Drawing.Size(141, 21);
+            this.CraftableItemSelection.TabIndex = 1;
             // 
             // tabPage6
             // 
@@ -4088,41 +4401,45 @@
             this.label19.TabIndex = 7;
             this.label19.Text = "System Variables";
             // 
-            // label82
+            // WorkBenchesListBox
             // 
-            this.label82.AutoSize = true;
-            this.label82.Location = new System.Drawing.Point(222, 193);
-            this.label82.Name = "label82";
-            this.label82.Size = new System.Drawing.Size(47, 13);
-            this.label82.TabIndex = 34;
-            this.label82.Text = "Sellable:";
+            this.WorkBenchesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.WorkBenchesListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.WorkBenchesListBox.FormattingEnabled = true;
+            this.WorkBenchesListBox.ItemHeight = 20;
+            this.WorkBenchesListBox.Location = new System.Drawing.Point(442, 154);
+            this.WorkBenchesListBox.Name = "WorkBenchesListBox";
+            this.WorkBenchesListBox.Size = new System.Drawing.Size(239, 284);
+            this.WorkBenchesListBox.TabIndex = 46;
+            this.WorkBenchesListBox.SelectedIndexChanged += new System.EventHandler(this.WorkBenchesListBox_SelectedIndexChanged);
             // 
-            // ItemSellableSelection
+            // label89
             // 
-            this.ItemSellableSelection.FormattingEnabled = true;
-            this.ItemSellableSelection.Items.AddRange(new object[] {
-            "False",
-            "True"});
-            this.ItemSellableSelection.Location = new System.Drawing.Point(274, 190);
-            this.ItemSellableSelection.Name = "ItemSellableSelection";
-            this.ItemSellableSelection.Size = new System.Drawing.Size(141, 21);
-            this.ItemSellableSelection.TabIndex = 33;
+            this.label89.AutoSize = true;
+            this.label89.Location = new System.Drawing.Point(441, 138);
+            this.label89.Name = "label89";
+            this.label89.Size = new System.Drawing.Size(81, 13);
+            this.label89.TabIndex = 47;
+            this.label89.Text = "Work Benches:";
             // 
-            // label83
+            // WorkbenchNameBox
             // 
-            this.label83.AutoSize = true;
-            this.label83.Location = new System.Drawing.Point(211, 219);
-            this.label83.Name = "label83";
-            this.label83.Size = new System.Drawing.Size(58, 13);
-            this.label83.TabIndex = 36;
-            this.label83.Text = "Sale Price:";
+            this.WorkbenchNameBox.Location = new System.Drawing.Point(493, 448);
+            this.WorkbenchNameBox.Name = "WorkbenchNameBox";
+            this.WorkbenchNameBox.Size = new System.Drawing.Size(141, 20);
+            this.WorkbenchNameBox.TabIndex = 48;
             // 
-            // ItemSellPriceSelection
+            // EditCraftingMaterialButton
             // 
-            this.ItemSellPriceSelection.Location = new System.Drawing.Point(274, 217);
-            this.ItemSellPriceSelection.Name = "ItemSellPriceSelection";
-            this.ItemSellPriceSelection.Size = new System.Drawing.Size(141, 20);
-            this.ItemSellPriceSelection.TabIndex = 35;
+            this.EditCraftingMaterialButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.EditCraftingMaterialButton.Location = new System.Drawing.Point(197, 536);
+            this.EditCraftingMaterialButton.Name = "EditCraftingMaterialButton";
+            this.EditCraftingMaterialButton.Size = new System.Drawing.Size(239, 47);
+            this.EditCraftingMaterialButton.TabIndex = 49;
+            this.EditCraftingMaterialButton.Text = "Edit Crafting Material";
+            this.EditCraftingMaterialButton.UseVisualStyleBackColor = true;
+            this.EditCraftingMaterialButton.Click += new System.EventHandler(this.EditCraftingMaterialButton_Click);
             // 
             // EditorForm
             // 
@@ -4180,7 +4497,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.ProjectileSpeed)).EndInit();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ItemSellPriceSelection)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ItemMaxStack)).EndInit();
+            this.tabPage9.ResumeLayout(false);
+            this.groupBox15.ResumeLayout(false);
+            this.groupBox15.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CraftableAmountSelection)).EndInit();
             this.tabPage6.ResumeLayout(false);
             this.panel8.ResumeLayout(false);
             this.groupBox13.ResumeLayout(false);
@@ -4227,7 +4549,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.XpPowSelection)).EndInit();
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ItemSellPriceSelection)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -4542,6 +4863,31 @@
         private System.Windows.Forms.ComboBox ItemSellableSelection;
         private System.Windows.Forms.Label label83;
         private System.Windows.Forms.NumericUpDown ItemSellPriceSelection;
+        private System.Windows.Forms.TabPage tabPage9;
+        private System.Windows.Forms.GroupBox groupBox15;
+        private System.Windows.Forms.Label label86;
+        private System.Windows.Forms.NumericUpDown CraftableAmountSelection;
+        private System.Windows.Forms.Button UndoCraftablesButton;
+        private System.Windows.Forms.Button AddCraftableButton;
+        private System.Windows.Forms.Button RemoveCraftableButton;
+        private System.Windows.Forms.ListBox CraftablesListBox;
+        private System.Windows.Forms.Label label90;
+        private System.Windows.Forms.TextBox CraftableNameBox;
+        private System.Windows.Forms.Button ApplyCraftablesButton;
+        private System.Windows.Forms.Label label91;
+        private System.Windows.Forms.ComboBox CraftableItemSelection;
+        private System.Windows.Forms.Label label87;
+        private System.Windows.Forms.ListBox CraftingMaterialListBox;
+        private System.Windows.Forms.Button AddCraftingMaterialButton;
+        private System.Windows.Forms.Button RemoveCraftingMaterialButton;
+        private System.Windows.Forms.Label label88;
+        private System.Windows.Forms.Button RemoveWorkbenchButton;
+        private System.Windows.Forms.Button AddWorkbenchButton;
+        private System.Windows.Forms.ComboBox CraftableWorkbenchSelection;
+        private System.Windows.Forms.Label label89;
+        private System.Windows.Forms.ListBox WorkBenchesListBox;
+        private System.Windows.Forms.TextBox WorkbenchNameBox;
+        private System.Windows.Forms.Button EditCraftingMaterialButton;
     }
 }
 

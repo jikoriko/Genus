@@ -1,4 +1,5 @@
-﻿using RpgEditor.ItemDataPresets;
+﻿using Genus2D.GameData;
+using RpgEditor.ItemDataPresets;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -119,6 +120,8 @@ namespace RpgEditor
             PopulateItemList();
             PopulateIconSelections();
             PopulateProjectilesList();
+            PopulateCraftablesList();
+            PopulateWorkbenchList();
             PopulateClassesList();
             PopulateDropTablesList();
             PopulateEnemyList();
@@ -1051,6 +1054,7 @@ namespace RpgEditor
             else
                 SelectItem(-1);
 
+            PopulateCraftingItemsList();
         }
 
         private void PopulateIconSelections()
@@ -1429,6 +1433,208 @@ namespace RpgEditor
         private void ProjectileBoundsHeight_ValueChanged(object sender, EventArgs e)
         {
             projectileViewerPanel.Refresh();
+        }
+
+        #endregion
+
+        #region Craftables Data
+
+        private void PopulateCraftablesList()
+        {
+            int selection = CraftablesListBox.SelectedIndex;
+            CraftablesListBox.Items.Clear();
+            for (int i = 0; i < Genus2D.GameData.CraftableData.GetCraftableDataCount(); i++)
+            {
+                CraftablesListBox.Items.Add(Genus2D.GameData.CraftableData.GetCraftableData(i).Name);
+            }
+            if (selection < CraftablesListBox.Items.Count)
+                CraftablesListBox.SelectedIndex = selection;
+            else
+                SelectCraftable(-1);
+
+        }
+
+        private void SelectCraftable(int index)
+        {
+            if (index != -1)
+            {
+                Genus2D.GameData.CraftableData data = Genus2D.GameData.CraftableData.GetCraftableData(index);
+                CraftableNameBox.Text = data.Name;
+                CraftableItemSelection.SelectedIndex = data.CraftedItemID;
+                CraftableAmountSelection.Value = data.CraftedItemCount;
+                CraftableWorkbenchSelection.SelectedIndex = data.WorkbenchID;
+            }
+            else
+            {
+                CraftableNameBox.Text = "";
+                CraftableItemSelection.SelectedIndex = -1;
+                CraftableAmountSelection.Value = 1;
+                CraftableWorkbenchSelection.SelectedIndex = -1;
+
+            }
+
+            PopulateCraftableMaterialList();
+        }
+
+        private void PopulateCraftingItemsList()
+        {
+            int selection = CraftableItemSelection.SelectedIndex;
+
+            CraftableItemSelection.Items.Clear();
+            List<string> items = ItemData.GetItemNames();
+            CraftableItemSelection.Items.AddRange(items.ToArray());
+
+            if (selection < items.Count)
+                CraftableItemSelection.SelectedIndex = selection;
+            else
+                CraftableItemSelection.SelectedIndex = -1;
+        }
+
+        private void PopulateWorkbenchList()
+        {
+            int selection = WorkBenchesListBox.SelectedIndex;
+            int craftableSelection = CraftableWorkbenchSelection.SelectedIndex;
+
+            CraftableWorkbenchSelection.Items.Clear();
+            WorkBenchesListBox.Items.Clear();
+            for (int i = 0; i < CraftableData.GetWorkbenchDataCount(); i++)
+            {
+                string name = CraftableData.GetWorkbench(i);
+                CraftableWorkbenchSelection.Items.Add(name);
+                WorkBenchesListBox.Items.Add(name);
+            }
+
+            if (selection < CraftableData.GetWorkbenchDataCount())
+            {
+                WorkBenchesListBox.SelectedIndex = selection;
+            }
+
+            if (craftableSelection < CraftableData.GetWorkbenchDataCount())
+            {
+                CraftableWorkbenchSelection.SelectedIndex = craftableSelection;
+            }
+        }
+
+        private void PopulateCraftableMaterialList()
+        {
+            int craftableSelection = CraftablesListBox.SelectedIndex;
+            CraftingMaterialListBox.Items.Clear();
+
+            if (craftableSelection > -1)
+            {
+                CraftableData data = CraftableData.GetCraftableData(craftableSelection);
+                for (int i = 0; i < data.Materials.Count; i++)
+                {
+                    ItemData itemData = ItemData.GetItemData(data.Materials[i].Item1);
+                    string label = "Item: " + (itemData == null ? "None " : itemData.Name);
+                    label +=  " {" + data.Materials[i].Item1 + ", " + data.Materials[i].Item2 + "}";
+                    CraftingMaterialListBox.Items.Add(label);
+                }
+            }
+
+        }
+
+        private void CraftablesListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SelectCraftable(CraftablesListBox.SelectedIndex);
+        }
+
+        private void AddCraftableButton_Click(object sender, EventArgs e)
+        {
+            CraftableData data = new CraftableData("Craftable " + (CraftableData.GetCraftableDataCount() + 1));
+            CraftableData.AddCraftableData(data);
+            PopulateCraftablesList();
+        }
+
+        private void RemoveCraftableButton_Click(object sender, EventArgs e)
+        {
+            CraftableData.RemoveCraftableData(CraftablesListBox.SelectedIndex);
+            PopulateCraftablesList();
+        }
+
+        private void AddWorkbenchButton_Click(object sender, EventArgs e)
+        {
+            CraftableData.AddWorkbench(WorkbenchNameBox.Text);
+            PopulateWorkbenchList();
+        }
+
+        private void RemoveWorkbenchButton_Click(object sender, EventArgs e)
+        {
+            CraftableData.RemoveWorkbench(WorkBenchesListBox.SelectedIndex);
+            PopulateWorkbenchList();
+        }
+
+        private void WorkBenchesListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (WorkBenchesListBox.SelectedIndex > -1)
+            {
+                WorkbenchNameBox.Text = (string)WorkBenchesListBox.Items[WorkBenchesListBox.SelectedIndex];
+            }
+            else
+            {
+                WorkbenchNameBox.Text = "";
+            }
+        }
+
+        private void UndoCraftablesButton_Click(object sender, EventArgs e)
+        {
+            CraftableData.ReloadData();
+            PopulateCraftablesList();
+            PopulateWorkbenchList();
+        }
+
+        private void ApplyCraftablesButton_Click(object sender, EventArgs e)
+        {
+            int selection = CraftablesListBox.SelectedIndex;
+            if (selection > -1)
+            {
+                Genus2D.GameData.CraftableData data = Genus2D.GameData.CraftableData.GetCraftableData(selection);
+                data.Name = CraftableNameBox.Text;
+                data.CraftedItemID = CraftableItemSelection.SelectedIndex;
+                data.CraftedItemCount = (int)CraftableAmountSelection.Value;
+                data.WorkbenchID = CraftableWorkbenchSelection.SelectedIndex;
+            }
+
+            CraftableData.SaveCraftablesData();
+            CraftableData.SaveWorkbenchesData();
+        }
+
+        private void AddCraftingMaterialButton_Click(object sender, EventArgs e)
+        {
+            int selection = CraftablesListBox.SelectedIndex;
+            if (selection > -1)
+            {
+                Genus2D.GameData.CraftableData data = Genus2D.GameData.CraftableData.GetCraftableData(selection);
+                data.Materials.Add(new Tuple<int, int>(-1, 1));
+                PopulateCraftableMaterialList();
+            }
+        }
+
+        private void EditCraftingMaterialButton_Click(object sender, EventArgs e)
+        {
+            int craftableSelection = CraftablesListBox.SelectedIndex;
+            int selection = CraftingMaterialListBox.SelectedIndex;
+
+            if (selection > -1 && craftableSelection > -1)
+            {
+                Genus2D.GameData.CraftableData data = Genus2D.GameData.CraftableData.GetCraftableData(craftableSelection);
+                EditCraftingMaterialForm form = new EditCraftingMaterialForm(data, selection);
+                form.ShowDialog(this);
+                SelectCraftable(craftableSelection);
+            }
+        }
+
+        private void RemoveCraftingMaterialButton_Click(object sender, EventArgs e)
+        {
+            int craftableSelection = CraftablesListBox.SelectedIndex;
+            int selection = CraftingMaterialListBox.SelectedIndex;
+
+            if (selection > -1 && craftableSelection > -1)
+            {
+                Genus2D.GameData.CraftableData data = Genus2D.GameData.CraftableData.GetCraftableData(craftableSelection);
+                data.Materials.RemoveAt(selection);
+                PopulateCraftableMaterialList();
+            }
         }
 
         #endregion
@@ -2208,5 +2414,6 @@ namespace RpgEditor
 
 
         #endregion
+
     }
 }

@@ -18,6 +18,7 @@ namespace Genus2D.GameData
             ItemData.ReloadData();
             MapInfo.ReloadData();
             ProjectileData.ReloadData();
+            CraftableData.ReloadData();
             QuestData.ReloadData();
             ShopData.ReloadData();
             SpriteData.ReloadData();
