@@ -33,7 +33,9 @@ namespace Genus2D.Networking
             RemoveTradeItem,
             CloseBank,
             AddBankItem,
-            RemoveBankItem
+            RemoveBankItem,
+            CloseWorkbench,
+            CraftItem
 
         }
 
@@ -130,6 +132,13 @@ namespace Genus2D.Networking
                     break;
                 case CommandType.RemoveBankItem:
                     _parameters.Add("ItemIndex", new Parameter(1, -1));
+                    _parameters.Add("Count", new Parameter(1, -1));
+                    break;
+                case CommandType.CloseWorkbench:
+
+                    break;
+                case CommandType.CraftItem:
+                    _parameters.Add("CraftID", new Parameter(1, -1));
                     _parameters.Add("Count", new Parameter(1, -1));
                     break;
 

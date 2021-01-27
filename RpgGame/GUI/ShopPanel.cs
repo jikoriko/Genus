@@ -24,7 +24,7 @@ namespace RpgGame.GUI
         private ShopData _shopData;
 
         public ShopPanel(GameState state, ShopData shopData)
-            : base((int)(Renderer.GetResoultion().X / 2) - 200, (int)(Renderer.GetResoultion().Y / 2) - 200, 400, 400, BarMode.Close, state)
+            : base(((int)MessagePanel.Instance.GetBodySize().X / 2) - 200, ((int)Renderer.GetResoultion().Y / 2) - 325, 400, 400, BarMode.Close, state)
         {
             if (Instance != null)
                 Instance.Close();

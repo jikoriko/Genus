@@ -504,12 +504,17 @@ namespace Genus2D.GUI
             Renderer.TranslateWorld(contentPos);
 
             RenderContent();
+            if (OnRenderContent != null)
+                OnRenderContent();
 
             Renderer.PopWorldMatrix();
             Renderer.PopStencilDepth();
             Renderer.PopScreenClip();
 
         }
+
+        public delegate void OnRenderContentEventHandler();
+        public event TriggerEventHandler OnRenderContent;
 
         protected virtual void RenderContent()
         {

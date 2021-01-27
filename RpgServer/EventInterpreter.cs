@@ -628,19 +628,20 @@ namespace RpgServer
                         if (client == null || !client.Connected()) break;
 
                         int shopID = (int)eventCommand.GetParameter("ShopID");
-                        if (shopID != -1)
-                        {
-                            client.ShopID = shopID;
-                            serverCommand = new ServerCommand(ServerCommand.CommandType.ShowShop);
-                            serverCommand.SetParameter("ShopID", shopID);
-                            client.AddServerCommand(serverCommand);
-                        }
+                        client.ShowShop(shopID);
 
                         break;
                     case EventCommand.CommandType.StartBanking:
                         if (client == null || !client.Connected()) break;
 
                         client.StartBanking();
+
+                        break;
+                    case EventCommand.CommandType.ShowWorkbench:
+                        if (client == null || !client.Connected()) break;
+
+                        int workbenchID = (int)eventCommand.GetParameter("WorkbenchID");
+                        client.ShowWorkbench(workbenchID);
 
                         break;
                 }

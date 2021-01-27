@@ -21,6 +21,7 @@ namespace RpgGame.GUI
 
         public enum OptionType
         {
+            None,
             Drop,
             AddTrade,
             RemoveTrade,
@@ -60,11 +61,11 @@ namespace RpgGame.GUI
 
             for (int i = 0; i < _counts.Length; i++)
             {
-                _options.Add(_labels[(int)optionType] + " " + _counts[i]);
+                _options.Add(_labels[((int)optionType) - 1] + " " + _counts[i]);
             }
 
             if (max > 0)
-                _options.Add(_labels[(int)optionType] + " All");
+                _options.Add(_labels[((int)optionType) - 1] + " All");
 
             SetMargin(2);
             SetBackgroundGradientMode(Renderer.GradientMode.None);

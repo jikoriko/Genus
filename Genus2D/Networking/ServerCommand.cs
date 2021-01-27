@@ -34,7 +34,8 @@ namespace Genus2D.Networking
             AddTradeItem,
             RemoveTradeItem,
             CantTrade,
-            OpenBank
+            OpenBank,
+            ShowWorkbench
         }
 
         private CommandType _commandType;
@@ -184,6 +185,9 @@ namespace Genus2D.Networking
                     break;
                 case CommandType.OpenBank:
 
+                    break;
+                case CommandType.ShowWorkbench:
+                    _parameters.Add("WorkbenchID", new Parameter(1, -1));
                     break;
 
             }

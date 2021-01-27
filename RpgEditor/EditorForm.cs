@@ -616,6 +616,9 @@ namespace RpgEditor
                     case Genus2D.GameData.EventCommand.CommandType.ShowShop:
                         control = new CommandDataPresets.ShowShopPreset(command);
                         break;
+                    case EventCommand.CommandType.ShowWorkbench:
+                        control = new CommandDataPresets.ShowWorkbenchPreset(command);
+                        break;
                 }
 
                 if (control != null)

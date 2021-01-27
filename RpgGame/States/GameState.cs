@@ -121,9 +121,18 @@ namespace RpgGame.States
             
         }
 
+        private bool CanToggleMenu()
+        {
+            if (TradePanel.Instance != null || BankPanel.Instance != null || 
+                ShopPanel.Instance != null || WorkbenchPanel.Instance != null)
+                return false;
+
+            return true;
+        }
+
         public void ToggleInventory()
         {
-            if (TradePanel.Instance != null || BankPanel.Instance != null)
+            if (!CanToggleMenu())
                 return;
 
             if (EquipmentPanel.Instance != null)
@@ -139,7 +148,7 @@ namespace RpgGame.States
 
         public void ToggleEquipmentPanel()
         {
-            if (TradePanel.Instance != null || BankPanel.Instance != null)
+            if (!CanToggleMenu())
                 return;
 
             if (InventoryPanel.Instance != null)
@@ -155,7 +164,7 @@ namespace RpgGame.States
 
         public void ToggleStatsPanel()
         {
-            if (TradePanel.Instance != null || BankPanel.Instance != null)
+            if (!CanToggleMenu())
                 return;
 
             if (InventoryPanel.Instance != null)

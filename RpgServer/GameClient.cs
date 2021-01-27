@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 
 namespace RpgServer
@@ -140,13 +141,14 @@ namespace RpgServer
         private List<MessagePacket> _messagePackets;
 
         public bool MessageShowing;
-        public bool Banking;
+        public bool Banking { get; private set; }
+        public bool Trading { get; private set; }
         public bool MovementDisabled;
         public int SelectedOption;
-        public int ShopID;
-        public int TradePlayerID;
+        public int ShopID { get; private set; }
+        public int WorkbenchID { get; private set; }
+        public int TradePlayerID { get; private set; }
         private TradeRequest _tradeRequest;
-        private bool _trading;
         private bool _ignoreEvents;
 
         private float _movementTimer;
@@ -183,6 +185,7 @@ namespace RpgServer
             MovementDisabled = false;
             SelectedOption = -1;
             ShopID = -1;
+            WorkbenchID = -1;
 
             _movementTimer = 0f;
             _combatTimer = 0f;
@@ -199,7 +202,7 @@ namespace RpgServer
 
             TradePlayerID = -1;
             _tradeRequest = null;
-            _trading = false;
+            Trading = false;
             _ignoreEvents = false;
         }
 
@@ -387,6 +390,7 @@ namespace RpgServer
             MapItem mapItem;
             int playerID;
             GameClient other;
+            int count;
 
             for (int i = 0; i < numCommands; i++)
             {
@@ -418,76 +422,91 @@ namespace RpgServer
                         ActionTrigger();
                         break;
                     case ClientCommand.CommandType.SelectItem:
-                        itemIndex = (int)command.GetParameter("ItemIndex");
-                        itemInfo = _playerPacket.Data.GetInventoryItem(itemIndex);
-                        if (itemInfo != null)
+                        if (CanMove())
                         {
-                            ItemData data = ItemData.GetItemData(itemInfo.Item1);
-                            switch (data.GetItemType())
+                            itemIndex = (int)command.GetParameter("ItemIndex");
+                            itemInfo = _playerPacket.Data.GetInventoryItem(itemIndex);
+                            if (itemInfo != null)
                             {
-                                case ItemData.ItemType.Tool:
+                                ItemData data = ItemData.GetItemData(itemInfo.Item1);
+                                switch (data.GetItemType())
+                                {
+                                    case ItemData.ItemType.Tool:
 
-                                    break;
-                                case ItemData.ItemType.Consumable:
+                                        break;
+                                    case ItemData.ItemType.Consumable:
 
-                                    break;
-                                case ItemData.ItemType.Material:
+                                        break;
+                                    case ItemData.ItemType.Material:
 
-                                    break;
-                                case ItemData.ItemType.Equipment:
-                                    _playerPacket.Data.EquipItem(itemIndex);
-                                    break;
-                                case ItemData.ItemType.Ammo:
-                                    _playerPacket.Data.EquipAmmo(itemIndex);
-                                    break;
+                                        break;
+                                    case ItemData.ItemType.Equipment:
+                                        _playerPacket.Data.EquipItem(itemIndex);
+                                        break;
+                                    case ItemData.ItemType.Ammo:
+                                        _playerPacket.Data.EquipAmmo(itemIndex);
+                                        break;
+                                }
                             }
                         }
                         break;
                     case ClientCommand.CommandType.DropItem:
-                        itemIndex = (int)command.GetParameter("ItemIndex");
-                        int count = (int)command.GetParameter("Count");
-                        itemInfo = _playerPacket.Data.GetInventoryItem(itemIndex);
-
-                        if (itemInfo != null)
+                        if (CanMove())
                         {
-                            if (count > itemInfo.Item2)
-                                count = itemInfo.Item2;
-                            mapItem = new MapItem(itemInfo.Item1, count, _playerPacket.PositionX, _playerPacket.PositionY, _playerPacket.PlayerID, _playerPacket.OnBridge);
-                            _playerPacket.Data.RemoveInventoryItemAt(itemIndex, count);
-                            _mapInstance.AddMapItem(mapItem);
+                            itemIndex = (int)command.GetParameter("ItemIndex");
+                            count = (int)command.GetParameter("Count");
+                            itemInfo = _playerPacket.Data.GetInventoryItem(itemIndex);
+
+                            if (itemInfo != null)
+                            {
+                                if (count > itemInfo.Item2)
+                                    count = itemInfo.Item2;
+                                mapItem = new MapItem(itemInfo.Item1, count, _playerPacket.PositionX, _playerPacket.PositionY, _playerPacket.PlayerID, _playerPacket.OnBridge);
+                                _playerPacket.Data.RemoveInventoryItemAt(itemIndex, count);
+                                _mapInstance.AddMapItem(mapItem);
+                            }
                         }
                         break;
                     case ClientCommand.CommandType.RemoveEquipment:
-                        EquipmentSlot slot = (EquipmentSlot)command.GetParameter("EquipmentIndex");
-                        _playerPacket.Data.UnequipItem(slot);
+                        if (CanMove())
+                        {
+                            EquipmentSlot slot = (EquipmentSlot)command.GetParameter("EquipmentIndex");
+                            _playerPacket.Data.UnequipItem(slot);
+                        }
                         break;
                     case ClientCommand.CommandType.RemoveAmmo:
-                        _playerPacket.Data.UnequipAmmo();
+                        if (CanMove())
+                        {
+                            _playerPacket.Data.UnequipAmmo();
+                        }
                         break;
                     case ClientCommand.CommandType.PickupItem:
-                        itemIndex = (int)command.GetParameter("ItemIndex");
-                        int signature = (int)command.GetParameter("Signature");
-                        mapItem = _mapInstance.GetMapItem(itemIndex);
-                        if (mapItem != null)
+                        if (CanMove())
                         {
-                            if (!mapItem.PickedUp && (mapItem.PlayerID == -1 || mapItem.PlayerID == _playerPacket.PlayerID))
+                            itemIndex = (int)command.GetParameter("ItemIndex");
+                            int signature = (int)command.GetParameter("Signature");
+                            mapItem = _mapInstance.GetMapItem(itemIndex);
+                            if (mapItem != null)
                             {
-                                if (mapItem.GetSignature() == signature && mapItem.OnBridge == _playerPacket.OnBridge)
+                                if (!mapItem.PickedUp && (mapItem.PlayerID == -1 || mapItem.PlayerID == _playerPacket.PlayerID))
                                 {
-                                    int distance = (int)new Vector2(mapItem.MapX - _playerPacket.PositionX, mapItem.MapY - _playerPacket.PositionY).Length;
-                                    if (distance <= 1)
+                                    if (mapItem.GetSignature() == signature && mapItem.OnBridge == _playerPacket.OnBridge)
                                     {
-                                        int added = _playerPacket.Data.AddInventoryItem(mapItem.ItemID, mapItem.Count);
-                                        if (added != 0)
+                                        int distance = (int)new Vector2(mapItem.MapX - _playerPacket.PositionX, mapItem.MapY - _playerPacket.PositionY).Length;
+                                        if (distance <= 1)
                                         {
-                                            if (added < mapItem.Count)
+                                            int added = _playerPacket.Data.AddInventoryItem(mapItem.ItemID, mapItem.Count);
+                                            if (added != 0)
                                             {
-                                                mapItem.Count = mapItem.Count - added;
-                                                _mapInstance.UpdateMapItem(itemIndex);
-                                            }
-                                            else
-                                            {
-                                                mapItem.PickedUp = true;
+                                                if (added < mapItem.Count)
+                                                {
+                                                    mapItem.Count = mapItem.Count - added;
+                                                    _mapInstance.UpdateMapItem(itemIndex);
+                                                }
+                                                else
+                                                {
+                                                    mapItem.PickedUp = true;
+                                                }
                                             }
                                         }
                                     }
@@ -571,7 +590,9 @@ namespace RpgServer
                         }
                         break;
                     case ClientCommand.CommandType.CloseShop:
-                        ShopID = -1;
+
+                        this.CloseShop();
+
                         break;
                     case ClientCommand.CommandType.BuyShopItem:
                         if (ShopID != -1)
@@ -665,7 +686,7 @@ namespace RpgServer
 
                         break;
                     case ClientCommand.CommandType.AddTradeItem:
-                        if (_trading)
+                        if (Trading)
                         {
                             itemIndex = (int)command.GetParameter("ItemIndex");
                             count = (int)command.GetParameter("Count");
@@ -674,7 +695,7 @@ namespace RpgServer
 
                         break;
                     case ClientCommand.CommandType.RemoveTradeItem:
-                        if (_trading)
+                        if (Trading)
                         {
                             itemIndex = (int)command.GetParameter("ItemIndex");
                             count = (int)command.GetParameter("Count");
@@ -697,6 +718,18 @@ namespace RpgServer
                         itemIndex = (int)command.GetParameter("ItemIndex");
                         count = (int)command.GetParameter("Count");
                         RemoveBankItem(itemIndex, count);
+
+                        break;
+                    case ClientCommand.CommandType.CloseWorkbench:
+
+                        CloseWorkbench();
+
+                        break;
+                    case ClientCommand.CommandType.CraftItem:
+                        int craftID = (int)command.GetParameter("CraftID");
+                        count = (int)command.GetParameter("Count");
+
+                        CraftItem(craftID, count);
 
                         break;
 
@@ -873,31 +906,34 @@ namespace RpgServer
 
         private void StartTrade(GameClient other)
         {
-            TradeRequest tradeRequest = new TradeRequest(other._playerPacket.PlayerID, _playerPacket.PlayerID);
-            tradeRequest.TradeOffer1.FreeSlots = other._playerPacket.Data.GetFreeInventorySlots();
-            tradeRequest.TradeOffer2.FreeSlots = _playerPacket.Data.GetFreeInventorySlots();
+            if (CanOpenInterface() && other.CanOpenInterface())
+            {
+                TradeRequest tradeRequest = new TradeRequest(other._playerPacket.PlayerID, _playerPacket.PlayerID);
+                tradeRequest.TradeOffer1.FreeSlots = other._playerPacket.Data.GetFreeInventorySlots();
+                tradeRequest.TradeOffer2.FreeSlots = _playerPacket.Data.GetFreeInventorySlots();
 
-            _tradeRequest = tradeRequest;
-            other._tradeRequest = tradeRequest;
-            _trading = true;
-            other._trading = true;
-            this.MovementDisabled = true;
-            other.MovementDisabled = true;
+                _tradeRequest = tradeRequest;
+                other._tradeRequest = tradeRequest;
+                Trading = true;
+                other.Trading = true;
+                this.MovementDisabled = true;
+                other.MovementDisabled = true;
 
-            ServerCommand sCommand = new ServerCommand(ServerCommand.CommandType.StartTrade);
-            sCommand.SetParameter("PlayerID", other._playerPacket.PlayerID);
-            sCommand.SetParameter("PlayerName", other._playerPacket.Username);
-            AddServerCommand(sCommand);
+                ServerCommand sCommand = new ServerCommand(ServerCommand.CommandType.StartTrade);
+                sCommand.SetParameter("PlayerID", other._playerPacket.PlayerID);
+                sCommand.SetParameter("PlayerName", other._playerPacket.Username);
+                AddServerCommand(sCommand);
 
-            sCommand = new ServerCommand(ServerCommand.CommandType.StartTrade);
-            sCommand.SetParameter("PlayerID", _playerPacket.PlayerID);
-            sCommand.SetParameter("PlayerName", _playerPacket.Username);
-            other.AddServerCommand(sCommand);
+                sCommand = new ServerCommand(ServerCommand.CommandType.StartTrade);
+                sCommand.SetParameter("PlayerID", _playerPacket.PlayerID);
+                sCommand.SetParameter("PlayerName", _playerPacket.Username);
+                other.AddServerCommand(sCommand);
+            }
         }
 
         public void StopTrading()
         {
-            if (_trading)
+            if (Trading)
             {
                 TradeRequest.TradeOffer myOffer, othersOffer;
                 if (_tradeRequest.TradeOffer1.PlayerID == _playerPacket.PlayerID)
@@ -959,7 +995,7 @@ namespace RpgServer
             AddServerCommand(new ServerCommand(ServerCommand.CommandType.EndTrade));
             this.TradePlayerID = -1;
             _tradeRequest = null;
-            _trading = false; ;
+            Trading = false;
             MovementDisabled = false;
         }
 
@@ -1053,9 +1089,33 @@ namespace RpgServer
             }
         }
 
+        public void ShowShop(int shopID)
+        {
+            if (CanOpenInterface())
+            {
+                if (shopID > -1 && shopID < ShopData.DataCount())
+                {
+                    ShopID = shopID;
+                    MovementDisabled = true;
+                    ServerCommand serverCommand = new ServerCommand(ServerCommand.CommandType.ShowShop);
+                    serverCommand.SetParameter("ShopID", shopID);
+                    this.AddServerCommand(serverCommand);
+                }
+            }
+        }
+
+        public void CloseShop()
+        {
+            if (ShopID != -1)
+            {
+                ShopID = -1;
+                MovementDisabled = false;
+            }
+        }
+
         public void StartBanking()
         {
-            if (!Banking)
+            if (CanOpenInterface())
             {
                 Banking = true;
                 MovementDisabled = true;
@@ -1077,27 +1137,128 @@ namespace RpgServer
 
         public void AddBankItem(int index, int count)
         {
-            Tuple<int, int> itemInfo = _playerPacket.Data.GetInventoryItem(index);
-            if (itemInfo != null)
+            if (Banking)
             {
-                if (count >= itemInfo.Item2)
+                Tuple<int, int> itemInfo = _playerPacket.Data.GetInventoryItem(index);
+                if (itemInfo != null)
                 {
-                    count = itemInfo.Item2;
-                    _playerPacket.Data.RemoveInventoryItem(index);
+                    if (count >= itemInfo.Item2)
+                    {
+                        count = itemInfo.Item2;
+                        _playerPacket.Data.RemoveInventoryItem(index);
+                    }
+                    else
+                    {
+                        _playerPacket.Data.RemoveInventoryItemAt(index, count);
+                    }
+                    _bankData.AddBankItem(itemInfo.Item1, count);
+                    _bankUpdated = true;
                 }
-                else
-                {
-                    _playerPacket.Data.RemoveInventoryItemAt(index, count);
-                }
-                _bankData.AddBankItem(itemInfo.Item1, count);
-                _bankUpdated = true;
             }
         }
 
         public void RemoveBankItem(int index, int count)
         {
-            _bankData.RemoveBankItem(index, count, _playerPacket.Data);
-            _bankUpdated = true;
+            if (Banking)
+            {
+                _bankData.RemoveBankItem(index, count, _playerPacket.Data);
+                _bankUpdated = true;
+            }
+        }
+
+        public void ShowWorkbench(int workbenchID)
+        {
+            if (CanOpenInterface())
+            {
+                if (workbenchID > -1 && workbenchID < CraftableData.GetWorkbenchDataCount())
+                {
+                    WorkbenchID = workbenchID;
+                    MovementDisabled = true;
+                    ServerCommand command = new ServerCommand(ServerCommand.CommandType.ShowWorkbench);
+                    command.SetParameter("WorkbenchID", workbenchID);
+                    this.AddServerCommand(command);
+                }
+            }
+        }
+
+        public void CloseWorkbench()
+        {
+            if (WorkbenchID != -1)
+            {
+                WorkbenchID = -1;
+                MovementDisabled = false;
+            }
+        }
+
+        public void CraftItem(int craftID, int count)
+        {
+            if (WorkbenchID > -1 && count > 0)
+            {
+                CraftableData data = CraftableData.GetCraftableData(craftID);
+                if (data != null && data.WorkbenchID == WorkbenchID)
+                {
+                    bool hasMaterials = true;
+
+                    for (int i = 0; i < count; i++)
+                    {
+
+                        for (int j = 0; j < data.Materials.Count; j++)
+                        {
+                            Tuple<int, int> material = data.Materials[j];
+                            if (material.Item1 < 0 || material.Item2 < 1)
+                                continue;
+
+                            if (!_playerPacket.Data.ItemInInventory(material.Item1, material.Item2))
+                            {
+                                hasMaterials = false;
+                                break;
+                            }
+                        }
+
+                        if (hasMaterials)
+                        {
+                            if (_playerPacket.Data.SpaceInInventory(data.CraftedItemID, data.CraftedItemCount))
+                            {
+                                _playerPacket.Data.AddInventoryItem(data.CraftedItemID, data.CraftedItemCount);
+                                for (int j = 0; j < data.Materials.Count; j++)
+                                {
+                                    Tuple<int, int> material = data.Materials[j];
+                                    _playerPacket.Data.RemoveInventoryItem(material.Item1, material.Item2);
+                                }
+                            }
+                    }
+                    }
+                }
+            }
+        }
+
+        public bool CanOpenInterface()
+        {
+            if (this.WorkbenchID == -1 && this.ShopID == -1 && !Banking && !Trading)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public void CloseInterface()
+        {
+            if (this.WorkbenchID != -1)
+            {
+                CloseWorkbench();
+            }
+            if (this.ShopID != -1)
+            {
+                this.CloseShop();
+            }
+            if (Trading)
+            {
+                StopTrading();
+            }
+            if (Banking)
+            {
+                StopBanking();
+            }
         }
 
         public void Update(float deltaTime)
@@ -1115,7 +1276,7 @@ namespace RpgServer
             }
 
             //trading
-            if (_trading)
+            if (Trading)
             {
                 if (_tradeRequest.Accepted())
                 {
@@ -1130,7 +1291,7 @@ namespace RpgServer
                     else
                         playerID = _tradeRequest.TradeOffer1.PlayerID;
                     GameClient other = _mapInstance.FindGameClient(playerID);
-                    if (other == null || !other._trading || other._disconnecting || _disconnecting)
+                    if (other == null || !other.Trading || other._disconnecting || _disconnecting)
                     {
                         this.StopTrading();
                     }
@@ -1251,7 +1412,6 @@ namespace RpgServer
             if (_movementTimer > 0f) return false;
             if (MovementDisabled) return false;
             if (Moving()) return false;
-            if (ShopID != -1) return false;
             return true;
         }
 

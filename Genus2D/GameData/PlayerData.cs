@@ -137,6 +137,34 @@ namespace Genus2D.GameData
             return InventorySize - _inventory.Count;
         }
 
+        public bool SpaceInInventory(int itemID, int count)
+        {
+            ItemData data = ItemData.GetItemData(itemID);
+            if (data != null)
+            {
+                int canAdd = 0;
+                for (int i = 0; i < _inventory.Count; i++)
+                {
+                    if (_inventory[i].Item1 == itemID)
+                    {
+                        canAdd += data.GetMaxStack() - _inventory[i].Item2;
+                    }
+                }
+
+                int freeSlots = InventorySize - _inventory.Count;
+                for (int i = 0; i < freeSlots; i++)
+                {
+                    canAdd += data.GetMaxStack();
+                }
+
+                if (canAdd >= count)
+                    return true;
+
+            }
+
+            return false;
+        }
+
         public int AddInventoryItem(int itemID, int count)
         {
             if (count < 1 || itemID < 0) return 0;

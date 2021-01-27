@@ -77,14 +77,14 @@ namespace RpgGame.GUI
                                     command = new ClientCommand(ClientCommand.CommandType.AddBankItem);
                                     command.SetParameter("Count", 1);
                                 }
-                                else
+                                else if (WorkbenchPanel.Instance == null)
                                 {
                                     command = new ClientCommand(ClientCommand.CommandType.SelectItem);
                                 }
                             }
                             else if (e.Button == MouseButton.Right)
                             {
-                                ItemClickOptionsPanel.OptionType optionType = ItemClickOptionsPanel.OptionType.Drop;
+                                ItemClickOptionsPanel.OptionType optionType = ItemClickOptionsPanel.OptionType.None;
 
                                 if (ShopPanel.Instance != null)
                                 {
@@ -98,14 +98,17 @@ namespace RpgGame.GUI
                                 {
                                     optionType = ItemClickOptionsPanel.OptionType.AddBank;
                                 }
-                                else
+                                else if ((WorkbenchPanel.Instance == null))
                                 {
                                     optionType = ItemClickOptionsPanel.OptionType.Drop;
                                 }
 
-                                Vector2 mousePos = StateWindow.Instance.GetMousePosition();
-                                ItemClickOptionsPanel optionPanel = new ItemClickOptionsPanel((int)mousePos.X, (int)mousePos.Y, optionType, itemIndex, itemInfo.Item1, itemInfo.Item2, _gameState);
-                                GameState.Instance.AddControl(optionPanel);
+                                if (optionType != ItemClickOptionsPanel.OptionType.None)
+                                {
+                                    Vector2 mousePos = StateWindow.Instance.GetMousePosition();
+                                    ItemClickOptionsPanel optionPanel = new ItemClickOptionsPanel((int)mousePos.X, (int)mousePos.Y, optionType, itemIndex, itemInfo.Item1, itemInfo.Item2, _gameState);
+                                    GameState.Instance.AddControl(optionPanel);
+                                }
                             }
                         }
 

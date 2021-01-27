@@ -37,7 +37,8 @@ namespace Genus2D.GameData
             SpawnEnemy,
             ProgressQuest,
             ShowShop,
-            StartBanking
+            StartBanking,
+            ShowWorkbench
         }
 
         public CommandType Type { get; private set; }
@@ -166,6 +167,9 @@ namespace Genus2D.GameData
                     break;
                 case CommandType.ShowShop:
                     _parameters.Add("ShopID", -1);
+                    break;
+                case CommandType.ShowWorkbench:
+                    _parameters.Add("WorkbenchID", -1);
                     break;
             }
         }

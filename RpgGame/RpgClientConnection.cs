@@ -645,6 +645,8 @@ namespace RpgGame
                     ShopData data = ShopData.GetData(shopID);
                     if (data != null)
                     {
+                        if (InventoryPanel.Instance == null)
+                            GameState.Instance.ToggleInventory();
                         _gameState.AddControl(new GUI.ShopPanel(_gameState, data));
                     }
                     else
@@ -716,6 +718,15 @@ namespace RpgGame
                         GameState.Instance.ToggleInventory();
 
                     _gameState.AddControl(new BankPanel(_gameState));
+
+                    break;
+                case ServerCommand.CommandType.ShowWorkbench:
+                    int workbenchID = (int)command.GetParameter("WorkbenchID");
+
+                    if (InventoryPanel.Instance == null)
+                        GameState.Instance.ToggleInventory();
+
+                    _gameState.AddControl(new GUI.WorkbenchPanel(_gameState, workbenchID));
 
                     break;
             }

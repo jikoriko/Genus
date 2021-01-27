@@ -63,6 +63,12 @@
     <Compile Include="AddEventCommandForm.Designer.cs">
       <DependentUpon>AddEventCommandForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="CommandDataPresets\ShowWorkbenchPreset.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CommandDataPresets\ShowWorkbenchPreset.Designer.cs">
+      <DependentUpon>ShowWorkbenchPreset.cs</DependentUpon>
+    </Compile>
     <Compile Include="CommandDataPresets\ShowShopPreset.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -260,6 +266,9 @@
     </Compile>
     <EmbeddedResource Include="AddEventCommandForm.resx">
       <DependentUpon>AddEventCommandForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CommandDataPresets\ShowWorkbenchPreset.resx">
+      <DependentUpon>ShowWorkbenchPreset.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CommandDataPresets\ShowShopPreset.resx">
       <DependentUpon>ShowShopPreset.cs</DependentUpon>
