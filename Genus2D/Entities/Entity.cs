@@ -148,7 +148,10 @@ namespace Genus2D.Entities
 
         protected virtual void OnDestroy()
         {
-
+            foreach (EntityComponent component in _components)
+            {
+                component.Destroy();
+            }
         }
 
         public virtual void Destroy()

@@ -178,6 +178,13 @@ namespace Genus2D.GameData
         AttackStyle
     }
 
-
+    [Serializable]
+    public enum PaticleEmitterShape
+    {
+        Rectangle,
+        Circle,
+        Star,
+        Triangle
+    }
 
 }

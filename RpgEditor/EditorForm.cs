@@ -1,4 +1,5 @@
 ﻿using Genus2D.GameData;
+using OpenTK.Graphics;
 using RpgEditor.ItemDataPresets;
 using System;
 using System.Collections.Generic;
@@ -121,6 +122,9 @@ namespace RpgEditor
             PopulateIconSelections();
             PopulateProjectilesList();
             PopulateCraftablesList();
+            PopulateEmittersList();
+            PopulateParticleTextureSelections();
+            PopulateParticleShapeSelections();
             PopulateWorkbenchList();
             PopulateClassesList();
             PopulateDropTablesList();
@@ -129,6 +133,13 @@ namespace RpgEditor
             PopulateShopList();
             PopulateSystemVariables();
             PopulateSytemData();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            if (ParticlePreviewWindow.PreviewInstance != null)
+                ParticlePreviewWindow.PreviewInstance.Close();
         }
 
         #region Map Functions
@@ -1642,6 +1653,241 @@ namespace RpgEditor
 
         #endregion
 
+        #region Particle Emitter Data
+        private void PopulateEmittersList()
+        {
+            int selection = ParticlesListBox.SelectedIndex;
+            ParticlesListBox.Items.Clear();
+            for (int i = 0; i < Genus2D.GameData.ParticleEmitterData.GetEmitterDataCount(); i++)
+            {
+                ParticlesListBox.Items.Add(Genus2D.GameData.ParticleEmitterData.GetEmitterData(i).Name);
+            }
+            if (selection < ParticlesListBox.Items.Count)
+                ParticlesListBox.SelectedIndex = selection;
+            else
+                SelectEmitter(-1);
+        }
+
+        private void ParticlesListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int selection = ParticlesListBox.SelectedIndex;
+            SelectEmitter(selection);
+        }
+
+        private void SelectEmitter(int index)
+        {
+            if (index != -1)
+            {
+                Genus2D.GameData.ParticleEmitterData data = Genus2D.GameData.ParticleEmitterData.GetEmitterData(index);
+                ParticleNameBox.Text = data.Name;
+                ParticleShapeSelection.SelectedIndex = (int)data.EmitterShape;
+
+                ParticleTextureSelection.SelectedIndex = 0;
+                if (data.ParticleTexture != "")
+                {
+                    for (int i = 0; i < ParticleTextureSelection.Items.Count; i++)
+                    {
+                        if ((string)ParticleTextureSelection.Items[i] == data.ParticleTexture)
+                        {
+                            ParticleTextureSelection.SelectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                ParticleEmissionSelection.Value = (decimal)data.EmissionRate;
+                ParticleAngleMinSelection.Value = (decimal)data.AngleMin;
+                ParticleAngleMaxSelection.Value = (decimal)data.AngleMax;
+                ParticleOffsetMinSelection.Value = (decimal)data.OffsetMin;
+                ParticleOffsetMaxSelection.Value = (decimal)data.OffsetMax;
+                ParticleStartVelocitySelection.Value = (decimal)data.StartVelocity;
+                ParticleEndVelocitySelection.Value = (decimal)data.EndVelocity;
+                ParticleStartScaleSelection.Value = (decimal)data.StartScale;
+                ParticleEndScaleSelection.Value = (decimal)data.EndScale;
+                ParticleRotationSpeedSelection.Value = (decimal)data.RotationSpeed;
+
+                Color4 startColour = data.StartColour;
+                startColour.A = 1;
+                Color sColour = Color.FromArgb(startColour.ToArgb());
+                ParticleColorBox1.BackColor = sColour;
+                ParticleStartAlphaSelection.Value = (decimal)data.StartColour.A;
+
+                Color4 endColour = data.EndColour;
+                endColour.A = 1;
+                Color eColour = Color.FromArgb(endColour.ToArgb());
+                ParticleColorBox2.BackColor = eColour;
+                ParticleEndAlphaSelection.Value = (decimal)data.EndColour.A;
+
+                ParticleMaxLifeSelection.Value = (decimal)data.MaxLife;
+
+                if (ParticlePreviewWindow.PreviewInstance != null)
+                {
+                    ParticlePreviewWindow.PreviewInstance.SetParticleData(data);
+                }
+            }
+            else
+            {
+                ParticleNameBox.Text = "";
+                ParticleShapeSelection.SelectedIndex = 0;
+                ParticleTextureSelection.SelectedIndex = 0;
+                ParticleEmissionSelection.Value = 1;
+                ParticleAngleMinSelection.Value = 0;
+                ParticleAngleMaxSelection.Value = 360;
+                ParticleOffsetMinSelection.Value = 0;
+                ParticleOffsetMaxSelection.Value = 0;
+                ParticleStartVelocitySelection.Value = 1;
+                ParticleEndVelocitySelection.Value = 1;
+                ParticleStartScaleSelection.Value = 1;
+                ParticleEndScaleSelection.Value = 1;
+                ParticleRotationSpeedSelection.Value = 0;
+                ParticleColorBox1.BackColor = Color.White;
+                ParticleStartAlphaSelection.Value = 1;
+                ParticleColorBox2.BackColor = Color.White;
+                ParticleEndAlphaSelection.Value = 1;
+                ParticleMaxLifeSelection.Value = 1;
+            }
+
+        }
+
+        private void PopulateParticleShapeSelections()
+        {
+            ParticleShapeSelection.Items.Clear();
+            int max = Enum.GetValues(typeof(PaticleEmitterShape)).Cast<int>().Max() + 1;
+            for (int i = 0; i < max; i++)
+            {
+                ParticleShapeSelection.Items.Add(((PaticleEmitterShape)i).ToString());
+            }
+        }
+
+        private void PopulateParticleTextureSelections()
+        {
+            ParticleTextureSelection.Items.Clear();
+            ParticleTextureSelection.Items.Add("None");
+            if (Directory.Exists("Assets/Textures/Particles"))
+            {
+                string[] files = Directory.GetFiles("Assets/Textures/Particles", "*.png");
+                for (int i = 0; i < files.Length; i++)
+                {
+                    files[i] = Path.GetFileName(files[i]);
+                }
+                ParticleTextureSelection.Items.AddRange(files);
+            }
+        }
+
+        private void ImportParticleTextureButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "PNG files | *.png; *.PNG;";
+            DialogResult result = dialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                string sourcePath = dialog.FileName;
+                Image image = Image.FromFile(sourcePath);
+                if (!Directory.Exists("Assets/Textures/Particles"))
+                    Directory.CreateDirectory("Assets/Textures/Particles");
+                string targetPath = "Assets/Textures/Particles/" + Path.GetFileName(sourcePath);
+                File.Copy(sourcePath, targetPath, true);
+                PopulateParticleTextureSelections();
+            }
+        }
+
+        private void ParticleStartColourButton_Click(object sender, EventArgs e)
+        {
+            ColorDialog dialog = new ColorDialog();
+            DialogResult result = dialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                Color color = dialog.Color;
+                ParticleColorBox1.BackColor = color;
+            }
+        }
+
+        private void ParticleEndColourButton_Click(object sender, EventArgs e)
+        {
+            ColorDialog dialog = new ColorDialog();
+            DialogResult result = dialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                Color color = dialog.Color;
+                ParticleColorBox2.BackColor = color;
+            }
+        }
+
+        private void ParticlePreviewButton_Click(object sender, EventArgs e)
+        {
+            int selection = ParticlesListBox.SelectedIndex;
+            if (selection != -1 && ParticlePreviewWindow.Instance == null)
+            {
+                ParticleEmitterData data = ParticleEmitterData.GetEmitterData(selection);
+                ParticlePreviewWindow window = new ParticlePreviewWindow(data);
+                window.Run();
+            }
+        }
+
+        private void AddParticleButton_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.ParticleEmitterData data = new Genus2D.GameData.ParticleEmitterData("Emitter " + (ParticlesListBox.Items.Count + 1).ToString("000"));
+            Genus2D.GameData.ParticleEmitterData.AddEmitterData(data);
+            PopulateEmittersList();
+            ParticlesListBox.SelectedIndex = ParticlesListBox.Items.Count - 1;
+
+        }
+
+        private void RemoveParticleButton_Click(object sender, EventArgs e)
+        {
+            int selection = ParticlesListBox.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.ParticleEmitterData.RemoveEmitterData(selection);
+                PopulateEmittersList();
+            }
+        }
+
+        private void UndoParticleButton_Click(object sender, EventArgs e)
+        {
+            Genus2D.GameData.ParticleEmitterData.ReloadData();
+            PopulateEmittersList();
+        }
+
+        private void ApplyParticleButton_Click(object sender, EventArgs e)
+        {
+            int selection = ParticlesListBox.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.ParticleEmitterData data = Genus2D.GameData.ParticleEmitterData.GetEmitterData(selection);
+                data.Name = ParticleNameBox.Text;
+                data.EmitterShape = (PaticleEmitterShape)ParticleShapeSelection.SelectedIndex;
+
+                if (ParticleTextureSelection.SelectedIndex > 0)
+                    data.ParticleTexture = (string)ParticleTextureSelection.Items[ParticleTextureSelection.SelectedIndex];
+                else
+                    data.ParticleTexture = "";
+
+                data.EmissionRate = (float)ParticleEmissionSelection.Value;
+                data.AngleMin = (float)ParticleAngleMinSelection.Value;
+                data.AngleMax = (float)ParticleAngleMaxSelection.Value;
+                data.OffsetMin = (float)ParticleOffsetMinSelection.Value;
+                data.OffsetMax = (float)ParticleOffsetMaxSelection.Value;
+                data.StartVelocity = (float)ParticleStartVelocitySelection.Value;
+                data.EndVelocity = (float)ParticleEndVelocitySelection.Value;
+                data.StartScale = (float)ParticleStartScaleSelection.Value;
+                data.EndScale = (float)ParticleEndScaleSelection.Value;
+                data.RotationSpeed = (float)ParticleRotationSpeedSelection.Value;
+
+                Color sColour = ParticleColorBox1.BackColor;
+                data.StartColour = new OpenTK.Graphics.Color4(sColour.R / 255f, sColour.G / 255f, sColour.B / 255f, (float)ParticleStartAlphaSelection.Value);
+
+                Color eColour = ParticleColorBox2.BackColor;
+                data.EndColour = new OpenTK.Graphics.Color4(eColour.R / 255f, eColour.G / 255f, eColour.B / 255f, (float)ParticleEndAlphaSelection.Value);
+
+                data.MaxLife = (float)ParticleMaxLifeSelection.Value;
+
+                PopulateEmittersList();
+            }
+            Genus2D.GameData.ParticleEmitterData.SaveItemData();
+        }
+        #endregion
+
         #region Class Functions
 
         private void PopulateClassesList()
@@ -2417,6 +2663,5 @@ namespace RpgEditor
 
 
         #endregion
-
     }
 }

@@ -6,6 +6,8 @@ using Genus2D.Entities;
 using OpenTK;
 using Genus2D.Utililities;
 using Genus2D.Core;
+using Genus2D.GameData;
+using OpenTK.Graphics;
 
 namespace Genus2DTest
 {
@@ -89,6 +91,28 @@ namespace Genus2DTest
 
             //*/
 
+            Entity particleEntity = Entity.CreateInstance(this.EntityManager, new Vector3(400, 400, 0));
+            ParticleEmitterData particleData = new ParticleEmitterData();
+
+            particleData.EmitterShape = PaticleEmitterShape.Rectangle;
+            particleData.ParticleTexture = "smoke.png";
+            particleData.EmissionRate = 1000;
+            particleData.AngleMin = 0;
+            particleData.AngleMax = 360;
+            particleData.OffsetMin = 10;
+            particleData.OffsetMax = 120;
+            particleData.StartVelocity = 10;
+            particleData.EndVelocity = 100;
+            particleData.StartScale = 3;
+            particleData.EndScale = 50;
+            particleData.RotationSpeed = 45f;
+            particleData.StartColour = Color4.White;
+            particleData.EndColour = Color4.Transparent;
+            //particleData.EndColour.A = 0f;
+            particleData.MaxLife = 5;
+
+            new ParticleEmitterComponent(particleEntity, particleData);
+            this.EntityManager.AddEntity(particleEntity);
 
         }
 

@@ -55,6 +55,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -67,10 +68,13 @@
     <Compile Include="Core\ClickBox.cs" />
     <Compile Include="Entities\EntityComponent.cs" />
     <Compile Include="Entities\EntityManager.cs" />
+    <Compile Include="Entities\ParticleEmitterComponent.cs" />
     <Compile Include="Entities\SpriteComponent.cs" />
     <Compile Include="Entities\Transform.cs" />
     <Compile Include="GameData\BankData.cs" />
     <Compile Include="GameData\CraftableData.cs" />
+    <Compile Include="GameData\ParticleEmitterData.cs" />
+    <Compile Include="GameData\ParticleEmitter.cs" />
     <Compile Include="GameData\Preloader.cs" />
     <Compile Include="GameData\ClassData.cs" />
     <Compile Include="GameData\CombatStats.cs" />
@@ -104,6 +108,7 @@
     <Compile Include="Networking\ServerCommand.cs" />
     <Compile Include="Networking\Packets.cs" />
     <Compile Include="Utilities\CircularQueue.cs" />
+    <Compile Include="Utilities\MathTools.cs" />
     <Compile Include="Utilities\Clock.cs" />
     <Compile Include="Graphics\Triangulator.cs" />
     <Compile Include="GUI\DropDownMenu.cs" />
@@ -172,6 +177,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets\Models\" />
+    <Folder Include="Assets\Textures\Particles\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

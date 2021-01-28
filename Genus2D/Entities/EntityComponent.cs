@@ -33,5 +33,10 @@ namespace Genus2D.Entities
         public virtual void Render(FrameEventArgs e)
         {
         }
+
+        public virtual void Destroy()
+        {
+        }
+
     }
 }

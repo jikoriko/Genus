@@ -142,6 +142,7 @@
     <Compile Include="EditorForm.Designer.cs">
       <DependentUpon>EditorForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ParticlePreviewWindow.cs" />
     <Compile Include="ProjectileViewerPanel.cs">
       <SubType>Component</SubType>
     </Compile>

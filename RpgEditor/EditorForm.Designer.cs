@@ -190,6 +190,10 @@
             this.ItemIconSelection = new System.Windows.Forms.ComboBox();
             this.tabPage9 = new System.Windows.Forms.TabPage();
             this.groupBox15 = new System.Windows.Forms.GroupBox();
+            this.EditCraftingMaterialButton = new System.Windows.Forms.Button();
+            this.WorkbenchNameBox = new System.Windows.Forms.TextBox();
+            this.label89 = new System.Windows.Forms.Label();
+            this.WorkBenchesListBox = new System.Windows.Forms.ListBox();
             this.RemoveWorkbenchButton = new System.Windows.Forms.Button();
             this.AddWorkbenchButton = new System.Windows.Forms.Button();
             this.CraftableWorkbenchSelection = new System.Windows.Forms.ComboBox();
@@ -357,10 +361,50 @@
             this.AddVariableButton = new System.Windows.Forms.Button();
             this.SystemVariablesList = new System.Windows.Forms.ListBox();
             this.label19 = new System.Windows.Forms.Label();
-            this.WorkBenchesListBox = new System.Windows.Forms.ListBox();
-            this.label89 = new System.Windows.Forms.Label();
-            this.WorkbenchNameBox = new System.Windows.Forms.TextBox();
-            this.EditCraftingMaterialButton = new System.Windows.Forms.Button();
+            this.groupBox16 = new System.Windows.Forms.GroupBox();
+            this.AddParticleButton = new System.Windows.Forms.Button();
+            this.RemoveParticleButton = new System.Windows.Forms.Button();
+            this.ParticlesListBox = new System.Windows.Forms.ListBox();
+            this.ApplyParticleButton = new System.Windows.Forms.Button();
+            this.label97 = new System.Windows.Forms.Label();
+            this.ParticleNameBox = new System.Windows.Forms.TextBox();
+            this.UndoParticleButton = new System.Windows.Forms.Button();
+            this.ParticleShapeSelection = new System.Windows.Forms.ComboBox();
+            this.ParticleTextureSelection = new System.Windows.Forms.ComboBox();
+            this.ImportParticleTextureButton = new System.Windows.Forms.Button();
+            this.ParticleEmissionSelection = new System.Windows.Forms.NumericUpDown();
+            this.ParticleAngleMinSelection = new System.Windows.Forms.NumericUpDown();
+            this.ParticleAngleMaxSelection = new System.Windows.Forms.NumericUpDown();
+            this.ParticleOffsetMinSelection = new System.Windows.Forms.NumericUpDown();
+            this.ParticleOffsetMaxSelection = new System.Windows.Forms.NumericUpDown();
+            this.ParticleStartVelocitySelection = new System.Windows.Forms.NumericUpDown();
+            this.ParticleEndVelocitySelection = new System.Windows.Forms.NumericUpDown();
+            this.ParticleStartScaleSelection = new System.Windows.Forms.NumericUpDown();
+            this.ParticleEndScaleSelection = new System.Windows.Forms.NumericUpDown();
+            this.ParticleRotationSpeedSelection = new System.Windows.Forms.NumericUpDown();
+            this.ParticleStartColourButton = new System.Windows.Forms.Button();
+            this.ParticleColorBox1 = new System.Windows.Forms.PictureBox();
+            this.ParticleColorBox2 = new System.Windows.Forms.PictureBox();
+            this.ParticleEndColourButton = new System.Windows.Forms.Button();
+            this.ParticleMaxLifeSelection = new System.Windows.Forms.NumericUpDown();
+            this.label93 = new System.Windows.Forms.Label();
+            this.label94 = new System.Windows.Forms.Label();
+            this.label95 = new System.Windows.Forms.Label();
+            this.label96 = new System.Windows.Forms.Label();
+            this.label98 = new System.Windows.Forms.Label();
+            this.label99 = new System.Windows.Forms.Label();
+            this.label100 = new System.Windows.Forms.Label();
+            this.label101 = new System.Windows.Forms.Label();
+            this.label102 = new System.Windows.Forms.Label();
+            this.label103 = new System.Windows.Forms.Label();
+            this.label104 = new System.Windows.Forms.Label();
+            this.label105 = new System.Windows.Forms.Label();
+            this.label106 = new System.Windows.Forms.Label();
+            this.ParticlePreviewButton = new System.Windows.Forms.Button();
+            this.label107 = new System.Windows.Forms.Label();
+            this.ParticleStartAlphaSelection = new System.Windows.Forms.NumericUpDown();
+            this.label108 = new System.Windows.Forms.Label();
+            this.ParticleEndAlphaSelection = new System.Windows.Forms.NumericUpDown();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -446,6 +490,22 @@
             ((System.ComponentModel.ISupportInitialize)(this.TestLvlSelection)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.XpPowSelection)).BeginInit();
             this.panel7.SuspendLayout();
+            this.groupBox16.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleEmissionSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleAngleMinSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleAngleMaxSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleOffsetMinSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleOffsetMaxSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleStartVelocitySelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleEndVelocitySelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleStartScaleSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleEndScaleSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleRotationSpeedSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleColorBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleColorBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleMaxLifeSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleStartAlphaSelection)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleEndAlphaSelection)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -2464,12 +2524,13 @@
             // tabPage9
             // 
             this.tabPage9.BackColor = System.Drawing.Color.DarkGray;
+            this.tabPage9.Controls.Add(this.groupBox16);
             this.tabPage9.Controls.Add(this.groupBox15);
             this.tabPage9.Location = new System.Drawing.Point(4, 22);
             this.tabPage9.Name = "tabPage9";
             this.tabPage9.Size = new System.Drawing.Size(1152, 711);
             this.tabPage9.TabIndex = 9;
-            this.tabPage9.Text = "Crafting";
+            this.tabPage9.Text = "Crafting / Particles";
             // 
             // groupBox15
             // 
@@ -2505,6 +2566,46 @@
             this.groupBox15.TabIndex = 3;
             this.groupBox15.TabStop = false;
             this.groupBox15.Text = "Craftables Data";
+            // 
+            // EditCraftingMaterialButton
+            // 
+            this.EditCraftingMaterialButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.EditCraftingMaterialButton.Location = new System.Drawing.Point(197, 536);
+            this.EditCraftingMaterialButton.Name = "EditCraftingMaterialButton";
+            this.EditCraftingMaterialButton.Size = new System.Drawing.Size(239, 47);
+            this.EditCraftingMaterialButton.TabIndex = 49;
+            this.EditCraftingMaterialButton.Text = "Edit Crafting Material";
+            this.EditCraftingMaterialButton.UseVisualStyleBackColor = true;
+            this.EditCraftingMaterialButton.Click += new System.EventHandler(this.EditCraftingMaterialButton_Click);
+            // 
+            // WorkbenchNameBox
+            // 
+            this.WorkbenchNameBox.Location = new System.Drawing.Point(493, 448);
+            this.WorkbenchNameBox.Name = "WorkbenchNameBox";
+            this.WorkbenchNameBox.Size = new System.Drawing.Size(141, 20);
+            this.WorkbenchNameBox.TabIndex = 48;
+            // 
+            // label89
+            // 
+            this.label89.AutoSize = true;
+            this.label89.Location = new System.Drawing.Point(441, 138);
+            this.label89.Name = "label89";
+            this.label89.Size = new System.Drawing.Size(81, 13);
+            this.label89.TabIndex = 47;
+            this.label89.Text = "Work Benches:";
+            // 
+            // WorkBenchesListBox
+            // 
+            this.WorkBenchesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.WorkBenchesListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.WorkBenchesListBox.FormattingEnabled = true;
+            this.WorkBenchesListBox.ItemHeight = 20;
+            this.WorkBenchesListBox.Location = new System.Drawing.Point(442, 154);
+            this.WorkBenchesListBox.Name = "WorkBenchesListBox";
+            this.WorkBenchesListBox.Size = new System.Drawing.Size(239, 284);
+            this.WorkBenchesListBox.TabIndex = 46;
+            this.WorkBenchesListBox.SelectedIndexChanged += new System.EventHandler(this.WorkBenchesListBox_SelectedIndexChanged);
             // 
             // RemoveWorkbenchButton
             // 
@@ -4401,45 +4502,646 @@
             this.label19.TabIndex = 7;
             this.label19.Text = "System Variables";
             // 
-            // WorkBenchesListBox
+            // groupBox16
             // 
-            this.WorkBenchesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.groupBox16.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.WorkBenchesListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.WorkBenchesListBox.FormattingEnabled = true;
-            this.WorkBenchesListBox.ItemHeight = 20;
-            this.WorkBenchesListBox.Location = new System.Drawing.Point(442, 154);
-            this.WorkBenchesListBox.Name = "WorkBenchesListBox";
-            this.WorkBenchesListBox.Size = new System.Drawing.Size(239, 284);
-            this.WorkBenchesListBox.TabIndex = 46;
-            this.WorkBenchesListBox.SelectedIndexChanged += new System.EventHandler(this.WorkBenchesListBox_SelectedIndexChanged);
+            this.groupBox16.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.groupBox16.Controls.Add(this.label108);
+            this.groupBox16.Controls.Add(this.ParticleEndAlphaSelection);
+            this.groupBox16.Controls.Add(this.label107);
+            this.groupBox16.Controls.Add(this.ParticleStartAlphaSelection);
+            this.groupBox16.Controls.Add(this.ParticlePreviewButton);
+            this.groupBox16.Controls.Add(this.label106);
+            this.groupBox16.Controls.Add(this.label105);
+            this.groupBox16.Controls.Add(this.label104);
+            this.groupBox16.Controls.Add(this.label103);
+            this.groupBox16.Controls.Add(this.label102);
+            this.groupBox16.Controls.Add(this.label101);
+            this.groupBox16.Controls.Add(this.label100);
+            this.groupBox16.Controls.Add(this.label99);
+            this.groupBox16.Controls.Add(this.label98);
+            this.groupBox16.Controls.Add(this.label96);
+            this.groupBox16.Controls.Add(this.label95);
+            this.groupBox16.Controls.Add(this.label94);
+            this.groupBox16.Controls.Add(this.label93);
+            this.groupBox16.Controls.Add(this.ParticleMaxLifeSelection);
+            this.groupBox16.Controls.Add(this.ParticleColorBox2);
+            this.groupBox16.Controls.Add(this.ParticleEndColourButton);
+            this.groupBox16.Controls.Add(this.ParticleColorBox1);
+            this.groupBox16.Controls.Add(this.ParticleStartColourButton);
+            this.groupBox16.Controls.Add(this.ParticleRotationSpeedSelection);
+            this.groupBox16.Controls.Add(this.ParticleEndScaleSelection);
+            this.groupBox16.Controls.Add(this.ParticleStartScaleSelection);
+            this.groupBox16.Controls.Add(this.ParticleEndVelocitySelection);
+            this.groupBox16.Controls.Add(this.ParticleStartVelocitySelection);
+            this.groupBox16.Controls.Add(this.ParticleOffsetMaxSelection);
+            this.groupBox16.Controls.Add(this.ParticleOffsetMinSelection);
+            this.groupBox16.Controls.Add(this.ParticleAngleMaxSelection);
+            this.groupBox16.Controls.Add(this.ParticleAngleMinSelection);
+            this.groupBox16.Controls.Add(this.ParticleEmissionSelection);
+            this.groupBox16.Controls.Add(this.ImportParticleTextureButton);
+            this.groupBox16.Controls.Add(this.ParticleTextureSelection);
+            this.groupBox16.Controls.Add(this.ParticleShapeSelection);
+            this.groupBox16.Controls.Add(this.UndoParticleButton);
+            this.groupBox16.Controls.Add(this.AddParticleButton);
+            this.groupBox16.Controls.Add(this.RemoveParticleButton);
+            this.groupBox16.Controls.Add(this.ParticlesListBox);
+            this.groupBox16.Controls.Add(this.label97);
+            this.groupBox16.Controls.Add(this.ParticleNameBox);
+            this.groupBox16.Controls.Add(this.ApplyParticleButton);
+            this.groupBox16.Location = new System.Drawing.Point(702, 3);
+            this.groupBox16.Name = "groupBox16";
+            this.groupBox16.Size = new System.Drawing.Size(447, 705);
+            this.groupBox16.TabIndex = 50;
+            this.groupBox16.TabStop = false;
+            this.groupBox16.Text = "Particle Emitter Data";
             // 
-            // label89
+            // AddParticleButton
             // 
-            this.label89.AutoSize = true;
-            this.label89.Location = new System.Drawing.Point(441, 138);
-            this.label89.Name = "label89";
-            this.label89.Size = new System.Drawing.Size(81, 13);
-            this.label89.TabIndex = 47;
-            this.label89.Text = "Work Benches:";
+            this.AddParticleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.AddParticleButton.Location = new System.Drawing.Point(6, 599);
+            this.AddParticleButton.Name = "AddParticleButton";
+            this.AddParticleButton.Size = new System.Drawing.Size(185, 47);
+            this.AddParticleButton.TabIndex = 10;
+            this.AddParticleButton.Text = "Add Emitter";
+            this.AddParticleButton.UseVisualStyleBackColor = true;
+            this.AddParticleButton.Click += new System.EventHandler(this.AddParticleButton_Click);
             // 
-            // WorkbenchNameBox
+            // RemoveParticleButton
             // 
-            this.WorkbenchNameBox.Location = new System.Drawing.Point(493, 448);
-            this.WorkbenchNameBox.Name = "WorkbenchNameBox";
-            this.WorkbenchNameBox.Size = new System.Drawing.Size(141, 20);
-            this.WorkbenchNameBox.TabIndex = 48;
+            this.RemoveParticleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.RemoveParticleButton.Location = new System.Drawing.Point(6, 652);
+            this.RemoveParticleButton.Name = "RemoveParticleButton";
+            this.RemoveParticleButton.Size = new System.Drawing.Size(185, 47);
+            this.RemoveParticleButton.TabIndex = 11;
+            this.RemoveParticleButton.Text = "Remove Emitter";
+            this.RemoveParticleButton.UseVisualStyleBackColor = true;
+            this.RemoveParticleButton.Click += new System.EventHandler(this.RemoveParticleButton_Click);
             // 
-            // EditCraftingMaterialButton
+            // ParticlesListBox
             // 
-            this.EditCraftingMaterialButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.EditCraftingMaterialButton.Location = new System.Drawing.Point(197, 536);
-            this.EditCraftingMaterialButton.Name = "EditCraftingMaterialButton";
-            this.EditCraftingMaterialButton.Size = new System.Drawing.Size(239, 47);
-            this.EditCraftingMaterialButton.TabIndex = 49;
-            this.EditCraftingMaterialButton.Text = "Edit Crafting Material";
-            this.EditCraftingMaterialButton.UseVisualStyleBackColor = true;
-            this.EditCraftingMaterialButton.Click += new System.EventHandler(this.EditCraftingMaterialButton_Click);
+            this.ParticlesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.ParticlesListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ParticlesListBox.FormattingEnabled = true;
+            this.ParticlesListBox.ItemHeight = 20;
+            this.ParticlesListBox.Location = new System.Drawing.Point(6, 19);
+            this.ParticlesListBox.Name = "ParticlesListBox";
+            this.ParticlesListBox.Size = new System.Drawing.Size(185, 564);
+            this.ParticlesListBox.TabIndex = 5;
+            this.ParticlesListBox.SelectedIndexChanged += new System.EventHandler(this.ParticlesListBox_SelectedIndexChanged);
+            // 
+            // ApplyParticleButton
+            // 
+            this.ApplyParticleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ApplyParticleButton.Location = new System.Drawing.Point(318, 652);
+            this.ApplyParticleButton.Name = "ApplyParticleButton";
+            this.ApplyParticleButton.Size = new System.Drawing.Size(122, 47);
+            this.ApplyParticleButton.TabIndex = 4;
+            this.ApplyParticleButton.Text = "Save Changes";
+            this.ApplyParticleButton.UseVisualStyleBackColor = true;
+            this.ApplyParticleButton.Click += new System.EventHandler(this.ApplyParticleButton_Click);
+            // 
+            // label97
+            // 
+            this.label97.AutoSize = true;
+            this.label97.Location = new System.Drawing.Point(256, 28);
+            this.label97.Name = "label97";
+            this.label97.Size = new System.Drawing.Size(38, 13);
+            this.label97.TabIndex = 26;
+            this.label97.Text = "Name:";
+            // 
+            // ParticleNameBox
+            // 
+            this.ParticleNameBox.Location = new System.Drawing.Point(299, 25);
+            this.ParticleNameBox.Name = "ParticleNameBox";
+            this.ParticleNameBox.Size = new System.Drawing.Size(141, 20);
+            this.ParticleNameBox.TabIndex = 25;
+            // 
+            // UndoParticleButton
+            // 
+            this.UndoParticleButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.UndoParticleButton.Location = new System.Drawing.Point(197, 652);
+            this.UndoParticleButton.Name = "UndoParticleButton";
+            this.UndoParticleButton.Size = new System.Drawing.Size(122, 47);
+            this.UndoParticleButton.TabIndex = 27;
+            this.UndoParticleButton.Text = "Undo Changes";
+            this.UndoParticleButton.UseVisualStyleBackColor = true;
+            this.UndoParticleButton.Click += new System.EventHandler(this.UndoParticleButton_Click);
+            // 
+            // ParticleShapeSelection
+            // 
+            this.ParticleShapeSelection.FormattingEnabled = true;
+            this.ParticleShapeSelection.Location = new System.Drawing.Point(299, 51);
+            this.ParticleShapeSelection.Name = "ParticleShapeSelection";
+            this.ParticleShapeSelection.Size = new System.Drawing.Size(141, 21);
+            this.ParticleShapeSelection.TabIndex = 50;
+            // 
+            // ParticleTextureSelection
+            // 
+            this.ParticleTextureSelection.FormattingEnabled = true;
+            this.ParticleTextureSelection.Location = new System.Drawing.Point(299, 77);
+            this.ParticleTextureSelection.Name = "ParticleTextureSelection";
+            this.ParticleTextureSelection.Size = new System.Drawing.Size(141, 21);
+            this.ParticleTextureSelection.TabIndex = 51;
+            // 
+            // ImportParticleTextureButton
+            // 
+            this.ImportParticleTextureButton.Location = new System.Drawing.Point(255, 104);
+            this.ImportParticleTextureButton.Name = "ImportParticleTextureButton";
+            this.ImportParticleTextureButton.Size = new System.Drawing.Size(185, 47);
+            this.ImportParticleTextureButton.TabIndex = 52;
+            this.ImportParticleTextureButton.Text = "Import Particle Texture";
+            this.ImportParticleTextureButton.UseVisualStyleBackColor = true;
+            this.ImportParticleTextureButton.Click += new System.EventHandler(this.ImportParticleTextureButton_Click);
+            // 
+            // ParticleEmissionSelection
+            // 
+            this.ParticleEmissionSelection.DecimalPlaces = 2;
+            this.ParticleEmissionSelection.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.ParticleEmissionSelection.Location = new System.Drawing.Point(299, 157);
+            this.ParticleEmissionSelection.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.ParticleEmissionSelection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.ParticleEmissionSelection.Name = "ParticleEmissionSelection";
+            this.ParticleEmissionSelection.Size = new System.Drawing.Size(141, 20);
+            this.ParticleEmissionSelection.TabIndex = 50;
+            this.ParticleEmissionSelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // ParticleAngleMinSelection
+            // 
+            this.ParticleAngleMinSelection.DecimalPlaces = 2;
+            this.ParticleAngleMinSelection.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.ParticleAngleMinSelection.Location = new System.Drawing.Point(299, 183);
+            this.ParticleAngleMinSelection.Maximum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            this.ParticleAngleMinSelection.Minimum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            -2147483648});
+            this.ParticleAngleMinSelection.Name = "ParticleAngleMinSelection";
+            this.ParticleAngleMinSelection.Size = new System.Drawing.Size(141, 20);
+            this.ParticleAngleMinSelection.TabIndex = 53;
+            // 
+            // ParticleAngleMaxSelection
+            // 
+            this.ParticleAngleMaxSelection.DecimalPlaces = 2;
+            this.ParticleAngleMaxSelection.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.ParticleAngleMaxSelection.Location = new System.Drawing.Point(299, 209);
+            this.ParticleAngleMaxSelection.Maximum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            this.ParticleAngleMaxSelection.Minimum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            -2147483648});
+            this.ParticleAngleMaxSelection.Name = "ParticleAngleMaxSelection";
+            this.ParticleAngleMaxSelection.Size = new System.Drawing.Size(141, 20);
+            this.ParticleAngleMaxSelection.TabIndex = 54;
+            this.ParticleAngleMaxSelection.Value = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            // 
+            // ParticleOffsetMinSelection
+            // 
+            this.ParticleOffsetMinSelection.DecimalPlaces = 2;
+            this.ParticleOffsetMinSelection.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.ParticleOffsetMinSelection.Location = new System.Drawing.Point(299, 235);
+            this.ParticleOffsetMinSelection.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.ParticleOffsetMinSelection.Name = "ParticleOffsetMinSelection";
+            this.ParticleOffsetMinSelection.Size = new System.Drawing.Size(141, 20);
+            this.ParticleOffsetMinSelection.TabIndex = 55;
+            // 
+            // ParticleOffsetMaxSelection
+            // 
+            this.ParticleOffsetMaxSelection.DecimalPlaces = 2;
+            this.ParticleOffsetMaxSelection.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.ParticleOffsetMaxSelection.Location = new System.Drawing.Point(299, 261);
+            this.ParticleOffsetMaxSelection.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.ParticleOffsetMaxSelection.Name = "ParticleOffsetMaxSelection";
+            this.ParticleOffsetMaxSelection.Size = new System.Drawing.Size(141, 20);
+            this.ParticleOffsetMaxSelection.TabIndex = 56;
+            // 
+            // ParticleStartVelocitySelection
+            // 
+            this.ParticleStartVelocitySelection.DecimalPlaces = 2;
+            this.ParticleStartVelocitySelection.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.ParticleStartVelocitySelection.Location = new System.Drawing.Point(299, 287);
+            this.ParticleStartVelocitySelection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.ParticleStartVelocitySelection.Name = "ParticleStartVelocitySelection";
+            this.ParticleStartVelocitySelection.Size = new System.Drawing.Size(141, 20);
+            this.ParticleStartVelocitySelection.TabIndex = 57;
+            this.ParticleStartVelocitySelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // ParticleEndVelocitySelection
+            // 
+            this.ParticleEndVelocitySelection.DecimalPlaces = 2;
+            this.ParticleEndVelocitySelection.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.ParticleEndVelocitySelection.Location = new System.Drawing.Point(299, 313);
+            this.ParticleEndVelocitySelection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.ParticleEndVelocitySelection.Name = "ParticleEndVelocitySelection";
+            this.ParticleEndVelocitySelection.Size = new System.Drawing.Size(141, 20);
+            this.ParticleEndVelocitySelection.TabIndex = 58;
+            this.ParticleEndVelocitySelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // ParticleStartScaleSelection
+            // 
+            this.ParticleStartScaleSelection.DecimalPlaces = 2;
+            this.ParticleStartScaleSelection.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.ParticleStartScaleSelection.Location = new System.Drawing.Point(299, 339);
+            this.ParticleStartScaleSelection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.ParticleStartScaleSelection.Name = "ParticleStartScaleSelection";
+            this.ParticleStartScaleSelection.Size = new System.Drawing.Size(141, 20);
+            this.ParticleStartScaleSelection.TabIndex = 59;
+            this.ParticleStartScaleSelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // ParticleEndScaleSelection
+            // 
+            this.ParticleEndScaleSelection.DecimalPlaces = 2;
+            this.ParticleEndScaleSelection.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.ParticleEndScaleSelection.Location = new System.Drawing.Point(299, 365);
+            this.ParticleEndScaleSelection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.ParticleEndScaleSelection.Name = "ParticleEndScaleSelection";
+            this.ParticleEndScaleSelection.Size = new System.Drawing.Size(141, 20);
+            this.ParticleEndScaleSelection.TabIndex = 60;
+            this.ParticleEndScaleSelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // ParticleRotationSpeedSelection
+            // 
+            this.ParticleRotationSpeedSelection.DecimalPlaces = 2;
+            this.ParticleRotationSpeedSelection.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.ParticleRotationSpeedSelection.Location = new System.Drawing.Point(299, 391);
+            this.ParticleRotationSpeedSelection.Maximum = new decimal(new int[] {
+            90,
+            0,
+            0,
+            0});
+            this.ParticleRotationSpeedSelection.Minimum = new decimal(new int[] {
+            90,
+            0,
+            0,
+            -2147483648});
+            this.ParticleRotationSpeedSelection.Name = "ParticleRotationSpeedSelection";
+            this.ParticleRotationSpeedSelection.Size = new System.Drawing.Size(141, 20);
+            this.ParticleRotationSpeedSelection.TabIndex = 61;
+            // 
+            // ParticleStartColourButton
+            // 
+            this.ParticleStartColourButton.Location = new System.Drawing.Point(197, 417);
+            this.ParticleStartColourButton.Name = "ParticleStartColourButton";
+            this.ParticleStartColourButton.Size = new System.Drawing.Size(185, 47);
+            this.ParticleStartColourButton.TabIndex = 62;
+            this.ParticleStartColourButton.Text = "Start Colour";
+            this.ParticleStartColourButton.UseVisualStyleBackColor = true;
+            this.ParticleStartColourButton.Click += new System.EventHandler(this.ParticleStartColourButton_Click);
+            // 
+            // ParticleColorBox1
+            // 
+            this.ParticleColorBox1.BackColor = System.Drawing.Color.White;
+            this.ParticleColorBox1.Location = new System.Drawing.Point(388, 418);
+            this.ParticleColorBox1.Name = "ParticleColorBox1";
+            this.ParticleColorBox1.Size = new System.Drawing.Size(52, 46);
+            this.ParticleColorBox1.TabIndex = 63;
+            this.ParticleColorBox1.TabStop = false;
+            // 
+            // ParticleColorBox2
+            // 
+            this.ParticleColorBox2.BackColor = System.Drawing.Color.White;
+            this.ParticleColorBox2.Location = new System.Drawing.Point(388, 496);
+            this.ParticleColorBox2.Name = "ParticleColorBox2";
+            this.ParticleColorBox2.Size = new System.Drawing.Size(52, 46);
+            this.ParticleColorBox2.TabIndex = 65;
+            this.ParticleColorBox2.TabStop = false;
+            // 
+            // ParticleEndColourButton
+            // 
+            this.ParticleEndColourButton.Location = new System.Drawing.Point(197, 495);
+            this.ParticleEndColourButton.Name = "ParticleEndColourButton";
+            this.ParticleEndColourButton.Size = new System.Drawing.Size(185, 47);
+            this.ParticleEndColourButton.TabIndex = 64;
+            this.ParticleEndColourButton.Text = "End Colour";
+            this.ParticleEndColourButton.UseVisualStyleBackColor = true;
+            this.ParticleEndColourButton.Click += new System.EventHandler(this.ParticleEndColourButton_Click);
+            // 
+            // ParticleMaxLifeSelection
+            // 
+            this.ParticleMaxLifeSelection.DecimalPlaces = 2;
+            this.ParticleMaxLifeSelection.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            131072});
+            this.ParticleMaxLifeSelection.Location = new System.Drawing.Point(300, 574);
+            this.ParticleMaxLifeSelection.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.ParticleMaxLifeSelection.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ParticleMaxLifeSelection.Name = "ParticleMaxLifeSelection";
+            this.ParticleMaxLifeSelection.Size = new System.Drawing.Size(141, 20);
+            this.ParticleMaxLifeSelection.TabIndex = 66;
+            this.ParticleMaxLifeSelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label93
+            // 
+            this.label93.AutoSize = true;
+            this.label93.Location = new System.Drawing.Point(256, 54);
+            this.label93.Name = "label93";
+            this.label93.Size = new System.Drawing.Size(41, 13);
+            this.label93.TabIndex = 67;
+            this.label93.Text = "Shape:";
+            // 
+            // label94
+            // 
+            this.label94.AutoSize = true;
+            this.label94.Location = new System.Drawing.Point(252, 80);
+            this.label94.Name = "label94";
+            this.label94.Size = new System.Drawing.Size(46, 13);
+            this.label94.TabIndex = 68;
+            this.label94.Text = "Texture:";
+            // 
+            // label95
+            // 
+            this.label95.AutoSize = true;
+            this.label95.Location = new System.Drawing.Point(221, 159);
+            this.label95.Name = "label95";
+            this.label95.Size = new System.Drawing.Size(77, 13);
+            this.label95.TabIndex = 69;
+            this.label95.Text = "Emission Rate:";
+            // 
+            // label96
+            // 
+            this.label96.AutoSize = true;
+            this.label96.Location = new System.Drawing.Point(241, 185);
+            this.label96.Name = "label96";
+            this.label96.Size = new System.Drawing.Size(57, 13);
+            this.label96.TabIndex = 70;
+            this.label96.Text = "Angle Min:";
+            // 
+            // label98
+            // 
+            this.label98.AutoSize = true;
+            this.label98.Location = new System.Drawing.Point(238, 211);
+            this.label98.Name = "label98";
+            this.label98.Size = new System.Drawing.Size(60, 13);
+            this.label98.TabIndex = 71;
+            this.label98.Text = "Angle Max:";
+            // 
+            // label99
+            // 
+            this.label99.AutoSize = true;
+            this.label99.Location = new System.Drawing.Point(241, 237);
+            this.label99.Name = "label99";
+            this.label99.Size = new System.Drawing.Size(58, 13);
+            this.label99.TabIndex = 72;
+            this.label99.Text = "Offset Min:";
+            // 
+            // label100
+            // 
+            this.label100.AutoSize = true;
+            this.label100.Location = new System.Drawing.Point(238, 263);
+            this.label100.Name = "label100";
+            this.label100.Size = new System.Drawing.Size(61, 13);
+            this.label100.TabIndex = 73;
+            this.label100.Text = "Offset Max:";
+            // 
+            // label101
+            // 
+            this.label101.AutoSize = true;
+            this.label101.Location = new System.Drawing.Point(226, 289);
+            this.label101.Name = "label101";
+            this.label101.Size = new System.Drawing.Size(72, 13);
+            this.label101.TabIndex = 74;
+            this.label101.Text = "Start Velocity:";
+            // 
+            // label102
+            // 
+            this.label102.AutoSize = true;
+            this.label102.Location = new System.Drawing.Point(229, 315);
+            this.label102.Name = "label102";
+            this.label102.Size = new System.Drawing.Size(69, 13);
+            this.label102.TabIndex = 75;
+            this.label102.Text = "End Velocity:";
+            // 
+            // label103
+            // 
+            this.label103.AutoSize = true;
+            this.label103.Location = new System.Drawing.Point(235, 341);
+            this.label103.Name = "label103";
+            this.label103.Size = new System.Drawing.Size(62, 13);
+            this.label103.TabIndex = 76;
+            this.label103.Text = "Start Scale:";
+            // 
+            // label104
+            // 
+            this.label104.AutoSize = true;
+            this.label104.Location = new System.Drawing.Point(239, 367);
+            this.label104.Name = "label104";
+            this.label104.Size = new System.Drawing.Size(59, 13);
+            this.label104.TabIndex = 77;
+            this.label104.Text = "End Scale:";
+            // 
+            // label105
+            // 
+            this.label105.AutoSize = true;
+            this.label105.Location = new System.Drawing.Point(215, 393);
+            this.label105.Name = "label105";
+            this.label105.Size = new System.Drawing.Size(84, 13);
+            this.label105.TabIndex = 78;
+            this.label105.Text = "Rotation Speed:";
+            // 
+            // label106
+            // 
+            this.label106.AutoSize = true;
+            this.label106.Location = new System.Drawing.Point(248, 576);
+            this.label106.Name = "label106";
+            this.label106.Size = new System.Drawing.Size(50, 13);
+            this.label106.TabIndex = 79;
+            this.label106.Text = "Max Life:";
+            // 
+            // ParticlePreviewButton
+            // 
+            this.ParticlePreviewButton.Location = new System.Drawing.Point(226, 601);
+            this.ParticlePreviewButton.Name = "ParticlePreviewButton";
+            this.ParticlePreviewButton.Size = new System.Drawing.Size(185, 47);
+            this.ParticlePreviewButton.TabIndex = 80;
+            this.ParticlePreviewButton.Text = "Preview";
+            this.ParticlePreviewButton.UseVisualStyleBackColor = true;
+            this.ParticlePreviewButton.Click += new System.EventHandler(this.ParticlePreviewButton_Click);
+            // 
+            // label107
+            // 
+            this.label107.AutoSize = true;
+            this.label107.Location = new System.Drawing.Point(236, 472);
+            this.label107.Name = "label107";
+            this.label107.Size = new System.Drawing.Size(62, 13);
+            this.label107.TabIndex = 82;
+            this.label107.Text = "Start Alpha:";
+            // 
+            // ParticleStartAlphaSelection
+            // 
+            this.ParticleStartAlphaSelection.DecimalPlaces = 2;
+            this.ParticleStartAlphaSelection.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ParticleStartAlphaSelection.Location = new System.Drawing.Point(299, 470);
+            this.ParticleStartAlphaSelection.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.ParticleStartAlphaSelection.Name = "ParticleStartAlphaSelection";
+            this.ParticleStartAlphaSelection.Size = new System.Drawing.Size(141, 20);
+            this.ParticleStartAlphaSelection.TabIndex = 81;
+            this.ParticleStartAlphaSelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label108
+            // 
+            this.label108.AutoSize = true;
+            this.label108.Location = new System.Drawing.Point(239, 550);
+            this.label108.Name = "label108";
+            this.label108.Size = new System.Drawing.Size(59, 13);
+            this.label108.TabIndex = 84;
+            this.label108.Text = "End Alpha:";
+            // 
+            // ParticleEndAlphaSelection
+            // 
+            this.ParticleEndAlphaSelection.DecimalPlaces = 2;
+            this.ParticleEndAlphaSelection.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ParticleEndAlphaSelection.Location = new System.Drawing.Point(299, 548);
+            this.ParticleEndAlphaSelection.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.ParticleEndAlphaSelection.Name = "ParticleEndAlphaSelection";
+            this.ParticleEndAlphaSelection.Size = new System.Drawing.Size(141, 20);
+            this.ParticleEndAlphaSelection.TabIndex = 83;
+            this.ParticleEndAlphaSelection.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // EditorForm
             // 
@@ -4549,6 +5251,23 @@
             ((System.ComponentModel.ISupportInitialize)(this.XpPowSelection)).EndInit();
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
+            this.groupBox16.ResumeLayout(false);
+            this.groupBox16.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleEmissionSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleAngleMinSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleAngleMaxSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleOffsetMinSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleOffsetMaxSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleStartVelocitySelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleEndVelocitySelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleStartScaleSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleEndScaleSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleRotationSpeedSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleColorBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleColorBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleMaxLifeSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleStartAlphaSelection)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ParticleEndAlphaSelection)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -4888,6 +5607,50 @@
         private System.Windows.Forms.ListBox WorkBenchesListBox;
         private System.Windows.Forms.TextBox WorkbenchNameBox;
         private System.Windows.Forms.Button EditCraftingMaterialButton;
+        private System.Windows.Forms.GroupBox groupBox16;
+        private System.Windows.Forms.Button UndoParticleButton;
+        private System.Windows.Forms.Button AddParticleButton;
+        private System.Windows.Forms.Button RemoveParticleButton;
+        private System.Windows.Forms.ListBox ParticlesListBox;
+        private System.Windows.Forms.Label label97;
+        private System.Windows.Forms.TextBox ParticleNameBox;
+        private System.Windows.Forms.Button ApplyParticleButton;
+        private System.Windows.Forms.ComboBox ParticleShapeSelection;
+        private System.Windows.Forms.ComboBox ParticleTextureSelection;
+        private System.Windows.Forms.Button ImportParticleTextureButton;
+        private System.Windows.Forms.NumericUpDown ParticleEmissionSelection;
+        private System.Windows.Forms.NumericUpDown ParticleAngleMaxSelection;
+        private System.Windows.Forms.NumericUpDown ParticleAngleMinSelection;
+        private System.Windows.Forms.NumericUpDown ParticleOffsetMaxSelection;
+        private System.Windows.Forms.NumericUpDown ParticleOffsetMinSelection;
+        private System.Windows.Forms.NumericUpDown ParticleEndVelocitySelection;
+        private System.Windows.Forms.NumericUpDown ParticleStartVelocitySelection;
+        private System.Windows.Forms.NumericUpDown ParticleEndScaleSelection;
+        private System.Windows.Forms.NumericUpDown ParticleStartScaleSelection;
+        private System.Windows.Forms.NumericUpDown ParticleRotationSpeedSelection;
+        private System.Windows.Forms.NumericUpDown ParticleMaxLifeSelection;
+        private System.Windows.Forms.PictureBox ParticleColorBox2;
+        private System.Windows.Forms.Button ParticleEndColourButton;
+        private System.Windows.Forms.PictureBox ParticleColorBox1;
+        private System.Windows.Forms.Button ParticleStartColourButton;
+        private System.Windows.Forms.Label label93;
+        private System.Windows.Forms.Label label94;
+        private System.Windows.Forms.Label label95;
+        private System.Windows.Forms.Label label99;
+        private System.Windows.Forms.Label label98;
+        private System.Windows.Forms.Label label96;
+        private System.Windows.Forms.Label label100;
+        private System.Windows.Forms.Label label101;
+        private System.Windows.Forms.Label label102;
+        private System.Windows.Forms.Label label103;
+        private System.Windows.Forms.Label label104;
+        private System.Windows.Forms.Label label105;
+        private System.Windows.Forms.Button ParticlePreviewButton;
+        private System.Windows.Forms.Label label106;
+        private System.Windows.Forms.Label label107;
+        private System.Windows.Forms.NumericUpDown ParticleStartAlphaSelection;
+        private System.Windows.Forms.Label label108;
+        private System.Windows.Forms.NumericUpDown ParticleEndAlphaSelection;
     }
 }
 
