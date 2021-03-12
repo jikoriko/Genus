@@ -25,13 +25,9 @@
  
  3: the build folder (GenusBuild) you have a file called /Data/ServerSettings.xml for server config
  
-       For the database you can use SQLLite for getting started, SQLLite stores the database in 
-       a local file but in reality you would want to create an sql database for the server to use. 
-       You could host an SQL database using cloud based services such as amazon aws, or on the host 
-       computer, configure the SqlConnectionString for connection to your SQL database and set SQLite 
-       to false:
+       For the database you need to host an SQL database using cloud based services such as amazon aws / Azure or on the host 
+       computer, configure the SqlConnectionString for connection to your SQL database:
            
-           <SQLite>false</SQLite>
            <SqlConnectionString> CONNECTION_STRING </SqlConnectionString>
        
  4. run the server and client
