@@ -16,25 +16,27 @@ namespace RpgGame.EntityComponents
     public class ProjectileComponent : EntityComponent
     {
 
-        private Projectile _projectile;
+        private MapProjectile _projectile;
         private ProjectileData _data;
 
-        public ProjectileComponent(Entity entity, Projectile projectile) : base(entity)
+        public ProjectileComponent(Entity entity, MapProjectile projectile) : base(entity)
         {
             SetProjectile(projectile);
         }
 
-        private void SetProjectile(Projectile projectile)
+        private void SetProjectile(MapProjectile projectile)
         {
             _projectile = projectile;
             _data = ProjectileData.GetProjectileData(projectile.ProjectileID);
-            SetRealPosition(projectile.Position.X, projectile.Position.Y);
+            SetRealPosition(_projectile.Position.X, _projectile.Position.Y);
         }
 
         public void SetRealPosition(float x, float y)
         {
+            _projectile.Position.X = x;
+            _projectile.Position.Y = y;
             Vector3 pos = new Vector3(x + 16, y + 16, 0);
-            pos.Z = -((int)(Math.Ceiling(pos.Y / 32) + (_projectile.OnBridge ? 3 : 0)) * 2) - 1;
+            pos.Z = -((int)(Math.Ceiling(pos.Y / 32) + (_projectile.OnBridge ? 3 : 0)) * 2) - 2;
             Transform.LocalPosition = pos;
 
         }
@@ -47,7 +49,10 @@ namespace RpgGame.EntityComponents
         public override void LateUpdate(FrameEventArgs e)
         {
             base.LateUpdate(e);
-            //do movement prediction here
+
+            _projectile.UpdateMovement((float)e.Time);
+            SetRealPosition(_projectile.Position.X, _projectile.Position.Y);
+
         }
 
         public override void Render(FrameEventArgs e)

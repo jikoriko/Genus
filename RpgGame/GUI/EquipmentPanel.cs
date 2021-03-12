@@ -6,6 +6,7 @@ using Genus2D.Utililities;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Input;
+using RpgGame.EntityComponents;
 using RpgGame.States;
 using System;
 using System.Collections.Generic;
@@ -83,7 +84,7 @@ namespace RpgGame.GUI
         {
             base.RenderContent();
 
-            PlayerPacket playerPacket = RpgClientConnection.Instance.GetLocalPlayerPacket();
+            PlayerPacket playerPacket = MapComponent.Instance.GetLocalPlayerPacket();
             if (playerPacket != null)
             {
                 int width = GetContentWidth() / 3;

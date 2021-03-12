@@ -17,8 +17,8 @@ namespace RpgServer
     {
         public static Server Instance { get; private set; }
 
-        private TcpListener _tcpListener;
-        private int _port;
+        private TcpListener _tcpServerListener;
+        private int _serverPort;
         private bool _running;
 
         DatabaseConnection _databaseConnection;
@@ -26,19 +26,19 @@ namespace RpgServer
         private long ticks, prevTicks;
         private double _deltaTime;
 
-        private Dictionary<int, MapInstance> _mapInstances;
+        private Dictionary<int, ServerMap> _serverMaps;
         private List<GameClient> _gameClients;
 
         private XmlDocument _settingsXml;
 
-        private static Thread _runThread;
+        private static Thread _serverThread;
 
         public Server()
         {
             Instance = this;
 
             _running = false;
-            _mapInstances = new Dictionary<int, MapInstance>();
+            _serverMaps = new Dictionary<int, ServerMap>();
             _gameClients = new List<GameClient>();
 
             _deltaTime = 0.0;
@@ -84,8 +84,8 @@ namespace RpgServer
             _settingsXml = new XmlDocument();
             _settingsXml.Load("Data/ServerSettings.xml");
 
-            XmlElement xElement = _settingsXml.DocumentElement["Port"];
-            _port = int.Parse(xElement.InnerText);
+            XmlElement xElement = _settingsXml.DocumentElement["ServerPort"];
+            _serverPort = int.Parse(xElement.InnerText);
         }
 
         public XmlElement GetSettingsElement(string name)
@@ -101,18 +101,26 @@ namespace RpgServer
 
         private void StartServer()
         {
-            _tcpListener = new TcpListener(IPAddress.Any, _port);
-            _tcpListener.Start();
+            _tcpServerListener = new TcpListener(IPAddress.Any, _serverPort);
+            _tcpServerListener.Start();
 
-            _runThread = new Thread(new ThreadStart(Run));
-            _runThread.Start();
+            /*
+            for (int i = 0; i < MapInfo.NumberMaps(); i++)
+            {
+                CheckMapStart(i);
+            }
+            */
+
+            _serverThread = new Thread(new ThreadStart(Run));
+            _serverThread.Start();
 
             Console.WriteLine("Server Started...");
-            //for (int i = 0; i < MapInfo.NumberMaps(); i++)
-            //{
-                //CheckMapStart(i);
-            //}
             RecieveClients();
+        }
+
+        public int ServerPort()
+        {
+            return _serverPort;
         }
 
         public void Stop()
@@ -134,7 +142,7 @@ namespace RpgServer
             {
                 try
                 {
-                    TcpClient tcpClient = _tcpListener.AcceptTcpClient();
+                    TcpClient tcpClient = _tcpServerListener.AcceptTcpClient();
                     GameClient.RecieveClient(tcpClient);
                 }
                 catch (Exception e)
@@ -147,23 +155,23 @@ namespace RpgServer
 
         public void ChangeClientsMap(GameClient client)
         {
-            int mapID = client.GetMapID();
+            int mapID = client.GetMapPlayer().GetMapID();
             CheckMapStart(mapID);
-            _mapInstances[mapID].AddClient(client);
+            _serverMaps[mapID].AddClient(client);
         }
 
         private void CheckMapStart(int mapID)
         {
-            if (!_mapInstances.ContainsKey(mapID))
+            if (!_serverMaps.ContainsKey(mapID))
             {
-                _mapInstances.Add(mapID, new MapInstance(this, mapID));
+                _serverMaps.Add(mapID, new ServerMap(this, mapID));
             }
         }
 
-        public MapInstance GetMapInstance(int id)
+        public ServerMap GetServerMap(int mapID)
         {
-            if (id >= 0 && id < _mapInstances.Count)
-                return _mapInstances[id];
+            if (mapID >= 0 && mapID < _serverMaps.Count)
+                return _serverMaps[mapID];
             return null;
         }
 
@@ -178,14 +186,16 @@ namespace RpgServer
                     ticks = DateTime.Now.Ticks;
                     _deltaTime = (ticks - prevTicks) / 10000000.0;
 
-                    for (int i = 0; i < _mapInstances.Count; i++)
+                    for (int i = 0; i < _serverMaps.Count; i++)
                     {
-                        MapInstance map = _mapInstances.ElementAt(i).Value;
+                        ServerMap map = _serverMaps.ElementAt(i).Value;
                         map.Update((float)_deltaTime);
                     }
                 }
-                catch
+                catch (Exception e)
                 {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
                     Stop();
                 }
             }
@@ -198,11 +208,10 @@ namespace RpgServer
             _databaseConnection.Close();
         }
 
-        public Thread GetRunThread()
+        public Thread GetServerThread()
         {
-            return _runThread;
+            return _serverThread;
         }
-
 
         public void SendMessage(MessagePacket message)
         {

@@ -32,6 +32,8 @@ namespace Genus2D.GameData
         private int EnemyCharacterID;
         private float _combatTimer;
 
+        public bool Changed;
+
         public MapEnemy(int enemyID, int mapX, int mapY, bool onBridge)
         {
             _enemyID = enemyID;
@@ -54,6 +56,8 @@ namespace Genus2D.GameData
             EnemyCharacterType = CharacterType.Player;
             EnemyCharacterID = -1;
             _combatTimer = 0f;
+
+            Changed = false;
         }
 
         public byte[] GetBytes()
@@ -227,6 +231,8 @@ namespace Genus2D.GameData
                         break;
                 }
 
+                Changed = true;
+
                 return true;
             }
 
@@ -237,23 +243,39 @@ namespace Genus2D.GameData
         {
             if (_combatTimer >= 0) _combatTimer -= deltaTime;
             else EnemyCharacterID = -1;
-            
+
+            UpdateMovement(deltaTime);
+        }
+
+        public bool UpdateMovement(float deltaTime)
+        {
             if (Moving())
             {
                 Vector2 realPos = new Vector2(RealX, RealY);
-                Vector2 dir = new Vector2(MapX * 32, MapY * 32) - realPos;
-                dir.Normalize();
-                realPos += (dir * GetMovementSpeed() * deltaTime);
+                Vector2 targetPos = new Vector2(MapX * 32, MapY * 32);
+                Vector2 dir = targetPos - realPos;
+                Vector2 endPos = realPos + (dir.Normalized() * GetMovementSpeed() * deltaTime);
 
-                dir = new Vector2(MapX * 32, MapY * 32) - realPos;
-                if (dir.Length <= 2f)
+                Vector2 dir2 = targetPos - endPos;
+
+                if (dir.Length < dir2.Length || dir.Length < 0.5f)
                 {
-                    realPos = new OpenTK.Vector2(MapX * 32, MapY * 32);
+                    realPos = targetPos;
+                }
+                else
+                {
+                    realPos = endPos;
                 }
 
                 RealX = realPos.X;
                 RealY = realPos.Y;
+
+                Changed = true;
+
+                return true;
             }
+
+            return false;
         }
 
         public void TakeDamage(CharacterType enemyType, int enemyID, int damage, bool multiCombat)
@@ -276,6 +298,8 @@ namespace Genus2D.GameData
                     HP = 0;
                     Dead = true;
                 }
+
+                Changed = true;
             }
         }
 

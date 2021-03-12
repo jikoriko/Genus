@@ -48,6 +48,8 @@
             this.FrequencySelection = new System.Windows.Forms.ComboBox();
             this.RandomMovementCheck = new System.Windows.Forms.CheckBox();
             this.EnabledCheck = new System.Windows.Forms.CheckBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.ParticleEmitterSelection = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // EventSelection
@@ -60,7 +62,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(12, 259);
+            this.button1.Location = new System.Drawing.Point(12, 309);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(281, 39);
             this.button1.TabIndex = 1;
@@ -93,7 +95,7 @@
             // 
             this.EventPassableCheck.AutoSize = true;
             this.EventPassableCheck.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.EventPassableCheck.Location = new System.Drawing.Point(14, 236);
+            this.EventPassableCheck.Location = new System.Drawing.Point(14, 286);
             this.EventPassableCheck.Name = "EventPassableCheck";
             this.EventPassableCheck.Size = new System.Drawing.Size(72, 17);
             this.EventPassableCheck.TabIndex = 4;
@@ -237,7 +239,7 @@
             // 
             this.RandomMovementCheck.AutoSize = true;
             this.RandomMovementCheck.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.RandomMovementCheck.Location = new System.Drawing.Point(95, 236);
+            this.RandomMovementCheck.Location = new System.Drawing.Point(95, 286);
             this.RandomMovementCheck.Name = "RandomMovementCheck";
             this.RandomMovementCheck.Size = new System.Drawing.Size(122, 17);
             this.RandomMovementCheck.TabIndex = 18;
@@ -248,18 +250,37 @@
             // 
             this.EnabledCheck.AutoSize = true;
             this.EnabledCheck.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.EnabledCheck.Location = new System.Drawing.Point(225, 236);
+            this.EnabledCheck.Location = new System.Drawing.Point(225, 286);
             this.EnabledCheck.Name = "EnabledCheck";
             this.EnabledCheck.Size = new System.Drawing.Size(68, 17);
             this.EnabledCheck.TabIndex = 19;
             this.EnabledCheck.Text = "Enabled:";
             this.EnabledCheck.UseVisualStyleBackColor = true;
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(47, 230);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(80, 13);
+            this.label9.TabIndex = 21;
+            this.label9.Text = "Particle Emitter:";
+            // 
+            // ParticleEmitterSelection
+            // 
+            this.ParticleEmitterSelection.FormattingEnabled = true;
+            this.ParticleEmitterSelection.Location = new System.Drawing.Point(133, 227);
+            this.ParticleEmitterSelection.Name = "ParticleEmitterSelection";
+            this.ParticleEmitterSelection.Size = new System.Drawing.Size(160, 21);
+            this.ParticleEmitterSelection.TabIndex = 20;
+            // 
             // EditMapEventForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(305, 310);
+            this.ClientSize = new System.Drawing.Size(305, 360);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.ParticleEmitterSelection);
             this.Controls.Add(this.EnabledCheck);
             this.Controls.Add(this.RandomMovementCheck);
             this.Controls.Add(this.label8);
@@ -310,5 +331,7 @@
         private System.Windows.Forms.ComboBox FrequencySelection;
         private System.Windows.Forms.CheckBox RandomMovementCheck;
         private System.Windows.Forms.CheckBox EnabledCheck;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.ComboBox ParticleEmitterSelection;
     }
 }

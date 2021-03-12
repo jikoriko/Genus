@@ -205,6 +205,12 @@ namespace Genus2D.Graphics
             GL.Uniform2(uxLocation, flipX == true ? 1.0f : 0.0f, flipY == true ? 1.0f : 0.0f);
         }
 
+        public static void SetTextureOffset(float x, float y)
+        {
+            int uxLocation = _currentShader.GetUniformLocation("uTexOffset");
+            GL.Uniform2(uxLocation, x, y);
+        }
+
         public static void Clear()
         {
             _worldMatrixStack.Clear();
@@ -427,7 +433,7 @@ namespace Genus2D.Graphics
 
         public static bool InsideScreenClip(ref Vector2 minBounds, ref Vector2 maxBounds, ref Vector3 position, ref Vector3 scale, ref Vector3 rotation, ref Vector3 offset)
         {
-            return true;
+            //return true;
             if (_projectionMode == ProjectionMode.Perspective)
                 return true;
             Rectangle screen = GetScreenClip();
@@ -851,7 +857,7 @@ namespace Genus2D.Graphics
             Matrix4 matrix = Matrix4.CreateScale(scale) * Matrix4.CreateTranslation(centerOffset) * rotationMatrix * Matrix4.CreateTranslation(position);
             GL.UniformMatrix4(uModelLocation, true, ref matrix);
 
-            GL.DrawElements(PrimitiveType.Polygon, shape.IndicesLength(), DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(shape.GetPrimitiveType(), shape.IndicesLength(), DrawElementsType.UnsignedInt, 0);
         }
 
         public static void DrawShape(Shape shape, ref Vector3 position, ref Vector3 scale, float lineWidth, ref Color4 colour)

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Genus2D.GameData
 {
-    public class Projectile
+    public class MapProjectile
     {
         public int ProjectileID { get; private set; }
         public CharacterType ParentType { get; private set; }
@@ -26,7 +26,9 @@ namespace Genus2D.GameData
         public AttackStyle Style;
         public int AttackPower;
 
-        public Projectile(int projectileID, CharacterType parentType, int characterID, Vector2 position, FacingDirection direction)
+        public bool Changed;
+
+        public MapProjectile(int projectileID, CharacterType parentType, int characterID, Vector2 position, FacingDirection direction)
         {
             ProjectileID = projectileID;
             ParentType = parentType;
@@ -48,6 +50,8 @@ namespace Genus2D.GameData
 
             Style = AttackStyle.None;
             AttackPower = 0;
+
+            Changed = false;
         }
 
         public ProjectileData GetData()
@@ -72,6 +76,14 @@ namespace Genus2D.GameData
             return hitbox;
         }
 
+        public void UpdateMovement(float deltaTime)
+        {
+            Vector2 targetPos = Position + (Velocity * deltaTime);
+            Position = targetPos;
+
+            Changed = true;
+        }
+
         public byte[] GetBytes()
         {
             using (MemoryStream stream = new MemoryStream())
@@ -87,7 +99,7 @@ namespace Genus2D.GameData
             }
         }
 
-        public static Projectile FromBytes(byte[] bytes)
+        public static MapProjectile FromBytes(byte[] bytes)
         {
             using (MemoryStream stream = new MemoryStream(bytes))
             {
@@ -113,7 +125,7 @@ namespace Genus2D.GameData
                 bool destroyed = BitConverter.ToBoolean(tempBytes, 0);
 
                 Vector2 position = new Vector2(positionX, positionY);
-                Projectile projectile = new Projectile(projectileID, CharacterType.Player, -1, position, direction);
+                MapProjectile projectile = new MapProjectile(projectileID, CharacterType.Player, -1, position, direction);
                 projectile.OnBridge = onBridge;
                 projectile.Destroyed = destroyed;
                 return projectile;

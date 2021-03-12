@@ -61,10 +61,10 @@ namespace RpgGame.States
                 int tileY = (int)Math.Floor((mousePos.Y - MapEntity.GetTransform().Position.Y) / 32);
                 List<MapClickOption> options = new List<MapClickOption>();
 
-                for (int i = 0; i < RpgClientConnection.Instance.MapItemEntities.Count; i++)
+                for (int i = 0; i < MapComponent.Instance.MapItemEntities.Count; i++)
                 {
-                    MapItem item = RpgClientConnection.Instance.MapItemEntities[i].FindComponent<MapItemComponent>().GetMapItem();
-                    if (item.PlayerID == -1 || item.PlayerID == RpgClientConnection.Instance.GetLocalPlayerPacket().PlayerID)
+                    MapItem item = MapComponent.Instance.MapItemEntities[i].FindComponent<MapItemComponent>().GetMapItem();
+                    if (item.PlayerID == -1 || item.PlayerID == MapComponent.Instance.GetLocalPlayerPacket().PlayerID)
                     {
                         if (item.MapX == tileX && item.MapY == tileY)
                         {
@@ -77,13 +77,13 @@ namespace RpgGame.States
                     }
                 }
 
-                for (int i = 0; i < RpgClientConnection.Instance.PlayerEntities.Count; i++)
+                for (int i = 0; i < MapComponent.Instance.PlayerEntities.Count; i++)
                 {
-                    int playerID = RpgClientConnection.Instance.PlayerEntities.ElementAt(i).Key;
-                    if (playerID != RpgClientConnection.Instance.GetLocalPlayerPacket().PlayerID)
+                    int playerID = MapComponent.Instance.PlayerEntities.ElementAt(i).Key;
+                    if (playerID != MapComponent.Instance.GetLocalPlayerPacket().PlayerID)
                     {
 
-                        PlayerPacket packet = RpgClientConnection.Instance.PlayerEntities[playerID].FindComponent<PlayerComponent>().GetPlayerPacket();
+                        PlayerPacket packet = MapComponent.Instance.PlayerEntities[playerID].FindComponent<PlayerComponent>().GetMapPlayer().GetPlayerPacket();
                         if (packet.PositionX == tileX && packet.PositionY == tileY)
                         {
                             string label = "Attack Player: " + packet.Username;
@@ -99,9 +99,9 @@ namespace RpgGame.States
                     }
                 }
 
-                for (int i = 0; i < RpgClientConnection.Instance.EnemyEntites.Count; i++)
+                for (int i = 0; i < MapComponent.Instance.EnemyEntites.Count; i++)
                 {
-                    MapEnemy mapEnemy = RpgClientConnection.Instance.EnemyEntites[i].FindComponent<MapEnemyComponent>().GetMapEnemy();
+                    MapEnemy mapEnemy = MapComponent.Instance.EnemyEntites[i].FindComponent<MapEnemyComponent>().GetMapEnemy();
                     if (mapEnemy.MapX == tileX && mapEnemy.MapY == tileY)
                     {
                         string label = "Attack Enemy: " + mapEnemy.GetEnemyData().Name;
@@ -234,7 +234,7 @@ namespace RpgGame.States
             {
                 if (_connection.Connected())
                 {
-                    _connection.Update();
+                    _connection.Update((float)e.Time);
                 }
                 else
                 {
@@ -249,62 +249,65 @@ namespace RpgGame.States
             if (_movementTimer > 0)
                 _movementTimer -= (float)e.Time;
 
-            KeyboardState keyState = Keyboard.GetState();
-            bool moving = false;
-            MovementDirection direction = MovementDirection.Down;
-
-            if (keyState.IsKeyDown(Key.W))
-            {
-                moving = true;
-                if (keyState.IsKeyDown(Key.A))
-                {
-                    direction = MovementDirection.UpperLeft;
-                }
-                else if (keyState.IsKeyDown(Key.D))
-                {
-                    direction = MovementDirection.UpperRight;
-                }
-                else
-                {
-                    direction = MovementDirection.Up;
-                }
-            }
-            else if (keyState.IsKeyDown(Key.S))
-            {
-                moving = true;
-                if (keyState.IsKeyDown(Key.A))
-                {
-                    direction = MovementDirection.LowerLeft;
-                }
-                else if (keyState.IsKeyDown(Key.D))
-                {
-                    direction = MovementDirection.LowerRight;
-                }
-                else
-                {
-                    direction = MovementDirection.Down;
-                }
-            }
-            else if (keyState.IsKeyDown(Key.A))
-            {
-                moving = true;
-                direction = MovementDirection.Left;
-            }
-            else if (keyState.IsKeyDown(Key.D))
-            {
-                moving = true;
-                direction = MovementDirection.Right;
-            }
-
-            if (moving && _movementTimer <= 0)
-            {
-                ClientCommand command = new ClientCommand(ClientCommand.CommandType.MovePlayer);
-                command.SetParameter("Direction", (int)direction);
-                RpgClientConnection.Instance.AddClientCommand(command);
-            }
-
             if (_movementTimer <= 0)
-                _movementTimer = 0.05f;
+            {
+                KeyboardState keyState = Keyboard.GetState();
+                bool moving = false;
+                MovementDirection direction = MovementDirection.Down;
+
+                if (keyState.IsKeyDown(Key.W))
+                {
+                    moving = true;
+                    if (keyState.IsKeyDown(Key.A))
+                    {
+                        direction = MovementDirection.UpperLeft;
+                    }
+                    else if (keyState.IsKeyDown(Key.D))
+                    {
+                        direction = MovementDirection.UpperRight;
+                    }
+                    else
+                    {
+                        direction = MovementDirection.Up;
+                    }
+                }
+                else if (keyState.IsKeyDown(Key.S))
+                {
+                    moving = true;
+                    if (keyState.IsKeyDown(Key.A))
+                    {
+                        direction = MovementDirection.LowerLeft;
+                    }
+                    else if (keyState.IsKeyDown(Key.D))
+                    {
+                        direction = MovementDirection.LowerRight;
+                    }
+                    else
+                    {
+                        direction = MovementDirection.Down;
+                    }
+                }
+                else if (keyState.IsKeyDown(Key.A))
+                {
+                    moving = true;
+                    direction = MovementDirection.Left;
+                }
+                else if (keyState.IsKeyDown(Key.D))
+                {
+                    moving = true;
+                    direction = MovementDirection.Right;
+                }
+
+                if (moving)
+                {
+                    ClientCommand command = new ClientCommand(ClientCommand.CommandType.MovePlayer);
+                    command.SetParameter("Direction", (int)direction);
+                    RpgClientConnection.Instance.AddClientCommand(command);
+                    MapComponent.Instance.MovePlayer(direction);
+                }
+
+                _movementTimer = 0.1f;
+            }
         }
 
         public override void Destroy()

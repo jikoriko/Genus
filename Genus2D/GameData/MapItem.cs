@@ -21,6 +21,8 @@ namespace Genus2D.GameData
         public float DespawnTimer;
         public bool PickedUp;
 
+        public bool Changed;
+
         public MapItem(int itemID, int count, int mapX, int mapY, int playerID, bool onBridge)
         {
             ItemID = itemID;
@@ -33,6 +35,8 @@ namespace Genus2D.GameData
             PlayerLockTimer = 60f;
             DespawnTimer = 120f;
             PickedUp = false;
+
+            Changed = false;
         }
 
         public int GetSignature()

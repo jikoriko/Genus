@@ -10,12 +10,12 @@ namespace RpgServer
 {
     public class EventInterpreter
     {
-        private MapInstance _mapInstance;
+        private ServerMap _serverMap;
         private List<TriggeringEvent> _triggeringEvents;
 
-        public EventInterpreter(MapInstance mapInstance)
+        public EventInterpreter(ServerMap serverMap)
         {
-            _mapInstance = mapInstance;
+            _serverMap = serverMap;
             _triggeringEvents = new List<TriggeringEvent>();
         }
 
@@ -37,27 +37,27 @@ namespace RpgServer
 
         private void TriggerEvent(TriggeringEvent triggeringEvent, float deltaTime)
         {
-            GameClient client = triggeringEvent.GetGameClient();
+            MapPlayer mapPlayer = triggeringEvent.GetMapPlayer();
             EventData eventData = triggeringEvent.GetEventData();
 
             if (triggeringEvent.MessageShowing)
             {
-                if (!client.MessageShowing || !client.Connected())
+                if (!mapPlayer.MessageShowing || !mapPlayer.Connected)
                 {
                     triggeringEvent.MessageShowing = false;
-                    client.MovementDisabled = false;
+                    mapPlayer.MovementDisabled = false;
                 }
 
                 return;
             }
             else if (triggeringEvent.OptionsShowing)
             {
-                if (!client.MessageShowing || !client.Connected())
+                if (!mapPlayer.MessageShowing || !mapPlayer.Connected)
                 {
                     triggeringEvent.OptionsShowing = false;
-                    client.MovementDisabled = false;
-                    triggeringEvent.SelectedOption = client.SelectedOption;
-                    client.SelectedOption = -1;
+                    mapPlayer.MovementDisabled = false;
+                    triggeringEvent.SelectedOption = mapPlayer.SelectedOption;
+                    mapPlayer.SelectedOption = -1;
                 }
 
                 return;
@@ -81,7 +81,6 @@ namespace RpgServer
 
                 EventCommand eventCommand = eventData.EventCommands[triggeringEvent.CommandID];
 
-                ServerCommand serverCommand;
                 int mapID;
                 int eventID;
                 int mapX;
@@ -103,7 +102,7 @@ namespace RpgServer
                 switch (eventCommand.Type)
                 {
                     case EventCommand.CommandType.WaitTimer:
-                        if (client != null) break;
+                        if (mapPlayer != null) break;
 
                         float timer = (float)eventCommand.GetParameter("Time");
                         triggeringEvent.WaitTimer = timer;
@@ -111,61 +110,57 @@ namespace RpgServer
                         break;
                     case EventCommand.CommandType.TeleportPlayer:
 
-                        if (client == null || !client.Connected()) break;
+                        if (mapPlayer == null || !mapPlayer.Connected) break;
 
                         mapID = (int)eventCommand.GetParameter("MapID");
                         mapX = (int)eventCommand.GetParameter("MapX");
                         mapY = (int)eventCommand.GetParameter("MapY");
-                        client.SetMapID(mapID);
-                        client.SetMapPosition(mapX, mapY);
+                        mapPlayer.SetMapID(mapID);
+                        mapPlayer.SetMapPosition(mapX, mapY);
 
                         break;
                     case EventCommand.CommandType.MovePlayer:
 
-                        if (client == null || !client.Connected()) break;
+                        if (mapPlayer == null || !mapPlayer.Connected) break;
 
                         movementDirection = (MovementDirection)eventCommand.GetParameter("Direction");
-                        client.Move(movementDirection, true);
+                        mapPlayer.Move(movementDirection, true);
 
                         break;
                     case EventCommand.CommandType.ChangePlayerDirection:
 
-                        if (client == null || !client.Connected()) break;
+                        if (mapPlayer == null || !mapPlayer.Connected) break;
 
                         facingDirection = (FacingDirection)eventCommand.GetParameter("Direction");
-                        client.ChangeDirection(facingDirection);
+                        mapPlayer.ChangeDirection(facingDirection);
 
                         break;
 
                     case EventCommand.CommandType.ChangeMapEvent:
 
-                        if (client != null) break;
+                        if (mapPlayer != null) break;
 
                         mapID = (int)eventCommand.GetParameter("MapID");
                         eventID = (int)eventCommand.GetParameter("EventID");
 
-                        if (!Server.Instance.GetMapInstance(mapID).ChangeMapEvent(eventID, eventCommand))
+                        if (!Server.Instance.GetServerMap(mapID).GetMapInstance().ChangeMapEvent(eventID, eventCommand))
                             triggeringEvent.CommandID--;
 
                         break;
                     case EventCommand.CommandType.ShowMessage:
 
-                        if (client == null || !client.Connected()) break;
+                        if (mapPlayer == null || !mapPlayer.Connected) break;
 
-                        serverCommand = new ServerCommand(ServerCommand.CommandType.ShowMessage);
-                        serverCommand.SetParameter("Message", (string)eventCommand.GetParameter("Message"));
-                        client.AddServerCommand(serverCommand);
                         triggeringEvent.MessageShowing = true;
-                        client.MovementDisabled = true;
-                        client.MessageShowing = true;
-
+                        mapPlayer.ShowMessage((string)eventCommand.GetParameter("Message"));
+                        
                         break;
                     case EventCommand.CommandType.ShowOptions:
 
-                        if (client == null || !client.Connected()) break;
+                        if (mapPlayer == null || !mapPlayer.Connected) break;
 
                         List<string> options = (List<string>)eventCommand.GetParameter("Options");
-                        client.SelectedOption = 0;
+                        mapPlayer.SelectedOption = 0;
                         int OptionsCount = options.Count;
 
                         string optionStrings = "";
@@ -176,19 +171,14 @@ namespace RpgServer
                                 optionStrings += ",";
                         }
 
-                        serverCommand = new ServerCommand(ServerCommand.CommandType.ShowOptions);
-                        serverCommand.SetParameter("Message", (string)eventCommand.GetParameter("Message"));
-                        serverCommand.SetParameter("Options", optionStrings);
-
-                        client.AddServerCommand(serverCommand);
+                        string message = (string)eventCommand.GetParameter("Message");
                         triggeringEvent.OptionsShowing = true;
-                        client.MovementDisabled = true;
-                        client.MessageShowing = true;
+                        mapPlayer.ShowMessage(message, optionStrings);
 
                         break;
 
                     case EventCommand.CommandType.ChangeSystemVariable:
-                        if (client != null) break;
+                        if (mapPlayer != null) break;
 
                         variableID = (int)eventCommand.GetParameter("VariableID");
                         variableType = (VariableType)eventCommand.GetParameter("VariableType");
@@ -233,15 +223,15 @@ namespace RpgServer
                         switch (type)
                         {
                             case ConditionalBranchType.PlayerPosition:
-                                if (client == null) break;
+                                if (mapPlayer == null) break;
 
                                 mapID = (int)eventCommand.GetParameter("PlayerMapID");
                                 if (mapID == -1) break;
                                 mapX = (int)eventCommand.GetParameter("PlayerMapX");
                                 mapY = (int)eventCommand.GetParameter("PlayerMapY");
 
-                                if (client.GetPacket().MapID == mapID && client.GetPacket().PositionX == mapX &&
-                                        client.GetPacket().PositionY == mapY)
+                                if (mapPlayer.GetPlayerPacket().MapID == mapID && mapPlayer.GetPlayerPacket().PositionX == mapX &&
+                                        mapPlayer.GetPlayerPacket().PositionY == mapY)
                                     conditionMet = true;
 
                                 break;
@@ -252,27 +242,27 @@ namespace RpgServer
                                 mapX = (int)eventCommand.GetParameter("MapEventMapX");
                                 mapY = (int)eventCommand.GetParameter("MapEventMapY");
 
-                                mapEvent = Server.Instance.GetMapInstance(mapID).GetMapData().GetMapEvent(eventID);
+                                mapEvent = Server.Instance.GetServerMap(mapID).GetMapInstance().GetMapData().GetMapEvent(eventID);
                                 if (mapEvent.MapX == mapX && mapEvent.MapY == mapY)
                                     conditionMet = true;
 
                                 break;
                             case ConditionalBranchType.ItemEquipped:
-                                if (client == null || !client.Connected()) break;
+                                if (mapPlayer == null || !mapPlayer.Connected) break;
 
                                 itemID = (int)eventCommand.GetParameter("EquippedItemID");
                                 if (itemID == -1) break;
-                                if (client.GetPacket().Data.ItemEquipped(itemID))
+                                if (mapPlayer.GetPlayerPacket().Data.ItemEquipped(itemID))
                                     conditionMet = true;
 
                                 break;
                             case ConditionalBranchType.ItemInInventory:
-                                if (client == null) break;
+                                if (mapPlayer == null) break;
 
                                 itemID = (int)eventCommand.GetParameter("InventoryItemID");
                                 itemAmount = (int)eventCommand.GetParameter("InventoryItemAmount");
                                 if (itemID == -1) break;
-                                if (client.GetPacket().Data.ItemInInventory(itemID, itemAmount))
+                                if (mapPlayer.GetPlayerPacket().Data.ItemInInventory(itemID, itemAmount))
                                     conditionMet = true;
 
                                 break;
@@ -381,7 +371,7 @@ namespace RpgServer
                                 break;
                             case ConditionalBranchType.QuestStatus:
 
-                                if (client == null || !client.Connected()) break;
+                                if (mapPlayer == null || !mapPlayer.Connected) break;
 
                                 questID = (int)eventCommand.GetParameter("QuestID");
                                 if (questID != -1)
@@ -390,11 +380,11 @@ namespace RpgServer
                                     switch (statusCheck)
                                     {
                                         case QuestStatusCheck.Started:
-                                            if (client.GetPacket().Data.QuestStarted(questID))
+                                            if (mapPlayer.GetPlayerPacket().Data.QuestStarted(questID))
                                                 conditionMet = true;
                                             break;
                                         case QuestStatusCheck.Complete:
-                                            if (client.GetPacket().Data.QuestComplete(questID))
+                                            if (mapPlayer.GetPlayerPacket().Data.QuestComplete(questID))
                                                 conditionMet = true;
                                             break;
                                         case QuestStatusCheck.Progression:
@@ -404,12 +394,12 @@ namespace RpgServer
                                                 int greaterCondition = (int)eventCommand.GetParameter("QuestProgressionCondition");
                                                 if (greaterCondition == 0)
                                                 {
-                                                    if (client.GetPacket().Data.GetQuestProgression(questID) == progression)
+                                                    if (mapPlayer.GetPlayerPacket().Data.GetQuestProgression(questID) == progression)
                                                         conditionMet = true;
                                                 }
                                                 else
                                                 {
-                                                    if (client.GetPacket().Data.GetQuestProgression(questID) >= progression)
+                                                    if (mapPlayer.GetPlayerPacket().Data.GetQuestProgression(questID) >= progression)
                                                         conditionMet = true;
                                                 }
                                             }
@@ -427,26 +417,26 @@ namespace RpgServer
 
                                 break;
                             case ConditionalBranchType.TerrainTag:
-                                if (client == null || !client.Connected()) break;
+                                if (mapPlayer == null || !mapPlayer.Connected) break;
 
                                 int tag = (int)eventCommand.GetParameter("TerrainTag");
-                                if (client.TerrainTagCheck(tag))
+                                if (mapPlayer.TerrainTagCheck(tag))
                                     conditionMet = true;
 
                                 break;
                             case ConditionalBranchType.PlayerDirection:
-                                if (client == null || !client.Connected()) break;
+                                if (mapPlayer == null || !mapPlayer.Connected) break;
 
                                 FacingDirection dir = (FacingDirection)eventCommand.GetParameter("PlayerDirection");
-                                if (client.GetPacket().Direction == dir)
+                                if (mapPlayer.GetPlayerPacket().Direction == dir)
                                     conditionMet = true;
 
                                 break;
                             case ConditionalBranchType.PlayerGold:
-                                if (client == null || !client.Connected()) break;
+                                if (mapPlayer == null || !mapPlayer.Connected) break;
 
                                 gold = (int)eventCommand.GetParameter("Gold");
-                                if (client.GetPacket().Data.Gold >= gold)
+                                if (mapPlayer.GetPlayerPacket().Data.Gold >= gold)
                                     conditionMet = true;
 
                                 break;
@@ -495,63 +485,63 @@ namespace RpgServer
                             triggeringEvent.ConditionDepth -= 1;
                         break;
                     case EventCommand.CommandType.AddInventoryItem:
-                        if (client == null || !client.Connected()) break;
+                        if (mapPlayer == null || !mapPlayer.Connected) break;
 
                         itemID = (int)eventCommand.GetParameter("ItemID");
                         itemAmount = (int)eventCommand.GetParameter("ItemAmount");
-                        added = client.GetPacket().Data.AddInventoryItem(itemID, itemAmount);
+                        added = mapPlayer.GetPlayerPacket().Data.AddInventoryItem(itemID, itemAmount);
                         remainder = itemAmount - added;
                         if (remainder > 0)
                         {
-                            mapX = client.GetPacket().PositionX;
-                            mapY = client.GetPacket().PositionY;
-                            MapItem mapItem = new MapItem(itemID, remainder, mapX, mapY, client.GetPacket().PlayerID, client.GetPacket().OnBridge);
-                            _mapInstance.AddMapItem(mapItem);
+                            mapX = mapPlayer.GetPlayerPacket().PositionX;
+                            mapY = mapPlayer.GetPlayerPacket().PositionY;
+                            MapItem mapItem = new MapItem(itemID, remainder, mapX, mapY, mapPlayer.GetPlayerPacket().PlayerID, mapPlayer.GetPlayerPacket().OnBridge);
+                            _serverMap.GetMapInstance().AddMapItem(mapItem);
                         }
 
                         break;
                     case EventCommand.CommandType.RemoveInventoryItem:
-                        if (client == null || !client.Connected()) break;
+                        if (mapPlayer == null || !mapPlayer.Connected) break;
 
                         itemID = (int)eventCommand.GetParameter("ItemID");
                         itemAmount = (int)eventCommand.GetParameter("ItemAmount");
-                        client.GetPacket().Data.RemoveInventoryItem(itemID, itemAmount);
+                        mapPlayer.GetPlayerPacket().Data.RemoveInventoryItem(itemID, itemAmount);
 
                         break;
                     case EventCommand.CommandType.ChangePlayerSprite:
-                        if (client == null || !client.Connected()) break;
+                        if (mapPlayer == null || !mapPlayer.Connected) break;
 
                         spriteID = (int)eventCommand.GetParameter("SpriteID");
-                        client.GetPacket().SpriteID = spriteID;
+                        mapPlayer.GetPlayerPacket().SpriteID = spriteID;
 
                         break;
                     case EventCommand.CommandType.WaitForMovementCompletion:
-                        if (client == null || !client.Connected()) break;
+                        if (mapPlayer == null || !mapPlayer.Connected) break;
 
-                        if (client.Moving())
+                        if (mapPlayer.Moving())
                         {
                             triggeringEvent.CommandID--;
                         }
 
                         break;
                     case EventCommand.CommandType.AddGold:
-                        if (client == null || !client.Connected()) break;
+                        if (mapPlayer == null || !mapPlayer.Connected) break;
 
                         gold = (int)eventCommand.GetParameter("Gold");
-                        client.GetPacket().Data.Gold += gold;
+                        mapPlayer.GetPlayerPacket().Data.Gold += gold;
 
                         break;
                     case EventCommand.CommandType.RemoveGold:
-                        if (client == null || !client.Connected()) break;
+                        if (mapPlayer == null || !mapPlayer.Connected) break;
 
                         gold = (int)eventCommand.GetParameter("Gold");
-                        client.GetPacket().Data.Gold -= gold;
-                        if (client.GetPacket().Data.Gold < 0)
-                            client.GetPacket().Data.Gold = 0;
+                        mapPlayer.GetPlayerPacket().Data.Gold -= gold;
+                        if (mapPlayer.GetPlayerPacket().Data.Gold < 0)
+                            mapPlayer.GetPlayerPacket().Data.Gold = 0;
 
                         break;
                     case EventCommand.CommandType.SpawnEnemy:
-                        if (client != null) break;
+                        if (mapPlayer != null) break;
 
                         int enemyID = (int)eventCommand.GetParameter("EnemyID");
                         if (enemyID == -1) break;
@@ -562,7 +552,7 @@ namespace RpgServer
 
                         mapEvent = triggeringEvent.GetMapEvent();
 
-                        Dictionary<MapEnemy, float> enemyTracker = _mapInstance.GetEnemyTracker(mapEvent);
+                        Dictionary<MapEnemy, float> enemyTracker = _serverMap.GetMapInstance().GetEnemyTracker(mapEvent);
                         Random r = new Random();
                         while (enemyTracker.Count < enemyCount)
                         {
@@ -575,13 +565,13 @@ namespace RpgServer
                             {
                                 int spawnX = r.Next(minX, maxX);
                                 int spawnY = r.Next(minY, maxY);
-                                bool onBridge = mapEvent.OnBridge && _mapInstance.GetBridgeFlag(spawnX, spawnY);
-                                bool bridgeEntry = onBridge && _mapInstance.MapTilesetPassable(spawnX, spawnY);
-                                if (_mapInstance.MapTileCharacterPassable(spawnX, spawnY, false, onBridge, bridgeEntry, MovementDirection.Down))
+                                bool onBridge = mapEvent.OnBridge && _serverMap.GetMapInstance().GetBridgeFlag(spawnX, spawnY);
+                                bool bridgeEntry = onBridge && _serverMap.GetMapInstance().MapTilesetPassable(spawnX, spawnY);
+                                if (_serverMap.GetMapInstance().MapTileCharacterPassable(spawnX, spawnY, false, onBridge, bridgeEntry, MovementDirection.Down))
                                 {
                                     MapEnemy enemy = new MapEnemy(enemyID, spawnX, spawnY, onBridge);
                                     enemyTracker.Add(enemy, respawnTime);
-                                    _mapInstance.AddMapEnemy(enemy);
+                                    _serverMap.GetMapInstance().AddMapEnemy(enemy);
                                     break;
                                 }
                             }
@@ -589,15 +579,15 @@ namespace RpgServer
 
                         break;
                     case EventCommand.CommandType.ProgressQuest:
-                        if (client == null || !client.Connected()) break;
+                        if (mapPlayer == null || !mapPlayer.Connected) break;
 
                         questID = (int)eventCommand.GetParameter("QuestID");
                         if (questID != -1)
                         {
-                            if (client.GetPacket().Data.QuestStarted(questID))
+                            if (mapPlayer.GetPlayerPacket().Data.QuestStarted(questID))
                             {
-                                int progression = client.GetPacket().Data.GetQuestProgression(questID);
-                                if (client.GetPacket().Data.ProgressQuest(questID))
+                                int progression = mapPlayer.GetPlayerPacket().Data.GetQuestProgression(questID);
+                                if (mapPlayer.GetPlayerPacket().Data.ProgressQuest(questID))
                                 {
                                     QuestData data = QuestData.GetData(questID);
                                     QuestData.QuestObective objective = data.Objectives[progression];
@@ -605,43 +595,43 @@ namespace RpgServer
                                     {
                                         itemID = objective.ItemRewards[i].Item1;
                                         itemAmount = objective.ItemRewards[i].Item2;
-                                        added = client.GetPacket().Data.AddInventoryItem(itemID, itemAmount);
+                                        added = mapPlayer.GetPlayerPacket().Data.AddInventoryItem(itemID, itemAmount);
                                         remainder = itemAmount - added;
                                         if (remainder > 0)
                                         {
-                                            mapX = client.GetPacket().PositionX;
-                                            mapY = client.GetPacket().PositionY;
-                                            MapItem mapItem = new MapItem(itemID, remainder, mapX, mapY, client.GetPacket().PlayerID, client.GetPacket().OnBridge);
-                                            _mapInstance.AddMapItem(mapItem);
+                                            mapX = mapPlayer.GetPlayerPacket().PositionX;
+                                            mapY = mapPlayer.GetPlayerPacket().PositionY;
+                                            MapItem mapItem = new MapItem(itemID, remainder, mapX, mapY, mapPlayer.GetPlayerPacket().PlayerID, mapPlayer.GetPlayerPacket().OnBridge);
+                                            _serverMap.GetMapInstance().AddMapItem(mapItem);
                                         }
                                     }
                                 }
                             }
                             else
                             {
-                                client.GetPacket().Data.StartQuest(questID);
+                                mapPlayer.GetPlayerPacket().Data.StartQuest(questID);
                             }
                         }
 
                         break;
                     case EventCommand.CommandType.ShowShop:
-                        if (client == null || !client.Connected()) break;
+                        if (mapPlayer == null || !mapPlayer.Connected) break;
 
                         int shopID = (int)eventCommand.GetParameter("ShopID");
-                        client.ShowShop(shopID);
+                        mapPlayer.ShowShop(shopID);
 
                         break;
                     case EventCommand.CommandType.StartBanking:
-                        if (client == null || !client.Connected()) break;
+                        if (mapPlayer == null || !mapPlayer.Connected) break;
 
-                        client.StartBanking();
+                        mapPlayer.StartBanking();
 
                         break;
                     case EventCommand.CommandType.ShowWorkbench:
-                        if (client == null || !client.Connected()) break;
+                        if (mapPlayer == null || !mapPlayer.Connected) break;
 
                         int workbenchID = (int)eventCommand.GetParameter("WorkbenchID");
-                        client.ShowWorkbench(workbenchID);
+                        mapPlayer.ShowWorkbench(workbenchID);
 
                         break;
                 }
@@ -652,10 +642,12 @@ namespace RpgServer
             }
         }
 
-        public void TriggerEventData(GameClient client, MapEvent mapEvent)
+        public void TriggerEventData(MapPlayer mapPlayer, MapEvent mapEvent)
         {
             if (mapEvent == null || mapEvent.GetEventData() == null)
+            {
                 return;
+            }
 
             if (mapEvent.Locked) // add player lock id list so others can interact
                 //we did this because sometimes a player could double trigger an event as it started / finished (event touch for example spamming the trigger)
@@ -665,17 +657,17 @@ namespace RpgServer
 
             TriggeringEvent parent = new TriggeringEvent(null, mapEvent);
             _triggeringEvents.Add(parent);
-            if (client == null)
+            if (mapPlayer == null)
             {
-                GameClient[] clients = _mapInstance.GetClients();
-                for (int i = 0; i < clients.Length; i++)
+                List<MapPlayer> players = _serverMap.GetMapInstance().GetMapPlayers();
+                for (int i = 0; i < players.Count; i++)
                 {
-                    _triggeringEvents.Add(new TriggeringEvent(clients[i], mapEvent, parent));
+                    _triggeringEvents.Add(new TriggeringEvent(players[i], mapEvent, parent));
                 }
             }
             else
             {
-                _triggeringEvents.Add(new TriggeringEvent(client, mapEvent, parent));
+                _triggeringEvents.Add(new TriggeringEvent(mapPlayer, mapEvent, parent));
             }
 
             mapEvent.Locked = true;

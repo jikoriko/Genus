@@ -23,7 +23,7 @@ namespace RpgServer
         static bool ConsoleEventCallback(int eventType)
         {
             _server.Stop();
-            while (_server.GetRunThread().IsAlive)
+            while (_server.GetServerThread().IsAlive)
             { }
             return false;
         }

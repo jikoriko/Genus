@@ -17,10 +17,13 @@ namespace RpgGame.EntityComponents
         private float _spriteTimer, _spriteTimerMax;
 
         private MapEvent _mapEvent;
+        private ParticleEmitterComponent _particleEmitterComponent;
 
         public MapEventComponent(Entity entity, MapEvent mapEvent)
             : base(entity)
         {
+            _particleEmitterComponent = null;
+
             SetMapEvent(mapEvent);
             SetAnimating(false);
             SetXFrames(4);
@@ -35,6 +38,12 @@ namespace RpgGame.EntityComponents
             SetSpriteID(mapEvent.SpriteID);
             SetRealPosition();
             SetYFrame((int)_mapEvent.EventDirection);
+
+            ParticleEmitterData data = ParticleEmitterData.GetEmitterData(_mapEvent.ParticleEmitterID);
+            if (data != null)
+            {
+                _particleEmitterComponent = new ParticleEmitterComponent(Parent, data);
+            }
         }
 
         public void SetRealPosition()
@@ -43,10 +52,10 @@ namespace RpgGame.EntityComponents
 
 
             if (_mapEvent.Priority == RenderPriority.BelowPlayer)
-                pos.Z = -(((int)Math.Ceiling(_mapEvent.RealY / 32) + (_mapEvent.OnBridge ? 3 : 0)) * 2);
+                pos.Z = -(((int)Math.Ceiling(_mapEvent.RealY / 32) + (_mapEvent.OnBridge ? 3 : 0)) * 2) - 1;
             //pos.Z = -((_mapEvent.MapY + (_mapEvent.OnBridge ? 3 : 0)) * (32 * (_mapEvent.OnBridge ? 3 : 1)));
             else if (_mapEvent.Priority == RenderPriority.AbovePlayer)
-                pos.Z = -(((int)Math.Ceiling(_mapEvent.RealY / 32) + (_mapEvent.OnBridge ? 3 : 0)) * 2) - 1;
+                pos.Z = -(((int)Math.Ceiling(_mapEvent.RealY / 32) + (_mapEvent.OnBridge ? 3 : 0)) * 2) - 2;
             //pos.Z = -((_mapEvent.MapY + (_mapEvent.OnBridge ? 3 : 0)) * (32 * (_mapEvent.OnBridge ? 3 : 1))) - 1;
             else
                 pos.Z = -(((int)Math.Ceiling(_mapEvent.RealY / 32) + 5) * 2);
@@ -58,7 +67,9 @@ namespace RpgGame.EntityComponents
             base.Update(e);
             if (!_mapEvent.Enabled) return;
 
-            SetRealPosition();// we could do some movement prediction here based on target pos, real pos and movement speed?
+            if (_mapEvent.UpdateMovement((float)e.Time))
+                SetRealPosition();
+
             SetYFrame((int)_mapEvent.EventDirection);
 
             if (_spriteTimer > 0)
@@ -82,7 +93,7 @@ namespace RpgGame.EntityComponents
         public override bool BushFlag()
         {
             if (_mapEvent.Priority == RenderPriority.OnTop) return false;
-            MapData data = MapComponent.Instance.GetMapData();
+            MapData data = MapComponent.Instance.GetMapInstance().GetMapData();
             for (int i = 0; i < 3; i++)
             {
                 float x = _mapEvent.RealX;
@@ -116,7 +127,7 @@ namespace RpgGame.EntityComponents
         {
             if (!_mapEvent.Enabled) return;
 
-            PlayerPacket localPacket = RpgClientConnection.Instance.GetLocalPlayerPacket();
+            PlayerPacket localPacket = MapComponent.Instance.GetLocalPlayerPacket();
             if (localPacket == null || !(localPacket.PositionX == _mapEvent.MapX && localPacket.PositionY == _mapEvent.MapY) || _mapEvent.Priority == RenderPriority.OnTop)
             {
                 base.Render(e);

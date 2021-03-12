@@ -13,7 +13,7 @@ using System.Xml.Serialization;
 namespace Genus2D.GameData
 {
     [Serializable]
-    public class ParticleEmitterData// : IXmlSerializable
+    public class ParticleEmitterData
     {
 
         public string Name;
@@ -23,6 +23,8 @@ namespace Genus2D.GameData
         public float AngleMin, AngleMax;
         public float OffsetMin, OffsetMax;
         public float StartVelocity, EndVelocity;
+        public float StartZ, EndZ;
+        public float SinMaxZ, SinSpeedZ;
         public float StartScale, EndScale;
         public float RotationSpeed;
         public Color4 StartColour, EndColour;
@@ -51,6 +53,10 @@ namespace Genus2D.GameData
             OffsetMax = 0;
             StartVelocity = 1;
             EndVelocity = 1;
+            StartZ = 0;
+            EndZ = 0;
+            SinMaxZ = 0;
+            SinSpeedZ = 1;
             StartScale = 1;
             EndScale = 1;
             RotationSpeed = 0;
@@ -157,21 +163,5 @@ namespace Genus2D.GameData
             return names;
         }
 
-        /*
-        public XmlSchema GetSchema()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ReadXml(XmlReader reader)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void WriteXml(XmlWriter writer)
-        {
-            throw new NotImplementedException();
-        }
-        */
     }
 }

@@ -10,7 +10,7 @@ namespace RpgServer
     public class TriggeringEvent
     {
 
-        private GameClient _gameClient;
+        private MapPlayer _mapPlayer;
         private MapEvent _mapEvent;
         private TriggeringEvent _parent;
         public int CommandID;
@@ -24,9 +24,9 @@ namespace RpgServer
 
         public bool Complete { get; private set; }
 
-        public TriggeringEvent(GameClient client, MapEvent mapEvent, TriggeringEvent parentEvent = null)
+        public TriggeringEvent(MapPlayer mapPlayer, MapEvent mapEvent, TriggeringEvent parentEvent = null)
         {
-            _gameClient = client;
+            _mapPlayer = mapPlayer;
             _mapEvent = mapEvent;
             _parent = parentEvent;
             CommandID = -1;
@@ -53,7 +53,7 @@ namespace RpgServer
 
         public EventData GetEventData()
         {
-            return EventData.GetEventData(_mapEvent.EventID);
+            return EventData.GetEventData(_mapEvent.EventDataID);
         }
 
         public void FinishTriggering()
@@ -62,9 +62,9 @@ namespace RpgServer
             _mapEvent.Locked = false;
         }
 
-        public GameClient GetGameClient()
+        public MapPlayer GetMapPlayer()
         {
-            return _gameClient;
+            return _mapPlayer;
         }
 
     }

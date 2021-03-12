@@ -7,6 +7,7 @@ using Genus2D.Utililities;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Input;
+using RpgGame.EntityComponents;
 using RpgGame.States;
 using System;
 using System.Collections.Generic;
@@ -41,7 +42,7 @@ namespace RpgGame.GUI
             this.SetPanelLabel("Trading with " + name);
 
             _playerID = playerID;
-            this.TradeRequest = new TradeRequest(RpgClientConnection.Instance.GetLocalPlayerPacket().PlayerID, playerID);
+            this.TradeRequest = new TradeRequest(MapComponent.Instance.GetLocalPlayerPacket().PlayerID, playerID);
 
             _cancelButton = new Button("Cancel", 10, GetContentHeight() - 50, (GetContentWidth() / 2) - 20, 40, state);
             _cancelButton.OnTrigger += Cancel;

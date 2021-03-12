@@ -13,7 +13,7 @@ namespace Genus2D.GameData
     public class MapEvent
     {
         public string Name;
-        public int EventID;
+        public int EventDataID;
         public int MapX;
         public int MapY;
         public float RealX;
@@ -25,12 +25,18 @@ namespace Genus2D.GameData
         public RenderPriority Priority;
         public MovementSpeed Speed;
         public MovementFrequency Frequency;
-        public bool RandomMovement;
+        public int ParticleEmitterID;
 
-        public bool Enabled = true;
-        public bool Moved = false;
-        public bool Locked = false;
-        public bool OnBridge = false;
+        public bool RandomMovement;
+        public bool Enabled;
+        public bool Locked;
+        public bool OnBridge;
+
+        public bool PositionChanged;
+        public bool DirectionChanged;
+        public bool SpriteChanged;
+        public bool RenderPriorityChanged;
+        public bool EnabledChanged;
 
         private float _frequencyTimer = 0;
 
@@ -39,15 +45,15 @@ namespace Genus2D.GameData
             Initialize("", -1, -1, -1);
         }
 
-        public MapEvent(string name, int id, int x, int y)
+        public MapEvent(string name, int dataID, int x, int y)
         {
-            Initialize(name, id, x, y);
+            Initialize(name, dataID, x, y);
         }
 
-        private void Initialize(string name, int id, int x, int y)
+        private void Initialize(string name, int dataID, int x, int y)
         {
             Name = name;
-            EventID = id;
+            EventDataID = dataID;
             MapX = x;
             MapY = y;
             RealX = x * 32;
@@ -59,7 +65,18 @@ namespace Genus2D.GameData
             Priority = RenderPriority.BelowPlayer;
             Speed = MovementSpeed.Normal;
             Frequency = MovementFrequency.Normal;
+            ParticleEmitterID = -1;
+
             RandomMovement = false;
+            Enabled = true;
+            Locked = false;
+            OnBridge = false;
+
+            PositionChanged = false;
+            DirectionChanged = false;
+            SpriteChanged = false;
+            RenderPriorityChanged = false;
+            EnabledChanged = false;
         }
 
         public byte[] GetBytes()
@@ -69,7 +86,7 @@ namespace Genus2D.GameData
                 byte[] nameBytes = Encoding.UTF8.GetBytes(Name);
                 stream.Write(BitConverter.GetBytes(nameBytes.Length), 0, sizeof(int));
                 stream.Write(nameBytes, 0, nameBytes.Length);
-                stream.Write(BitConverter.GetBytes(EventID), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(EventDataID), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(MapX), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(MapY), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(RealX), 0, sizeof(float));
@@ -79,6 +96,7 @@ namespace Genus2D.GameData
                 stream.Write(BitConverter.GetBytes((int)TriggerType), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes((int)Priority), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes((int)Speed), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(ParticleEmitterID), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(Enabled), 0, sizeof(bool));
                 stream.Write(BitConverter.GetBytes(OnBridge), 0, sizeof(bool));
                 return stream.ToArray();
@@ -99,7 +117,7 @@ namespace Genus2D.GameData
 
                 tempBytes = new byte[sizeof(int)];
                 stream.Read(tempBytes, 0, sizeof(int));
-                int eventID = BitConverter.ToInt32(tempBytes, 0);
+                int eventDataID = BitConverter.ToInt32(tempBytes, 0);
 
                 stream.Read(tempBytes, 0, sizeof(int));
                 int mapX = BitConverter.ToInt32(tempBytes, 0);
@@ -130,6 +148,9 @@ namespace Genus2D.GameData
                 stream.Read(tempBytes, 0, sizeof(int));
                 MovementSpeed speed = (MovementSpeed)BitConverter.ToInt32(tempBytes, 0);
 
+                stream.Read(tempBytes, 0, sizeof(int));
+                int particleEmitterID = BitConverter.ToInt32(tempBytes, 0);
+
                 tempBytes = new byte[sizeof(bool)];
                 stream.Read(tempBytes, 0, sizeof(bool));
                 bool enabled = BitConverter.ToBoolean(tempBytes, 0);
@@ -137,7 +158,7 @@ namespace Genus2D.GameData
                 stream.Read(tempBytes, 0, sizeof(bool));
                 bool onBridge = BitConverter.ToBoolean(tempBytes, 0);
 
-                MapEvent mapEvent = new MapEvent(name, eventID, mapX, mapY);
+                MapEvent mapEvent = new MapEvent(name, eventDataID, mapX, mapY);
                 mapEvent.RealX = realX;
                 mapEvent.RealY = realY;
                 mapEvent.EventDirection = direction;
@@ -147,13 +168,14 @@ namespace Genus2D.GameData
                 mapEvent.Priority = priority;
                 mapEvent.Speed = speed;
                 mapEvent.OnBridge = onBridge;
+                mapEvent.ParticleEmitterID = particleEmitterID;
                 return mapEvent;
             }
         }
 
         public EventData GetEventData()
         {
-            return EventData.GetEventData(EventID);
+            return EventData.GetEventData(EventDataID);
         }
 
         public bool Moving()
@@ -195,6 +217,8 @@ namespace Genus2D.GameData
                 {
                     MapX = x;
                     MapY = y;
+                    PositionChanged = true;
+
                     return true;
                 }
             }
@@ -202,7 +226,7 @@ namespace Genus2D.GameData
             return false;
         }
 
-        public void UpdateMovement(float deltaTime)
+        public bool UpdateMovement(float deltaTime)
         {
             if (Enabled)
             {
@@ -242,9 +266,12 @@ namespace Genus2D.GameData
 
                     RealX = realPos.X;
                     RealY = realPos.Y;
-                    Moved = true;
+                    PositionChanged = true;
+
+                    return true;
                 }
             }
+            return false;
         }
     }
 

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GenusTest</RootNamespace>
     <AssemblyName>GenusTest</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -25,7 +25,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\GenusBuild\</OutputPath>
@@ -43,10 +43,6 @@
     </Reference>
     <Reference Include="OpenTK">
       <HintPath>..\Dependencies\OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpFont, Version=3.0.1.200, Culture=neutral, PublicKeyToken=48add4c483071cdf, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\SharpFont.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

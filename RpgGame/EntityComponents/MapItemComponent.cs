@@ -39,7 +39,7 @@ namespace RpgGame.EntityComponents
         public void SetRealPosition()
         {
             Vector3 pos = new Vector3(_mapItem.MapX * 32, _mapItem.MapY * 32, 0);
-            pos.Z = -((_mapItem.MapY + (_mapItem.OnBridge ? 3 : 0)) * 2);
+            pos.Z = -((_mapItem.MapY + (_mapItem.OnBridge ? 3 : 0)) * 2) - 1;
             Transform.LocalPosition = pos;
 
         }
@@ -50,7 +50,7 @@ namespace RpgGame.EntityComponents
 
             if (_data != null)
             {
-                if (_mapItem.PlayerID == -1 || _mapItem.PlayerID == RpgClientConnection.Instance.GetLocalPlayerPacket().PlayerID)
+                if (_mapItem.PlayerID == -1 || _mapItem.PlayerID == MapComponent.Instance.GetLocalPlayerPacket().PlayerID)
                 {
                     Texture texture = Assets.GetTexture("Icons/" + _data.IconSheetImage);
                     Color4 colour = Color4.White;

@@ -3,7 +3,6 @@ using Genus2D.Networking;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,8 +14,6 @@ namespace RpgServer
     {
 
         private string _sqlConnectionString;
-        private bool _sqlite;
-        SQLiteConnection _sqliteConnection;
         SqlConnection _sqlConnection;
         private bool _connected;
 
@@ -28,21 +25,12 @@ namespace RpgServer
 
         private void Connect()
         {
-            _sqlite = Server.Instance.GetSettingsElement("SQLite").InnerText.ToLower() == "true" ? true : false;
             try
             {
-                if (_sqlite)
-                {
-                    if (!File.Exists("Data/sv.db")) SQLiteConnection.CreateFile("Data/sv.db");
-                    _sqliteConnection = new SQLiteConnection("Data Source=Data/sv.db;Version=3;");
-                    _sqliteConnection.Open();
-                }
-                else
-                {
-                    _sqlConnectionString = Server.Instance.GetSettingsElement("SqlConnectionString").InnerText;
-                    _sqlConnection = new SqlConnection(_sqlConnectionString);
-                    _sqlConnection.Open();
-                }
+
+                _sqlConnectionString = Server.Instance.GetSettingsElement("SqlConnectionString").InnerText;
+                _sqlConnection = new SqlConnection(_sqlConnectionString);
+                _sqlConnection.Open();
                 _connected = true;
             }
             catch (Exception e)
@@ -57,94 +45,38 @@ namespace RpgServer
             if (_connected)
             {
                 _connected = false;
-                if (_sqlite) _sqliteConnection.Close();
-                else _sqlConnection.Close();
+                _sqlConnection.Close();
             }
         }
 
         private void InitializeDatabase()
         {
-            if (_sqlite)
+            try
             {
-                SQLiteDataReader playersReader = ReadDatabaseTableSQLite("Players");
-                if (playersReader == null)
-                {
-                    Console.WriteLine("Creating tables...");
-                    CreatePlayersTable();
-                    Console.WriteLine("created table");
-                }
-                else
-                {
-                    playersReader.Close();
-                }
+                _sqlConnection.ChangeDatabase("RpgMmoDatabase");
+            }
+            catch
+            {
+                string createDatabaseQuery = @"CREATE DATABASE RpgMmoDatabase";
+                Insert(createDatabaseQuery);
+                _sqlConnection.ChangeDatabase("RpgMmoDatabase");
+            }
+
+            SqlDataReader playersReader = ReadDatabaseTable("Players");
+            if (playersReader == null)
+            {
+                CreatePlayersTable();
             }
             else
             {
-                try
-                {
-                    _sqlConnection.ChangeDatabase("RpgMmoDatabase");
-                }
-                catch
-                {
-                    string createDatabaseQuery = @"CREATE DATABASE RpgMmoDatabase";
-                    Insert(createDatabaseQuery);
-                    _sqlConnection.ChangeDatabase("RpgMmoDatabase");
-                }
-
-                SqlDataReader playersReader = ReadDatabaseTable("Players");
-                if (playersReader == null)
-                {
-                    CreatePlayersTable();
-                }
-                else
-                {
-                    playersReader.Close();
-                }
+                playersReader.Close();
             }
+
         }
 
         private void CreatePlayersTable()
         {
-            if (_sqlite)
-            {
-                string createTableQuery = @"CREATE TABLE Players(
-                PlayerID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                Connected INTEGER,
-                Username TEXT,
-                Password TEXT,
-                MapID INTEGER,
-                SpriteID INTEGER,
-                Direction INTEGER,
-                MapX INTEGER,
-                MapY INTEGER,
-                OnBridge INTEGER,
-                Level INTEGER,
-                Experience INTEGER,
-                ClassID INTEGER,
-                HP INTEGER,
-                MP INTEGER,
-                Stamina INTEGER,
-                Gold INTEGER,
-                Inventory TEXT,
-                Equipment TEXT,
-                Bank TEXT,
-                Quests TEXT,
-                InvestmentPoints INTEGER,
-                VitalityPoints INTEGER,
-                InteligencePoints INTEGER,
-                StrengthPoints INTEGER,
-                AgilityPoints INTEGER,
-                MeleeDefencePoints INTEGER,
-                RangeDefencePoints INTEGER,
-                MagicDefencePoints INTEGER
-                )";
-
-                // create table in database
-                Insert(createTableQuery);
-            }
-            else
-            {
-                string createTableQuery = @"CREATE TABLE Players(
+            string createTableQuery = @"CREATE TABLE Players(
                 PlayerID int IDENTITY (1, 1) NOT NULL PRIMARY KEY,
                 Connected int,
                 Username varchar(50),
@@ -162,10 +94,10 @@ namespace RpgServer
                 MP int,
                 Stamina int,
                 Gold int,
-                Inventory varchar,
-                Equipment varchar,
-                Bank varchar,
-                Quests varchar,
+                Inventory varchar(8000),
+                Equipment varchar(8000),
+                Bank varchar(8000),
+                Quests varchar(8000),
                 InvestmentPoints int,
                 VitalityPoints int,
                 InteligencePoints int,
@@ -176,25 +108,16 @@ namespace RpgServer
                 MagicDefencePoints int
                 )";
 
-                // create table in database
-                Insert(createTableQuery);
-            }
+            // create table in database
+            Insert(createTableQuery);
         }
 
         private void Insert(string command)
         {
             try
             {
-                if (_sqlite)
-                {
-                    SQLiteCommand cmd = new SQLiteCommand(command, _sqliteConnection);
-                    cmd.ExecuteNonQuery();
-                }
-                else
-                {
-                    SqlCommand cmd = new SqlCommand(command, _sqlConnection);
-                    cmd.ExecuteNonQuery();
-                }
+                SqlCommand cmd = new SqlCommand(command, _sqlConnection);
+                cmd.ExecuteNonQuery();
             }
             catch (Exception e)
             {
@@ -216,20 +139,6 @@ namespace RpgServer
             }
         }
 
-        private SQLiteDataReader ReadDatabaseTableSQLite(string table)
-        {
-            try
-            {
-                SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM " + table, _sqliteConnection);
-                SQLiteDataReader rdr = cmd.ExecuteReader();
-                return rdr;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
         public bool LoginQuery(string username, string password, out int playerID)
         {
             playerID = -1;
@@ -237,36 +146,18 @@ namespace RpgServer
 
             try
             {
-                if (_sqlite)
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Players WHERE Username='" + username + "'", _sqlConnection);
+                SqlDataReader rdr = cmd.ExecuteReader();
+                if (rdr.Read())
                 {
-                    SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Players WHERE Username='" + username + "'", _sqliteConnection);
-                    SQLiteDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.Read())
+                    if (password == rdr.GetString(3))
                     {
-                        if (password == rdr.GetString(3))
-                        {
-                            login = true;
-                            playerID = rdr.GetInt32(0);
-                        }
+                        login = true;
+                        playerID = rdr.GetInt32(0);
                     }
-
-                    rdr.Close();
                 }
-                else
-                {
-                    SqlCommand cmd = new SqlCommand("SELECT * FROM Players WHERE Username='" + username + "'", _sqlConnection);
-                    SqlDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.Read())
-                    {
-                        if (password == rdr.GetString(3))
-                        {
-                            login = true;
-                            playerID = rdr.GetInt32(0);
-                        }
-                    }
 
-                    rdr.Close();
-                }
+                rdr.Close();
             }
             catch (Exception e)
             {
@@ -299,43 +190,23 @@ namespace RpgServer
                         "HP, MP, Stamina, Gold, Inventory, Equipment, Bank, Quests, " +
                         "InvestmentPoints, VitalityPoints, InteligencePoints, StrengthPoints, AgilityPoints, MeleeDefencePoints, RangeDefencePoints, MagicDefencePoints) " +
                         "VALUES (0, '" + username + "', '" + password + "', " + spawn.MapID + ", 0, 0, " + spawn.MapX + ", " + spawn.MapY + ", 0, 1, 0, -1, " + //set a valid class id
-                            "10, 10, 10, 0, '', '', '0,0,0,0,0,0,0,0,0,-1,0', '', 0, 0, 0, 0, 0, 0, 0, 0)";
+                            "10, 10, 10, 0, '', '0,0,0,0,0,0,0,0,0,-1,0', '', '', 0, 0, 0, 0, 0, 0, 0, 0)";
 
+                    SqlCommand cmd = new SqlCommand("SELECT * FROM Players WHERE Username='" + username + "'", _sqlConnection);
+                    SqlDataReader rdr = cmd.ExecuteReader();
 
-                    if (_sqlite)
+                    if (!rdr.Read())
                     {
-                        SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Players WHERE Username='" + username + "'", _sqliteConnection);
-                        SQLiteDataReader rdr = cmd.ExecuteReader();
-
-                        if (!rdr.Read())
-                        {
-                            Insert(insertQuery);
-                            inserted = true;
-                        }
-                        else
-                        {
-                            reason = "Account already exists.";
-                        }
-
-                        rdr.Close();
+                        Insert(insertQuery);
+                        inserted = true;
                     }
                     else
                     {
-                        SqlCommand cmd = new SqlCommand("SELECT * FROM Players WHERE Username='" + username + "'", _sqlConnection);
-                        SqlDataReader rdr = cmd.ExecuteReader();
-
-                        if (!rdr.Read())
-                        {
-                            Insert(insertQuery);
-                            inserted = true;
-                        }
-                        else
-                        {
-                            reason = "Account already exists.";
-                        }
-
-                        rdr.Close();
+                        reason = "Account already exists.";
                     }
+
+                    rdr.Close();
+
                 }
                 catch { }
             }
@@ -343,9 +214,12 @@ namespace RpgServer
             return inserted;
         }
 
-        public bool UpdatePlayerQuery(PlayerPacket packet, BankData bankData)
+        public bool UpdatePlayerQuery(MapPlayer mapPlayer)
         {
             bool updated = false;
+            PlayerPacket packet = mapPlayer.GetPlayerPacket();
+            BankData bankData = mapPlayer.GetBankData();
+
             try
             {
                 string updateQuery = "UPDATE Players SET " +
@@ -384,103 +258,62 @@ namespace RpgServer
             return updated;
         }
 
-        public PlayerPacket RetrievePlayerQuery(int playerID, out BankData bankData)
+        public MapPlayer RetrievePlayerQuery(int playerID)
         {
             PlayerPacket packet = null;
-            bankData = null;
+            BankData bankData = null;
 
             try
             {
-                if (_sqlite)
+                SqlCommand cmd = new SqlCommand("SELECT * FROM Players WHERE PlayerID='" + playerID + "'", _sqlConnection);
+                SqlDataReader rdr = cmd.ExecuteReader();
+                if (rdr.Read())
                 {
-                    SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Players WHERE PlayerID='" + playerID + "'", _sqliteConnection);
-                    SQLiteDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.Read())
-                    {
-                        packet = new PlayerPacket();
-                        bankData = new BankData();
+                    packet = new PlayerPacket();
+                    bankData = new BankData();
 
-                        packet.PlayerID = Convert.ToInt32(rdr["PlayerID"]);
-                        packet.Username = (string)rdr["Username"];
-                        packet.MapID = Convert.ToInt32(rdr["MapID"]);
-                        packet.SpriteID = Convert.ToInt32(rdr["SpriteID"]);
-                        packet.Direction = (FacingDirection)(Convert.ToInt32(rdr["Direction"]));
-                        packet.PositionX = Convert.ToInt32(rdr["MapX"]);
-                        packet.PositionY = Convert.ToInt32(rdr["MapY"]);
-                        packet.RealX = packet.PositionX * 32;
-                        packet.RealY = packet.PositionY * 32;
-                        packet.OnBridge = Convert.ToInt32(rdr["OnBridge"]) == 1 ? true : false;
-                        packet.Data = new PlayerData();
-                        packet.Data.Level = Convert.ToInt32(rdr["Level"]);
-                        packet.Data.Experience = Convert.ToInt32(rdr["Experience"]);
-                        packet.Data.SetClassID(Convert.ToInt32(rdr["ClassID"]));
-                        packet.Data.HP = Convert.ToInt32(rdr["HP"]);
-                        packet.Data.MP = Convert.ToInt32(rdr["MP"]);
-                        packet.Data.Stamina = Convert.ToInt32(rdr["Stamina"]);
-                        packet.Data.Gold = Convert.ToInt32(rdr["Gold"]);
-                        packet.Data.ParseInventoryString((string)rdr["Inventory"]);
-                        packet.Data.ParseEquipmentString((string)rdr["Equipment"]);
-                        packet.Data.ParseEquipmentString((string)rdr["Equipment"]);
-                        bankData.ParseBankString((string)rdr["Bank"]);
-                        packet.Data.InvestedStats.Vitality = Convert.ToInt32(rdr["VitalityPoints"]);
-                        packet.Data.InvestedStats.Inteligence = Convert.ToInt32(rdr["InteligencePoints"]);
-                        packet.Data.InvestedStats.Strength = Convert.ToInt32(rdr["StrengthPoints"]);
-                        packet.Data.InvestedStats.Agility = Convert.ToInt32(rdr["AgilityPoints"]);
-                        packet.Data.InvestedStats.MeleeDefence = Convert.ToInt32(rdr["MeleeDefencePoints"]);
-                        packet.Data.InvestedStats.RangeDefence = Convert.ToInt32(rdr["RangeDefencePoints"]);
-                        packet.Data.InvestedStats.MagicDefence = Convert.ToInt32(rdr["MagicDefencePoints"]);
-                    }
-
-                    rdr.Close();
+                    packet.PlayerID = Convert.ToInt32(rdr["PlayerID"]);
+                    packet.Username = (string)rdr["Username"];
+                    packet.MapID = Convert.ToInt32(rdr["MapID"]);
+                    packet.SpriteID = Convert.ToInt32(rdr["SpriteID"]);
+                    packet.Direction = (FacingDirection)(Convert.ToInt32(rdr["Direction"]));
+                    packet.PositionX = Convert.ToInt32(rdr["MapX"]);
+                    packet.PositionY = Convert.ToInt32(rdr["MapY"]);
+                    packet.PrevMapX = packet.PositionX;
+                    packet.PrevMapY = packet.PositionY;
+                    packet.RealX = packet.PositionX * 32;
+                    packet.RealY = packet.PositionY * 32;
+                    packet.OnBridge = Convert.ToInt32(rdr["OnBridge"]) == 1 ? true : false;
+                    packet.Data = new PlayerData();
+                    packet.Data.Level = Convert.ToInt32(rdr["Level"]);
+                    packet.Data.Experience = Convert.ToInt32(rdr["Experience"]);
+                    packet.Data.SetClassID(Convert.ToInt32(rdr["ClassID"]));
+                    packet.Data.HP = Convert.ToInt32(rdr["HP"]);
+                    packet.Data.MP = Convert.ToInt32(rdr["MP"]);
+                    packet.Data.Stamina = Convert.ToInt32(rdr["Stamina"]);
+                    packet.Data.Gold = Convert.ToInt32(rdr["Gold"]);
+                    packet.Data.ParseInventoryString((string)rdr["Inventory"]);
+                    packet.Data.ParseEquipmentString((string)rdr["Equipment"]);
+                    bankData.ParseBankString((string)rdr["Bank"]);
+                    packet.Data.ParseQuestsString((string)rdr["Quests"]);
+                    packet.Data.InvestedStats.Vitality = Convert.ToInt32(rdr["VitalityPoints"]);
+                    packet.Data.InvestedStats.Inteligence = Convert.ToInt32(rdr["InteligencePoints"]);
+                    packet.Data.InvestedStats.Strength = Convert.ToInt32(rdr["StrengthPoints"]);
+                    packet.Data.InvestedStats.Agility = Convert.ToInt32(rdr["AgilityPoints"]);
+                    packet.Data.InvestedStats.MeleeDefence = Convert.ToInt32(rdr["MeleeDefencePoints"]);
+                    packet.Data.InvestedStats.RangeDefence = Convert.ToInt32(rdr["RangeDefencePoints"]);
+                    packet.Data.InvestedStats.MagicDefence = Convert.ToInt32(rdr["MagicDefencePoints"]);
                 }
-                else
-                {
-                    SqlCommand cmd = new SqlCommand("SELECT * FROM Players WHERE PlayerID='" + playerID + "'", _sqlConnection);
-                    SqlDataReader rdr = cmd.ExecuteReader();
-                    if (rdr.Read())
-                    {
-                        packet = new PlayerPacket();
-                        packet.PlayerID = Convert.ToInt32(rdr["PlayerID"]);
-                        packet.Username = (string)rdr["Username"];
-                        packet.MapID = Convert.ToInt32(rdr["MapID"]);
-                        packet.SpriteID = Convert.ToInt32(rdr["SpriteID"]);
-                        packet.Direction = (FacingDirection)(Convert.ToInt32(rdr["Direction"]));
-                        packet.PositionX = Convert.ToInt32(rdr["MapX"]);
-                        packet.PositionY = Convert.ToInt32(rdr["MapY"]);
-                        packet.RealX = packet.PositionX * 32;
-                        packet.RealY = packet.PositionY * 32;
-                        packet.OnBridge = Convert.ToInt32(rdr["OnBridge"]) == 1 ? true : false;
-                        packet.Data = new PlayerData();
-                        packet.Data.Level = Convert.ToInt32(rdr["Level"]);
-                        packet.Data.Experience = Convert.ToInt32(rdr["Experience"]);
-                        packet.Data.SetClassID(Convert.ToInt32(rdr["ClassID"]));
-                        packet.Data.HP = Convert.ToInt32(rdr["HP"]);
-                        packet.Data.MP = Convert.ToInt32(rdr["MP"]);
-                        packet.Data.Stamina = Convert.ToInt32(rdr["Stamina"]);
-                        packet.Data.Gold = Convert.ToInt32(rdr["Gold"]);
-                        packet.Data.ParseInventoryString((string)rdr["Inventory"]);
-                        packet.Data.ParseEquipmentString((string)rdr["Equipment"]);
-                        bankData.ParseBankString((string)rdr["Bank"]);
-                        packet.Data.ParseQuestsString((string)rdr["Quests"]);
-                        packet.Data.InvestedStats.Vitality = Convert.ToInt32(rdr["VitalityPoints"]);
-                        packet.Data.InvestedStats.Inteligence = Convert.ToInt32(rdr["InteligencePoints"]);
-                        packet.Data.InvestedStats.Strength = Convert.ToInt32(rdr["StrengthPoints"]);
-                        packet.Data.InvestedStats.Agility = Convert.ToInt32(rdr["AgilityPoints"]);
-                        packet.Data.InvestedStats.MeleeDefence = Convert.ToInt32(rdr["MeleeDefencePoints"]);
-                        packet.Data.InvestedStats.RangeDefence = Convert.ToInt32(rdr["RangeDefencePoints"]);
-                        packet.Data.InvestedStats.MagicDefence = Convert.ToInt32(rdr["MagicDefencePoints"]);
-                    }
 
-                    rdr.Close();
-                }
+                rdr.Close();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
             }
 
-            return packet;
+            return new MapPlayer(packet, bankData);
         }
 
     }

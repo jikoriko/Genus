@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
+using OpenTK;
 
 namespace Genus2D.Networking
 {
@@ -230,6 +231,8 @@ namespace Genus2D.Networking
         public FacingDirection Direction;
         public int PositionX;
         public int PositionY;
+        public int PrevMapX;
+        public int PrevMapY;
         public float RealX;
         public float RealY;
         public float MovementSpeed;
@@ -249,6 +252,8 @@ namespace Genus2D.Networking
                 stream.Write(BitConverter.GetBytes((int)Direction), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(PositionX), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(PositionY), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(PrevMapX), 0, sizeof(int));
+                stream.Write(BitConverter.GetBytes(PrevMapY), 0, sizeof(int));
                 stream.Write(BitConverter.GetBytes(RealX), 0, sizeof(float));
                 stream.Write(BitConverter.GetBytes(RealY), 0, sizeof(float));
                 stream.Write(BitConverter.GetBytes(MovementSpeed), 0, sizeof(float));
@@ -293,6 +298,12 @@ namespace Genus2D.Networking
                 stream.Read(tempBytes, 0, sizeof(int));
                 int posY = BitConverter.ToInt32(tempBytes, 0);
 
+                stream.Read(tempBytes, 0, sizeof(int));
+                int prevX = BitConverter.ToInt32(tempBytes, 0);
+
+                stream.Read(tempBytes, 0, sizeof(int));
+                int prevY = BitConverter.ToInt32(tempBytes, 0);
+
                 tempBytes = new byte[sizeof(float)];
                 stream.Read(tempBytes, 0, sizeof(float));
                 float realX = BitConverter.ToSingle(tempBytes, 0);
@@ -318,12 +329,13 @@ namespace Genus2D.Networking
                 PlayerPacket packet = new PlayerPacket();
                 packet.Username = username;
                 packet.PlayerID = playerID;
-                packet.Username = username;
                 packet.MapID = mapID;
                 packet.SpriteID = spriteID;
                 packet.Direction = direction;
                 packet.PositionX = PosX;
                 packet.PositionY = posY;
+                packet.PrevMapX = prevX;
+                packet.PrevMapY = prevY;
                 packet.RealX = realX;
                 packet.RealY = realY;
                 packet.MovementSpeed = movementSpeed;
@@ -345,19 +357,21 @@ namespace Genus2D.Networking
     public class MapPacket
     {
         public int MapID;
-        public MapData mapData;
+        public MapData MapData;
 
+        public List<MapPlayer> Players;
         public List<MapEnemy> Enemies;
-        public List<Projectile> Projectiles;
+        public List<MapProjectile> Projectiles;
         public List<MapItem> Items;
 
         public MapPacket(int id, MapData data)
         {
             MapID = id;
-            mapData = data;
+            MapData = data;
 
+            Players = new List<MapPlayer>();
             Enemies = new List<MapEnemy>();
-            Projectiles = new List<Projectile>();
+            Projectiles = new List<MapProjectile>();
             Items = new List<MapItem>();
         }
 
@@ -367,9 +381,11 @@ namespace Genus2D.Networking
             {
                 stream.Write(BitConverter.GetBytes(MapID), 0, sizeof(int));
 
-                byte[] mapBytes = mapData.GetBytes();
+                byte[] mapBytes = MapData.GetBytes();
                 stream.Write(BitConverter.GetBytes(mapBytes.Length), 0, sizeof(int));
                 stream.Write(mapBytes, 0, mapBytes.Length);
+
+                //Add in the map players here
 
                 stream.Write(BitConverter.GetBytes(Enemies.Count), 0, sizeof(int));
                 for (int i = 0; i < Enemies.Count; i++)
@@ -415,6 +431,8 @@ namespace Genus2D.Networking
 
                 MapPacket mapPacket = new MapPacket(mapID, MapData.FromBytes(tempBytes));
 
+                //add in the map players here
+
                 tempBytes = new byte[sizeof(int)];
                 stream.Read(tempBytes, 0, sizeof(int));
                 int enemiesCount = BitConverter.ToInt32(tempBytes, 0);
@@ -443,7 +461,7 @@ namespace Genus2D.Networking
 
                     tempBytes = new byte[size];
                     stream.Read(tempBytes, 0, size);
-                    Projectile projectile = Projectile.FromBytes(tempBytes);
+                    MapProjectile projectile = MapProjectile.FromBytes(tempBytes);
                     mapPacket.Projectiles.Add(projectile);
                 }
 

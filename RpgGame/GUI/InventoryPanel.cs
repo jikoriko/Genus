@@ -7,6 +7,7 @@ using Genus2D.Utililities;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Input;
+using RpgGame.EntityComponents;
 using RpgGame.States;
 using System;
 using System.Collections.Generic;
@@ -50,7 +51,7 @@ namespace RpgGame.GUI
                         mouse.Y /= slotSize;
                         int itemIndex = (int)mouse.X + ((int)mouse.Y * 5);
 
-                        Tuple<int, int> itemInfo = RpgClientConnection.Instance.GetLocalPlayerPacket().Data.GetInventoryItem(itemIndex);
+                        Tuple<int, int> itemInfo = MapComponent.Instance.GetLocalPlayerPacket().Data.GetInventoryItem(itemIndex);
                         if (itemInfo != null)
                         {
                             if (e.Button == MouseButton.Left)
@@ -126,7 +127,7 @@ namespace RpgGame.GUI
         {
             base.RenderContent();
 
-            PlayerPacket playerPacket = RpgClientConnection.Instance.GetLocalPlayerPacket();
+            PlayerPacket playerPacket = MapComponent.Instance.GetLocalPlayerPacket();
             if (playerPacket != null)
             {
                 Vector3 pos = new Vector3(10, 5, 0);

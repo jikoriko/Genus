@@ -1702,6 +1702,10 @@ namespace RpgEditor
                 ParticleOffsetMaxSelection.Value = (decimal)data.OffsetMax;
                 ParticleStartVelocitySelection.Value = (decimal)data.StartVelocity;
                 ParticleEndVelocitySelection.Value = (decimal)data.EndVelocity;
+                ParticleStartZSelection.Value = (decimal)data.StartZ;
+                ParticleEndZSelection.Value = (decimal)data.EndZ;
+                particleSinZSelection.Value = (decimal)data.SinMaxZ;
+                particleSinSpeedSelection.Value = (decimal)data.SinSpeedZ;
                 ParticleStartScaleSelection.Value = (decimal)data.StartScale;
                 ParticleEndScaleSelection.Value = (decimal)data.EndScale;
                 ParticleRotationSpeedSelection.Value = (decimal)data.RotationSpeed;
@@ -1737,6 +1741,10 @@ namespace RpgEditor
                 ParticleOffsetMaxSelection.Value = 0;
                 ParticleStartVelocitySelection.Value = 1;
                 ParticleEndVelocitySelection.Value = 1;
+                ParticleStartZSelection.Value = 0;
+                ParticleEndZSelection.Value = 0;
+                particleSinZSelection.Value = 0;
+                particleSinSpeedSelection.Value = 1;
                 ParticleStartScaleSelection.Value = 1;
                 ParticleEndScaleSelection.Value = 1;
                 ParticleRotationSpeedSelection.Value = 0;
@@ -1870,6 +1878,10 @@ namespace RpgEditor
                 data.OffsetMax = (float)ParticleOffsetMaxSelection.Value;
                 data.StartVelocity = (float)ParticleStartVelocitySelection.Value;
                 data.EndVelocity = (float)ParticleEndVelocitySelection.Value;
+                data.StartZ = (float)ParticleStartZSelection.Value;
+                data.EndZ = (float)ParticleEndZSelection.Value;
+                data.SinMaxZ = (float)particleSinZSelection.Value;
+                data.SinSpeedZ = (float)particleSinSpeedSelection.Value;
                 data.StartScale = (float)ParticleStartScaleSelection.Value;
                 data.EndScale = (float)ParticleEndScaleSelection.Value;
                 data.RotationSpeed = (float)ParticleRotationSpeedSelection.Value;

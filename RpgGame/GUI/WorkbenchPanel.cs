@@ -7,6 +7,7 @@ using Genus2D.Utililities;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Input;
+using RpgGame.EntityComponents;
 using RpgGame.States;
 using System;
 using System.Collections.Generic;
@@ -202,7 +203,7 @@ namespace RpgGame.GUI
                             int count = data.Materials[i].Item2 * _countControl.GetIndex();
                             text = matData.Name + ": ";
 
-                            if (RpgClientConnection.Instance.GetLocalPlayerPacket().Data.ItemInInventory(itemID, count))
+                            if (MapComponent.Instance.GetLocalPlayerPacket().Data.ItemInInventory(itemID, count))
                                 colour = Color4.LimeGreen;
                             else
                                 colour = Color4.Red;

@@ -24,6 +24,8 @@ namespace Genus2D.Graphics
 
         private PrimitiveType _primitiveType = PrimitiveType.Polygon;
 
+        public bool IgnoreTextureCoordTransforms;
+
         public Shape(float[] vertices)
         {
             _vertices = vertices;
@@ -53,6 +55,8 @@ namespace Genus2D.Graphics
             _textureCoordOffset = new Vector2(0, 0);
             _textureCoordScale = new Vector2(1, 1);
             _textureCoordsChanged = false;
+
+            IgnoreTextureCoordTransforms = false;
         }
 
         public Shape(float[] vertices, int[] indices)
@@ -148,6 +152,34 @@ namespace Genus2D.Graphics
             _primitiveType = primitiveType;
         }
 
+        public Shape(float[] vertices, float[] textureCoords, int[] indices, PrimitiveType primitiveType)
+        {
+            _vertices = vertices;
+            _textureCoords = textureCoords;
+            _indices = indices;
+
+            _boundsMin = new Vector2(vertices[0], vertices[1]);
+            _boundsMax = _boundsMin;
+
+            for (int i = 0; i < vertices.Length / 3; i++)
+            {
+                int index = i * 3;
+                if (vertices[index] < _boundsMin.X)
+                    _boundsMin.X = vertices[index];
+                else if (vertices[index] > _boundsMax.X)
+                    _boundsMax.X = vertices[index];
+                if (vertices[index + 1] < _boundsMin.Y)
+                    _boundsMin.Y = vertices[index + 1];
+                else if (vertices[index + 1] > _boundsMax.Y)
+                    _boundsMax.Y = vertices[index + 1];
+            }
+
+            _textureCoordOffset = new Vector2(0, 0);
+            _textureCoordScale = new Vector2(1, 1);
+            _textureCoordsChanged = false;
+            _primitiveType = primitiveType;
+        }
+
         public PrimitiveType GetPrimitiveType()
         {
             return _primitiveType;
@@ -170,6 +202,9 @@ namespace Genus2D.Graphics
 
         public void SetTextureCoordOffset(float x, float y)
         {
+            if (IgnoreTextureCoordTransforms)
+                return;
+
             if (_textureCoordOffset.X != x || _textureCoordOffset.Y != y)
             {
                 _textureCoordOffset.X = x;
@@ -180,6 +215,9 @@ namespace Genus2D.Graphics
 
         public void SetTextureCoordScale(float w, float h)
         {
+            if (IgnoreTextureCoordTransforms)
+                return;
+
             if (_textureCoordScale.X != w || _textureCoordScale.Y != h)
             {
                 _textureCoordScale.X = w;

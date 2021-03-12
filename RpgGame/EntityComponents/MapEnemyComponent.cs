@@ -49,6 +49,7 @@ namespace RpgGame.EntityComponents
             _mapEnemy.Direction = direction;
             _mapEnemy.OnBridge = onBridge;
             _mapEnemy.Dead = dead;
+            SetRealPosition();
         }
 
         public MapEnemy GetMapEnemy()
@@ -59,7 +60,7 @@ namespace RpgGame.EntityComponents
         public void SetRealPosition()
         {
             Vector3 pos = new Vector3(_mapEnemy.RealX + 16, _mapEnemy.RealY + 16, 0);
-            pos.Z = -(((int)Math.Ceiling(_mapEnemy.RealY / 32) + (_mapEnemy.OnBridge ? 3 : 0)) * 2);
+            pos.Z = -(((int)Math.Ceiling(_mapEnemy.RealY / 32) + (_mapEnemy.OnBridge ? 3 : 0)) * 2) - 1;
             //pos.Z = -((_mapEnemy.MapY + (_mapEnemy.OnBridge ? 3 : 0)) * (32 * (_mapEnemy.OnBridge ? 3 : 1)));
             Transform.LocalPosition = pos;
         }
@@ -69,7 +70,9 @@ namespace RpgGame.EntityComponents
             base.Update(e);
             if (_mapEnemy.Dead) return;
 
-            SetRealPosition();// we could do some movement prediction here based on target pos, real pos and movement speed?
+            if (_mapEnemy.UpdateMovement((float)e.Time))
+                SetRealPosition();
+
             SetYFrame((int)_mapEnemy.Direction);
 
             if (_spriteTimer > 0)
@@ -92,7 +95,7 @@ namespace RpgGame.EntityComponents
 
         public override bool BushFlag()
         {
-            MapData data = MapComponent.Instance.GetMapData();
+            MapData data = MapComponent.Instance.GetMapInstance().GetMapData();
             for (int i = 0; i < 3; i++)
             {
                 float x = _mapEnemy.RealX;
@@ -126,7 +129,7 @@ namespace RpgGame.EntityComponents
         {
             if (_mapEnemy.Dead) return;
 
-            PlayerPacket localPacket = RpgClientConnection.Instance.GetLocalPlayerPacket();
+            PlayerPacket localPacket = MapComponent.Instance.GetLocalPlayerPacket();
             if (localPacket == null || !(localPacket.PositionX == _mapEnemy.MapX && localPacket.PositionY == _mapEnemy.MapY))
             {
                 base.Render(e);

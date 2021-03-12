@@ -37,12 +37,14 @@ namespace Genus2D.Entities
             base.Render(e);
             Vector3 pos;
 
+            Renderer.DisableDepthTest();
+
             for (int i = 0; i < _emitter.Particles.Count; i++)
             {
                 ParticleEmitter.Particle particle = _emitter.Particles[i];
                 if (particle != null)
                 {
-                    pos = this.Parent.GetTransform().Position + new Vector3(particle.Position.X, particle.Position.Y, 0);
+                    pos = this.Parent.GetTransform().Position + new Vector3(particle.Position.X, particle.Position.Y - particle.Z, 0);
                     Vector3 scale = new Vector3(particle.Scale);
                     Vector3 rotation = new Vector3(0, 0, particle.Rotation);
 
@@ -70,6 +72,8 @@ namespace Genus2D.Entities
                     }
                 }
             }
+
+            Renderer.EnableDepthTest();
         }
 
         public override void Destroy()

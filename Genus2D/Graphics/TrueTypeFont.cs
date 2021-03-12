@@ -53,7 +53,7 @@ namespace Genus2D.Graphics
         private void SetFontSize(int size)
         {
             _size = size;
-            //_fontFace.SetCharSize(size, size, 0, 0);
+            //////_fontFace.SetCharSize(size, size, 0, 0);
             _fontFace.SetPixelSizes((uint)size, (uint)size);
             GenerateTextures();
         }
@@ -80,7 +80,7 @@ namespace Genus2D.Graphics
             _textureSize = Next_P2(16 * _size);
             int spacing = _textureSize / 16;
             byte[] textureData = new byte[4 * _textureSize * _textureSize];
-            //byte[] outlineData = new byte[4 * _textureSize * _textureSize];
+            byte[] outlineData = new byte[4 * _textureSize * _textureSize];
 
             for (int i = 0; i < 256; i++)
             {

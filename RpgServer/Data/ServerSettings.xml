@@ -1,11 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <Settings>
     <ExternalIpAddress>127.0.0.1</ExternalIpAddress>
-    <Port>55998</Port>
-    <SQLite>true</SQLite>
-    <SqlConnectionString>Data Source=localhost; Initial Catalog=RpgMmoDatabase; MultipleActiveResultSets=true; Integrated Security=True</SqlConnectionString>
-    <!-- <SqlConnectionString>Data Source=DATASOURCE; MultipleActiveResultSets=true; User ID=USER_ID; Password=PASSWORD;</SqlConnectionString> <- aws login -->
-    <SqlDataSource>localhost</SqlDataSource>
-    <SqlUsername>jikoriko</SqlUsername>
-    <SqlPassword>testDB</SqlPassword>
+    <ServerPort>55998</ServerPort>
+    <SqlConnectionString>Server=tcp:genus-mmo-sql.database.windows.net,1433;Initial Catalog=RpgMmoDatabase;Persist Security Info=False;User ID=genus-mmo-admin;Password=XXXX;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;</SqlConnectionString>
 </Settings>

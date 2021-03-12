@@ -10,8 +10,11 @@ using RpgGame.States;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 
 namespace RpgGame
@@ -21,21 +24,20 @@ namespace RpgGame
         public static RpgClientConnection Instance { get; private set; }
         private XmlDocument _settingsXml;
 
-        private TcpClient _client;
         private string _ipAddress;
-        private int _port;
-        private NetworkStream _stream;
+        private int _serverPort;
+
+        private TcpClient _tcpClient;
+        private NetworkStream _networkStream;
+        private float _sendTimer;
+        private bool _sendingPackets;
+        private bool _recievingPackets;
+
         private LoginResult _loginResult;
         private bool _connected = false;
 
         private Dictionary<int, PlayerPacket> _playerPackets;
-        public Dictionary<int, Entity> PlayerEntities { get; private set; }
-        public List<Entity> EnemyEntites { get; private set; }
-        public List<Entity> ProjectileEntites { get; private set; }
-        public List<Entity> MapItemEntities { get; private set; }
-        private bool _playersUpdated = false;
 
-        private Thread _recievePacketsThread;
         private List<MessagePacket> _messages;
         private List<ClientCommand> _clientCommands;
 
@@ -54,14 +56,17 @@ namespace RpgGame
             {
                 _settingsXml = new XmlDocument();
                 _settingsXml.Load("Data/ServerSettings.xml");
-                XmlElement xElement = _settingsXml.DocumentElement["Port"];
-                _port = int.Parse(xElement.InnerText);
-                xElement = _settingsXml.DocumentElement["ExternalIpAddress"];
+                XmlElement xElement = _settingsXml.DocumentElement["ExternalIpAddress"];
                 _ipAddress = xElement.InnerText;
+                xElement = _settingsXml.DocumentElement["ServerPort"];
+                _serverPort = int.Parse(xElement.InnerText);
 
-                _client = new TcpClient();
-                _client.Connect(_ipAddress, _port);
-                _stream = _client.GetStream();
+                _tcpClient = new TcpClient();
+                _tcpClient.Connect(_ipAddress, _serverPort);
+                _networkStream = _tcpClient.GetStream();
+                _sendTimer = 0f;
+                _sendingPackets = false;
+                _recievingPackets = false;
 
                 LoginRequest request = new LoginRequest();
                 request.Username = username;
@@ -69,8 +74,8 @@ namespace RpgGame
 
                 if (register)
                 {
-                    SendRegisterRequest(_stream, request);
-                    RegisterResult result = RecieveRegisterResult(_stream);
+                    SendRegisterRequest(_networkStream, request);
+                    RegisterResult result = RecieveRegisterResult(_networkStream);
                     if (!result.Registered)
                     {
                         MessageBox messageBox = new MessageBox("Failed to register." + '\n' + result.Reason, LoginState.INSTANCE);
@@ -85,23 +90,16 @@ namespace RpgGame
                 }
                 else
                 {
-                    SendLoginRequest(_stream, request);
-                    _loginResult = RecieveLoginResult(_stream);
+                    SendLoginRequest(_networkStream, request);
+                    _loginResult = RecieveLoginResult(_networkStream);
 
                     if (_loginResult.LoggedIn)
                     {
                         _connected = true;
                         _playerPackets = new Dictionary<int, PlayerPacket>();
-                        PlayerEntities = new Dictionary<int, Entity>();
-                        EnemyEntites = new List<Entity>();
-                        ProjectileEntites = new List<Entity>();
-                        MapItemEntities = new List<Entity>();
 
-                        _recievePacketsThread = new Thread(new ThreadStart(RecievePackets));
-                        _recievePacketsThread.Start();
                         _messages = new List<MessagePacket>();
                         _clientCommands = new List<ClientCommand>();
-                        Console.WriteLine("Client logged in: " + _loginResult.PlayerID + ", " + request.Username);
                     }
                     else
                     {
@@ -117,11 +115,14 @@ namespace RpgGame
             }
         }
 
-        public PlayerPacket GetLocalPlayerPacket()
+        public int GetLocalPlayerID()
         {
-            if (_playerPackets.ContainsKey(_loginResult.PlayerID))
-                return _playerPackets[_loginResult.PlayerID];
-            return null;
+            if (_loginResult != null && _loginResult.LoggedIn)
+            {
+                return _loginResult.PlayerID;
+            }
+
+            return -1;
         }
 
         private void SendRegisterRequest(NetworkStream stream, LoginRequest request)
@@ -139,10 +140,10 @@ namespace RpgGame
 
         private RegisterResult RecieveRegisterResult(NetworkStream stream)
         {
-            byte[] bytes = ReadData(sizeof(int), _stream);
+            byte[] bytes = ReadData(sizeof(int), _networkStream);
             int size = BitConverter.ToInt32(bytes, 0);
 
-            bytes = ReadData(size, _stream);
+            bytes = ReadData(size, _networkStream);
             RegisterResult result = RegisterResult.FromBytes(bytes);
 
             return result;
@@ -163,186 +164,154 @@ namespace RpgGame
 
         private LoginResult RecieveLoginResult(NetworkStream stream)
         {
-            byte[] bytes = ReadData(sizeof(int), _stream);
+            byte[] bytes = ReadData(sizeof(int), _networkStream);
             int size = BitConverter.ToInt32(bytes, 0);
 
-            bytes = ReadData(size, _stream);
+            bytes = ReadData(size, _networkStream);
             LoginResult result = LoginResult.FromBytes(bytes);
 
             return result;
         }
 
-        public void Update()
+        public void Update(float deltaTime)
         {
-            if (_playersUpdated)
+            SendRecievePackets(deltaTime);
+        }
+
+        public void SendRecievePackets(float deltaTime)
+        {
+            if (!Connected())
+                return;
+
+            if (_sendTimer <= 0)
             {
-                for (int i = 0; i < PlayerEntities.Count; i++)
-                {
-                    int id = PlayerEntities.ElementAt(i).Key;
-                    if (_playerPackets.ContainsKey(id) == false)
-                    {
-                        PlayerEntities[id].Destroy();
-                        PlayerEntities.Remove(id);
-                    }
-
-                }
-
-                for (int i = 0; i < _playerPackets.Count; i++)
-                {
-                    PlayerPacket packet = _playerPackets.ElementAt(i).Value;
-                    if (_loginResult.PlayerID == packet.PlayerID)
-                    {
-                        Vector3 mapPos = new Vector3((Renderer.GetResoultion().X / 2) - (packet.RealX + 16), ((Renderer.GetResoultion().Y - 200) / 2) - packet.RealY, 0);
-                        _gameState.MapEntity.GetTransform().LocalPosition = mapPos;
-                    }
-
-                    if (PlayerEntities.ContainsKey(packet.PlayerID))
-                    {
-                        Entity clientEntity = PlayerEntities[packet.PlayerID];
-                        PlayerComponent playerComponent = (PlayerComponent)clientEntity.FindComponent<PlayerComponent>();
-                        playerComponent.SetPlayerPacket(packet);
-                    }
-                    else
-                    {
-                        Entity clientEntity = Entity.CreateInstance(_gameState.EntityManager);
-                        clientEntity.GetTransform().Parent = _gameState.MapEntity.GetTransform();
-                        new PlayerComponent(clientEntity, packet);
-                        PlayerEntities.Add(packet.PlayerID, clientEntity);
-                    }
-
-                   
-                }
-                _playersUpdated = false;
+                SendPackets();
+                _sendTimer = 0.1f;
             }
+            else
+            {
+                _sendTimer -= deltaTime;
+            }
+            RecievePackets();
 
         }
 
-        private void RecievePackets()
+        private async void RecievePackets()
         {
-            while (true)
+            if (!_recievingPackets)
             {
-                if (!Connected())
-                    break;
-
-                try
-                {
-                    byte[] bytes = ReadData(sizeof(int), _stream);
-                    PacketType type = (PacketType)BitConverter.ToInt32(bytes, 0);
-
-                    switch (type)
+                _recievingPackets = true;
+                await Task.Run(() => {                   
+                    while (_networkStream.DataAvailable)
                     {
-                        case PacketType.PlayerPacket:
-                            RecievePlayerPackets();
-                            break;
-                        case PacketType.MapPacket:
-                            RecieveMapPackets();
-                            break;
-                        case PacketType.ServerCommand:
-                            RecieveServerCommand();
-                            break;
-                        case PacketType.ClientCommand:
-                            SendClientCommands();
-                            break;
-                        case PacketType.SendMessagePackets:
-                            SendMessagePackets();
-                            break;
-                        case PacketType.RecieveMessagePackets:
-                            RecieveMessagePackets();
-                            break;
-                        case PacketType.BankPacket:
-                            RecieveBankPacket();
-                            break;
+                        try
+                        {
+                            byte[] bytes = ReadData(sizeof(int), _networkStream);
+                            PacketType type = (PacketType)BitConverter.ToInt32(bytes, 0);
 
+                            switch (type)
+                            {
+                                case PacketType.PlayerPacket:
+                                    RecievePlayerPackets();
+                                    break;
+                                case PacketType.MapPacket:
+                                    RecieveMapPackets();
+                                    break;
+                                case PacketType.ServerCommand:
+                                    RecieveServerCommand();
+                                    break;
+                                case PacketType.RecieveMessagePackets:
+                                    RecieveMessagePackets();
+                                    break;
+                                case PacketType.BankPacket:
+                                    RecieveBankPacket();
+                                    break;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                            Console.WriteLine(e.StackTrace);
+                        }
                     }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                    Console.WriteLine(e.StackTrace);
-                }
+                    _recievingPackets = false;
+                });
             }
+        }
 
+        private async void SendPackets()
+        {
+            if (!_sendingPackets)
+            {
+                _sendingPackets = true;
+                await Task.Run(() =>
+                {
+                    try
+                    {
+                        List<byte> comunicationBytes = new List<byte>();
+                        GetMessagePacketBytes(ref comunicationBytes);
+                        GetClientCommandBytes(ref comunicationBytes);
+
+                        if (comunicationBytes.Count > 0)
+                        {
+                            _networkStream.Write(comunicationBytes.ToArray(), 0, comunicationBytes.Count);
+                            _networkStream.Flush();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine(e.StackTrace);
+                    }
+                    _sendingPackets = false;
+                });
+            }
         }
 
         private void RecievePlayerPackets()
         {
-            byte[] bytes = ReadData(sizeof(int), _stream);
+            byte[] bytes = ReadData(sizeof(int), _networkStream);
             int numClients = BitConverter.ToInt32(bytes, 0);
 
-            Dictionary<int, PlayerPacket> playerPackets = new Dictionary<int, PlayerPacket>();
+            _playerPackets.Clear();
 
             for (int i = 0; i < numClients; i++)
             {
-                bytes = ReadData(sizeof(int), _stream);
+                bytes = ReadData(sizeof(int), _networkStream);
                 int packetSize = BitConverter.ToInt32(bytes, 0);
 
-                bytes = ReadData(packetSize, _stream);
+                bytes = ReadData(packetSize, _networkStream);
                 PlayerPacket packet = PlayerPacket.FromBytes(bytes);
 
-                try
+                if (_playerPackets.ContainsKey(packet.PlayerID))
                 {
-                    playerPackets.Add(packet.PlayerID, packet);
+                    _playerPackets[packet.PlayerID] = packet;
                 }
-                catch (Exception e) { }
+                else
+                {
+                    _playerPackets.Add(packet.PlayerID, packet);
+                }
             }
 
-            if (!_playersUpdated)
-            {
-                _playerPackets = playerPackets;
-                _playersUpdated = true;
-            }
+            MapComponent.Instance.SetPlayers(_playerPackets);
         }
 
         private void RecieveMapPackets()
         {
-            byte[] bytes = ReadData(sizeof(int), _stream);
+            byte[] bytes = ReadData(sizeof(int), _networkStream);
             int packetSize = BitConverter.ToInt32(bytes, 0);
 
-            bytes = ReadData(packetSize, _stream);
+            bytes = ReadData(packetSize, _networkStream);
 
             MapPacket packet = MapPacket.FromBytes(bytes);
-            MapComponent.Instance.SetMapData(packet.MapID, packet.mapData);
-
-            for (int i = 0; i < EnemyEntites.Count; i++)
-                EnemyEntites[i].Destroy();
-            EnemyEntites.Clear();
-
-            for (int i = 0; i < packet.Enemies.Count; i++)
-            {
-                Entity entity = Entity.CreateInstance(GameState.Instance.EntityManager);
-                entity.GetTransform().Parent = _gameState.MapEntity.GetTransform();
-                entity.AddComponent(new MapEnemyComponent(entity, packet.Enemies[i]));
-                EnemyEntites.Add(entity);
-            }
-
-            for (int i = 0; i < ProjectileEntites.Count; i++)
-                ProjectileEntites[i].Destroy();
-            ProjectileEntites.Clear();
-            for (int i = 0; i < packet.Projectiles.Count; i++)
-            {
-                Entity entity = Entity.CreateInstance(GameState.Instance.EntityManager);
-                entity.GetTransform().Parent = _gameState.MapEntity.GetTransform();
-                entity.AddComponent(new ProjectileComponent(entity, packet.Projectiles[i]));
-                ProjectileEntites.Add(entity);
-            }
-
-            for (int i = 0; i < MapItemEntities.Count; i++)
-                MapItemEntities[i].Destroy();
-            MapItemEntities.Clear();
-            for (int i = 0; i < packet.Items.Count; i++)
-            {
-                Entity entity = Entity.CreateInstance(GameState.Instance.EntityManager);
-                entity.GetTransform().Parent = _gameState.MapEntity.GetTransform();
-                entity.AddComponent(new MapItemComponent(entity, packet.Items[i]));
-                MapItemEntities.Add(entity);
-            }
+            MapComponent.Instance.SetMapInstance(packet);
         }
 
         private void RecieveBankPacket()
         {
-            byte[] bytes = ReadData(sizeof(int), _stream);
+            byte[] bytes = ReadData(sizeof(int), _networkStream);
             int packetSize = BitConverter.ToInt32(bytes, 0);
-            bytes = ReadData(packetSize, _stream);
+            bytes = ReadData(packetSize, _networkStream);
 
             if (BankPanel.Instance != null)
             {
@@ -373,10 +342,10 @@ namespace RpgGame
 
         private void RecieveServerCommand()
         {
-            byte[] bytes = ReadData(sizeof(int), _stream);
+            byte[] bytes = ReadData(sizeof(int), _networkStream);
             int packetSize = BitConverter.ToInt32(bytes, 0);
 
-            bytes = ReadData(packetSize, _stream);
+            bytes = ReadData(packetSize, _networkStream);
             ServerCommand command = ServerCommand.FromBytes(bytes);
 
             int eventID;
@@ -429,16 +398,13 @@ namespace RpgGame
 
                     enemyID = (int)command.GetParameter("EnemyID");
                     mapID = (int)command.GetParameter("MapID");
-                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().GetMapInstance().GetMapPacket().MapID == mapID)
                     {
                         mapX = (int)command.GetParameter("MapX");
                         mapY = (int)command.GetParameter("MapY");
                         bool onBridge = (bool)command.GetParameter("OnBridge");
                         MapEnemy mapEnemy = new MapEnemy(enemyID, mapX, mapY, onBridge);
-                        Entity entity = Entity.CreateInstance(GameState.Instance.EntityManager);
-                        entity.GetTransform().Parent = _gameState.MapEntity.GetTransform();
-                        entity.AddComponent(new MapEnemyComponent(entity, mapEnemy));
-                        EnemyEntites.Add(entity);
+                        MapComponent.Instance.AddMapEnemy(mapEnemy);
                     }
 
                     break;
@@ -446,7 +412,7 @@ namespace RpgGame
 
                     enemyIndex = (int)command.GetParameter("EnemyIndex");
                     mapID = (int)command.GetParameter("MapID");
-                    if ((_gameState.MapEntity.FindComponent<MapComponent>()).MapID == mapID)
+                    if ((_gameState.MapEntity.FindComponent<MapComponent>()).GetMapInstance().GetMapPacket().MapID == mapID)
                     {
                         int HP = (int)command.GetParameter("HP");
                         mapX = (int)command.GetParameter("MapX");
@@ -456,13 +422,14 @@ namespace RpgGame
                         direction = (FacingDirection)command.GetParameter("Direction");
                         bool onBridge = (bool)command.GetParameter("OnBridge");
                         bool dead = (bool)command.GetParameter("Dead");
-                        MapEnemyComponent enemyComponent = EnemyEntites[enemyIndex].FindComponent<MapEnemyComponent>();
+                        MapEnemyComponent enemyComponent = MapComponent.Instance.EnemyEntites[enemyIndex].FindComponent<MapEnemyComponent>();
                         enemyComponent.UpdateMapEnemy(HP, mapX, mapY, realX, realY, direction, onBridge, dead);
 
                         if (dead)
                         {
-                            EnemyEntites[enemyIndex].Destroy();
-                            EnemyEntites.RemoveAt(enemyIndex);
+                            MapComponent.Instance.EnemyEntites[enemyIndex].Destroy();
+                            MapComponent.Instance.EnemyEntites.RemoveAt(enemyIndex);
+                            MapComponent.Instance.GetMapInstance().RemoveMapEnemy(enemyIndex);
                         }
                     }
 
@@ -471,7 +438,7 @@ namespace RpgGame
 
                     eventID = (int)command.GetParameter("EventID");
                     mapID = (int)command.GetParameter("MapID");
-                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().GetMapInstance().GetMapPacket().MapID == mapID)
                     {
                         mapX = (int)command.GetParameter("MapX");
                         mapY = (int)command.GetParameter("MapY");
@@ -480,7 +447,7 @@ namespace RpgGame
                         direction = (FacingDirection)command.GetParameter("Direction");
                         bool onBridge = (bool)command.GetParameter("OnBridge");
 
-                        map = _gameState.MapEntity.FindComponent<MapComponent>().GetMapData();
+                        map = _gameState.MapEntity.FindComponent<MapComponent>().GetMapInstance().GetMapData();
                         if (map != null)
                         {
                             map.GetMapEvent(eventID).MapX = mapX;
@@ -497,11 +464,11 @@ namespace RpgGame
 
                     eventID = (int)command.GetParameter("EventID");
                     mapID = (int)command.GetParameter("MapID");
-                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().GetMapInstance().GetMapPacket().MapID == mapID)
                     {
                         direction = (FacingDirection)command.GetParameter("Direction");
 
-                        map = _gameState.MapEntity.FindComponent<MapComponent>().GetMapData();
+                        map = _gameState.MapEntity.FindComponent<MapComponent>().GetMapInstance().GetMapData();
                         if (map != null)
                         {
                             map.GetMapEvent(eventID).EventDirection = direction;
@@ -512,7 +479,7 @@ namespace RpgGame
                 case ServerCommand.CommandType.ChangeMapEventSprite:
 
                     mapID = (int)command.GetParameter("MapID");
-                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().GetMapInstance().GetMapPacket().MapID == mapID)
                     {
                         eventID = (int)command.GetParameter("EventID");
                         int spriteID = (int)command.GetParameter("SpriteID");
@@ -523,7 +490,7 @@ namespace RpgGame
                 case ServerCommand.CommandType.ChangeMapEventRenderPriority:
 
                     mapID = (int)command.GetParameter("MapID");
-                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().GetMapInstance().GetMapPacket().MapID == mapID)
                     {
                         eventID = (int)command.GetParameter("EventID");
                         RenderPriority priority = (RenderPriority)command.GetParameter("RenderPriority");
@@ -534,7 +501,7 @@ namespace RpgGame
                 case ServerCommand.CommandType.ChangeMapEventEnabled:
 
                     mapID = (int)command.GetParameter("MapID");
-                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().GetMapInstance().GetMapPacket().MapID == mapID)
                     {
                         eventID = (int)command.GetParameter("EventID");
                         bool enabled = (bool)command.GetParameter("Enabled");
@@ -545,7 +512,7 @@ namespace RpgGame
                 case ServerCommand.CommandType.AddProjectile:
 
                     mapID = (int)command.GetParameter("MapID");
-                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().GetMapInstance().GetMapPacket().MapID == mapID)
                     {
                         {
                             int dataID = (int)command.GetParameter("DataID");
@@ -554,36 +521,33 @@ namespace RpgGame
                             direction = (FacingDirection)command.GetParameter("Direction");
                             bool onBridge = (bool)command.GetParameter("OnBridge");
 
-                            Projectile projectile = new Projectile(dataID, CharacterType.Player, -1, new Vector2(realX, realY), direction);
+                            MapProjectile projectile = new MapProjectile(dataID, CharacterType.Player, -1, new Vector2(realX, realY), direction);
                             projectile.OnBridge = onBridge;
-                            Entity entity = Entity.CreateInstance(GameState.Instance.EntityManager);
-                            entity.GetTransform().Parent = _gameState.MapEntity.GetTransform();
-                            entity.AddComponent(new ProjectileComponent(entity, projectile));
-                            ProjectileEntites.Add(entity);
+                            MapComponent.Instance.AddMapProjectile(projectile);
                         }
-
                     }
 
                     break;
                 case ServerCommand.CommandType.UpdateProjectile:
 
                     mapID = (int)command.GetParameter("MapID");
-                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().GetMapInstance().GetMapPacket().MapID == mapID)
                     {
                         projectileID = (int)command.GetParameter("ProjectileID");
-                        if (projectileID < ProjectileEntites.Count)
+                        if (projectileID < MapComponent.Instance.ProjectileEntites.Count)
                         {
                             realX = (float)command.GetParameter("RealX");
                             realY = (float)command.GetParameter("RealY");
                             bool onBridge = (bool)command.GetParameter("OnBridge");
                             bool destroyed = (bool)command.GetParameter("Destroyed");
-                            ProjectileComponent component = ProjectileEntites[projectileID].FindComponent<ProjectileComponent>();
+                            ProjectileComponent component = MapComponent.Instance.ProjectileEntites[projectileID].FindComponent<ProjectileComponent>();
                             component.SetRealPosition(realX, realY);
                             component.SetOnBridge(onBridge);
                             if (destroyed)
                             {
-                                ProjectileEntites[projectileID].Destroy();
-                                ProjectileEntites.RemoveAt(projectileID);
+                                MapComponent.Instance.ProjectileEntites[projectileID].Destroy();
+                                MapComponent.Instance.ProjectileEntites.RemoveAt(projectileID);
+                                MapComponent.Instance.GetMapInstance().RemoveMapProjectile(projectileID);
                             }
                         }
                     }
@@ -593,7 +557,7 @@ namespace RpgGame
 
                     mapID = (int)command.GetParameter("MapID");
                     MapComponent mapComponent = _gameState.MapEntity.FindComponent<MapComponent>();
-                    if (mapComponent.MapID == mapID)
+                    if (mapComponent.GetMapInstance().GetMapPacket().MapID == mapID)
                     {
                         itemID = (int)command.GetParameter("ItemID");
                         count = (int)command.GetParameter("Count");
@@ -602,23 +566,21 @@ namespace RpgGame
                         playerID = (int)command.GetParameter("PlayerID");
                         bool onBridge = (bool)command.GetParameter("OnBridge");
                         MapItem mapItem = new MapItem(itemID, count, mapX, mapY, playerID, onBridge);
-                        Entity entity = Entity.CreateInstance(GameState.Instance.EntityManager);
-                        entity.GetTransform().Parent = _gameState.MapEntity.GetTransform();
-                        entity.AddComponent(new MapItemComponent(entity, mapItem));
-                        MapItemEntities.Add(entity);
+                        MapComponent.Instance.AddMapItem(mapItem);
                     }
 
                     break;
                 case ServerCommand.CommandType.RemoveMapItem:
 
                     mapID = (int)command.GetParameter("MapID");
-                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().GetMapInstance().GetMapPacket().MapID == mapID)
                     {
                         itemIndex = (int)command.GetParameter("ItemIndex");
-                        if (itemIndex < MapItemEntities.Count)
+                        if (itemIndex < MapComponent.Instance.MapItemEntities.Count)
                         {
-                            MapItemEntities[itemIndex].Destroy();
-                            MapItemEntities.RemoveAt(itemIndex);
+                            MapComponent.Instance.MapItemEntities[itemIndex].Destroy();
+                            MapComponent.Instance.MapItemEntities.RemoveAt(itemIndex);
+                            MapComponent.Instance.GetMapInstance().RemoveMapItem(itemIndex);
                         }
                     }
 
@@ -626,15 +588,15 @@ namespace RpgGame
                 case ServerCommand.CommandType.UpdateMapItem:
 
                     mapID = (int)command.GetParameter("MapID");
-                    if (_gameState.MapEntity.FindComponent<MapComponent>().MapID == mapID)
+                    if (_gameState.MapEntity.FindComponent<MapComponent>().GetMapInstance().GetMapPacket().MapID == mapID)
                     {
                         itemIndex = (int)command.GetParameter("ItemIndex");
-                        if (itemIndex < MapItemEntities.Count)
+                        if (itemIndex < MapComponent.Instance.MapItemEntities.Count)
                         {
                             playerID = (int)command.GetParameter("PlayerID");
                             count = (int)command.GetParameter("Count");
-                            MapItemEntities[itemIndex].FindComponent<MapItemComponent>().GetMapItem().PlayerID = playerID;
-                            MapItemEntities[itemIndex].FindComponent<MapItemComponent>().GetMapItem().Count = count;
+                            MapComponent.Instance.MapItemEntities[itemIndex].FindComponent<MapItemComponent>().GetMapItem().PlayerID = playerID;
+                            MapComponent.Instance.MapItemEntities[itemIndex].FindComponent<MapItemComponent>().GetMapItem().Count = count;
                         }
                     }
 
@@ -737,20 +699,24 @@ namespace RpgGame
             _clientCommands.Add(command);
         }
 
-        private void SendClientCommands()
+        private void GetClientCommandBytes(ref List<byte> oBytes)
         {
             int numCommands = _clientCommands.Count;
-            byte[] bytes = BitConverter.GetBytes(numCommands);
-            _stream.Write(bytes, 0, sizeof(int));
-            for (int i = 0; i < numCommands; i++)
+
+            if (numCommands > 0)
             {
-                while (_clientCommands[i] == null) ;
-                bytes = _clientCommands[i].GetBytes();
-                _stream.Write(BitConverter.GetBytes(bytes.Length), 0, sizeof(int));
-                _stream.Write(bytes, 0, bytes.Length);
+                oBytes.AddRange(BitConverter.GetBytes((int)PacketType.ClientCommand));
+                oBytes.AddRange(BitConverter.GetBytes(numCommands));
+
+                for (int i = 0; i < numCommands; i++)
+                {
+                    while (_clientCommands[i] == null) ;
+                    byte[] bytes = _clientCommands[i].GetBytes();
+                    oBytes.AddRange(BitConverter.GetBytes(bytes.Length));
+                    oBytes.AddRange(bytes);
+                }
+                _clientCommands.RemoveRange(0, numCommands);
             }
-            _clientCommands.RemoveRange(0, numCommands);
-            _stream.Flush();
         }
 
         public void SendMessage(MessagePacket packet)
@@ -758,31 +724,34 @@ namespace RpgGame
             _messages.Add(packet);
         }
 
-        private void SendMessagePackets()
+        private void GetMessagePacketBytes(ref List<byte> oBytes)
         {
             int numMessages = _messages.Count;
-            byte[] bytes = BitConverter.GetBytes(numMessages);
-            _stream.Write(bytes, 0, sizeof(int));
-            for (int i = 0; i < numMessages; i++)
+
+            if (numMessages > 0)
             {
-                bytes = _messages[i].GetBytes();
-                _stream.Write(BitConverter.GetBytes(bytes.Length), 0, sizeof(int));
-                _stream.Write(bytes, 0, bytes.Length);
+                oBytes.AddRange(BitConverter.GetBytes((int)PacketType.SendMessagePackets));
+                oBytes.AddRange(BitConverter.GetBytes(numMessages));
+                for (int i = 0; i < numMessages; i++)
+                {
+                    byte[] bytes = _messages[i].GetBytes();
+                    oBytes.AddRange(BitConverter.GetBytes(bytes.Length));
+                    oBytes.AddRange(bytes);
+                }
+                _messages.RemoveRange(0, numMessages);
             }
-            _messages.RemoveRange(0, numMessages);
-            _stream.Flush();
         }
 
         private void RecieveMessagePackets()
         {
-            byte[] bytes = ReadData(sizeof(int), _stream);
+            byte[] bytes = ReadData(sizeof(int), _networkStream);
             int numMessages = BitConverter.ToInt32(bytes, 0);
 
             for (int i = 0; i < numMessages; i++)
             {
-                bytes = ReadData(sizeof(int), _stream);
+                bytes = ReadData(sizeof(int), _networkStream);
                 int messageSize = BitConverter.ToInt32(bytes, 0);
-                bytes = ReadData(messageSize, _stream);
+                bytes = ReadData(messageSize, _networkStream);
                 MessagePacket packet = MessagePacket.FromBytes(bytes);
                 GUI.MessagePanel.Instance.AddMessage(packet);
             }
@@ -806,15 +775,15 @@ namespace RpgGame
 
         public bool Connected()
         {
-            return _connected && _client.Connected;
+            return _connected && _tcpClient.Connected;
         }
 
         public void Disconnect()
         {
             if (_connected)
             {
-                _stream.Close();
-                _client.Close();
+                _networkStream.Close();
+                _tcpClient.Close();
                 _connected = false;
             }
         }

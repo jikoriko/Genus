@@ -5,6 +5,7 @@ uniform mat4 uWorld;
 uniform mat4 uProjection;
 
 uniform vec2 uFlipUV;
+uniform vec2 uTexOffset;
 
 in vec3 vPosition;
 in vec2 vTexCoords;
@@ -22,8 +23,11 @@ void main()
 	{ 
 	    position.y = 1.0 - position.y;
 	}
+	
 	gl_Position = vec4(position, 1) * uModel * uWorld;
 	gl_Position = gl_Position * uProjection;
 
 	oTexCoords = vTexCoords;
+	oTexCoords.x += uTexOffset.x;
+	oTexCoords.y += uTexOffset.y;
 }

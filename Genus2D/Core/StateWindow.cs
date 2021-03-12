@@ -26,12 +26,13 @@ namespace Genus2D.Core
         private bool _mouseInitialized;
 
         public StateWindow(int width, int height, string title, GameWindowFlags windowFlags)
-            : base(width, height, new GraphicsMode(32, 24, 8, 4), title, windowFlags, DisplayDevice.Default, 3, 1, GraphicsContextFlags.ForwardCompatible)
+            : base(width, height, new GraphicsMode(32, 24, 8, 8), title, windowFlags, DisplayDevice.Default, 3, 1, GraphicsContextFlags.ForwardCompatible)
         {
             Instance = this;
             _stateList = new List<State>();
             _mouseInitialized = false;
             Renderer.Initialize();
+            this.TargetRenderFrequency = 60.0;
         }
 
         public double GetFPS()
@@ -180,7 +181,7 @@ namespace Genus2D.Core
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            if (!this.Focused) return;
+            //if (!this.Focused) return;
             base.OnUpdateFrame(e);
 
             if (_stateList.Count > 0)

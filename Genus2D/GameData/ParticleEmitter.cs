@@ -19,6 +19,7 @@ namespace Genus2D.GameData
             public Vector2 Direction;
             public Vector2 Position;
             public Vector2 Velocity;
+            public float Z;
             public float Scale;
             public float Rotation;
             public Color4 Colour;
@@ -75,6 +76,12 @@ namespace Genus2D.GameData
                         float deltaLife = 1.0f - (Particles[i].Life / EmitterData.MaxLife);
                         Particles[i].Velocity = Particles[i].Direction * MathTools.Lerp(EmitterData.StartVelocity, EmitterData.EndVelocity, deltaLife);
                         Particles[i].Position += Particles[i].Velocity * (float)deltaTime;
+
+                        float sinZ = ((float)Math.Sin(-(Particles[i].Life - EmitterData.MaxLife) * EmitterData.SinSpeedZ) + 1f) * 0.5f;
+                        sinZ *= (1 - deltaLife);
+                        float realZ = MathTools.Lerp(EmitterData.StartZ, EmitterData.EndZ, deltaLife) + (sinZ * EmitterData.SinMaxZ);
+                        Particles[i].Z = realZ;
+                        
                         Particles[i].Scale = MathTools.Lerp(EmitterData.StartScale, EmitterData.EndScale, deltaLife);
                         Particles[i].Rotation += EmitterData.RotationSpeed * (float)deltaTime;
                         Particles[i].Colour = MathTools.Lerp(ref EmitterData.StartColour, ref EmitterData.EndColour, deltaLife);
@@ -104,6 +111,7 @@ namespace Genus2D.GameData
 
                     particle.Position = particle.Direction * offset;
                     particle.Velocity = particle.Direction * EmitterData.StartVelocity;
+                    particle.Z = EmitterData.StartZ;
                     particle.Scale = EmitterData.StartScale;
                     particle.Rotation = 0;
                     particle.Colour = EmitterData.StartColour;

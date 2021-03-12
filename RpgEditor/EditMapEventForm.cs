@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Genus2D.GameData;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -24,8 +25,8 @@ namespace RpgEditor
             List<string> events = Genus2D.GameData.EventData.GetEventsDataNames();
             EventSelection.Items.Add("None");
             EventSelection.Items.AddRange(events.ToArray());
-            if (mapEvent.EventID + 1 < EventSelection.Items.Count)
-                EventSelection.SelectedIndex = mapEvent.EventID + 1;
+            if (mapEvent.EventDataID + 1 < EventSelection.Items.Count)
+                EventSelection.SelectedIndex = mapEvent.EventDataID + 1;
             else
                 EventSelection.SelectedIndex = 0;
 
@@ -43,6 +44,15 @@ namespace RpgEditor
             RenderPrioritySelection.SelectedIndex = (int)mapEvent.Priority;
             SpeedSelection.SelectedIndex = (int)mapEvent.Speed;
             FrequencySelection.SelectedIndex = (int)mapEvent.Frequency;
+
+            ParticleEmitterSelection.Items.Add("None");
+            List<string> emitterNames = Genus2D.GameData.ParticleEmitterData.GetEmitterNames();
+            ParticleEmitterSelection.Items.AddRange(emitterNames.ToArray());
+            if (mapEvent.ParticleEmitterID + 1 < ParticleEmitterSelection.Items.Count)
+                ParticleEmitterSelection.SelectedIndex = mapEvent.ParticleEmitterID + 1;
+            else
+                ParticleEmitterSelection.SelectedIndex = 0;
+
             EventPassableCheck.Checked = mapEvent.Passable;
             RandomMovementCheck.Checked = mapEvent.RandomMovement;
             EnabledCheck.Checked = mapEvent.Enabled;
@@ -60,17 +70,17 @@ namespace RpgEditor
         {
             if (NameBox.Text != "")
                 _mapEvent.Name = NameBox.Text;
-            _mapEvent.EventID = EventSelection.SelectedIndex - 1;
+            _mapEvent.EventDataID = EventSelection.SelectedIndex - 1;
             _mapEvent.EventDirection = (Genus2D.GameData.FacingDirection)EventDirectionSelection.SelectedIndex;
             _mapEvent.SpriteID = EventSpriteSelection.SelectedIndex - 1;
             _mapEvent.TriggerType = (Genus2D.GameData.EventTriggerType)EventTriggerTypeSelection.SelectedIndex;
             _mapEvent.Priority = (Genus2D.GameData.RenderPriority)RenderPrioritySelection.SelectedIndex;
             _mapEvent.Speed = (Genus2D.GameData.MovementSpeed)SpeedSelection.SelectedIndex;
             _mapEvent.Frequency = (Genus2D.GameData.MovementFrequency)FrequencySelection.SelectedIndex;
+            _mapEvent.ParticleEmitterID = ParticleEmitterSelection.SelectedIndex - 1;
             _mapEvent.Passable = EventPassableCheck.Checked;
             _mapEvent.RandomMovement = RandomMovementCheck.Checked;
             _mapEvent.Enabled = EnabledCheck.Checked;
         }
-
     }
 }
