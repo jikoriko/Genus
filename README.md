@@ -2,7 +2,7 @@
 2d MMO Engine WIP
 
  Programed using C# and Visual Studio, OpenGL rendering using OpenTK and the game editor uses WinForms.
- Project configured against .net 4.7, when built all build files go to a root folder called 'GenusBuild'.
+ Project currently configured against .net 4.5, when built all build files go to a root folder called 'GenusBuild'.
 
  1: build all 4 projects:
  
@@ -18,6 +18,7 @@
        * Events
        * Sprites
        * Items & Projectiles
+       * Crafting / Particles
        * Classes / Enemies / Drop Tables
        * Quests / Shops
        * System Data
