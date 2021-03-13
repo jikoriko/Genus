@@ -413,6 +413,7 @@
             this.AddVariableButton = new System.Windows.Forms.Button();
             this.SystemVariablesList = new System.Windows.Forms.ListBox();
             this.label19 = new System.Windows.Forms.Label();
+            this.EditEquipableSpriteButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -2269,6 +2270,7 @@
             this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox8.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.groupBox8.Controls.Add(this.EditEquipableSpriteButton);
             this.groupBox8.Controls.Add(this.label83);
             this.groupBox8.Controls.Add(this.ItemSellPriceSelection);
             this.groupBox8.Controls.Add(this.label82);
@@ -2375,9 +2377,9 @@
             // 
             // ImportIconButton
             // 
-            this.ImportIconButton.Location = new System.Drawing.Point(230, 84);
+            this.ImportIconButton.Location = new System.Drawing.Point(197, 84);
             this.ImportIconButton.Name = "ImportIconButton";
-            this.ImportIconButton.Size = new System.Drawing.Size(185, 47);
+            this.ImportIconButton.Size = new System.Drawing.Size(218, 47);
             this.ImportIconButton.TabIndex = 31;
             this.ImportIconButton.Text = "Import Icon Sheet";
             this.ImportIconButton.UseVisualStyleBackColor = true;
@@ -2465,9 +2467,9 @@
             // ItemStatsPanel
             // 
             this.ItemStatsPanel.BackColor = System.Drawing.Color.Transparent;
-            this.ItemStatsPanel.Location = new System.Drawing.Point(197, 243);
+            this.ItemStatsPanel.Location = new System.Drawing.Point(197, 296);
             this.ItemStatsPanel.Name = "ItemStatsPanel";
-            this.ItemStatsPanel.Size = new System.Drawing.Size(218, 340);
+            this.ItemStatsPanel.Size = new System.Drawing.Size(218, 287);
             this.ItemStatsPanel.TabIndex = 9;
             // 
             // ApplyItemButton
@@ -5246,6 +5248,16 @@
             this.label19.TabIndex = 7;
             this.label19.Text = "System Variables";
             // 
+            // EditEquipableSpriteButton
+            // 
+            this.EditEquipableSpriteButton.Location = new System.Drawing.Point(197, 243);
+            this.EditEquipableSpriteButton.Name = "EditEquipableSpriteButton";
+            this.EditEquipableSpriteButton.Size = new System.Drawing.Size(219, 47);
+            this.EditEquipableSpriteButton.TabIndex = 37;
+            this.EditEquipableSpriteButton.Text = "Edit Equipable Sprite";
+            this.EditEquipableSpriteButton.UseVisualStyleBackColor = true;
+            this.EditEquipableSpriteButton.Click += new System.EventHandler(this.EditEquipableSpriteButton_Click);
+            // 
             // EditorForm
             // 
             this.ClientSize = new System.Drawing.Size(1184, 761);
@@ -5766,6 +5778,7 @@
         private System.Windows.Forms.NumericUpDown particleSinZSelection;
         private System.Windows.Forms.Label label112;
         private System.Windows.Forms.NumericUpDown particleSinSpeedSelection;
+        private System.Windows.Forms.Button EditEquipableSpriteButton;
     }
 }
 

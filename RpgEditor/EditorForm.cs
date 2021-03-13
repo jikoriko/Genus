@@ -1223,6 +1223,24 @@ namespace RpgEditor
             }
         }
 
+        private void EditEquipableSpriteButton_Click(object sender, EventArgs e)
+        {
+            int selection = ItemListBox.SelectedIndex;
+            if (selection != -1)
+            {
+                Genus2D.GameData.ItemData data = Genus2D.GameData.ItemData.GetItemData(selection);
+                if (data.GetItemType() == ItemData.ItemType.Equipment || data.GetItemType() == ItemData.ItemType.Tool)
+                {
+                    EditEquipableSpriteForm form = new EditEquipableSpriteForm(this, data);
+                    form.ShowDialog(this);
+                }
+                else
+                {
+                    MessageBox.Show("Can only set sprites for equipables or tools.");
+                }
+            }
+        }
+
         private void ApplyItemButton_Click(object sender, EventArgs e)
         {
             int selection = ItemListBox.SelectedIndex;
@@ -2675,5 +2693,6 @@ namespace RpgEditor
 
 
         #endregion
+
     }
 }

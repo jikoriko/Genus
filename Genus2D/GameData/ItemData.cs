@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,6 +32,9 @@ namespace Genus2D.GameData
         public int IconID;
         public bool Sellable;
         public int SellPrice;
+        public string EquipableSprite;
+        private int[] _equipableAnchors;
+
         private ItemType _itemType;
         private int _maxStack;
         private Dictionary<string, object> _itemStats;
@@ -52,6 +56,9 @@ namespace Genus2D.GameData
             IconID = 0;
             Sellable = false;
             SellPrice = 0;
+            EquipableSprite = "";
+            _equipableAnchors = new int[4 * 4 * 2];
+
             _itemType = ItemType.Tool;
             _maxStack = 1;
             _itemStats = new Dictionary<string, object>();
@@ -141,6 +148,26 @@ namespace Genus2D.GameData
                 _itemStats[name] = value;
         }
 
+        public Vector2 GetEquipableAnchor(FacingDirection direction, int frame)
+        {
+            Vector2 anchor = Vector2.Zero;
+            if (frame >= 0 && frame < 4)
+            {
+                anchor.X = _equipableAnchors[((int)direction * 4) + (frame * 2)];
+                anchor.Y = _equipableAnchors[((int)direction * 4) + (frame * 2) + 1];
+            }
+
+            return anchor;
+        }
+
+        public void SetEquipableAnchor(FacingDirection direction, int frame, Vector2 anchor)
+        {
+            if (frame >= 0 && frame < 4)
+            {
+                _equipableAnchors[((int)direction * 4) + (frame * 2)] = (int)anchor.X;
+                _equipableAnchors[((int)direction * 4) + (frame * 2) + 1] = (int)anchor.Y;
+            }
+        }
 
 
         //static
@@ -314,6 +341,22 @@ namespace Genus2D.GameData
 
 
                     }
+                    else if (reader.LocalName == "EquipableSprite")
+                    {
+                        reader.Read();
+                        EquipableSprite = reader.ReadContentAsString();
+                        if (EquipableSprite == "NONE") EquipableSprite = "";
+                    }
+                    else if (reader.LocalName == "EquipableAnchors")
+                    {
+                        reader.Read();
+                        string anchorsString = reader.ReadContentAsString();
+                        string[] parts = anchorsString.Split(',');
+                        for (int i = 0; i < parts.Length; i++)
+                        {
+                            _equipableAnchors[i] = int.Parse(parts[i]);
+                        }
+                    }
                 }
             }
         }
@@ -369,6 +412,21 @@ namespace Genus2D.GameData
 
                 writer.WriteEndElement();
 
+            }
+
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("EquipableSprite");
+            writer.WriteString(EquipableSprite == "" ? "NONE" : EquipableSprite);
+            writer.WriteEndElement();
+
+            writer.WriteStartElement("EquipableAnchors");
+
+            for (int i = 0; i < _equipableAnchors.Length; i++)
+            {
+                writer.WriteString(_equipableAnchors[i].ToString());
+                if (i < _equipableAnchors.Length - 1)
+                    writer.WriteString(",");
             }
 
             writer.WriteEndElement();
